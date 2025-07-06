@@ -3,6 +3,9 @@ import { prisma } from "@/lib/prisma"
 import { PrismaClientInitializationError, PrismaClientKnownRequestError } from "@prisma/client/runtime/library"
 import { Difficulty, TourStatus } from "@prisma/client"
 
+// Force dynamic rendering to prevent static generation errors
+export const dynamic = 'force-dynamic'
+
 // GET /api/admin/tours - Get all tours with advanced filtering and pagination
 export async function GET(request: NextRequest) {
   try {
