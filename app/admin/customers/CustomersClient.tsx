@@ -66,6 +66,7 @@ interface CustomerResponse {
   limit: number
   hasMore: boolean
   stats: CustomerStats
+  error?: string
 }
 
 const getStatusColor = (status: "active" | "inactive" | "blocked") => {
@@ -135,6 +136,17 @@ export default function CustomersClient() {
       if (customerType !== "all") params.append("customerType", customerType)
 
       const response = await fetch(`/api/admin/customers?${params}`)
+      
+      if (!response.ok) {
+        if (response.status === 401) {
+          // Redirect to login with current path as redirect parameter
+          const currentPath = window.location.pathname
+          window.location.href = `/signin?redirect=${encodeURIComponent(currentPath)}`
+          return
+        }
+        throw new Error(`HTTP error! status: ${response.status}`)
+      }
+      
       const data: CustomerResponse = await response.json()
 
       if (data.success) {
@@ -143,19 +155,25 @@ export default function CustomersClient() {
         setTotal(data.total)
         setHasMore(data.hasMore)
       } else {
-        toast({
-          title: "Error",
-          description: "Failed to fetch customers",
-          variant: "destructive"
-        })
+        throw new Error(data.error || "Failed to fetch customers")
       }
     } catch (error) {
       console.error("Error fetching customers:", error)
       toast({
         title: "Error",
-        description: "Failed to fetch customers",
+        description: error instanceof Error ? error.message : "Failed to fetch customers",
         variant: "destructive"
       })
+      // Reset data on error
+      setCustomers([])
+      setStats({
+        totalCustomers: 0,
+        activeCustomers: 0,
+        totalRevenue: 0,
+        avgOrderValue: 0
+      })
+      setTotal(0)
+      setHasMore(false)
     } finally {
       setLoading(false)
     }
@@ -290,8 +308,60 @@ export default function CustomersClient() {
     }
   }
 
-  if (loading && customers.length === 0) {
-    return <LoadingSpinner />
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <Card key={i}>
+              <CardHeader className="space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">
+                  <div className="h-4 bg-gray-200 rounded w-24 animate-pulse" />
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="h-8 bg-gray-200 rounded w-16 animate-pulse" />
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+        <div className="space-y-4">
+          {Array.from({ length: 5 }).map((_, i) => (
+            <div key={i} className="p-4 border rounded-lg">
+              <div className="flex items-center space-x-4">
+                <div className="h-10 w-10 rounded-full bg-gray-200 animate-pulse" />
+                <div className="space-y-2 flex-1">
+                  <div className="h-4 bg-gray-200 rounded w-1/4 animate-pulse" />
+                  <div className="h-3 bg-gray-200 rounded w-1/3 animate-pulse" />
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    )
+  }
+
+  if (customers.length === 0) {
+    return (
+      <div className="text-center py-10">
+        <Users className="mx-auto h-12 w-12 text-gray-400" />
+        <h3 className="mt-2 text-sm font-medium text-gray-900">No customers found</h3>
+        <p className="mt-1 text-sm text-gray-500">
+          {search ? "Try adjusting your search or filters" : "Get started by adding a new customer"}
+        </p>
+        <div className="mt-6">
+          <Button onClick={() => {
+            setSearch("")
+            setStatus("all")
+            setCustomerType("all")
+            setPage(1)
+          }}>
+            Clear filters
+          </Button>
+        </div>
+      </div>
+    )
   }
 
   return (

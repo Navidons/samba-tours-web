@@ -1,6 +1,7 @@
 import nodemailer from 'nodemailer'
 import { prisma } from './prisma'
 import { emailTemplates } from './email'
+import { env } from './config'
 
 // Email configuration
 const emailConfig = {
@@ -8,17 +9,36 @@ const emailConfig = {
   port: 587,
   secure: false,
   auth: {
-    user: process.env.GMAIL_USER,
-    pass: process.env.GMAIL_APP_PASSWORD,
+    user: env.GMAIL_USER,
+    pass: env.GMAIL_APP_PASSWORD,
   },
-  pool: true, // Use pooled connection
-  maxConnections: 5, // Maximum number of connections to pool
-  maxMessages: 100, // Maximum number of messages per connection
-  rateLimit: 10, // Messages per second
+  // Reduce pool settings for production stability
+  pool: true,
+  maxConnections: 2, // Reduced from 5
+  maxMessages: 50,   // Reduced from 100
+  rateLimit: 5,      // Reduced from 10
+  // Add TLS options for better security
+  tls: {
+    rejectUnauthorized: true,
+    minVersion: 'TLSv1.2'
+  }
 }
 
-// Create transporter with pooling
-const transporter = nodemailer.createTransport(emailConfig)
+// Create transporter with error handling
+let transporter: nodemailer.Transporter | null = null
+
+try {
+  transporter = nodemailer.createTransport(emailConfig)
+} catch (error) {
+  console.error('Failed to create email transporter:', error)
+}
+
+// Verify transporter on startup
+if (transporter) {
+  transporter.verify()
+    .then(() => console.log('Email transporter verified successfully'))
+    .catch((error) => console.error('Email transporter verification failed:', error))
+}
 
 export interface EmailAttachment {
   filename: string
@@ -162,31 +182,70 @@ class EmailQueue {
   }
 
   private async sendEmail(emailData: EmailData & { databaseId?: number }): Promise<void> {
+    if (!transporter) {
+      throw new Error('Email transporter not initialized')
+    }
+
     const emailTemplate = emailTemplates[emailData.template](emailData.data)
     
     const mailOptions: any = {
-      from: `"Samba Tours Uganda" <${process.env.GMAIL_USER}>`,
+      from: `"${env.EMAIL_FROM_NAME}" <${env.GMAIL_USER}>`,
       to: emailData.to,
       subject: emailData.subject || emailTemplate.subject,
       html: emailTemplate.html,
+      replyTo: env.EMAIL_REPLY_TO || env.GMAIL_USER,
+      headers: {
+        'X-Environment': env.NODE_ENV,
+        'X-Application': 'Samba Tours'
+      }
     }
 
     if (emailData.attachments && emailData.attachments.length > 0) {
       mailOptions.attachments = emailData.attachments
     }
 
-    const info = await transporter.sendMail(mailOptions)
-    
-    // Update database record using the correct ID
-    if (emailData.databaseId) {
-      await prisma.emailSent.update({
-        where: { id: emailData.databaseId },
-        data: {
-          messageId: info.messageId,
-          status: 'sent',
-          sentAt: new Date()
+    try {
+      // Verify transporter before sending
+      await transporter.verify()
+      
+      const info = await transporter.sendMail(mailOptions)
+      
+      // Update database record using the correct ID
+      if (emailData.databaseId) {
+        await prisma.emailSent.update({
+          where: { id: emailData.databaseId },
+          data: {
+            messageId: info.messageId,
+            status: 'sent',
+            sentAt: new Date()
+          }
+        })
+      }
+    } catch (error) {
+      console.error('Failed to send email:', error)
+      
+      // Update database with error
+      if (emailData.databaseId) {
+        await prisma.emailSent.update({
+          where: { id: emailData.databaseId },
+          data: {
+            status: 'failed',
+            errorMessage: error.message || 'Failed to send email',
+            updatedAt: new Date()
+          }
+        })
+      }
+      
+      // Recreate transporter if it failed
+      if (!transporter.isIdle()) {
+        try {
+          transporter = nodemailer.createTransport(emailConfig)
+        } catch (e) {
+          console.error('Failed to recreate email transporter:', e)
         }
-      })
+      }
+      
+      throw error
     }
   }
 

@@ -1,4 +1,6 @@
 import { Suspense } from "react"
+import { redirect } from "next/navigation"
+import { cookies } from "next/headers"
 import ContactManagementClient from "./ContactManagementClient"
 import { Skeleton } from "@/components/ui/skeleton"
 
@@ -8,6 +10,14 @@ export const metadata = {
 }
 
 export default function ContactManagementPage() {
+  // Check for admin session on server side
+  const cookieStore = cookies()
+  const adminSession = cookieStore.get('admin_session')
+  
+  if (!adminSession || !adminSession.value) {
+    redirect('/signin?redirect=/admin/contact')
+  }
+
   return (
     <div className="space-y-6">
       <div>

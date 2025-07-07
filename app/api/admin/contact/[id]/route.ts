@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { PrismaClient } from "@prisma/client"
 import { z } from "zod"
+import { requireAdminAuth } from '@/lib/server-auth'
 
 const prisma = new PrismaClient()
 
@@ -18,6 +19,15 @@ export async function PATCH(
   { params }: { params: { id: string } }
 ) {
   try {
+    // Check admin authentication
+    const authResult = await requireAdminAuth(request)
+    if (authResult.error) {
+      return NextResponse.json(
+        { error: authResult.error },
+        { status: authResult.status }
+      )
+    }
+
     const id = parseInt(params.id)
     
     if (isNaN(id)) {
@@ -102,6 +112,15 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
+    // Check admin authentication
+    const authResult = await requireAdminAuth(request)
+    if (authResult.error) {
+      return NextResponse.json(
+        { error: authResult.error },
+        { status: authResult.status }
+      )
+    }
+
     const id = parseInt(params.id)
     
     if (isNaN(id)) {
@@ -156,6 +175,15 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
+    // Check admin authentication
+    const authResult = await requireAdminAuth(request)
+    if (authResult.error) {
+      return NextResponse.json(
+        { error: authResult.error },
+        { status: authResult.status }
+      )
+    }
+
     const id = parseInt(params.id)
     
     if (isNaN(id)) {

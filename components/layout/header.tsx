@@ -1,7 +1,6 @@
 "use client"
 
-import type React from "react"
-import { useState, useEffect } from "react"
+import React, { useState, useEffect } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { Button } from "@/components/ui/button"
@@ -47,6 +46,7 @@ export default function Header() {
   const [isSearchOpen, setIsSearchOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState("")
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const [isClient, setIsClient] = useState(false)
   const { getItemCount } = useCart()
   const cartItems = getItemCount()
   const [tourStats, setTourStats] = useState<TourStats>({
@@ -59,7 +59,14 @@ export default function Header() {
   const [featuredTours, setFeaturedTours] = useState<FeaturedTour[]>([])
   const [currentFeaturedTour, setCurrentFeaturedTour] = useState<FeaturedTour | null>(null)
   const [currentTourIndex, setCurrentTourIndex] = useState(0)
-  const pathname = usePathname()
+  
+  // Ensure component only runs on client side
+  useEffect(() => {
+    setIsClient(true)
+  }, [])
+
+  // Only call usePathname after ensuring we're on the client
+  const pathname = isClient ? usePathname() : ''
 
   useEffect(() => {
     const handleScroll = () => {
@@ -71,6 +78,8 @@ export default function Header() {
 
   // Fetch tour statistics, categories, and featured tours
   useEffect(() => {
+    if (!isClient) return
+
     const fetchTourData = async () => {
       try {
         const [toursResponse, categoriesResponse, featuredToursResponse] = await Promise.all([
@@ -121,10 +130,12 @@ export default function Header() {
     }
 
     fetchTourData()
-  }, [])
+  }, [isClient])
 
   // Fetch current tour title if on tour detail page
   useEffect(() => {
+    if (!isClient) return
+
     const fetchCurrentTour = async () => {
       if (pathname.startsWith('/tours/') && pathname !== '/tours') {
         const tourSlug = pathname.split('/').pop()
@@ -147,7 +158,7 @@ export default function Header() {
     }
 
     fetchCurrentTour()
-  }, [pathname])
+  }, [pathname, isClient])
 
   // Auto-rotate featured tours
   useEffect(() => {

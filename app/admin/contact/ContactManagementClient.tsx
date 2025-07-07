@@ -131,31 +131,50 @@ export default function ContactManagementClient() {
 
   const fetchInquiries = async () => {
     try {
-      const response = await fetch("/api/contact")
-      if (response.ok) {
-        const data = await response.json()
-        setInquiries(data.inquiries)
-        
-        // Calculate stats
-        const stats = {
-          total: data.inquiries.length,
-          new: data.inquiries.filter((i: ContactInquiry) => i.status === "new").length,
-          read: data.inquiries.filter((i: ContactInquiry) => i.status === "read").length,
-          replied: data.inquiries.filter((i: ContactInquiry) => i.status === "replied").length,
-          archived: data.inquiries.filter((i: ContactInquiry) => i.status === "archived").length
+      const response = await fetch("/api/admin/contact")
+      
+      if (!response.ok) {
+        if (response.status === 401 || response.status === 403) {
+          // Authentication issue - redirect to login
+          window.location.href = '/signin'
+          return
         }
-        setStats(stats)
-      } else {
-        toast({
-          title: "Error",
-          description: "Failed to fetch contact inquiries",
-          variant: "destructive",
-        })
+        
+        const errorText = await response.text()
+        console.error("API Error Response:", errorText)
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`)
       }
+
+      const contentType = response.headers.get("content-type")
+      if (!contentType || !contentType.includes("application/json")) {
+        const textResponse = await response.text()
+        console.error("Non-JSON Response:", textResponse)
+        throw new Error("Server returned non-JSON response")
+      }
+
+      const data = await response.json()
+      
+      if (!data.inquiries || !Array.isArray(data.inquiries)) {
+        console.error("Invalid data structure:", data)
+        throw new Error("Invalid response structure from server")
+      }
+
+      setInquiries(data.inquiries)
+      
+      // Calculate stats
+      const stats = {
+        total: data.inquiries.length,
+        new: data.inquiries.filter((i: ContactInquiry) => i.status === "new").length,
+        read: data.inquiries.filter((i: ContactInquiry) => i.status === "read").length,
+        replied: data.inquiries.filter((i: ContactInquiry) => i.status === "replied").length,
+        archived: data.inquiries.filter((i: ContactInquiry) => i.status === "archived").length
+      }
+      setStats(stats)
     } catch (error) {
+      console.error("Fetch inquiries error:", error)
       toast({
         title: "Error",
-        description: "Failed to connect to server",
+        description: error instanceof Error ? error.message : "Failed to fetch contact inquiries",
         variant: "destructive",
       })
     } finally {
@@ -194,6 +213,11 @@ export default function ContactManagementClient() {
         body: JSON.stringify({ status }),
       })
 
+      if (response.status === 401 || response.status === 403) {
+        window.location.href = '/signin'
+        return
+      }
+
       if (response.ok) {
         toast({
           title: "Status Updated",
@@ -201,6 +225,8 @@ export default function ContactManagementClient() {
         })
         fetchInquiries() // Refresh the list
       } else {
+        const errorText = await response.text()
+        console.error("Update status error:", errorText)
         toast({
           title: "Update Failed",
           description: "Failed to update inquiry status",
@@ -208,6 +234,7 @@ export default function ContactManagementClient() {
         })
       }
     } catch (error) {
+      console.error("Update inquiry status error:", error)
       toast({
         title: "Error",
         description: "Failed to update inquiry",
@@ -226,6 +253,11 @@ export default function ContactManagementClient() {
         body: JSON.stringify({ priority }),
       })
 
+      if (response.status === 401 || response.status === 403) {
+        window.location.href = '/signin'
+        return
+      }
+
       if (response.ok) {
         toast({
           title: "Priority Updated",
@@ -233,6 +265,8 @@ export default function ContactManagementClient() {
         })
         fetchInquiries() // Refresh the list
       } else {
+        const errorText = await response.text()
+        console.error("Update priority error:", errorText)
         toast({
           title: "Update Failed",
           description: "Failed to update inquiry priority",
@@ -240,6 +274,7 @@ export default function ContactManagementClient() {
         })
       }
     } catch (error) {
+      console.error("Update inquiry priority error:", error)
       toast({
         title: "Error",
         description: "Failed to update inquiry priority",
@@ -363,6 +398,11 @@ export default function ContactManagementClient() {
         body: formData,
       })
 
+      if (response.status === 401 || response.status === 403) {
+        window.location.href = '/signin'
+        return
+      }
+
       if (response.ok) {
         // Update inquiry status to replied
         await updateInquiryStatus(selectedInquiry.id, "replied")
@@ -377,8 +417,17 @@ export default function ContactManagementClient() {
         setAttachments([])
         setSelectedInquiry(null)
       } else {
-        const errorData = await response.json()
-        throw new Error(errorData.message || "Failed to send reply")
+        let errorMessage = "Failed to send reply"
+        try {
+          const errorData = await response.json()
+          errorMessage = errorData.message || errorMessage
+        } catch (jsonError) {
+          // If response is not JSON, use the status text
+          const errorText = await response.text()
+          console.error("Non-JSON error response:", errorText)
+          errorMessage = `HTTP ${response.status}: ${response.statusText}`
+        }
+        throw new Error(errorMessage)
       }
     } catch (error) {
       toast({

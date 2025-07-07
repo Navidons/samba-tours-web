@@ -10,8 +10,13 @@ import { CartProvider } from "@/hooks/use-cart"
 import ConditionalLayout from "@/components/layout/conditional-layout"
 import VisitorTracker from "@/components/tracking/visitor-tracker"
 import StructuredData from "@/components/seo/structured-data"
-import SEOMonitor from "@/components/seo/seo-monitor"
 import { generateSEOMetadata, generateOrganizationSchema, SEO_CONFIG } from "@/lib/seo"
+import dynamic from "next/dynamic"
+
+// Dynamically import SEO Monitor to prevent SSR issues
+const SEOMonitor = dynamic(() => import("@/components/seo/seo-monitor"), {
+  ssr: false
+})
 
 const inter = Inter({
   subsets: ["latin"],

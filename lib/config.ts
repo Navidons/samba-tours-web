@@ -18,7 +18,14 @@ const envSchema = z.object({
   STRIPE_SECRET_KEY: z.string().optional(),
   STRIPE_PUBLISHABLE_KEY: z.string().optional(),
   
-  // Email (if you add email functionality)
+  // Email Configuration
+  GMAIL_USER: z.string(),
+  GMAIL_APP_PASSWORD: z.string(),
+  EMAIL_FROM_NAME: z.string().default('Samba Tours Uganda'),
+  EMAIL_REPLY_TO: z.string().optional(),
+  ADMIN_EMAIL: z.string().optional(),
+  
+  // Legacy email config (for future use with other providers)
   SMTP_HOST: z.string().optional(),
   SMTP_PORT: z.string().transform(Number).optional(),
   SMTP_USER: z.string().optional(),
@@ -55,7 +62,7 @@ export const config = {
   app: {
     name: 'Samba Tours',
     description: 'Discover the beauty of Uganda with Samba Tours',
-    url: env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000',
+    url: env.NEXT_PUBLIC_APP_URL || 'https://sambatours.org',
     environment: env.NODE_ENV,
   },
   
@@ -73,7 +80,7 @@ export const config = {
       windowMs: env.RATE_LIMIT_WINDOW,
     },
     cors: {
-      origin: env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000',
+      origin: env.NEXT_PUBLIC_APP_URL || 'https://sambatours.org',
       credentials: true,
     },
   },

@@ -42,7 +42,13 @@ export default function NewsletterSubscribersClient() {
   const [filteredSubscribers, setFilteredSubscribers] = useState<NewsletterSubscriber[]>([])
   const [searchTerm, setSearchTerm] = useState("")
   const [isLoading, setIsLoading] = useState(true)
-  const [stats, setStats] = useState({
+  const [error, setError] = useState<string | null>(null)
+  const [stats, setStats] = useState<{
+    total: number
+    active: number
+    inactive: number
+    thisMonth: number
+  }>({
     total: 0,
     active: 0,
     inactive: 0,
@@ -60,22 +66,23 @@ export default function NewsletterSubscribersClient() {
 
   const fetchSubscribers = async () => {
     try {
+      setError(null)
       const response = await fetch("/api/admin/newsletter/subscribers")
-      if (response.ok) {
-        const data = await response.json()
-        setSubscribers(data.subscribers)
-        setStats(data.stats)
-      } else {
-        toast({
-          title: "Error",
-          description: "Failed to fetch subscribers",
-          variant: "destructive",
-        })
+      if (!response.ok) {
+        throw new Error(`Failed to fetch subscribers: ${response.statusText}`)
       }
+      const data = await response.json()
+      if (!data.subscribers || !data.stats) {
+        throw new Error("Invalid response format from server")
+      }
+      setSubscribers(data.subscribers)
+      setStats(data.stats)
     } catch (error) {
+      const message = error instanceof Error ? error.message : "Failed to connect to server"
+      setError(message)
       toast({
         title: "Error",
-        description: "Failed to connect to server",
+        description: message,
         variant: "destructive",
       })
     } finally {
@@ -128,7 +135,23 @@ export default function NewsletterSubscribersClient() {
   }
 
   if (isLoading) {
-    return <div>Loading subscribers...</div>
+    return <div className="flex items-center justify-center p-8">
+      <div className="text-center space-y-4">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
+        <p className="text-muted-foreground">Loading subscribers...</p>
+      </div>
+    </div>
+  }
+
+  if (error) {
+    return <div className="flex items-center justify-center p-8">
+      <div className="text-center space-y-4">
+        <p className="text-destructive">Error: {error}</p>
+        <Button onClick={fetchSubscribers} variant="outline">
+          Try Again
+        </Button>
+      </div>
+    </div>
   }
 
   return (

@@ -13,10 +13,18 @@ interface SEOCheck {
 export default function SEOMonitor() {
   const [checks, setChecks] = useState<SEOCheck[]>([])
   const [isVisible, setIsVisible] = useState(false)
-  const pathname = usePathname()
+  const [isClient, setIsClient] = useState(false)
+  
+  // Ensure component only runs on client side
+  useEffect(() => {
+    setIsClient(true)
+  }, [])
+
+  // Only call usePathname after ensuring we're on the client
+  const pathname = isClient ? usePathname() : ''
 
   useEffect(() => {
-    if (process.env.NODE_ENV !== 'development') return
+    if (process.env.NODE_ENV !== 'development' || !isClient) return
 
     const runSEOChecks = () => {
       const newChecks: SEOCheck[] = []
@@ -208,20 +216,88 @@ export default function SEOMonitor() {
         newChecks.push({
           name: 'Indexability',
           status: 'pass',
-          message: 'Page is indexable (no robots meta)',
+          message: 'No robots restriction found',
           critical: true
         })
+      }
+
+      // Check viewport meta tag
+      const viewport = document.querySelector('meta[name="viewport"]')
+      if (!viewport) {
+        newChecks.push({
+          name: 'Viewport Meta',
+          status: 'fail',
+          message: 'Missing viewport meta tag',
+          critical: true
+        })
+      } else {
+        newChecks.push({
+          name: 'Viewport Meta',
+          status: 'pass',
+          message: 'Viewport meta tag present',
+          critical: true
+        })
+      }
+
+      // Check for external links without rel attributes
+      const externalLinks = Array.from(document.querySelectorAll('a[href^="http"]')).filter(link => {
+        const href = link.getAttribute('href')
+        return href && !href.includes(window.location.hostname)
+      })
+      
+      const unsafeExternalLinks = externalLinks.filter(link => {
+        const rel = link.getAttribute('rel')
+        return !rel || (!rel.includes('noopener') && !rel.includes('noreferrer'))
+      })
+
+      if (unsafeExternalLinks.length > 0) {
+        newChecks.push({
+          name: 'External Links',
+          status: 'warning',
+          message: `${unsafeExternalLinks.length} external link(s) without security attributes`,
+          critical: false
+        })
+      } else if (externalLinks.length > 0) {
+        newChecks.push({
+          name: 'External Links',
+          status: 'pass',
+          message: 'All external links have security attributes',
+          critical: false
+        })
+      }
+
+      // Check page load speed (basic check)
+      if (typeof window !== 'undefined' && 'performance' in window) {
+        const loadTime = performance.timing.loadEventEnd - performance.timing.navigationStart
+        if (loadTime > 3000) {
+          newChecks.push({
+            name: 'Page Load Speed',
+            status: 'warning',
+            message: `Page load time: ${Math.round(loadTime)}ms (>3s)`,
+            critical: false
+          })
+        } else {
+          newChecks.push({
+            name: 'Page Load Speed',
+            status: 'pass',
+            message: `Page load time: ${Math.round(loadTime)}ms`,
+            critical: false
+          })
+        }
       }
 
       setChecks(newChecks)
     }
 
-    // Run checks after DOM is loaded
+    // Run checks after a short delay to ensure DOM is fully loaded
     const timer = setTimeout(runSEOChecks, 1000)
     return () => clearTimeout(timer)
-  }, [pathname])
+  }, [pathname, isClient])
 
-  if (process.env.NODE_ENV !== 'development') return null
+  // Don't render anything if not in development or not on client
+  if (process.env.NODE_ENV !== 'development' || !isClient) {
+    return null
+  }
 
   const criticalIssues = checks.filter(check => check.critical && check.status === 'fail').length
   const warnings = checks.filter(check => check.status === 'warning').length
@@ -231,37 +307,53 @@ export default function SEOMonitor() {
     <div className="fixed bottom-4 right-4 z-50">
       <button
         onClick={() => setIsVisible(!isVisible)}
-        className={`px-4 py-2 rounded-lg text-white font-medium shadow-lg transition-colors ${
-          criticalIssues > 0 
-            ? 'bg-red-500 hover:bg-red-600' 
+        className={`
+          px-4 py-2 rounded-full text-sm font-medium shadow-lg transition-all
+          ${criticalIssues > 0 
+            ? 'bg-red-500 text-white hover:bg-red-600' 
             : warnings > 0 
-            ? 'bg-yellow-500 hover:bg-yellow-600'
-            : 'bg-green-500 hover:bg-green-600'
-        }`}
+            ? 'bg-yellow-500 text-white hover:bg-yellow-600'
+            : 'bg-green-500 text-white hover:bg-green-600'
+          }
+        `}
       >
-        SEO {criticalIssues > 0 ? `(${criticalIssues} issues)` : `(${passed}/${checks.length})`}
+        SEO: {criticalIssues}❌ {warnings}⚠️ {passed}✅
       </button>
 
       {isVisible && (
-        <div className="absolute bottom-12 right-0 w-96 bg-white border border-gray-200 rounded-lg shadow-xl max-h-96 overflow-y-auto">
+        <div className="absolute bottom-12 right-0 w-80 max-h-96 overflow-y-auto bg-white border border-gray-200 rounded-lg shadow-xl">
           <div className="p-4 border-b border-gray-200">
-            <h3 className="font-bold text-gray-900">SEO Health Check</h3>
+            <h3 className="font-semibold text-gray-900">SEO Monitor</h3>
             <p className="text-sm text-gray-600">
-              {passed} passed • {warnings} warnings • {criticalIssues} critical issues
+              {checks.length} checks • Page: {pathname}
             </p>
           </div>
           
           <div className="p-4 space-y-3">
             {checks.map((check, index) => (
-              <div key={index} className="flex items-start space-x-3">
-                <div className={`w-3 h-3 rounded-full mt-1 flex-shrink-0 ${
-                  check.status === 'pass' ? 'bg-green-500' :
-                  check.status === 'warning' ? 'bg-yellow-500' : 'bg-red-500'
-                }`} />
-                <div className="flex-1 min-w-0">
-                  <p className="font-medium text-gray-900 text-sm">{check.name}</p>
-                  <p className="text-xs text-gray-600">{check.message}</p>
+              <div
+                key={index}
+                className={`
+                  p-3 rounded-md border-l-4
+                  ${check.status === 'pass' 
+                    ? 'bg-green-50 border-green-400' 
+                    : check.status === 'warning'
+                    ? 'bg-yellow-50 border-yellow-400'
+                    : 'bg-red-50 border-red-400'
+                  }
+                `}
+              >
+                <div className="flex items-center justify-between">
+                  <span className="font-medium text-sm">
+                    {check.name}
+                  </span>
+                  <span className="text-lg">
+                    {check.status === 'pass' ? '✅' : check.status === 'warning' ? '⚠️' : '❌'}
+                  </span>
                 </div>
+                <p className="text-xs mt-1 text-gray-600">
+                  {check.message}
+                </p>
               </div>
             ))}
           </div>

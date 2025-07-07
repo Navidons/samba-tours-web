@@ -29,9 +29,6 @@ export async function GET(request: NextRequest) {
       where.isActive = false
     }
 
-    // Get total count
-    const total = await prisma.newsletterSubscriber.count({ where })
-
     // Get subscribers
     const subscribers = await prisma.newsletterSubscriber.findMany({
       where,
@@ -52,8 +49,28 @@ export async function GET(request: NextRequest) {
       take: limit
     })
 
+    // Get stats
+    const [total, active, inactive, thisMonth] = await Promise.all([
+      prisma.newsletterSubscriber.count(),
+      prisma.newsletterSubscriber.count({ where: { isActive: true } }),
+      prisma.newsletterSubscriber.count({ where: { isActive: false } }),
+      prisma.newsletterSubscriber.count({
+        where: {
+          subscribedAt: {
+            gte: new Date(new Date().getFullYear(), new Date().getMonth(), 1)
+          }
+        }
+      })
+    ])
+
     return NextResponse.json({
       subscribers,
+      stats: {
+        total,
+        active,
+        inactive,
+        thisMonth
+      },
       pagination: {
         page,
         limit,
