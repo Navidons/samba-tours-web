@@ -2,15 +2,14 @@
 
 import type React from "react"
 
-import { useState } from "react"
-import { useRouter } from "next/navigation"
+import { useState, useEffect } from "react"
+import { useRouter, useSearchParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Mountain, Eye, EyeOff } from "lucide-react"
-import { useAuth } from "@/components/auth/mock-auth-provider"
 
 export default function AdminSignIn() {
   const [email, setEmail] = useState("")
@@ -18,27 +17,33 @@ export default function AdminSignIn() {
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState("")
   const [isLoading, setIsLoading] = useState(false)
-  const { signIn } = useAuth()
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const redirectTo = searchParams.get('redirect') || '/admin'
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError("")
     setIsLoading(true)
-
     try {
-      await signIn(email, password)
-      router.push("/admin")
+      const res = await fetch("/api/admin/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password })
+      })
+      const data = await res.json()
+      
+      if (!res.ok) {
+        setError(data.error || "Sign in failed")
+      } else {
+        // Force a page reload to ensure the cookie is properly set
+        window.location.href = redirectTo
+      }
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Sign in failed")
+      setError("Sign in failed")
     } finally {
       setIsLoading(false)
     }
-  }
-
-  const fillDemoCredentials = () => {
-    setEmail("admin@sambatours.com")
-    setPassword("admin123")
   }
 
   return (
@@ -64,7 +69,7 @@ export default function AdminSignIn() {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="admin@sambatours.com"
+                placeholder="Enter your email"
                 required
                 className="focus:ring-orange-500 focus:border-orange-500"
               />
@@ -111,27 +116,6 @@ export default function AdminSignIn() {
               {isLoading ? "Signing in..." : "Sign In"}
             </Button>
           </form>
-
-          <div className="mt-6 p-4 bg-orange-50 rounded-lg border border-orange-200">
-            <h3 className="text-sm font-medium text-orange-800 mb-2">Demo Credentials</h3>
-            <div className="text-xs text-orange-700 space-y-1">
-              <p>
-                <strong>Admin:</strong> admin@sambatours.com / admin123
-              </p>
-              <p>
-                <strong>Demo:</strong> demo@sambatours.com / demo123
-              </p>
-            </div>
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={fillDemoCredentials}
-              className="mt-2 text-orange-600 border-orange-300 hover:bg-orange-50 bg-transparent"
-            >
-              Use Admin Credentials
-            </Button>
-          </div>
         </CardContent>
       </Card>
     </div>

@@ -2,12 +2,43 @@ import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
 export async function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl
+
+  // Protect /admin routes
+  if (pathname.startsWith('/admin')) {
+    const cookie = request.cookies.get('admin_session')
+    
+    // Check if cookie exists and has a valid format
+    if (!cookie || !cookie.value || cookie.value.trim() === '') {
+      const signinUrl = request.nextUrl.clone()
+      signinUrl.pathname = '/signin'
+      signinUrl.searchParams.set('redirect', pathname)
+      return NextResponse.redirect(signinUrl)
+    }
+    
+    // Basic validation that the session has the expected format (userId:timestamp)
+    try {
+      const decoded = Buffer.from(cookie.value, 'base64').toString()
+      if (!decoded.includes(':')) {
+        throw new Error('Invalid session format')
+      }
+    } catch (error) {
+      // Invalid session, redirect to login
+      const signinUrl = request.nextUrl.clone()
+      signinUrl.pathname = '/signin'
+      signinUrl.searchParams.set('redirect', pathname)
+      return NextResponse.redirect(signinUrl)
+    }
+  }
+
   // Skip tracking for admin routes, API routes, and static files
-  if (request.nextUrl.pathname.startsWith('/admin') || 
-      request.nextUrl.pathname.startsWith('/api') ||
-      request.nextUrl.pathname.startsWith('/_next') ||
-      request.nextUrl.pathname.startsWith('/favicon.ico') ||
-      request.nextUrl.pathname.includes('.')) {
+  if (
+    pathname.startsWith('/admin') || 
+    pathname.startsWith('/api') ||
+    pathname.startsWith('/_next') ||
+    pathname.startsWith('/favicon.ico') ||
+    pathname.includes('.')
+  ) {
     return NextResponse.next()
   }
 
@@ -16,7 +47,7 @@ export async function middleware(request: NextRequest) {
 
   // Add tracking header to trigger client-side tracking
   response.headers.set('x-track-visit', 'true')
-  response.headers.set('x-page-path', request.nextUrl.pathname)
+  response.headers.set('x-page-path', pathname)
 
   return response
 }

@@ -12,10 +12,10 @@ function getDatabaseUrl() {
   // For MySQL, add connection pool parameters to prevent too many connections
   if (baseUrl.includes('mysql://')) {
     const url = new URL(baseUrl)
-    url.searchParams.set('connection_limit', '1')
+    url.searchParams.set('connection_limit', '10')
     url.searchParams.set('pool_timeout', '5')
     url.searchParams.set('acquire_timeout', '5')
-    url.searchParams.set('max_connections', '1')
+    url.searchParams.set('max_connections', '10')
     return url.toString()
   }
   

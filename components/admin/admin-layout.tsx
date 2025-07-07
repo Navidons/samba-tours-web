@@ -34,7 +34,6 @@ import {
   Send,
   Database,
 } from "lucide-react"
-import { useAuth } from "@/components/auth/mock-auth-provider"
 
 // Define navigation type for better type safety
 interface NavItem {
@@ -79,11 +78,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const pathname = usePathname()
   const router = useRouter()
-  const { user, signOut } = useAuth()
 
   const handleSignOut = async () => {
-    await signOut()
-    router.push("/admin/signin")
+    await fetch("/api/admin/logout", { method: "POST" })
+    window.location.href = "/signin"
   }
 
   const Sidebar = ({ mobile = false }: { mobile?: boolean }) => (
@@ -157,12 +155,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       <div className="flex-shrink-0 p-4 border-t border-white/10">
         <div className="flex items-center space-x-3">
           <Avatar className="h-8 w-8 flex-shrink-0">
-            <AvatarImage src={user?.avatar || "/placeholder.svg"} />
-            <AvatarFallback className="bg-orange-500 text-white text-xs">{user?.name?.charAt(0) || "A"}</AvatarFallback>
+            <AvatarImage src="/placeholder.svg" />
+            <AvatarFallback className="bg-orange-500 text-white text-xs">A</AvatarFallback>
           </Avatar>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-white truncate">{user?.name}</p>
-            <p className="text-xs text-orange-200 truncate">{user?.email}</p>
+            <p className="text-sm font-medium text-white truncate">Admin</p>
+            <p className="text-xs text-orange-200 truncate">admin@sambatours.com</p>
           </div>
         </div>
       </div>
@@ -230,18 +228,16 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" className="relative h-8 w-8 rounded-full">
                     <Avatar className="h-8 w-8">
-                      <AvatarImage src={user?.avatar || "/placeholder.svg"} />
-                      <AvatarFallback className="bg-orange-500 text-white">
-                        {user?.name?.charAt(0) || "A"}
-                      </AvatarFallback>
+                      <AvatarImage src="/placeholder.svg" />
+                      <AvatarFallback className="bg-orange-500 text-white">A</AvatarFallback>
                     </Avatar>
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="w-56" align="end" forceMount>
                   <DropdownMenuLabel className="font-normal">
                     <div className="flex flex-col space-y-1">
-                      <p className="text-sm font-medium leading-none">{user?.name}</p>
-                      <p className="text-xs leading-none text-muted-foreground">{user?.email}</p>
+                      <p className="text-sm font-medium leading-none">Admin</p>
+                      <p className="text-xs leading-none text-muted-foreground">admin@sambatours.com</p>
                     </div>
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator />
