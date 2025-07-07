@@ -1,5 +1,3 @@
-import { prisma } from '@/lib/prisma'
-
 export interface BlogComment {
   id: number
   authorName: string
@@ -107,21 +105,7 @@ export async function likeBlogComment(commentId: number): Promise<{ success: boo
   }
 }
 
-// Get comment count for a blog post
-export async function getBlogCommentCount(postId: number): Promise<number> {
-  try {
-    const count = await prisma.blogComment.count({
-      where: {
-        postId,
-        status: 'approved'
-      }
-    })
-    return count
-  } catch (error) {
-    console.error('Error getting comment count:', error)
-    return 0
-  }
-}
+
 
 // Format comment date
 export function formatCommentDate(date: Date | string): string {
