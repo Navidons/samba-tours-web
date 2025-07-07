@@ -1,10 +1,11 @@
 const fs = require('fs');
 const path = require('path');
 
-// Check if Prisma client exists
-const prismaClientPath = path.join(__dirname, '../node_modules/.prisma/client/index.js');
+// Check both possible Prisma client locations
+const legacyPath = path.join(__dirname, '../node_modules/.prisma/client/index.js');
+const modernPath = path.join(__dirname, '../node_modules/@prisma/client/index.js');
 
-if (!fs.existsSync(prismaClientPath)) {
+if (!fs.existsSync(legacyPath) && !fs.existsSync(modernPath)) {
   console.error('❌ Prisma client not found. Please run "prisma generate" first.');
   process.exit(1);
 }
