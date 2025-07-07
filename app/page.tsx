@@ -42,7 +42,7 @@ export const metadata: Metadata = generateSEOMetadata({
     'African safari', 'primate tours', 'birding tours Uganda', 'Uganda honeymoon safari',
     'best Uganda tour operator', 'Uganda safari packages', 'Uganda wildlife tours'
   ],
-  images: ['/images/og-homepage.jpg', '/images/gorilla-trekking-hero.jpg'],
+  images: ['/images/og-homepage.webp', '/images/gorilla-trekking-hero.jpg'],
   canonical: '/',
   alternates: {
     types: '/rss.xml'
