@@ -123,70 +123,56 @@ export default function CustomersClient() {
   const [sendingEmail, setSendingEmail] = useState(false)
   const { toast } = useToast()
 
-  const fetchCustomers = async () => {
+  const fetchCustomers = async (params: FetchParams) => {
     try {
       setLoading(true)
-      const params = new URLSearchParams({
-        page: page.toString(),
-        limit: "10"
+      const searchParams = new URLSearchParams({
+        page: params.page.toString(),
+        limit: params.limit.toString(),
+        search: params.search || '',
+        status: params.status || '',
+        customerType: params.customerType || ''
       })
 
-      if (search) params.append("search", search)
-      if (status !== "all") params.append("status", status)
-      if (customerType !== "all") params.append("customerType", customerType)
-
-      const response = await fetch(`/api/admin/customers?${params}`)
+      const response = await fetch(`/api/admin/customers?${searchParams}`)
       
       if (!response.ok) {
         if (response.status === 401) {
-          // Redirect to login with current path as redirect parameter
-          const currentPath = window.location.pathname
-          window.location.href = `/signin?redirect=${encodeURIComponent(currentPath)}`
-          return
+          // Don't throw on 401, just return null to let the middleware handle the redirect
+          return null
         }
-        throw new Error(`HTTP error! status: ${response.status}`)
+        throw new Error(`Error: ${response.statusText}`)
       }
-      
-      const data: CustomerResponse = await response.json()
 
-      if (data.success) {
-        setCustomers(data.customers)
-        setStats(data.stats)
-        setTotal(data.total)
-        setHasMore(data.hasMore)
-      } else {
-        throw new Error(data.error || "Failed to fetch customers")
+      const data = await response.json()
+      if (!data.success) {
+        throw new Error(data.error || 'Failed to fetch customers')
       }
+
+      setCustomers(data.customers)
+      setTotal(data.total)
+      setStats(data.stats)
+      setHasMore(data.hasMore)
     } catch (error) {
-      console.error("Error fetching customers:", error)
+      console.error('Error fetching customers:', error)
       toast({
-        title: "Error",
-        description: error instanceof Error ? error.message : "Failed to fetch customers",
-        variant: "destructive"
+        title: 'Error',
+        description: error instanceof Error ? error.message : 'Failed to fetch customers',
+        variant: 'destructive'
       })
-      // Reset data on error
-      setCustomers([])
-      setStats({
-        totalCustomers: 0,
-        activeCustomers: 0,
-        totalRevenue: 0,
-        avgOrderValue: 0
-      })
-      setTotal(0)
-      setHasMore(false)
     } finally {
       setLoading(false)
     }
   }
 
   useEffect(() => {
-    fetchCustomers()
+    fetchCustomers({ page, search, status, customerType })
   }, [page, search, status, customerType])
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
     setPage(1)
-    fetchCustomers()
+    fetchCustomers({ page, search, status, customerType })
   }
 
   const handleStatusChange = (newStatus: string) => {
