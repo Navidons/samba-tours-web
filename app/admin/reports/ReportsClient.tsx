@@ -22,6 +22,8 @@ import {
   Trash2,
   Plus,
 } from "lucide-react"
+import { useToast } from "@/hooks/use-toast"
+import { format } from "date-fns"
 
 const reportTypes = [
   {
@@ -125,17 +127,40 @@ export default function ReportsClient() {
   const [dateFrom, setDateFrom] = useState<Date>()
   const [dateTo, setDateTo] = useState<Date>()
   const [reportName, setReportName] = useState("")
-  const [format, setFormat] = useState("pdf")
+  const [formatType, setFormatType] = useState("pdf")
+  const [loading, setLoading] = useState(false)
+  const { toast } = useToast()
 
-  const handleGenerateReport = () => {
-    // Handle report generation
-    console.log("Generating report:", {
-      type: selectedReportType,
-      name: reportName,
-      dateFrom,
-      dateTo,
-      format,
-    })
+  const handleGenerateReport = async () => {
+    if (!selectedReportType || !reportName) return
+    setLoading(true)
+    try {
+      const res = await fetch("/api/admin/reports", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          type: selectedReportType,
+          dateFrom: dateFrom ? dateFrom.toISOString().split("T")[0] : undefined,
+          dateTo: dateTo ? dateTo.toISOString().split("T")[0] : undefined,
+          format: formatType,
+        }),
+      })
+      if (!res.ok) throw new Error("Failed to generate report")
+      const blob = await res.blob()
+      const url = window.URL.createObjectURL(blob)
+      const a = document.createElement("a")
+      a.href = url
+      a.download = `${reportName || selectedReportType}-report.csv`
+      document.body.appendChild(a)
+      a.click()
+      a.remove()
+      window.URL.revokeObjectURL(url)
+      toast({ title: "Success", description: "Report generated and downloaded!" })
+    } catch (err) {
+      toast({ title: "Error", description: "Failed to generate report", variant: "destructive" })
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -243,7 +268,7 @@ export default function ReportsClient() {
 
                   <div className="space-y-2">
                     <Label>Export Format</Label>
-                    <Select value={format} onValueChange={setFormat}>
+                    <Select value={formatType} onValueChange={setFormatType}>
                       <SelectTrigger>
                         <SelectValue />
                       </SelectTrigger>
@@ -257,11 +282,17 @@ export default function ReportsClient() {
 
                   <Button
                     onClick={handleGenerateReport}
-                    disabled={!selectedReportType || !reportName}
+                    disabled={!selectedReportType || !reportName || loading}
                     className="w-full bg-forest-600 hover:bg-forest-700"
                   >
-                    <TrendingUp className="h-4 w-4 mr-2" />
-                    Generate Report
+                    {loading ? (
+                      <span>Generating...</span>
+                    ) : (
+                      <>
+                        <TrendingUp className="h-4 w-4 mr-2" />
+                        Generate Report
+                      </>
+                    )}
                   </Button>
                 </CardContent>
               </Card>

@@ -36,26 +36,43 @@ import {
 } from "lucide-react"
 import { useAuth } from "@/components/auth/mock-auth-provider"
 
-const navigation = [
-  { name: "Dashboard", href: "/admin", icon: Home },
-  { name: "Tours", href: "/admin/tours", icon: MapPin },
-  { name: "Bookings", href: "/admin/bookings", icon: Calendar },
-  { name: "Customers", href: "/admin/customers", icon: Users },
-  { name: "Gallery", href: "/admin/gallery", icon: Camera },
-  { name: "Blog", href: "/admin/blog", icon: FileText },
-  { name: "Comments", href: "/admin/comments", icon: MessageSquare },
-  { name: "Newsletter", href: "/admin/newsletter", icon: Mail },
-  { name: "Email", href: "/admin/email", icon: Send },
-  { name: "Contact", href: "/admin/contact", icon: MessageSquare },
-  { name: "Analytics", href: "/admin/analytics", icon: BarChart3 },
-  { name: "Reports", href: "/admin/reports", icon: BarChart3 },
-  { name: "System", href: "/admin/system", icon: Settings },
-  { name: "Settings", href: "/admin/settings", icon: Settings },
-  { name: "Notifications", href: "/admin/notifications", icon: Bell },
-  { name: "User Management", href: "/admin/users", icon: Users },
-  { name: "Logs", href: "/admin/logs", icon: FileText },
-  { name: "Backup", href: "/admin/backup", icon: Database },
-  { name: "API Keys", href: "/admin/api-keys", icon: Settings },
+// Define navigation type for better type safety
+interface NavItem {
+  name: string;
+  href: string;
+  icon: React.ComponentType<any>;
+}
+interface NavSection {
+  section: string;
+  items: NavItem[];
+}
+
+const navigation: NavSection[] = [
+  { section: "Dashboard", items: [
+    { name: "Dashboard", href: "/admin", icon: Home },
+  ]},
+  { section: "Content", items: [
+    { name: "Tours", href: "/admin/tours", icon: MapPin },
+    { name: "Gallery", href: "/admin/gallery", icon: Camera },
+    { name: "Blog", href: "/admin/blog", icon: FileText },
+    { name: "Comments", href: "/admin/comments", icon: MessageSquare },
+    { name: "Newsletter", href: "/admin/newsletter", icon: Mail },
+  ]},
+  { section: "Operations", items: [
+    { name: "Bookings", href: "/admin/bookings", icon: Calendar },
+    { name: "Customers", href: "/admin/customers", icon: Users },
+    { name: "Email", href: "/admin/email", icon: Send },
+    { name: "Contact", href: "/admin/contact", icon: MessageSquare },
+  ]},
+  { section: "Analytics & Reports", items: [
+    { name: "Analytics", href: "/admin/analytics", icon: BarChart3 },
+    { name: "Reports", href: "/admin/reports", icon: BarChart3 },
+  ]},
+  { section: "System", items: [
+    { name: "User Management", href: "/admin/users", icon: Users },
+    { name: "Logs", href: "/admin/logs", icon: FileText },
+    { name: "Backup", href: "/admin/backup", icon: Database },
+  ]},
 ]
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -109,22 +126,30 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               background: rgba(255, 255, 255, 0.5);
             }
           `}</style>
-          {navigation.map((item) => {
-            const isActive = pathname === item.href
-            return (
-              <Link
-                key={item.name}
-                href={item.href}
-                onClick={() => mobile && setSidebarOpen(false)}
-                className={`flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-all duration-200 ${
-                  isActive ? "bg-white/20 text-white shadow-lg" : "text-orange-100 hover:bg-white/10 hover:text-white"
-                }`}
-              >
-                <item.icon className="mr-3 h-5 w-5 flex-shrink-0" />
-                <span className="truncate">{item.name}</span>
-              </Link>
-            )
-          })}
+          {navigation.map((section) => (
+            <div key={section.section}>
+              <div className="mt-6 mb-2 px-4 text-xs font-bold text-orange-200 uppercase tracking-wider">
+                {section.section}
+              </div>
+              {section.items.map((item) => {
+                const isActive = pathname === item.href
+                const Icon = item.icon
+                return (
+                  <Link
+                    key={item.name}
+                    href={item.href}
+                    onClick={() => mobile && setSidebarOpen(false)}
+                    className={`flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-all duration-200 ${
+                      isActive ? "bg-white/20 text-white shadow-lg" : "text-orange-100 hover:bg-white/10 hover:text-white"
+                    }`}
+                  >
+                    <Icon className="mr-3 h-5 w-5 flex-shrink-0" />
+                    <span className="truncate">{item.name}</span>
+                  </Link>
+                )
+              })}
+            </div>
+          ))}
         </div>
       </div>
 
@@ -141,8 +166,23 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           </div>
         </div>
       </div>
+      {/* Logout Button - Fixed at bottom */}
+      <div className="p-4 border-t border-white/10 mt-auto">
+        <button
+          type="button"
+          onClick={handleSignOut}
+          className="flex items-center w-full px-4 py-3 text-sm font-medium rounded-lg transition-all duration-200 text-orange-100 hover:bg-white/10 hover:text-white"
+        >
+          <LogOut className="mr-3 h-5 w-5 flex-shrink-0" />
+          <span className="truncate">Logout</span>
+        </button>
+      </div>
     </div>
   )
+
+  // In the header, show the current page name
+  const allNavItems = navigation.flatMap(section => section.items)
+  const currentNavItem = allNavItems.find(i => i.href === pathname)
 
   return (
     <div className="flex h-screen bg-gray-50">
@@ -174,7 +214,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 </SheetTrigger>
               </Sheet>
               <h1 className="text-xl font-semibold text-gray-900">
-                {navigation.find((item) => item.href === pathname)?.name || "Admin Panel"}
+                {currentNavItem?.name || "Admin Panel"}
               </h1>
             </div>
 

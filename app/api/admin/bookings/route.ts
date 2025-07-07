@@ -71,7 +71,8 @@ export async function GET(request: NextRequest) {
       limit,
         total,
         pages: Math.ceil(total / limit)
-      }
+      },
+      success: true
     })
   } catch (error) {
     console.error('Error fetching bookings:', error)

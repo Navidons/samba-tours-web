@@ -226,26 +226,31 @@ export default function BookingsManagement() {
   })
   const [updatingStatus, setUpdatingStatus] = useState(false)
   const [expandedBookings, setExpandedBookings] = useState<Set<number>>(new Set())
+  const [loadError, setLoadError] = useState<string | null>(null)
 
   // Load all bookings
   useEffect(() => {
     const loadBookings = async () => {
       try {
         setLoading(true)
+        setLoadError(null)
         const response = await fetch('/api/admin/bookings')
         const data = await response.json()
 
         if (data.success) {
           setBookings(data.bookings || [])
         } else {
-          console.error('Error loading bookings:', data.error)
+          setLoadError(data.error || 'Failed to load bookings')
+          setBookings([])
           toast({
             title: "Error",
-            description: "Failed to load bookings",
+            description: data.error || "Failed to load bookings",
             variant: "destructive"
           })
         }
       } catch (err) {
+        setLoadError('Failed to load bookings')
+        setBookings([])
         console.error('Error loading bookings:', err)
         toast({
           title: "Error",
@@ -666,6 +671,24 @@ const getPaymentStatusColor = (status: string) => {
               </div>
             </div>
 
+            {/* Error Card if loadError exists */}
+            {loadError && (
+              <div className="mb-8">
+                <Card className="bg-red-50 border border-red-200 shadow-sm">
+                  <CardContent className="p-6 text-center">
+                    <div className="flex flex-col items-center">
+                      <AlertCircle className="h-10 w-10 text-red-400 mb-2" />
+                      <h3 className="text-xl font-semibold text-red-700 mb-2">Failed to load bookings</h3>
+                      <p className="text-red-600 mb-2">{loadError}</p>
+                      <Button variant="outline" onClick={() => window.location.reload()} className="mt-2">
+                        Retry
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            )}
+
             {/* Stats Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
               <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-sm hover:shadow-md transition-all duration-200">
@@ -790,7 +813,7 @@ const getPaymentStatusColor = (status: string) => {
 
           {/* Enhanced Bookings List */}
           <div className="space-y-6">
-            {filteredBookings.length === 0 ? (
+            {!loadError && filteredBookings.length === 0 ? (
               <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-sm">
                 <CardContent className="p-16 text-center">
                   <div className="p-6 bg-gray-100 rounded-full w-24 h-24 mx-auto mb-6 flex items-center justify-center">
@@ -806,7 +829,7 @@ const getPaymentStatusColor = (status: string) => {
                 </CardContent>
               </Card>
             ) : (
-              filteredBookings.map((booking) => {
+              !loadError && filteredBookings.map((booking) => {
                 const isExpanded = expandedBookings.has(booking.id!)
                 return (
                   <Card key={booking.id} className="bg-white/80 backdrop-blur-sm border-0 shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden">
