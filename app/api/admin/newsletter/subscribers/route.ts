@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
-import { PrismaClient } from "@prisma/client"
-
-const prisma = new PrismaClient()
+import { prisma } from "@/lib/prisma"
 
 export const dynamic = 'force-dynamic'
 
@@ -11,7 +9,7 @@ export async function GET(request: NextRequest) {
     const page = parseInt(searchParams.get("page") || "1")
     const limit = parseInt(searchParams.get("limit") || "50")
     const search = searchParams.get("search") || ""
-    const status = searchParams.get("status") || "all"
+    const status = searchParams.get("status") || ""
 
     const skip = (page - 1) * limit
 
@@ -31,63 +29,42 @@ export async function GET(request: NextRequest) {
       where.isActive = false
     }
 
-    // Get subscribers with pagination
-    const [subscribers, totalCount] = await Promise.all([
-      prisma.newsletterSubscriber.findMany({
-        where,
-        skip,
-        take: limit,
-        orderBy: { subscribedAt: "desc" },
-        select: {
-          id: true,
-          email: true,
-          name: true,
-          isActive: true,
-          source: true,
-          subscribedAt: true,
-          unsubscribedAt: true,
-          interests: true,
-          metadata: true,
-        }
-      }),
-      prisma.newsletterSubscriber.count({ where })
-    ])
+    // Get total count
+    const total = await prisma.newsletterSubscriber.count({ where })
 
-    // Get statistics
-    const [activeCount, inactiveCount, thisMonthCount] = await Promise.all([
-      prisma.newsletterSubscriber.count({ where: { isActive: true } }),
-      prisma.newsletterSubscriber.count({ where: { isActive: false } }),
-      prisma.newsletterSubscriber.count({
-        where: {
-          subscribedAt: {
-            gte: new Date(new Date().getFullYear(), new Date().getMonth(), 1)
-          }
-        }
-      })
-    ])
-
-    const stats = {
-      total: totalCount,
-      active: activeCount,
-      inactive: inactiveCount,
-      thisMonth: thisMonthCount
-    }
+    // Get subscribers
+    const subscribers = await prisma.newsletterSubscriber.findMany({
+      where,
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        interests: true,
+        isActive: true,
+        source: true,
+        subscribedAt: true,
+        unsubscribedAt: true
+      },
+      orderBy: {
+        subscribedAt: "desc"
+      },
+      skip,
+      take: limit
+    })
 
     return NextResponse.json({
       subscribers,
-      stats,
       pagination: {
         page,
         limit,
-        total: totalCount,
-        pages: Math.ceil(totalCount / limit)
+        total,
+        pages: Math.ceil(total / limit)
       }
     })
-
   } catch (error) {
     console.error("Error fetching newsletter subscribers:", error)
     return NextResponse.json(
-      { error: "Failed to fetch subscribers" },
+      { error: "Failed to fetch newsletter subscribers" },
       { status: 500 }
     )
   }

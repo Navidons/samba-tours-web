@@ -1,7 +1,8 @@
-import { type NextRequest, NextResponse } from "next/server"
-import { prisma } from "@/lib/prisma"
+import { NextRequest, NextResponse } from "next/server"
+import { PrismaClient } from "@prisma/client"
 
-// Force dynamic rendering to prevent static generation errors
+const prisma = new PrismaClient()
+
 export const dynamic = 'force-dynamic'
 
 export async function GET(request: NextRequest) {

@@ -1,11 +1,26 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { Textarea } from "@/components/ui/textarea"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import { 
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
+import { 
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { 
   Table, 
   TableBody, 
@@ -24,7 +39,25 @@ import {
   Mail,
   Clock,
   CheckCircle,
-  AlertCircle
+  AlertCircle,
+  User,
+  Phone,
+  Calendar,
+  MessageSquare,
+  Send,
+  X,
+  Paperclip,
+  Bold,
+  Italic,
+  Underline,
+  List,
+  AlignLeft,
+  AlignCenter,
+  AlignRight,
+  Link,
+  Image,
+  FileText,
+  Type
 } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 
@@ -40,6 +73,7 @@ interface ContactInquiry {
   status: "new" | "read" | "replied" | "archived"
   createdAt: string
   updatedAt: string
+  repliedAt?: string | null
   assignedUser?: {
     id: number
     email: string
@@ -51,12 +85,31 @@ interface ContactInquiry {
   } | null
 }
 
+interface Attachment {
+  id: string
+  name: string
+  size: number
+  type: string
+  file: File
+}
+
 export default function ContactManagementClient() {
   const [inquiries, setInquiries] = useState<ContactInquiry[]>([])
   const [filteredInquiries, setFilteredInquiries] = useState<ContactInquiry[]>([])
   const [searchTerm, setSearchTerm] = useState("")
   const [statusFilter, setStatusFilter] = useState("all")
   const [isLoading, setIsLoading] = useState(true)
+  const [selectedInquiry, setSelectedInquiry] = useState<ContactInquiry | null>(null)
+  const [isViewModalOpen, setIsViewModalOpen] = useState(false)
+  const [isReplyModalOpen, setIsReplyModalOpen] = useState(false)
+  const [replyData, setReplyData] = useState({
+    subject: "",
+    message: "",
+    isHtml: true
+  })
+  const [isSendingReply, setIsSendingReply] = useState(false)
+  const [attachments, setAttachments] = useState<Attachment[]>([])
+  const [isHtmlMode, setIsHtmlMode] = useState(true)
   const [stats, setStats] = useState({
     total: 0,
     new: 0,
@@ -65,6 +118,8 @@ export default function ContactManagementClient() {
     archived: 0
   })
   const { toast } = useToast()
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  const editorRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     fetchInquiries()
@@ -158,6 +213,181 @@ export default function ContactManagementClient() {
         description: "Failed to update inquiry",
         variant: "destructive",
       })
+    }
+  }
+
+  const updateInquiryPriority = async (id: number, priority: string) => {
+    try {
+      const response = await fetch(`/api/admin/contact/${id}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ priority }),
+      })
+
+      if (response.ok) {
+        toast({
+          title: "Priority Updated",
+          description: `Inquiry priority set to ${priority}`,
+        })
+        fetchInquiries() // Refresh the list
+      } else {
+        toast({
+          title: "Update Failed",
+          description: "Failed to update inquiry priority",
+          variant: "destructive",
+        })
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to update inquiry priority",
+        variant: "destructive",
+      })
+    }
+  }
+
+  const handleViewInquiry = async (inquiry: ContactInquiry) => {
+    setSelectedInquiry(inquiry)
+    setIsViewModalOpen(true)
+    
+    // Mark as read if it's new
+    if (inquiry.status === "new") {
+      await updateInquiryStatus(inquiry.id, "read")
+    }
+  }
+
+  const handleReplyToInquiry = (inquiry: ContactInquiry) => {
+    setSelectedInquiry(inquiry)
+    setReplyData({
+      subject: `Re: ${inquiry.subject || "Your inquiry"}`,
+      message: "",
+      isHtml: true
+    })
+    setAttachments([])
+    setIsHtmlMode(true)
+    setIsReplyModalOpen(true)
+  }
+
+  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files
+    if (files) {
+      const newAttachments: Attachment[] = Array.from(files).map(file => ({
+        id: Math.random().toString(36).substr(2, 9),
+        name: file.name,
+        size: file.size,
+        type: file.type,
+        file: file
+      }))
+      setAttachments(prev => [...prev, ...newAttachments])
+    }
+  }
+
+  const removeAttachment = (id: string) => {
+    setAttachments(prev => prev.filter(att => att.id !== id))
+  }
+
+  const formatFileSize = (bytes: number) => {
+    if (bytes === 0) return '0 Bytes'
+    const k = 1024
+    const sizes = ['Bytes', 'KB', 'MB', 'GB']
+    const i = Math.floor(Math.log(bytes) / Math.log(k))
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
+  }
+
+  const executeCommand = (command: string, value?: string) => {
+    document.execCommand(command, false, value)
+    editorRef.current?.focus()
+  }
+
+  const getEditorContent = () => {
+    if (isHtmlMode && editorRef.current) {
+      return editorRef.current.innerHTML
+    }
+    return replyData.message
+  }
+
+  const handleEditorInput = (e: React.FormEvent<HTMLDivElement>) => {
+    const content = e.currentTarget.innerHTML
+    setReplyData({ ...replyData, message: content })
+  }
+
+  const handleHtmlModeToggle = () => {
+    if (isHtmlMode && editorRef.current) {
+      // Convert HTML to plain text when switching from HTML to plain
+      const plainText = editorRef.current.innerText || editorRef.current.textContent || ''
+      setReplyData({ ...replyData, message: plainText })
+    }
+    setIsHtmlMode(!isHtmlMode)
+  }
+
+  const sendReply = async () => {
+    if (!selectedInquiry || !replyData.subject.trim()) {
+      toast({
+        title: "Error",
+        description: "Please fill in all required fields",
+        variant: "destructive",
+      })
+      return
+    }
+
+    const messageContent = getEditorContent()
+    if (!messageContent.trim()) {
+      toast({
+        title: "Error",
+        description: "Please enter a message",
+        variant: "destructive",
+      })
+      return
+    }
+
+    setIsSendingReply(true)
+
+    try {
+      const formData = new FormData()
+      formData.append('action', 'send-single')
+      formData.append('to', selectedInquiry.email || '')
+      formData.append('subject', replyData.subject)
+      formData.append('customMessage', messageContent)
+      formData.append('hasCustomData', 'true')
+      formData.append('hasAttachments', attachments.length > 0 ? 'true' : 'false')
+
+      // Add attachments
+      attachments.forEach(attachment => {
+        formData.append('attachments', attachment.file)
+      })
+
+      const response = await fetch("/api/admin/email", {
+        method: "POST",
+        body: formData,
+      })
+
+      if (response.ok) {
+        // Update inquiry status to replied
+        await updateInquiryStatus(selectedInquiry.id, "replied")
+        
+        toast({
+          title: "Reply Sent",
+          description: "Email reply sent successfully",
+        })
+        
+        setIsReplyModalOpen(false)
+        setReplyData({ subject: "", message: "", isHtml: true })
+        setAttachments([])
+        setSelectedInquiry(null)
+      } else {
+        const errorData = await response.json()
+        throw new Error(errorData.message || "Failed to send reply")
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: error instanceof Error ? error.message : "Failed to send reply",
+        variant: "destructive",
+      })
+    } finally {
+      setIsSendingReply(false)
     }
   }
 
@@ -272,17 +502,18 @@ export default function ContactManagementClient() {
           />
         </div>
         <div className="flex gap-2">
-          <select
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
-          >
-            <option value="all">All Status</option>
-            <option value="new">New</option>
-            <option value="read">Read</option>
-            <option value="replied">Replied</option>
-            <option value="archived">Archived</option>
-          </select>
+          <Select value={statusFilter} onValueChange={setStatusFilter}>
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Filter by status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Status</SelectItem>
+              <SelectItem value="new">New</SelectItem>
+              <SelectItem value="read">Read</SelectItem>
+              <SelectItem value="replied">Replied</SelectItem>
+              <SelectItem value="archived">Archived</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
       </div>
 
@@ -360,16 +591,16 @@ export default function ContactManagementClient() {
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => updateInquiryStatus(inquiry.id, "read")}
-                          disabled={inquiry.status === "read"}
+                          onClick={() => handleViewInquiry(inquiry)}
+                          title="View details"
                         >
                           <Eye className="h-4 w-4" />
                         </Button>
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => updateInquiryStatus(inquiry.id, "replied")}
-                          disabled={inquiry.status === "replied"}
+                          onClick={() => handleReplyToInquiry(inquiry)}
+                          title="Reply to inquiry"
                         >
                           <Reply className="h-4 w-4" />
                         </Button>
@@ -378,6 +609,7 @@ export default function ContactManagementClient() {
                           size="sm"
                           onClick={() => updateInquiryStatus(inquiry.id, "archived")}
                           disabled={inquiry.status === "archived"}
+                          title="Archive inquiry"
                         >
                           <Archive className="h-4 w-4" />
                         </Button>
@@ -390,6 +622,355 @@ export default function ContactManagementClient() {
           </Table>
         </CardContent>
       </Card>
+
+      {/* Inquiry View Modal */}
+      <Dialog open={isViewModalOpen} onOpenChange={setIsViewModalOpen}>
+        <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center space-x-2">
+              <MessageSquare className="h-5 w-5" />
+              <span>Inquiry Details</span>
+            </DialogTitle>
+            <DialogDescription>
+              View and manage this contact inquiry
+            </DialogDescription>
+          </DialogHeader>
+          
+          {selectedInquiry && (
+            <div className="space-y-6">
+              {/* Header Info */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <div className="flex items-center space-x-2">
+                    <User className="h-4 w-4 text-muted-foreground" />
+                    <span className="font-medium">{selectedInquiry.name}</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Mail className="h-4 w-4 text-muted-foreground" />
+                    <span className="text-sm">{selectedInquiry.email}</span>
+                  </div>
+                  {selectedInquiry.phone && (
+                    <div className="flex items-center space-x-2">
+                      <Phone className="h-4 w-4 text-muted-foreground" />
+                      <span className="text-sm">{selectedInquiry.phone}</span>
+                    </div>
+                  )}
+                </div>
+                
+                <div className="space-y-2">
+                  <div className="flex items-center space-x-2">
+                    <Calendar className="h-4 w-4 text-muted-foreground" />
+                    <span className="text-sm">Submitted: {formatDate(selectedInquiry.createdAt)}</span>
+                  </div>
+                  {selectedInquiry.repliedAt && (
+                    <div className="flex items-center space-x-2">
+                      <Clock className="h-4 w-4 text-muted-foreground" />
+                      <span className="text-sm">Replied: {formatDate(selectedInquiry.repliedAt)}</span>
+                    </div>
+                  )}
+                  <div className="flex space-x-2">
+                    <Badge className={getStatusColor(selectedInquiry.status)}>
+                      {selectedInquiry.status}
+                    </Badge>
+                    <Badge className={getPriorityColor(selectedInquiry.priority)}>
+                      {selectedInquiry.priority}
+                    </Badge>
+                  </div>
+                </div>
+              </div>
+
+              {/* Subject and Tour Interest */}
+              <div className="space-y-4">
+                {selectedInquiry.subject && (
+                  <div>
+                    <h3 className="font-medium mb-2">Subject</h3>
+                    <p className="text-sm bg-gray-50 p-3 rounded-md">{selectedInquiry.subject}</p>
+                  </div>
+                )}
+                
+                {selectedInquiry.tourInterest && (
+                  <div>
+                    <h3 className="font-medium mb-2">Tour Interest</h3>
+                    <p className="text-sm bg-gray-50 p-3 rounded-md">{selectedInquiry.tourInterest}</p>
+                  </div>
+                )}
+              </div>
+
+              {/* Message */}
+              <div>
+                <h3 className="font-medium mb-2">Message</h3>
+                <div className="bg-gray-50 p-4 rounded-md">
+                  <p className="text-sm whitespace-pre-wrap">{selectedInquiry.message}</p>
+                </div>
+              </div>
+
+              {/* Actions */}
+              <div className="flex justify-end space-x-2 pt-4 border-t">
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setIsViewModalOpen(false)
+                    handleReplyToInquiry(selectedInquiry)
+                  }}
+                >
+                  <Reply className="h-4 w-4 mr-2" />
+                  Reply
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => updateInquiryStatus(selectedInquiry.id, "archived")}
+                  disabled={selectedInquiry.status === "archived"}
+                >
+                  <Archive className="h-4 w-4 mr-2" />
+                  Archive
+                </Button>
+                <Button onClick={() => setIsViewModalOpen(false)}>
+                  Close
+                </Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Gmail-Style Reply Modal */}
+      <Dialog open={isReplyModalOpen} onOpenChange={setIsReplyModalOpen}>
+        <DialogContent className="max-w-4xl h-[90vh] flex flex-col overflow-hidden">
+          <DialogHeader className="border-b pb-4 flex-shrink-0">
+            <DialogTitle className="flex items-center space-x-2">
+              <Reply className="h-5 w-5" />
+              <span>Reply to Inquiry</span>
+            </DialogTitle>
+            <DialogDescription>
+              Send a professional reply to {selectedInquiry?.name}
+            </DialogDescription>
+          </DialogHeader>
+          
+          {selectedInquiry && (
+            <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
+              {/* Email Header */}
+              <div className="border-b p-4 space-y-3 flex-shrink-0">
+                <div className="flex items-center space-x-4">
+                  <div className="flex-1">
+                    <label className="text-sm font-medium text-gray-700">To:</label>
+                    <div className="flex items-center space-x-2 mt-1 p-2 bg-gray-50 rounded-md">
+                      <User className="h-4 w-4 text-muted-foreground" />
+                      <span className="text-sm">{selectedInquiry.name} ({selectedInquiry.email || 'No email'})</span>
+                    </div>
+                  </div>
+                </div>
+                
+                <div>
+                  <label className="text-sm font-medium text-gray-700">Subject:</label>
+                  <Input
+                    value={replyData.subject}
+                    onChange={(e) => setReplyData({ ...replyData, subject: e.target.value })}
+                    className="mt-1"
+                    placeholder="Enter subject..."
+                  />
+                </div>
+              </div>
+
+              {/* Editor Toolbar */}
+              <div className="border-b bg-gray-50 p-2 flex-shrink-0">
+                <div className="flex items-center space-x-1">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleHtmlModeToggle}
+                    className="text-xs"
+                  >
+                    <Type className="h-3 w-3 mr-1" />
+                    {isHtmlMode ? "HTML" : "Plain"}
+                  </Button>
+                  
+                  {isHtmlMode && (
+                    <>
+                      <div className="w-px h-4 bg-gray-300 mx-2" />
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => executeCommand('bold')}
+                        className="text-xs"
+                      >
+                        <Bold className="h-3 w-3" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => executeCommand('italic')}
+                        className="text-xs"
+                      >
+                        <Italic className="h-3 w-3" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => executeCommand('underline')}
+                        className="text-xs"
+                      >
+                        <Underline className="h-3 w-3" />
+                      </Button>
+                      <div className="w-px h-4 bg-gray-300 mx-2" />
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => executeCommand('insertUnorderedList')}
+                        className="text-xs"
+                      >
+                        <List className="h-3 w-3" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => executeCommand('justifyLeft')}
+                        className="text-xs"
+                      >
+                        <AlignLeft className="h-3 w-3" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => executeCommand('justifyCenter')}
+                        className="text-xs"
+                      >
+                        <AlignCenter className="h-3 w-3" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => executeCommand('justifyRight')}
+                        className="text-xs"
+                      >
+                        <AlignRight className="h-3 w-3" />
+                      </Button>
+                      <div className="w-px h-4 bg-gray-300 mx-2" />
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => {
+                          const url = prompt('Enter URL:')
+                          if (url) executeCommand('createLink', url)
+                        }}
+                        className="text-xs"
+                      >
+                        <Link className="h-3 w-3" />
+                      </Button>
+                    </>
+                  )}
+                </div>
+              </div>
+
+              {/* Scrollable Content Area */}
+              <div className="flex-1 overflow-y-auto">
+                {/* Message Editor */}
+                <div className="p-4">
+                  {isHtmlMode ? (
+                    <div
+                      ref={editorRef}
+                      contentEditable
+                      className="min-h-[400px] p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      style={{ 
+                        fontFamily: 'Arial, sans-serif',
+                        fontSize: '14px',
+                        lineHeight: '1.5'
+                      }}
+                      onInput={handleEditorInput}
+                      suppressContentEditableWarning={true}
+                      data-placeholder="Type your reply message..."
+                    />
+                  ) : (
+                    <Textarea
+                      value={replyData.message}
+                      onChange={(e) => setReplyData({ ...replyData, message: e.target.value })}
+                      placeholder="Type your reply message..."
+                      className="min-h-[400px] resize-none"
+                    />
+                  )}
+                </div>
+
+                {/* Attachments */}
+                {attachments.length > 0 && (
+                  <div className="px-4 pb-4">
+                    <h4 className="text-sm font-medium mb-2">Attachments ({attachments.length})</h4>
+                    <div className="space-y-2">
+                      {attachments.map((attachment) => (
+                        <div key={attachment.id} className="flex items-center justify-between p-2 bg-gray-50 rounded border">
+                          <div className="flex items-center space-x-2">
+                            <Paperclip className="h-4 w-4 text-gray-500" />
+                            <span className="text-sm font-medium">{attachment.name}</span>
+                            <span className="text-xs text-gray-500">({formatFileSize(attachment.size)})</span>
+                          </div>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => removeAttachment(attachment.id)}
+                          >
+                            <X className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Footer Actions - Fixed at bottom */}
+              <div className="border-t p-4 bg-gray-50 flex items-center justify-between flex-shrink-0">
+                <div className="flex items-center space-x-2">
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    multiple
+                    onChange={handleFileSelect}
+                    className="hidden"
+                  />
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => fileInputRef.current?.click()}
+                  >
+                    <Paperclip className="h-4 w-4 mr-2" />
+                    Attach Files
+                  </Button>
+                  {attachments.length > 0 && (
+                    <span className="text-sm text-gray-500">
+                      {attachments.length} file(s) attached
+                    </span>
+                  )}
+                </div>
+                
+                <div className="flex space-x-2">
+                  <Button
+                    variant="outline"
+                    onClick={() => setIsReplyModalOpen(false)}
+                    disabled={isSendingReply}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    onClick={sendReply}
+                    disabled={isSendingReply || !replyData.subject.trim()}
+                    className="bg-blue-600 hover:bg-blue-700"
+                  >
+                    {isSendingReply ? (
+                      <>
+                        <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent mr-2" />
+                        Sending...
+                      </>
+                    ) : (
+                      <>
+                        <Send className="h-4 w-4 mr-2" />
+                        Send Reply
+                      </>
+                    )}
+                  </Button>
+                </div>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   )
 } 

@@ -1,8 +1,6 @@
 import nodemailer from 'nodemailer'
-import { PrismaClient } from '@prisma/client'
+import { prisma } from './prisma'
 import { emailTemplates } from './email'
-
-const prisma = new PrismaClient()
 
 // Email configuration
 const emailConfig = {
@@ -54,7 +52,8 @@ const templateSlugToKey: Record<string, keyof typeof emailTemplates> = {
   'newsletter-welcome': 'newsletterConfirmation',
   'booking-confirmation': 'bookingConfirmation',
   'password-reset': 'passwordReset',
-  'custom': 'custom'
+  'custom': 'custom',
+  'admin-email': 'custom'
 }
 
 // Get template key from slug
@@ -82,7 +81,7 @@ class EmailQueue {
 
     // Generate HTML content from template
     const emailTemplate = emailTemplates[templateKey](emailData.data)
-    const htmlContent = emailData.data.customMessage || emailTemplate.html
+    const htmlContent = emailTemplate.html
 
     // Create database record first
     const templateId = await this.getTemplateId(templateKey)
@@ -169,7 +168,7 @@ class EmailQueue {
       from: `"Samba Tours Uganda" <${process.env.GMAIL_USER}>`,
       to: emailData.to,
       subject: emailData.subject || emailTemplate.subject,
-      html: emailData.data.customMessage || emailTemplate.html,
+      html: emailTemplate.html,
     }
 
     if (emailData.attachments && emailData.attachments.length > 0) {
@@ -189,8 +188,6 @@ class EmailQueue {
         }
       })
     }
-
-    console.log('Email sent successfully:', info.messageId)
   }
 
   private async handleRetry(emailData: EmailData & { databaseId?: number }): Promise<void> {
@@ -361,14 +358,109 @@ export class EmailCampaignService {
 
 // Main email service functions
 export async function sendEmail(data: EmailData): Promise<EmailResult> {
-  const queue = new EmailQueue()
-  const messageId = await queue.addToQueue(data)
-  
-  return {
-    success: true,
-    messageId,
-    status: 'pending'
+  try {
+    // Get template key from slug
+    const templateKey = getTemplateKey(data.template as string)
+    
+    // Validate template exists
+    if (!emailTemplates[templateKey]) {
+      throw new Error(`Template '${data.template}' not found. Available templates: ${Object.keys(emailTemplates).join(', ')}`)
+    }
+
+    // Generate email content
+    const emailTemplate = emailTemplates[templateKey](data.data)
+    // Use the template's HTML which should contain the custom message
+    const htmlContent = emailTemplate.html
+    const subject = data.subject || emailTemplate.subject
+
+    // Prepare mail options
+    const mailOptions: any = {
+      from: `"Samba Tours Uganda" <${process.env.GMAIL_USER}>`,
+      to: data.to,
+      subject: subject,
+      html: htmlContent,
+    }
+
+    if (data.attachments && data.attachments.length > 0) {
+      mailOptions.attachments = data.attachments
+    }
+
+    // Send email directly
+    const info = await transporter.sendMail(mailOptions)
+
+    // Create database record
+    const templateId = await getTemplateId(templateKey)
+    const emailRecord = await prisma.emailSent.create({
+      data: {
+        recipientEmail: data.to,
+        templateId: templateId,
+        subject: subject,
+        htmlContent: htmlContent,
+        status: 'sent',
+        messageId: info.messageId,
+        customData: data.data,
+        campaignId: data.campaignId,
+        createdBy: data.userId,
+        sentAt: new Date()
+      }
+    })
+
+    return {
+      success: true,
+      messageId: info.messageId,
+      status: 'sent'
+    }
+  } catch (error) {
+    console.error('Error sending email:', error)
+    
+    // Create failed record
+    try {
+      const templateKey = getTemplateKey(data.template as string)
+      const templateId = await getTemplateId(templateKey)
+      await prisma.emailSent.create({
+        data: {
+          recipientEmail: data.to,
+          templateId: templateId,
+          subject: data.subject || 'Failed Email',
+          htmlContent: '',
+          status: 'failed',
+          errorMessage: error.message,
+          customData: data.data,
+          campaignId: data.campaignId,
+          createdBy: data.userId
+        }
+      })
+    } catch (dbError) {
+      console.error('Error creating failed email record:', dbError)
+    }
+
+    return {
+      success: false,
+      error: error.message,
+      status: 'failed'
+    }
   }
+}
+
+// Helper function to get template ID
+async function getTemplateId(templateName: string): Promise<number> {
+  let template = await prisma.emailTemplate.findFirst({
+    where: { slug: templateName }
+  })
+
+  if (!template) {
+    template = await prisma.emailTemplate.create({
+      data: {
+        name: templateName,
+        slug: templateName,
+        subject: 'Default Subject',
+        htmlContent: '<p>Default content</p>',
+        isSystem: true
+      }
+    })
+  }
+
+  return template.id
 }
 
 export async function sendBulkEmail(recipients: string[], data: Omit<EmailData, 'to'>): Promise<EmailResult[]> {

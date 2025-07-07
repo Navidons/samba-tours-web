@@ -1,12 +1,12 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 
-// Force dynamic rendering to prevent static generation errors
+// Force dynamic rendering for this route
 export const dynamic = 'force-dynamic'
 
 export async function GET(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url)
+    const searchParams = request.nextUrl.searchParams
     const status = searchParams.get("status")
     const customerType = searchParams.get("customerType")
 

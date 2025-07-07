@@ -90,9 +90,9 @@ export default function BlogComments({ postId }: BlogCommentsProps) {
         })
         
         // Clear form
-        setNewComment("")
-        setName("")
-        setEmail("")
+    setNewComment("")
+    setName("")
+    setEmail("")
         
         // Reload comments to show the new one (if approved)
         await loadComments()
@@ -293,27 +293,27 @@ export default function BlogComments({ postId }: BlogCommentsProps) {
             </div>
           ) : (
             comments.map((comment) => (
-              <div key={comment.id} className="border-b border-gray-200 pb-6 last:border-b-0">
-                <div className="flex items-start space-x-4">
-                  <div className="relative w-10 h-10 rounded-full overflow-hidden flex-shrink-0">
-                    <Image
+            <div key={comment.id} className="border-b border-gray-200 pb-6 last:border-b-0">
+              <div className="flex items-start space-x-4">
+                <div className="relative w-10 h-10 rounded-full overflow-hidden flex-shrink-0">
+                  <Image
                       src={comment.user?.avatar || "/placeholder.svg?height=100&width=100"}
                       alt={comment.authorName}
-                      fill
-                      className="object-cover"
-                    />
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex items-center space-x-2 mb-2">
+                    fill
+                    className="object-cover"
+                  />
+                </div>
+                <div className="flex-1">
+                  <div className="flex items-center space-x-2 mb-2">
                       <h5 className="font-semibold text-earth-900">
                         {comment.user?.name || comment.authorName}
                       </h5>
                       <span className="text-sm text-earth-500">
                         {formatCommentDate(comment.createdAt)}
                       </span>
-                    </div>
-                    <p className="text-earth-700 mb-3">{comment.content}</p>
-                    <div className="flex items-center space-x-4 text-sm">
+                  </div>
+                  <p className="text-earth-700 mb-3">{comment.content}</p>
+                  <div className="flex items-center space-x-4 text-sm">
                       <Button 
                         variant="ghost" 
                         size="sm" 
@@ -324,29 +324,29 @@ export default function BlogComments({ postId }: BlogCommentsProps) {
                         {liking === comment.id ? (
                           <Loader2 className="h-4 w-4 mr-1 animate-spin" />
                         ) : (
-                          <Heart className="h-4 w-4 mr-1" />
+                      <Heart className="h-4 w-4 mr-1" />
                         )}
-                        {comment.likes}
-                      </Button>
+                      {comment.likes}
+                    </Button>
                       <Button 
                         variant="ghost" 
                         size="sm" 
                         className="text-earth-600 hover:text-forest-600"
                         onClick={() => setReplyingTo(replyingTo === comment.id ? null : comment.id)}
                       >
-                        <Reply className="h-4 w-4 mr-1" />
-                        Reply
-                      </Button>
+                      <Reply className="h-4 w-4 mr-1" />
+                      Reply
+                    </Button>
                       <Button 
                         variant="ghost" 
                         size="sm" 
                         className="text-earth-600 hover:text-red-600"
                         onClick={() => handleReport(comment.id)}
                       >
-                        <Flag className="h-4 w-4 mr-1" />
-                        Report
-                      </Button>
-                    </div>
+                      <Flag className="h-4 w-4 mr-1" />
+                      Report
+                    </Button>
+                  </div>
 
                     {/* Reply Form */}
                     {replyingTo === comment.id && (
@@ -407,62 +407,62 @@ export default function BlogComments({ postId }: BlogCommentsProps) {
                       </form>
                     )}
 
-                    {/* Replies */}
-                    {comment.replies.length > 0 && (
-                      <div className="mt-4 ml-6 space-y-4 border-l-2 border-gray-200 pl-6">
-                        {comment.replies.map((reply) => (
-                          <div key={reply.id} className="flex items-start space-x-3">
-                            <div className="relative w-8 h-8 rounded-full overflow-hidden flex-shrink-0">
-                              <Image
+                  {/* Replies */}
+                  {comment.replies.length > 0 && (
+                    <div className="mt-4 ml-6 space-y-4 border-l-2 border-gray-200 pl-6">
+                      {comment.replies.map((reply) => (
+                        <div key={reply.id} className="flex items-start space-x-3">
+                          <div className="relative w-8 h-8 rounded-full overflow-hidden flex-shrink-0">
+                            <Image
                                 src={reply.user?.avatar || "/placeholder.svg?height=100&width=100"}
                                 alt={reply.authorName}
-                                fill
-                                className="object-cover"
-                              />
-                            </div>
-                            <div className="flex-1">
-                              <div className="flex items-center space-x-2 mb-1">
+                              fill
+                              className="object-cover"
+                            />
+                          </div>
+                          <div className="flex-1">
+                            <div className="flex items-center space-x-2 mb-1">
                                 <h6 className="font-semibold text-earth-900 text-sm">
                                   {reply.user?.name || reply.authorName}
                                 </h6>
-                                <span className="text-xs text-earth-500">
+                              <span className="text-xs text-earth-500">
                                   {formatCommentDate(reply.createdAt)}
-                                </span>
-                              </div>
-                              <p className="text-earth-700 text-sm mb-2">{reply.content}</p>
-                              <div className="flex items-center space-x-3 text-xs">
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  className="text-earth-600 hover:text-forest-600 h-6 px-2"
+                              </span>
+                            </div>
+                            <p className="text-earth-700 text-sm mb-2">{reply.content}</p>
+                            <div className="flex items-center space-x-3 text-xs">
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="text-earth-600 hover:text-forest-600 h-6 px-2"
                                   onClick={() => handleLike(reply.id)}
                                   disabled={liking === reply.id}
-                                >
+                              >
                                   {liking === reply.id ? (
                                     <Loader2 className="h-3 w-3 mr-1 animate-spin" />
                                   ) : (
-                                    <Heart className="h-3 w-3 mr-1" />
+                                <Heart className="h-3 w-3 mr-1" />
                                   )}
-                                  {reply.likes}
-                                </Button>
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
+                                {reply.likes}
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="sm"
                                   className="text-earth-600 hover:text-red-600 h-6 px-2"
                                   onClick={() => handleReport(reply.id)}
-                                >
+                              >
                                   <Flag className="h-3 w-3 mr-1" />
                                   Report
-                                </Button>
-                              </div>
+                              </Button>
                             </div>
                           </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
+            </div>
             ))
           )}
         </div>

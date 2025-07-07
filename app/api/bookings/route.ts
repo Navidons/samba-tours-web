@@ -4,9 +4,6 @@ import { sendEmail } from "@/lib/email-service"
 import { PrismaClientInitializationError, PrismaClientKnownRequestError } from "@prisma/client/runtime/library"
 import { BookingStatus } from "@prisma/client"
 
-// Force dynamic rendering to prevent static generation errors
-export const dynamic = 'force-dynamic'
-
 // POST /api/bookings - Create new booking
 export async function POST(request: NextRequest) {
   try {

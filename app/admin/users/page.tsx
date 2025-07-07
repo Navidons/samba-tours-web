@@ -56,6 +56,7 @@ interface User {
     nationality: string | null
     country: string | null
     city: string | null
+    address: string | null
     isActive: boolean
     lastActivity: string | null
     role: {
@@ -65,9 +66,10 @@ interface User {
     } | null
   } | null
   stats: {
-    bookings: number
-    reviews: number
-    comments: number
+    totalBookings: number
+    totalReviews: number
+    totalComments: number
+    totalWishlistItems: number
   }
 }
 
@@ -82,8 +84,8 @@ export default function AdminUsersPage() {
   const [loading, setLoading] = useState(true)
   const [selectedUsers, setSelectedUsers] = useState<number[]>([])
   const [searchTerm, setSearchTerm] = useState("")
-  const [roleFilter, setRoleFilter] = useState("")
-  const [statusFilter, setStatusFilter] = useState("")
+  const [roleFilter, setRoleFilter] = useState("all")
+  const [statusFilter, setStatusFilter] = useState("all")
   const [sortBy, setSortBy] = useState("createdAt")
   const [sortOrder, setSortOrder] = useState("desc")
   const [currentPage, setCurrentPage] = useState(1)
@@ -106,8 +108,8 @@ export default function AdminUsersPage() {
         page: currentPage.toString(),
         limit: "20",
         search: searchTerm,
-        role: roleFilter,
-        status: statusFilter,
+        role: roleFilter === "all" ? "" : roleFilter,
+        status: statusFilter === "all" ? "" : statusFilter,
         sortBy,
         sortOrder
       })
@@ -387,21 +389,21 @@ export default function AdminUsersPage() {
               />
                       </div>
             
-            <Select value={roleFilter || "all"} onValueChange={(value) => setRoleFilter(value === "all" ? "" : value)}>
+            <Select value={roleFilter} onValueChange={setRoleFilter}>
               <SelectTrigger>
                 <SelectValue placeholder="All Roles" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all">All Roles</SelectItem>
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Roles</SelectItem>
                 {roles.map(role => (
                   <SelectItem key={role.id} value={role.id.toString()}>
                     {role.roleName}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
 
-            <Select value={statusFilter || "all"} onValueChange={(value) => setStatusFilter(value === "all" ? "" : value)}>
+            <Select value={statusFilter} onValueChange={setStatusFilter}>
               <SelectTrigger>
                 <SelectValue placeholder="All Status" />
               </SelectTrigger>
@@ -503,9 +505,9 @@ export default function AdminUsersPage() {
                     </TableCell>
                     <TableCell>
                       <div className="text-sm">
-                        <div>Bookings: {user.stats.bookings}</div>
-                        <div>Reviews: {user.stats.reviews}</div>
-                        <div>Comments: {user.stats.comments}</div>
+                        <div>Bookings: {user.stats.totalBookings}</div>
+                        <div>Reviews: {user.stats.totalReviews}</div>
+                        <div>Comments: {user.stats.totalComments}</div>
                       </div>
                     </TableCell>
                     <TableCell>

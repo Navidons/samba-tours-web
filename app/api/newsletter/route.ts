@@ -42,7 +42,7 @@ export async function POST(request: NextRequest) {
             isActive: true,
             unsubscribedAt: null,
             name: validatedData.name || existingSubscriber.name,
-            interests: validatedData.interests || existingSubscriber.interests,
+            interests: validatedData.interests || existingSubscriber.interests || [],
             source: validatedData.source || existingSubscriber.source,
           }
         })

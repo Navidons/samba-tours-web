@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { PrismaClientInitializationError, PrismaClientKnownRequestError } from "@prisma/client/runtime/library"
 
-// Force dynamic rendering to prevent static generation errors
 export const dynamic = 'force-dynamic'
 
 // GET /api/gallery - Get all galleries with their images

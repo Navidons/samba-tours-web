@@ -1,138 +1,87 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 
-// Force dynamic rendering to prevent static generation errors
-export const dynamic = 'force-dynamic'
-
 // GET - Fetch comments for a blog post
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
-    const postId = searchParams.get('postId')
-    const parentId = searchParams.get('parentId') // For replies
+    const page = parseInt(searchParams.get('page') || '1')
+    const limit = parseInt(searchParams.get('limit') || '50')
+    const search = searchParams.get('search') || ''
+    const status = searchParams.get('status') || ''
 
-    if (!postId) {
-      return NextResponse.json(
-        { error: 'Post ID is required', success: false },
-        { status: 400 }
-      )
+    const skip = (page - 1) * limit
+
+    // Build where clause
+    const where: any = {}
+    
+    if (search) {
+      where.OR = [
+        { authorName: { contains: search, mode: 'insensitive' } },
+        { authorEmail: { contains: search, mode: 'insensitive' } },
+        { content: { contains: search, mode: 'insensitive' } },
+        { post: { title: { contains: search, mode: 'insensitive' } } }
+      ]
     }
 
-    const where: any = {
-      postId: parseInt(postId),
-      status: 'approved'
+    if (status) {
+      where.status = status
     }
 
-    // If parentId is provided, get replies to that comment
-    if (parentId) {
-      where.parentCommentId = parseInt(parentId)
-    } else {
-      // Get top-level comments only
-      where.parentCommentId = null
-    }
+    // Get total count
+    const total = await prisma.blogComment.count({ where })
 
+    // Get comments
     const comments = await prisma.blogComment.findMany({
       where,
-      include: {
+      select: {
+        id: true,
+        authorName: true,
+        authorEmail: true,
+        content: true,
+        status: true,
+        likes: true,
+        createdAt: true,
+        updatedAt: true,
+        post: {
+          select: {
+            id: true,
+            title: true,
+            slug: true
+          }
+        },
         user: {
           select: {
             id: true,
+            email: true,
             profile: {
               select: {
-                firstName: true,
-                lastName: true,
-                fullName: true,
-                avatarData: true,
-                avatarName: true,
-                avatarType: true,
+                fullName: true
               }
-            }
-          }
-        },
-        replies: {
-          where: { status: 'approved' },
-          include: {
-            user: {
-              select: {
-                id: true,
-                profile: {
-                  select: {
-                    firstName: true,
-                    lastName: true,
-                    fullName: true,
-                    avatarData: true,
-                    avatarName: true,
-                    avatarType: true,
-                  }
-                }
-              }
-            }
-          },
-          orderBy: { createdAt: 'asc' }
-        },
-        _count: {
-          select: {
-            replies: {
-              where: { status: 'approved' }
             }
           }
         }
       },
-      orderBy: { createdAt: 'desc' }
+      orderBy: {
+        createdAt: 'desc'
+      },
+      skip,
+      take: limit
     })
-
-    // Transform comments to include avatar URLs and user info
-    const transformedComments = comments.map(comment => ({
-      id: comment.id,
-      authorName: comment.authorName,
-      authorEmail: comment.authorEmail,
-      content: comment.content,
-      status: comment.status,
-      likes: comment.likes,
-      createdAt: comment.createdAt,
-      updatedAt: comment.updatedAt,
-      parentCommentId: comment.parentCommentId,
-      user: comment.user ? {
-        id: comment.user.id,
-        name: comment.user.profile?.fullName || 
-              `${comment.user.profile?.firstName || ''} ${comment.user.profile?.lastName || ''}`.trim() ||
-              'Unknown User',
-        avatar: comment.user.profile?.avatarData && comment.user.profile?.avatarType
-          ? `data:${comment.user.profile.avatarType};base64,${Buffer.from(comment.user.profile.avatarData).toString('base64')}`
-          : null
-      } : null,
-      replies: comment.replies.map(reply => ({
-        id: reply.id,
-        authorName: reply.authorName,
-        authorEmail: reply.authorEmail,
-        content: reply.content,
-        status: reply.status,
-        likes: reply.likes,
-        createdAt: reply.createdAt,
-        updatedAt: reply.updatedAt,
-        parentCommentId: reply.parentCommentId,
-        user: reply.user ? {
-          id: reply.user.id,
-          name: reply.user.profile?.fullName || 
-                `${reply.user.profile?.firstName || ''} ${reply.user.profile?.lastName || ''}`.trim() ||
-                'Unknown User',
-          avatar: reply.user.profile?.avatarData && reply.user.profile?.avatarType
-            ? `data:${reply.user.profile.avatarType};base64,${Buffer.from(reply.user.profile.avatarData).toString('base64')}`
-            : null
-        } : null,
-      })),
-      replyCount: comment._count.replies
-    }))
 
     return NextResponse.json({
-      success: true,
-      comments: transformedComments
+      comments,
+      pagination: {
+        page,
+        limit,
+        total,
+        pages: Math.ceil(total / limit)
+      }
     })
-
   } catch (error) {
-    console.error('Error fetching comments:', error)
+    console.error('Error fetching blog comments:', error)
     return NextResponse.json(
-      { error: 'Failed to fetch comments', success: false },
+      { error: 'Failed to fetch blog comments' },
       { status: 500 }
     )
   }

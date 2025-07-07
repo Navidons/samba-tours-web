@@ -9,7 +9,7 @@ import GalleryStats from "@/components/gallery/gallery-stats"
 import VideoGallery from "@/components/gallery/video-gallery"
 import LoadingSpinner from "@/components/ui/loading-spinner"
 import { Alert, AlertDescription } from "@/components/ui/alert"
-import { AlertCircle, Database, Wifi, RefreshCw, Search } from "lucide-react"
+import { AlertCircle, Database, Wifi, RefreshCw } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { galleryService, type GalleryImage, type GalleryCategory, type GalleryLocation, DatabaseConnectionError, GalleryServiceError } from "@/lib/gallery-service"
 
@@ -23,7 +23,7 @@ interface GalleryPageProps {
   }
 }
 
-function GalleryContent({ searchParams }: GalleryPageProps) {
+function GalleryPageContent({ searchParams }: GalleryPageProps) {
   const router = useRouter()
   const urlSearchParams = useSearchParams()
   const [images, setImages] = useState<GalleryImage[]>([])
@@ -127,10 +127,6 @@ function GalleryContent({ searchParams }: GalleryPageProps) {
     loadFiltersData()
   }
 
-  const clearAllFilters = () => {
-    router.replace("/gallery", { scroll: false })
-  }
-
   // Transform images for the existing gallery grid component
   const transformedImages = images.map(image => ({
     id: image.id,
@@ -202,84 +198,126 @@ function GalleryContent({ searchParams }: GalleryPageProps) {
           </div>
 
           {/* Show stats if we have data */}
-          {pagination.total > 0 && (
-            <GalleryStats
+          {(images.length > 0 || categories.length > 0) && (
+            <GalleryStats 
               totalImages={pagination.total}
               totalVideos={totalVideos}
-              categories={categories.length}
-              locations={locations.length}
+              categories={categories}
+              locations={locations}
             />
           )}
 
-          {/* Filters */}
-          <GalleryFilters
-            categories={categories}
-            locations={locations}
-            selectedCategory={category}
-            selectedLocation={location}
-            selectedFeatured={searchParams.featured}
-            searchQuery={search}
-            viewMode={viewMode}
-            onViewModeChange={setViewMode}
-          />
-
-          {/* Error Display */}
+          {/* Show other types of errors */}
           {error && error.type !== 'CONNECTION_ERROR' && (
-            <Alert className="mb-6 border-red-200 bg-red-50">
-              <AlertCircle className="h-4 w-4 text-red-600" />
-              <AlertDescription className="text-red-800">
+            <Alert className="mb-8 border-orange-200 bg-orange-50">
+              <AlertCircle className="h-4 w-4 text-orange-600" />
+              <AlertDescription className="text-orange-800">
                 {error.message}
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={handleRetry}
+                  className="ml-4 text-orange-600 hover:text-orange-700 hover:bg-orange-100"
+                >
+                  <RefreshCw className="w-3 h-3 mr-1" />
+                  Retry
+                </Button>
               </AlertDescription>
             </Alert>
           )}
 
-          {/* Gallery Grid */}
-          {images.length > 0 && (
-            <GalleryGrid
-              images={transformedImages}
-              viewMode={viewMode}
-              pagination={pagination}
-              onPageChange={navigateToPage}
-            />
-          )}
-
-          {/* No Results */}
-          {!loading && images.length === 0 && !error && (
-            <div className="text-center py-16">
-              <div className="w-24 h-24 mx-auto mb-6 bg-orange-100 rounded-full flex items-center justify-center">
-                <Search className="w-12 h-12 text-orange-600" />
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 mt-12">
+            <div className="lg:col-span-1">
+              <div className="sticky top-24">
+                <GalleryFilters 
+                  categories={categories}
+                  locations={locations}
+                  selectedCategory={category}
+                  selectedLocation={location}
+                  selectedFeatured={searchParams.featured}
+                  searchQuery={search}
+                  viewMode={viewMode}
+                  onViewModeChange={setViewMode}
+                />
               </div>
-              <h3 className="text-2xl font-bold text-earth-900 mb-4">No Images Found</h3>
-              <p className="text-earth-600 mb-6 max-w-md mx-auto">
-                Try adjusting your filters or search terms to find what you're looking for.
-              </p>
-              <Button onClick={clearAllFilters} variant="outline" className="border-orange-200 hover:bg-orange-50">
-                Clear All Filters
-              </Button>
             </div>
-          )}
 
-          {/* Video Gallery Section */}
-          {totalVideos > 0 && (
-            <div className="mt-20">
-              <div className="text-center mb-12">
-                <h2 className="text-3xl md:text-4xl font-playfair font-bold text-earth-900 mb-4">
-                  Video Gallery
-                </h2>
-                <p className="text-lg text-earth-600 max-w-2xl mx-auto">
-                  Watch our videos to experience the sights and sounds of Uganda's wildlife and landscapes.
-                </p>
-              </div>
-              <VideoGallery />
+            <div className="lg:col-span-3">
+              {loading ? (
+                <div className="flex justify-center py-12">
+                  <div className="text-center">
+                    <LoadingSpinner />
+                    <p className="mt-2 text-earth-600">Loading images...</p>
+                  </div>
+                </div>
+              ) : images.length === 0 ? (
+                <div className="text-center py-12">
+                  <div className="text-gray-400 mb-4">
+                    <svg className="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 00-2-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                  </div>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">No images found</h3>
+                  <p className="text-gray-600 mb-4">
+                    {search || category || location ? 
+                      "No images match your current filters. Try adjusting your search criteria." :
+                      "No images are available in the gallery yet."
+                    }
+                  </p>
+                  {(search || category || location) && (
+                    <Button 
+                      variant="outline"
+                      onClick={() => router.replace('/gallery', { scroll: false })}
+                      className="border-orange-200 hover:bg-orange-50"
+                    >
+                      View All Images
+                    </Button>
+                  )}
+                </div>
+              ) : (
+                <>
+                  <GalleryGrid 
+                    images={transformedImages}
+                    viewMode={viewMode}
+                  />
+                  
+                  {/* Pagination */}
+                  {pagination.totalPages > 1 && (
+                    <div className="flex justify-center items-center space-x-4 mt-12">
+                      <button
+                        onClick={() => navigateToPage(pagination.page - 1)}
+                        disabled={pagination.page === 1}
+                        className="px-4 py-2 border border-orange-200 rounded-md text-earth-700 hover:bg-orange-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                      >
+                        Previous
+                      </button>
+                      
+                      <span className="text-earth-600">
+                        Page {pagination.page} of {pagination.totalPages}
+                      </span>
+                      
+                      <button
+                        onClick={() => navigateToPage(pagination.page + 1)}
+                        disabled={pagination.page === pagination.totalPages}
+                        className="px-4 py-2 border border-orange-200 rounded-md text-earth-700 hover:bg-orange-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                      >
+                        Next
+                      </button>
+                    </div>
+                  )}
+                </>
+              )}
             </div>
-          )}
+          </div>
         </div>
       </section>
+
+      <VideoGallery />
     </div>
   )
 }
 
-export default function GalleryPage(props: GalleryPageProps) {
+export default function GalleryPage({ searchParams }: GalleryPageProps) {
   return (
     <Suspense fallback={
       <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-red-50 flex items-center justify-center">
@@ -289,7 +327,7 @@ export default function GalleryPage(props: GalleryPageProps) {
         </div>
       </div>
     }>
-      <GalleryContent {...props} />
+      <GalleryPageContent searchParams={searchParams} />
     </Suspense>
   )
 }

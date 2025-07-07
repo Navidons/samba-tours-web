@@ -42,10 +42,18 @@ export async function PATCH(
       )
     }
 
+    // Prepare update data
+    const updateData: any = { ...validatedData }
+    
+    // Set repliedAt timestamp when status changes to "replied"
+    if (validatedData.status === "replied" && existingInquiry.status !== "replied") {
+      updateData.repliedAt = new Date()
+    }
+
     // Update the inquiry
     const updatedInquiry = await prisma.contactInquiry.update({
       where: { id },
-      data: validatedData,
+      data: updateData,
       include: {
         assignedUser: {
           select: {

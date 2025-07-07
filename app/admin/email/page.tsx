@@ -10,6 +10,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
 import { Separator } from '@/components/ui/separator'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
+import { Checkbox } from '@/components/ui/checkbox'
 import { useToast } from '@/hooks/use-toast'
 import { 
   Mail, 
@@ -28,8 +31,37 @@ import {
   CheckCircle,
   XCircle,
   AlertCircle,
-  MoreHorizontal
+  MoreHorizontal,
+  User,
+  BookOpen,
+  ShoppingCart,
+  MessageSquare,
+  FileText,
+  Bell,
+  Settings,
+  RefreshCw,
+  Target,
+  Zap,
+  Clock3,
+  MailCheck,
+  MailX,
+  MailOpen,
+  MailPlus,
+  Paperclip,
+  Bold,
+  Italic,
+  Underline,
+  List,
+  AlignLeft,
+  AlignCenter,
+  AlignRight,
+  Link,
+  Image,
+  Trash2,
+  Type,
+  Palette
 } from 'lucide-react'
+import { useRef } from 'react'
 
 interface EmailStats {
   totalEmails: number
@@ -51,20 +83,110 @@ interface EmailAnalytics {
   emailTrends: any[]
 }
 
-interface Campaign {
+interface User {
+  id: number
+  email: string
+  profile?: {
+    fullName: string
+    firstName: string
+    lastName: string
+  }
+  createdAt: string
+  lastSignInAt?: string
+}
+
+interface Customer {
   id: number
   name: string
-  description?: string
+  email: string
+  phone?: string
+  country?: string
+  city?: string
+  totalBookings: number
+  totalSpent: number
   status: string
-  subject: string
-  totalRecipients: number
-  sentCount: number
-  openCount: number
-  clickCount: number
+  customerType: string
+  loyaltyPoints: number
+  joinDate: string
+  updatedAt: string
+}
+
+interface Booking {
+  id: number
+  bookingReference: string
+  customerName: string
+  customerEmail: string
+  customerPhone?: string
+  startDate: string
+  endDate: string
+  guestCount: number
+  totalAmount: number
+  finalAmount: number
+  status: string
+  paymentStatus: string
   createdAt: string
-  template: { name: string }
-  creator?: { profile?: { fullName: string } }
-  _count: { sentEmails: number }
+  tour: {
+    id: number
+    title: string
+    slug: string
+  }
+}
+
+interface NewsletterSubscriber {
+  id: number
+  email: string
+  name?: string
+  interests?: any
+  isActive: boolean
+  source?: string
+  subscribedAt: string
+  unsubscribedAt?: string
+}
+
+interface ContactInquiry {
+  id: number
+  name: string
+  email: string
+  phone?: string
+  subject?: string
+  message: string
+  tourInterest?: string
+  priority: string
+  status: string
+  assignedTo?: number
+  repliedAt?: string
+  createdAt: string
+  updatedAt: string
+  assignedUser?: {
+    id: number
+    email: string
+    profile?: {
+      fullName: string
+    }
+  }
+}
+
+interface BlogComment {
+  id: number
+  authorName: string
+  authorEmail?: string
+  content: string
+  status: string
+  likes: number
+  createdAt: string
+  updatedAt: string
+  post: {
+    id: number
+    title: string
+    slug: string
+  }
+  user?: {
+    id: number
+    email: string
+    profile?: {
+      fullName: string
+    }
+  }
 }
 
 interface EmailTemplate {
@@ -77,29 +199,549 @@ interface EmailTemplate {
   _count: { sentEmails: number }
 }
 
+interface ComposeEmailModalProps {
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  recipients: Array<{ email: string; name?: string }>
+  defaultSubject?: string
+  defaultTemplate?: string
+}
+
+function ComposeEmailModal({ open, onOpenChange, recipients, defaultSubject = '', defaultTemplate = '' }: ComposeEmailModalProps) {
+  const [formData, setFormData] = useState({
+    to: '',
+    subject: defaultSubject,
+    template: defaultTemplate,
+    message: '',
+    htmlMessage: '',
+    attachments: [] as File[]
+  })
+  const [isHtmlMode, setIsHtmlMode] = useState(false)
+  const [isDragOver, setIsDragOver] = useState(false)
+  const [showPreview, setShowPreview] = useState(false)
+  const editorRef = useRef<HTMLDivElement>(null)
+
+  // Auto-fill email when modal opens
+  useEffect(() => {
+    if (open && recipients.length > 0) {
+      setFormData(prev => ({
+        ...prev,
+        to: recipients.map(r => r.email).join(', ')
+      }))
+    }
+  }, [open, recipients])
+
+  // Initialize HTML editor content when switching to HTML mode
+  useEffect(() => {
+    if (isHtmlMode && editorRef.current) {
+      // Only set content if the editor is empty or if we have new content
+      if (!editorRef.current.innerHTML || formData.htmlMessage !== editorRef.current.innerHTML) {
+        editorRef.current.innerHTML = formData.htmlMessage || ''
+      }
+    }
+  }, [isHtmlMode, formData.htmlMessage])
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      const newFiles = Array.from(e.target.files)
+      setFormData(prev => ({
+        ...prev,
+        attachments: [...prev.attachments, ...newFiles]
+      }))
+    }
+  }
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault()
+    setIsDragOver(false)
+    
+    if (e.dataTransfer.files) {
+      const newFiles = Array.from(e.dataTransfer.files)
+      setFormData(prev => ({
+        ...prev,
+        attachments: [...prev.attachments, ...newFiles]
+      }))
+    }
+  }
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault()
+    setIsDragOver(true)
+  }
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault()
+    setIsDragOver(false)
+  }
+
+  const removeAttachment = (index: number) => {
+    setFormData(prev => ({
+      ...prev,
+      attachments: prev.attachments.filter((_, i) => i !== index)
+    }))
+  }
+
+  const formatBytes = (bytes: number) => {
+    if (bytes === 0) return '0 Bytes'
+    const k = 1024
+    const sizes = ['Bytes', 'KB', 'MB', 'GB']
+    const i = Math.floor(Math.log(bytes) / Math.log(k))
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
+  }
+  const [templates, setTemplates] = useState<EmailTemplate[]>([])
+  const [loading, setLoading] = useState(false)
+  const { toast } = useToast()
+
+  useEffect(() => {
+    if (open) {
+      loadTemplates()
+    }
+  }, [open])
+
+  const loadTemplates = async () => {
+    try {
+      const response = await fetch('/api/admin/email?action=templates')
+      const data = await response.json()
+      setTemplates(data.templates || [])
+    } catch (error) {
+      console.error('Error loading templates:', error)
+    }
+  }
+
+  const handleSend = async () => {
+    if (!formData.to || !formData.subject) {
+      toast({
+        title: "Error",
+        description: "Recipient and subject are required",
+        variant: "destructive"
+      })
+      return
+    }
+
+    setLoading(true)
+    try {
+      const formDataToSend = new FormData()
+      formDataToSend.append('action', 'send-single')
+      formDataToSend.append('to', formData.to)
+      formDataToSend.append('subject', formData.subject)
+      formDataToSend.append('template', formData.template)
+      
+      // Add message content based on mode
+      const messageContent = isHtmlMode ? formData.htmlMessage : formData.message
+      formDataToSend.append('customData', JSON.stringify({ 
+        message: messageContent,
+        isHtml: isHtmlMode 
+      }))
+      
+      // Add attachments
+      formData.attachments.forEach(file => {
+        formDataToSend.append('attachments', file)
+      })
+
+      const response = await fetch('/api/admin/email', {
+        method: 'POST',
+        body: formDataToSend
+      })
+
+      const result = await response.json()
+      if (result.success) {
+        toast({
+          title: "Success",
+          description: "Email sent successfully"
+        })
+        onOpenChange(false)
+      } else {
+        throw new Error(result.error)
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to send email",
+        variant: "destructive"
+      })
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle className="flex items-center space-x-2">
+            <Mail className="h-5 w-5" />
+            <span>Compose Email</span>
+          </DialogTitle>
+          <DialogDescription>
+            Send email to {recipients.length} recipient{recipients.length !== 1 ? 's' : ''}
+          </DialogDescription>
+        </DialogHeader>
+
+        <div className="space-y-4">
+          <div>
+            <label className="text-sm font-medium">To:</label>
+            <Input
+              value={formData.to}
+              onChange={(e) => setFormData(prev => ({ ...prev, to: e.target.value }))}
+              placeholder="Recipient emails (comma separated)"
+              disabled={recipients.length > 0}
+              className={recipients.length > 0 ? "bg-gray-50" : ""}
+            />
+            {recipients.length > 0 && (
+              <p className="text-xs text-muted-foreground mt-1">
+                Email address{recipients.length > 1 ? 'es' : ''} pre-filled from selected recipient{recipients.length > 1 ? 's' : ''}
+              </p>
+            )}
+          </div>
+
+          <div>
+            <label className="text-sm font-medium">Subject:</label>
+            <Input
+              value={formData.subject}
+              onChange={(e) => setFormData(prev => ({ ...prev, subject: e.target.value }))}
+              placeholder="Email subject"
+            />
+          </div>
+
+          <div>
+            <label className="text-sm font-medium">Template (optional):</label>
+            <Select value={formData.template || "none"} onValueChange={(value) => setFormData(prev => ({ ...prev, template: value === "none" ? "" : value }))}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select template" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="none">No template</SelectItem>
+                {templates.map((template) => (
+                  <SelectItem key={template.id} value={template.slug}>
+                    {template.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <label className="text-sm font-medium">Message:</label>
+              <div className="flex items-center space-x-2">
+                                <Button
+                  type="button"
+                  variant={isHtmlMode ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => {
+                    if (isHtmlMode) {
+                      // Switching from HTML to plain text - get current HTML content
+                      const currentHtmlContent = editorRef.current?.innerHTML || formData.htmlMessage || ''
+                      setFormData(prev => ({
+                        ...prev,
+                        message: editorRef.current?.innerText || '',
+                        htmlMessage: currentHtmlContent
+                      }))
+      } else {
+                      // Switching from plain text to HTML - convert plain text to HTML
+                      const plainTextContent = formData.message || ''
+                      const htmlContent = plainTextContent.replace(/\n/g, '<br>')
+                      setFormData(prev => ({
+                        ...prev,
+                        htmlMessage: htmlContent
+                      }))
+                      // Update the editor content
+                      if (editorRef.current) {
+                        editorRef.current.innerHTML = htmlContent
+                      }
+                    }
+                    setIsHtmlMode(!isHtmlMode)
+                  }}
+                >
+                  {isHtmlMode ? "Plain Text" : "HTML"}
+                </Button>
+                {isHtmlMode && (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setShowPreview(!showPreview)}
+                  >
+                    {showPreview ? "Hide Preview" : "Show Preview"}
+                  </Button>
+                )}
+              </div>
+            </div>
+            
+            {isHtmlMode ? (
+              <div className="border rounded-lg">
+                {/* HTML Editor Toolbar */}
+                <div className="flex items-center space-x-1 p-2 border-b bg-gray-50">
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => document.execCommand('bold', false)}
+                    title="Bold"
+                  >
+                    <Bold className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => document.execCommand('italic', false)}
+                    title="Italic"
+                  >
+                    <Italic className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => document.execCommand('underline', false)}
+                    title="Underline"
+                  >
+                    <Underline className="h-4 w-4" />
+                  </Button>
+                  <div className="w-px h-6 bg-gray-300 mx-1"></div>
+                  
+                  {/* Font Size */}
+                  <select 
+                    className="text-xs border rounded px-2 py-1"
+                    onChange={(e) => document.execCommand('fontSize', false, e.target.value)}
+                    title="Font Size"
+                  >
+                    <option value="">Size</option>
+                    <option value="1">Small</option>
+                    <option value="3">Normal</option>
+                    <option value="5">Large</option>
+                    <option value="7">Extra Large</option>
+                  </select>
+                  
+                  {/* Font Color */}
+                  <input
+                    type="color"
+                    className="w-8 h-8 border rounded cursor-pointer"
+                    onChange={(e) => document.execCommand('foreColor', false, e.target.value)}
+                    title="Font Color"
+                  />
+                  
+                  <div className="w-px h-6 bg-gray-300 mx-1"></div>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => document.execCommand('insertUnorderedList', false)}
+                    title="Bullet List"
+                  >
+                    <List className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => document.execCommand('insertOrderedList', false)}
+                    title="Numbered List"
+                  >
+                    <List className="h-4 w-4" />
+                  </Button>
+                  <div className="w-px h-6 bg-gray-300 mx-1"></div>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => document.execCommand('justifyLeft', false)}
+                    title="Align Left"
+                  >
+                    <AlignLeft className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => document.execCommand('justifyCenter', false)}
+                    title="Align Center"
+                  >
+                    <AlignCenter className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => document.execCommand('justifyRight', false)}
+                    title="Align Right"
+                  >
+                    <AlignRight className="h-4 w-4" />
+                  </Button>
+                  <div className="w-px h-6 bg-gray-300 mx-1"></div>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => {
+                      const url = prompt('Enter URL:')
+                      if (url) document.execCommand('createLink', false, url)
+                    }}
+                    title="Insert Link"
+                  >
+                    <Link className="h-4 w-4" />
+                  </Button>
+                </div>
+                
+                {/* HTML Editor Content */}
+                <div
+                  ref={editorRef}
+                  contentEditable
+                  className="p-3 min-h-[200px] focus:outline-none"
+                  onInput={(e) => {
+                    const htmlContent = e.currentTarget?.innerHTML || ''
+                    setFormData(prev => ({ 
+                      ...prev, 
+                      htmlMessage: htmlContent
+                    }))
+                  }}
+                  suppressContentEditableWarning={true}
+                  style={{ 
+                    fontFamily: 'Arial, sans-serif',
+                    fontSize: '14px',
+                    lineHeight: '1.5'
+                  }}
+                />
+              </div>
+            ) : (
+              <Textarea
+                value={formData.message}
+                onChange={(e) => {
+                  const plainText = e.target.value
+                  setFormData(prev => ({ 
+                    ...prev, 
+                    message: plainText,
+                    // Also update HTML content to keep in sync
+                    htmlMessage: plainText.replace(/\n/g, '<br>')
+                  }))
+                }}
+                placeholder="Your message..."
+                rows={8}
+              />
+            )}
+            
+            {/* HTML Preview */}
+            {isHtmlMode && showPreview && (
+              <div className="mt-4 border rounded-lg">
+                <div className="p-2 border-b bg-gray-50">
+                  <h4 className="text-sm font-medium">Email Preview</h4>
+                </div>
+                <div 
+                  className="p-4 bg-white"
+                  dangerouslySetInnerHTML={{ __html: formData.htmlMessage }}
+                  style={{ 
+                    fontFamily: 'Arial, sans-serif',
+                    fontSize: '14px',
+                    lineHeight: '1.5'
+                  }}
+                />
+              </div>
+            )}
+          </div>
+
+          {/* File Attachments */}
+          <div>
+            <label className="text-sm font-medium">Attachments:</label>
+            <div className="mt-2 space-y-3">
+              {/* File Upload Area */}
+              <div 
+                className={`border-2 border-dashed rounded-lg p-4 text-center transition-colors ${
+                  isDragOver 
+                    ? 'border-blue-400 bg-blue-50' 
+                    : 'border-gray-300 hover:border-gray-400'
+                }`}
+                onDrop={handleDrop}
+                onDragOver={handleDragOver}
+                onDragLeave={handleDragLeave}
+              >
+                <input
+                  type="file"
+                  multiple
+                  onChange={handleFileUpload}
+                  className="hidden"
+                  id="file-upload"
+                  accept=".pdf,.doc,.docx,.txt,.jpg,.jpeg,.png,.gif"
+                />
+                <label htmlFor="file-upload" className="cursor-pointer">
+                  <div className="space-y-2">
+                    <Paperclip className="w-8 h-8 mx-auto text-gray-400" />
+                    <p className="text-sm text-gray-600">
+                      {isDragOver ? 'Drop files here' : 'Click to upload attachments or drag and drop'}
+                    </p>
+                    <p className="text-xs text-gray-500">
+                      Supported: PDF, DOC, DOCX, TXT, JPG, PNG, GIF (Max 10MB each)
+                    </p>
+                  </div>
+                </label>
+              </div>
+              
+              {/* Attachments List */}
+              {formData.attachments.length > 0 && (
+                <div className="space-y-2">
+                  <p className="text-sm font-medium">Selected Files:</p>
+                  {formData.attachments.map((file, index) => (
+                    <div key={index} className="flex items-center justify-between p-2 bg-gray-50 rounded border">
+                      <div className="flex items-center space-x-2">
+                        <Paperclip className="h-4 w-4 text-gray-500" />
+                        <div>
+                          <p className="text-sm font-medium">{file.name}</p>
+                          <p className="text-xs text-gray-500">{formatBytes(file.size)}</p>
+                        </div>
+                      </div>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => removeAttachment(index)}
+                        className="text-red-500 hover:text-red-700"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className="flex justify-end space-x-2">
+            <Button variant="outline" onClick={() => onOpenChange(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleSend} disabled={loading}>
+              {loading ? 'Sending...' : 'Send Email'}
+            </Button>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+  )
+}
+
 export default function AdminEmailPage() {
   const [activeTab, setActiveTab] = useState('overview')
   const [emailStats, setEmailStats] = useState<EmailStats | null>(null)
   const [analytics, setAnalytics] = useState<EmailAnalytics | null>(null)
-  const [campaigns, setCampaigns] = useState<Campaign[]>([])
   const [templates, setTemplates] = useState<EmailTemplate[]>([])
-  const [recentEmails, setRecentEmails] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
-  const [composeForm, setComposeForm] = useState({
-    to: '',
-    subject: '',
-    template: '',
-    customMessage: '',
-    attachments: [] as File[]
-  })
-  const [campaignForm, setCampaignForm] = useState({
-    name: '',
-    description: '',
-    templateId: '',
-    subject: '',
-    customData: {},
-    scheduledAt: ''
-  })
+  const [searchTerm, setSearchTerm] = useState('')
+  const [selectedRecipients, setSelectedRecipients] = useState<Array<{ email: string; name?: string }>>([])
+  const [showComposeModal, setShowComposeModal] = useState(false)
+  const [composeData, setComposeData] = useState<{
+    recipients: Array<{ email: string; name?: string }>
+    subject: string
+    template: string
+  }>({ recipients: [], subject: '', template: '' })
+
+  // Data states for different user groups
+  const [users, setUsers] = useState<User[]>([])
+  const [customers, setCustomers] = useState<Customer[]>([])
+  const [bookings, setBookings] = useState<Booking[]>([])
+  const [newsletterSubscribers, setNewsletterSubscribers] = useState<NewsletterSubscriber[]>([])
+  const [contactInquiries, setContactInquiries] = useState<ContactInquiry[]>([])
+  const [blogComments, setBlogComments] = useState<BlogComment[]>([])
+
   const { toast } = useToast()
 
   useEffect(() => {
@@ -109,27 +751,39 @@ export default function AdminEmailPage() {
   const loadDashboardData = async () => {
     try {
       setLoading(true)
-      const [dashboardRes, analyticsRes, campaignsRes, templatesRes, emailsRes] = await Promise.all([
+      const [dashboardRes, analyticsRes, templatesRes, usersRes, customersRes, bookingsRes, newsletterRes, contactsRes, commentsRes] = await Promise.all([
         fetch('/api/admin/email'),
         fetch('/api/admin/email?action=analytics'),
-        fetch('/api/admin/email?action=campaigns'),
         fetch('/api/admin/email?action=templates'),
-        fetch('/api/admin/email?action=recent-emails')
+        fetch('/api/admin/users'),
+        fetch('/api/admin/customers'),
+        fetch('/api/admin/bookings'),
+        fetch('/api/admin/newsletter/subscribers'),
+        fetch('/api/admin/contact?limit=100'),
+        fetch('/api/blog/comments')
       ])
 
-      const [dashboard, analyticsData, campaignsData, templatesData, emailsData] = await Promise.all([
+      const [dashboard, analyticsData, templatesData, usersData, customersData, bookingsData, newsletterData, contactsData, commentsData] = await Promise.all([
         dashboardRes.json(),
         analyticsRes.json(),
-        campaignsRes.json(),
         templatesRes.json(),
-        emailsRes.json()
+        usersRes.json(),
+        customersRes.json(),
+        bookingsRes.json(),
+        newsletterRes.json(),
+        contactsRes.json(),
+        commentsRes.json()
       ])
 
       setEmailStats(dashboard.dashboard || null)
       setAnalytics(analyticsData.analytics || null)
-      setCampaigns(campaignsData.campaigns || [])
       setTemplates(templatesData.templates || [])
-      setRecentEmails(emailsData.emails || [])
+      setUsers(usersData.users || [])
+      setCustomers(customersData.customers || [])
+      setBookings(bookingsData.bookings || [])
+      setNewsletterSubscribers(newsletterData.subscribers || [])
+      setContactInquiries(contactsData.inquiries || [])
+      setBlogComments(commentsData.comments || [])
     } catch (error) {
       console.error('Error loading dashboard data:', error)
       toast({
@@ -142,144 +796,49 @@ export default function AdminEmailPage() {
     }
   }
 
-  const sendEmail = async () => {
-    try {
-      const formData = new FormData()
-      formData.append('action', 'send-single')
-      formData.append('to', composeForm.to)
-      formData.append('subject', composeForm.subject)
-      formData.append('template', composeForm.template)
-      formData.append('customData', JSON.stringify({ customMessage: composeForm.customMessage }))
-      
-      composeForm.attachments.forEach(file => {
-        formData.append('attachments', file)
-      })
+  const handleSendEmail = (recipients: Array<{ email: string; name?: string }>, subject: string = '', template: string = '') => {
+    setComposeData({ recipients, subject, template })
+    setShowComposeModal(true)
+  }
 
-      const response = await fetch('/api/admin/email', {
-        method: 'POST',
-        body: formData
-      })
-
-      const result = await response.json()
-
-      if (result.success) {
+  const handleBulkEmail = () => {
+    if (selectedRecipients.length === 0) {
         toast({
-          title: "Success",
-          description: "Email sent successfully"
-        })
-        setComposeForm({
-          to: '',
-          subject: '',
-          template: '',
-          customMessage: '',
-          attachments: []
-        })
-      } else {
-        throw new Error(result.error)
-      }
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to send email",
+        title: "No Recipients Selected",
+        description: "Please select recipients to send bulk email",
         variant: "destructive"
       })
+      return
+    }
+    handleSendEmail(selectedRecipients)
+  }
+
+  const handleSelectAll = (checked: boolean, data: Array<{ email: string; name?: string }>) => {
+    if (checked) {
+      setSelectedRecipients(data)
+    } else {
+      setSelectedRecipients([])
     }
   }
 
-  const createCampaign = async () => {
-    try {
-      const response = await fetch('/api/admin/email', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          action: 'create-campaign',
-          ...campaignForm
-        })
-      })
-
-      const result = await response.json()
-
-      if (result.success) {
-        toast({
-          title: "Success",
-          description: "Campaign created successfully"
-        })
-        setCampaignForm({
-          name: '',
-          description: '',
-          templateId: '',
-          subject: '',
-          customData: {},
-          scheduledAt: ''
-        })
-        loadDashboardData()
-      } else {
-        throw new Error(result.error)
-      }
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to create campaign",
-        variant: "destructive"
-      })
+  const handleSelectRecipient = (recipient: { email: string; name?: string }, checked: boolean) => {
+    if (checked) {
+      setSelectedRecipients(prev => [...prev, recipient])
+    } else {
+      setSelectedRecipients(prev => prev.filter(r => r.email !== recipient.email))
     }
-  }
-
-  const sendCampaign = async (campaignId: number) => {
-    try {
-      const response = await fetch('/api/admin/email', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          action: 'send-campaign',
-          campaignId
-        })
-      })
-
-      const result = await response.json()
-
-      if (result.success) {
-        toast({
-          title: "Success",
-          description: "Campaign sent successfully"
-        })
-        loadDashboardData()
-      } else {
-        throw new Error(result.error)
-      }
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to send campaign",
-        variant: "destructive"
-      })
-    }
-  }
-
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      setComposeForm(prev => ({
-        ...prev,
-        attachments: [...prev.attachments, ...Array.from(e.target.files!)]
-      }))
-    }
-  }
-
-  const removeAttachment = (index: number) => {
-    setComposeForm(prev => ({
-      ...prev,
-      attachments: prev.attachments.filter((_, i) => i !== index)
-    }))
   }
 
   const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'sent': return 'bg-green-100 text-green-800'
-      case 'draft': return 'bg-gray-100 text-gray-800'
-      case 'scheduled': return 'bg-blue-100 text-blue-800'
-      case 'sending': return 'bg-yellow-100 text-yellow-800'
-      case 'paused': return 'bg-orange-100 text-orange-800'
-      case 'failed': return 'bg-red-100 text-red-800'
+    switch (status.toLowerCase()) {
+      case 'active': return 'bg-green-100 text-green-800'
+      case 'pending': return 'bg-yellow-100 text-yellow-800'
+      case 'confirmed': return 'bg-blue-100 text-blue-800'
+      case 'completed': return 'bg-green-100 text-green-800'
+      case 'cancelled': return 'bg-red-100 text-red-800'
+      case 'new': return 'bg-gray-100 text-gray-800'
+      case 'read': return 'bg-blue-100 text-blue-800'
+      case 'replied': return 'bg-green-100 text-green-800'
       default: return 'bg-gray-100 text-gray-800'
     }
   }
@@ -287,445 +846,763 @@ export default function AdminEmailPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-orange-500"></div>
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-500"></div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 p-6">
-      <div className="max-w-7xl mx-auto space-y-6">
+    <div className="container mx-auto p-6 space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Email Management</h1>
-            <p className="text-gray-600 mt-2">Enterprise-grade email marketing and automation</p>
+          <h1 className="text-3xl font-bold">Email Management</h1>
+          <p className="text-muted-foreground">
+            Professional email marketing and communication system
+          </p>
           </div>
-          <div className="flex items-center space-x-4">
+        <div className="flex items-center space-x-2">
             <Button variant="outline" onClick={loadDashboardData}>
-              <BarChart3 className="w-4 h-4 mr-2" />
+            <RefreshCw className="w-4 h-4 mr-2" />
               Refresh
             </Button>
-            <Button>
-              <Plus className="w-4 h-4 mr-2" />
-              New Campaign
+          {selectedRecipients.length > 0 && (
+            <Button onClick={handleBulkEmail}>
+              <Send className="w-4 h-4 mr-2" />
+              Send to {selectedRecipients.length} Recipients
             </Button>
+          )}
           </div>
         </div>
 
-        {/* Main Tabs */}
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-6 bg-white/80 backdrop-blur-sm">
-            <TabsTrigger value="overview" className="flex items-center space-x-2">
-              <BarChart3 className="w-4 h-4" />
-              <span>Overview</span>
-            </TabsTrigger>
-            <TabsTrigger value="campaigns" className="flex items-center space-x-2">
-              <Send className="w-4 h-4" />
-              <span>Campaigns</span>
-            </TabsTrigger>
-            <TabsTrigger value="compose" className="flex items-center space-x-2">
-              <Mail className="w-4 h-4" />
-              <span>Compose</span>
-            </TabsTrigger>
-            <TabsTrigger value="templates" className="flex items-center space-x-2">
-              <Eye className="w-4 h-4" />
-              <span>Templates</span>
-            </TabsTrigger>
-            <TabsTrigger value="analytics" className="flex items-center space-x-2">
-              <TrendingUp className="w-4 h-4" />
-              <span>Analytics</span>
-            </TabsTrigger>
-            <TabsTrigger value="settings" className="flex items-center space-x-2">
-              <MoreHorizontal className="w-4 h-4" />
-              <span>Settings</span>
-            </TabsTrigger>
-          </TabsList>
-
-          {/* Overview Tab */}
-          <TabsContent value="overview" className="space-y-6">
             {/* Stats Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-medium text-gray-600">Total Emails</p>
-                      <p className="text-2xl font-bold text-gray-900">{emailStats?.totalEmails || 0}</p>
-                    </div>
-                    <Mail className="w-8 h-8 text-blue-500" />
-                  </div>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Total Emails Sent</CardTitle>
+            <Mail className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{emailStats?.totalEmails || 0}</div>
+            <p className="text-xs text-muted-foreground">
+              {analytics?.emailsLast30Days || 0} this month
+            </p>
                 </CardContent>
               </Card>
 
-              <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-medium text-gray-600">Campaigns</p>
-                      <p className="text-2xl font-bold text-gray-900">{emailStats?.totalCampaigns || 0}</p>
-                    </div>
-                    <Send className="w-8 h-8 text-green-500" />
-                  </div>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Open Rate</CardTitle>
+            <Eye className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{analytics?.openRate || '0'}%</div>
+            <p className="text-xs text-muted-foreground">
+              Industry average: 21.5%
+            </p>
                 </CardContent>
               </Card>
 
-              <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-medium text-gray-600">Open Rate</p>
-                      <p className="text-2xl font-bold text-gray-900">{analytics?.openRate || '0'}%</p>
-                    </div>
-                    <Eye className="w-8 h-8 text-purple-500" />
-                  </div>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Click Rate</CardTitle>
+            <MousePointer className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{analytics?.clickRate || '0'}%</div>
+            <p className="text-xs text-muted-foreground">
+              Industry average: 2.3%
+            </p>
                 </CardContent>
               </Card>
 
-              <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-medium text-gray-600">Click Rate</p>
-                      <p className="text-2xl font-bold text-gray-900">{analytics?.clickRate || '0'}%</p>
-                    </div>
-                    <MousePointer className="w-8 h-8 text-orange-500" />
-                  </div>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Templates</CardTitle>
+            <FileText className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{templates.length}</div>
+            <p className="text-xs text-muted-foreground">
+              {templates.filter(t => t.isSystem).length} system templates
+            </p>
                 </CardContent>
               </Card>
             </div>
 
-            {/* Recent Activity */}
+      {/* Main Tabs */}
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+        <TabsList className="grid w-full grid-cols-7">
+          <TabsTrigger value="overview">Overview</TabsTrigger>
+          <TabsTrigger value="users">Users</TabsTrigger>
+          <TabsTrigger value="customers">Customers</TabsTrigger>
+          <TabsTrigger value="bookings">Bookings</TabsTrigger>
+          <TabsTrigger value="newsletter">Newsletter</TabsTrigger>
+          <TabsTrigger value="contacts">Contacts</TabsTrigger>
+          <TabsTrigger value="comments">Comments</TabsTrigger>
+        </TabsList>
+
+        {/* Overview Tab */}
+        <TabsContent value="overview" className="space-y-6">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
+            <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center space-x-2">
-                    <Clock className="w-5 h-5" />
-                    <span>Recent Emails</span>
+                  <TrendingUp className="w-5 h-5" />
+                  <span>Email Performance</span>
                   </CardTitle>
                 </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    {(recentEmails || []).slice(0, 5).map((email) => (
-                      <div key={email.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                        <div>
-                          <p className="font-medium text-gray-900">{email.recipientEmail}</p>
-                          <p className="text-sm text-gray-600">{email.subject}</p>
+              <CardContent className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <span>Open Rate</span>
+                  <span className="font-bold">{analytics?.openRate || '0'}%</span>
                         </div>
-                        <Badge className={getStatusColor(email.status)}>
-                          {email.status}
-                        </Badge>
+                <Progress value={parseFloat(analytics?.openRate || '0')} />
+                
+                <div className="flex items-center justify-between">
+                  <span>Click Rate</span>
+                  <span className="font-bold">{analytics?.clickRate || '0'}%</span>
                       </div>
-                    ))}
+                <Progress value={parseFloat(analytics?.clickRate || '0')} />
+                
+                <div className="flex items-center justify-between">
+                  <span>Bounce Rate</span>
+                  <span className="font-bold">{analytics?.bounceRate || '0'}%</span>
                   </div>
+                <Progress value={parseFloat(analytics?.bounceRate || '0')} />
                 </CardContent>
               </Card>
 
-              <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
+            <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center space-x-2">
-                    <TrendingUp className="w-5 h-5" />
-                    <span>Email Trends</span>
+                  <BarChart3 className="w-5 h-5" />
+                  <span>Quick Stats</span>
                   </CardTitle>
                 </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    {(analytics?.emailTrends || []).slice(0, 7).map((trend, index) => (
-                      <div key={index} className="flex items-center justify-between">
-                        <span className="text-sm text-gray-600">{trend.date}</span>
-                        <div className="flex items-center space-x-2">
-                          <Progress value={(trend.count / Math.max(...(analytics?.emailTrends || []).map(t => t.count))) * 100} className="w-20" />
-                          <span className="text-sm font-medium">{trend.count}</span>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="text-center p-4 bg-blue-50 rounded-lg">
+                    <div className="text-2xl font-bold text-blue-600">{users.length}</div>
+                    <div className="text-sm text-blue-600">Registered Users</div>
                         </div>
+                  <div className="text-center p-4 bg-green-50 rounded-lg">
+                    <div className="text-2xl font-bold text-green-600">{customers.length}</div>
+                    <div className="text-sm text-green-600">Customers</div>
                       </div>
-                    ))}
+                  <div className="text-center p-4 bg-purple-50 rounded-lg">
+                    <div className="text-2xl font-bold text-purple-600">{newsletterSubscribers.filter(s => s.isActive).length}</div>
+                    <div className="text-sm text-purple-600">Active Subscribers</div>
+                  </div>
+                  <div className="text-center p-4 bg-orange-50 rounded-lg">
+                    <div className="text-2xl font-bold text-orange-600">{bookings.length}</div>
+                    <div className="text-sm text-orange-600">Total Bookings</div>
+                  </div>
                   </div>
                 </CardContent>
               </Card>
             </div>
           </TabsContent>
 
-          {/* Campaigns Tab */}
-          <TabsContent value="campaigns" className="space-y-6">
-            <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
+        {/* Users Tab */}
+        <TabsContent value="users" className="space-y-6">
+          <Card>
               <CardHeader>
-                <CardTitle>Campaign Management</CardTitle>
-                <CardDescription>Create and manage email campaigns</CardDescription>
+              <CardTitle className="flex items-center space-x-2">
+                <User className="w-5 h-5" />
+                <span>Registered Users</span>
+              </CardTitle>
+              <CardDescription>
+                Send emails to registered users of the system
+              </CardDescription>
               </CardHeader>
-              <CardContent className="space-y-6">
-                {/* Campaign Form */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <CardContent>
+              <div className="flex items-center space-x-2 mb-4">
+                <Search className="w-4 h-4 text-muted-foreground" />
                   <Input
-                    placeholder="Campaign Name"
-                    value={campaignForm.name}
-                    onChange={(e) => setCampaignForm(prev => ({ ...prev, name: e.target.value }))}
-                  />
-                  <Input
-                    placeholder="Subject Line"
-                    value={campaignForm.subject}
-                    onChange={(e) => setCampaignForm(prev => ({ ...prev, subject: e.target.value }))}
-                  />
-                  <Select value={campaignForm.templateId} onValueChange={(value) => setCampaignForm(prev => ({ ...prev, templateId: value }))}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select Template" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {templates.map((template) => (
-                        <SelectItem key={template.id} value={template.id.toString()}>
-                          {template.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <Input
-                    type="datetime-local"
-                    value={campaignForm.scheduledAt}
-                    onChange={(e) => setCampaignForm(prev => ({ ...prev, scheduledAt: e.target.value }))}
-                  />
-                </div>
-                <Textarea
-                  placeholder="Campaign Description"
-                  value={campaignForm.description}
-                  onChange={(e) => setCampaignForm(prev => ({ ...prev, description: e.target.value }))}
+                  placeholder="Search users..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="max-w-sm"
                 />
-                <Button onClick={createCampaign} className="w-full">
-                  Create Campaign
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handleSelectAll(true, users.map(u => ({ email: u.email, name: u.profile?.fullName })))}
+                >
+                  Select All
                 </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setSelectedRecipients([])}
+                >
+                  Clear Selection
+                </Button>
+              </div>
+
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="w-12">
+                      <Checkbox
+                        checked={selectedRecipients.length === users.length && users.length > 0}
+                        onCheckedChange={(checked) => handleSelectAll(checked as boolean, users.map(u => ({ email: u.email, name: u.profile?.fullName })))}
+                      />
+                    </TableHead>
+                    <TableHead>User</TableHead>
+                    <TableHead>Email</TableHead>
+                    <TableHead>Joined</TableHead>
+                    <TableHead>Last Login</TableHead>
+                    <TableHead className="w-12">Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {users
+                    .filter(user => 
+                      user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                      user.profile?.fullName?.toLowerCase().includes(searchTerm.toLowerCase())
+                    )
+                    .map((user) => (
+                    <TableRow key={user.id}>
+                      <TableCell>
+                        <Checkbox
+                          checked={selectedRecipients.some(r => r.email === user.email)}
+                          onCheckedChange={(checked) => handleSelectRecipient({ email: user.email, name: user.profile?.fullName }, checked as boolean)}
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center space-x-2">
+                          <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white text-sm font-medium">
+                            {user.profile?.firstName?.charAt(0) || user.email.charAt(0).toUpperCase()}
+                </div>
+                          <span className="font-medium">{user.profile?.fullName || 'No Name'}</span>
+                        </div>
+                      </TableCell>
+                      <TableCell>{user.email}</TableCell>
+                      <TableCell>{new Date(user.createdAt).toLocaleDateString()}</TableCell>
+                      <TableCell>
+                        {user.lastSignInAt ? new Date(user.lastSignInAt).toLocaleDateString() : 'Never'}
+                      </TableCell>
+                      <TableCell>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => handleSendEmail([{ email: user.email, name: user.profile?.fullName }])}
+                          title="Send email to this user"
+                        >
+                          <Mail className="h-4 w-4" />
+                </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
               </CardContent>
             </Card>
+        </TabsContent>
 
-            {/* Campaigns List */}
-            <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
+        {/* Customers Tab */}
+        <TabsContent value="customers" className="space-y-6">
+          <Card>
               <CardHeader>
-                <CardTitle>Active Campaigns</CardTitle>
+              <CardTitle className="flex items-center space-x-2">
+                <Users className="w-5 h-5" />
+                <span>Customers</span>
+              </CardTitle>
+              <CardDescription>
+                Send emails to customers with booking history
+              </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="space-y-4">
-                  {campaigns.map((campaign) => (
-                    <div key={campaign.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                      <div className="flex-1">
-                        <h3 className="font-medium text-gray-900">{campaign.name}</h3>
-                        <p className="text-sm text-gray-600">{campaign.subject}</p>
-                        <div className="flex items-center space-x-4 mt-2">
-                          <span className="text-xs text-gray-500">
-                            {campaign.totalRecipients} recipients
-                          </span>
-                          <span className="text-xs text-gray-500">
-                            {campaign.openCount} opens
-                          </span>
-                          <span className="text-xs text-gray-500">
-                            {campaign.clickCount} clicks
-                          </span>
+              <div className="flex items-center space-x-2 mb-4">
+                <Search className="w-4 h-4 text-muted-foreground" />
+                <Input
+                  placeholder="Search customers..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="max-w-sm"
+                />
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handleSelectAll(true, customers.map(c => ({ email: c.email, name: c.name })))}
+                >
+                  Select All
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setSelectedRecipients([])}
+                >
+                  Clear Selection
+                </Button>
                         </div>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <Badge className={getStatusColor(campaign.status)}>
-                          {campaign.status}
+
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="w-12">
+                      <Checkbox
+                        checked={selectedRecipients.length === customers.length && customers.length > 0}
+                        onCheckedChange={(checked) => handleSelectAll(checked as boolean, customers.map(c => ({ email: c.email, name: c.name })))}
+                      />
+                    </TableHead>
+                    <TableHead>Customer</TableHead>
+                    <TableHead>Email</TableHead>
+                    <TableHead>Bookings</TableHead>
+                    <TableHead>Total Spent</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead className="w-12">Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {customers
+                    .filter(customer => 
+                      customer.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                      customer.name.toLowerCase().includes(searchTerm.toLowerCase())
+                    )
+                    .map((customer) => (
+                    <TableRow key={customer.id}>
+                      <TableCell>
+                        <Checkbox
+                          checked={selectedRecipients.some(r => r.email === customer.email)}
+                          onCheckedChange={(checked) => handleSelectRecipient({ email: customer.email, name: customer.name }, checked as boolean)}
+                        />
+                      </TableCell>
+                      <TableCell className="font-medium">{customer.name}</TableCell>
+                      <TableCell>{customer.email}</TableCell>
+                      <TableCell>{customer.totalBookings}</TableCell>
+                      <TableCell>${Number(customer.totalSpent).toFixed(2)}</TableCell>
+                      <TableCell>
+                        <Badge className={getStatusColor(customer.status)}>
+                          {customer.status}
                         </Badge>
-                        {campaign.status === 'draft' && (
-                          <Button size="sm" onClick={() => sendCampaign(campaign.id)}>
-                            Send
+                      </TableCell>
+                      <TableCell>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => handleSendEmail([{ email: customer.email, name: customer.name }])}
+                          title="Send email to this customer"
+                        >
+                          <Mail className="h-4 w-4" />
                           </Button>
-                        )}
-                      </div>
-                    </div>
+                      </TableCell>
+                    </TableRow>
                   ))}
-                </div>
+                </TableBody>
+              </Table>
               </CardContent>
             </Card>
           </TabsContent>
 
-          {/* Compose Tab */}
-          <TabsContent value="compose" className="space-y-6">
-            <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
+        {/* Bookings Tab */}
+        <TabsContent value="bookings" className="space-y-6">
+          <Card>
               <CardHeader>
-                <CardTitle>Compose Email</CardTitle>
-                <CardDescription>Send individual or bulk emails</CardDescription>
+              <CardTitle className="flex items-center space-x-2">
+                <ShoppingCart className="w-5 h-5" />
+                <span>Bookings</span>
+              </CardTitle>
+              <CardDescription>
+                Send emails to customers with active bookings
+              </CardDescription>
               </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <CardContent>
+              <div className="flex items-center space-x-2 mb-4">
+                <Search className="w-4 h-4 text-muted-foreground" />
                   <Input
-                    placeholder="Recipient Email"
-                    value={composeForm.to}
-                    onChange={(e) => setComposeForm(prev => ({ ...prev, to: e.target.value }))}
-                  />
-                  <Select value={composeForm.template} onValueChange={(value) => setComposeForm(prev => ({ ...prev, template: value }))}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select Template" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {templates.map((template) => (
-                        <SelectItem key={template.id} value={template.slug}>
-                          {template.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  placeholder="Search bookings..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="max-w-sm"
+                />
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handleSelectAll(true, bookings.map(b => ({ email: b.customerEmail, name: b.customerName })))}
+                >
+                  Select All
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setSelectedRecipients([])}
+                >
+                  Clear Selection
+                </Button>
                 </div>
-                <Input
-                  placeholder="Subject"
-                  value={composeForm.subject}
-                  onChange={(e) => setComposeForm(prev => ({ ...prev, subject: e.target.value }))}
-                />
-                <Textarea
-                  placeholder="Custom Message (optional)"
-                  value={composeForm.customMessage}
-                  onChange={(e) => setComposeForm(prev => ({ ...prev, customMessage: e.target.value }))}
-                  rows={6}
-                />
-                
-                {/* File Attachments */}
-                <div className="space-y-4">
-                  <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
-                    <input
-                      type="file"
-                      multiple
-                      onChange={handleFileUpload}
-                      className="hidden"
-                      id="file-upload"
-                    />
-                    <label htmlFor="file-upload" className="cursor-pointer">
-                      <div className="space-y-2">
-                        <Mail className="w-8 h-8 mx-auto text-gray-400" />
-                        <p className="text-sm text-gray-600">
-                          Click to upload attachments or drag and drop
-                        </p>
+
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="w-12">
+                      <Checkbox
+                        checked={selectedRecipients.length === bookings.length && bookings.length > 0}
+                        onCheckedChange={(checked) => handleSelectAll(checked as boolean, bookings.map(b => ({ email: b.customerEmail, name: b.customerName })))}
+                      />
+                    </TableHead>
+                    <TableHead>Customer</TableHead>
+                    <TableHead>Tour</TableHead>
+                    <TableHead>Dates</TableHead>
+                    <TableHead>Amount</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead className="w-12">Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {bookings
+                    .filter(booking => 
+                      booking.customerEmail.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                      booking.customerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                      booking.tour.title.toLowerCase().includes(searchTerm.toLowerCase())
+                    )
+                    .map((booking) => (
+                    <TableRow key={booking.id}>
+                      <TableCell>
+                        <Checkbox
+                          checked={selectedRecipients.some(r => r.email === booking.customerEmail)}
+                          onCheckedChange={(checked) => handleSelectRecipient({ email: booking.customerEmail, name: booking.customerName }, checked as boolean)}
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <div>
+                          <div className="font-medium">{booking.customerName}</div>
+                          <div className="text-sm text-muted-foreground">{booking.customerEmail}</div>
                       </div>
-                    </label>
+                      </TableCell>
+                      <TableCell>{booking.tour.title}</TableCell>
+                      <TableCell>
+                        <div className="text-sm">
+                          <div>{new Date(booking.startDate).toLocaleDateString()}</div>
+                          <div className="text-muted-foreground">to {new Date(booking.endDate).toLocaleDateString()}</div>
                   </div>
-                  
-                  {composeForm.attachments.length > 0 && (
-                    <div className="space-y-2">
-                      <p className="text-sm font-medium">Attachments:</p>
-                      {composeForm.attachments.map((file, index) => (
-                        <div key={index} className="flex items-center justify-between p-2 bg-gray-50 rounded">
-                          <span className="text-sm">{file.name}</span>
+                      </TableCell>
+                      <TableCell>${Number(booking.totalAmount).toFixed(2)}</TableCell>
+                      <TableCell>
+                        <Badge className={getStatusColor(booking.status)}>
+                          {booking.status}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
                           <Button
                             size="sm"
                             variant="ghost"
-                            onClick={() => removeAttachment(index)}
+                          onClick={() => handleSendEmail([{ email: booking.customerEmail, name: booking.customerName }], `Booking Update - ${booking.tour.title}`)}
+                          title="Send email about this booking"
                           >
-                            Remove
+                          <Mail className="h-4 w-4" />
                           </Button>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-
-                <Button onClick={sendEmail} className="w-full">
-                  Send Email
-                </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
               </CardContent>
             </Card>
           </TabsContent>
 
-          {/* Templates Tab */}
-          <TabsContent value="templates" className="space-y-6">
-            <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
+        {/* Newsletter Tab */}
+        <TabsContent value="newsletter" className="space-y-6">
+          <Card>
               <CardHeader>
-                <CardTitle>Email Templates</CardTitle>
-                <CardDescription>Manage your email templates</CardDescription>
+              <CardTitle className="flex items-center space-x-2">
+                <Bell className="w-5 h-5" />
+                <span>Newsletter Subscribers</span>
+              </CardTitle>
+              <CardDescription>
+                Send newsletters to subscribers
+              </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {templates.map((template) => (
-                    <div key={template.id} className="p-4 border rounded-lg bg-gray-50">
-                      <div className="flex items-center justify-between mb-2">
-                        <h3 className="font-medium">{template.name}</h3>
-                        {template.isSystem && (
-                          <Badge variant="secondary">System</Badge>
-                        )}
+              <div className="flex items-center space-x-2 mb-4">
+                <Search className="w-4 h-4 text-muted-foreground" />
+                <Input
+                  placeholder="Search subscribers..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="max-w-sm"
+                />
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handleSelectAll(true, newsletterSubscribers.filter(s => s.isActive).map(s => ({ email: s.email, name: s.name })))}
+                >
+                  Select Active
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setSelectedRecipients([])}
+                >
+                  Clear Selection
+                </Button>
                       </div>
-                      <p className="text-sm text-gray-600 mb-2">{template.subject}</p>
-                      <p className="text-xs text-gray-500">
-                        Used {template._count?.sentEmails || 0} times
-                      </p>
-                    </div>
+
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="w-12">
+                      <Checkbox
+                        checked={selectedRecipients.length === newsletterSubscribers.filter(s => s.isActive).length && newsletterSubscribers.filter(s => s.isActive).length > 0}
+                        onCheckedChange={(checked) => handleSelectAll(checked as boolean, newsletterSubscribers.filter(s => s.isActive).map(s => ({ email: s.email, name: s.name })))}
+                      />
+                    </TableHead>
+                    <TableHead>Subscriber</TableHead>
+                    <TableHead>Email</TableHead>
+                    <TableHead>Subscribed</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead className="w-12">Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {newsletterSubscribers
+                    .filter(subscriber => 
+                      subscriber.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                      subscriber.name?.toLowerCase().includes(searchTerm.toLowerCase())
+                    )
+                    .map((subscriber) => (
+                    <TableRow key={subscriber.id}>
+                      <TableCell>
+                        <Checkbox
+                          checked={selectedRecipients.some(r => r.email === subscriber.email)}
+                          onCheckedChange={(checked) => handleSelectRecipient({ email: subscriber.email, name: subscriber.name }, checked as boolean)}
+                          disabled={!subscriber.isActive}
+                        />
+                      </TableCell>
+                      <TableCell className="font-medium">{subscriber.name || 'Anonymous'}</TableCell>
+                      <TableCell>{subscriber.email}</TableCell>
+                      <TableCell>{new Date(subscriber.subscribedAt).toLocaleDateString()}</TableCell>
+                      <TableCell>
+                        <Badge className={subscriber.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}>
+                          {subscriber.isActive ? 'Active' : 'Inactive'}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => handleSendEmail([{ email: subscriber.email, name: subscriber.name }], 'Newsletter Update')}
+                          title="Send newsletter to this subscriber"
+                          disabled={!subscriber.isActive}
+                        >
+                          <Mail className="h-4 w-4" />
+                        </Button>
+                      </TableCell>
+                    </TableRow>
                   ))}
-                </div>
+                </TableBody>
+              </Table>
               </CardContent>
             </Card>
           </TabsContent>
 
-          {/* Analytics Tab */}
-          <TabsContent value="analytics" className="space-y-6">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
+        {/* Contacts Tab */}
+        <TabsContent value="contacts" className="space-y-6">
+          <Card>
                 <CardHeader>
-                  <CardTitle>Performance Metrics</CardTitle>
+              <CardTitle className="flex items-center space-x-2">
+                <MessageSquare className="w-5 h-5" />
+                <span>Contact Inquiries</span>
+              </CardTitle>
+              <CardDescription>
+                Send follow-up emails to contact form submissions
+              </CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <span>Open Rate</span>
-                    <span className="font-bold">{analytics?.openRate || '0'}%</span>
+            <CardContent>
+              <div className="flex items-center space-x-2 mb-4">
+                <Search className="w-4 h-4 text-muted-foreground" />
+                <Input
+                  placeholder="Search inquiries..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="max-w-sm"
+                />
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handleSelectAll(true, contactInquiries.map(c => ({ email: c.email, name: c.name })))}
+                >
+                  Select All
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setSelectedRecipients([])}
+                >
+                  Clear Selection
+                </Button>
                   </div>
-                  <Progress value={parseFloat(analytics?.openRate || '0')} />
-                  
-                  <div className="flex items-center justify-between">
-                    <span>Click Rate</span>
-                    <span className="font-bold">{analytics?.clickRate || '0'}%</span>
+
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="w-12">
+                      <Checkbox
+                        checked={selectedRecipients.length === contactInquiries.length && contactInquiries.length > 0}
+                        onCheckedChange={(checked) => handleSelectAll(checked as boolean, contactInquiries.map(c => ({ email: c.email, name: c.name })))}
+                      />
+                    </TableHead>
+                    <TableHead>Contact</TableHead>
+                    <TableHead>Subject</TableHead>
+                    <TableHead>Submitted</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead className="w-12">Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {contactInquiries
+                    .filter(inquiry => 
+                      inquiry.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                      inquiry.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                      inquiry.subject?.toLowerCase().includes(searchTerm.toLowerCase())
+                    )
+                    .map((inquiry) => (
+                    <TableRow key={inquiry.id}>
+                      <TableCell>
+                        <Checkbox
+                          checked={selectedRecipients.some(r => r.email === inquiry.email)}
+                          onCheckedChange={(checked) => handleSelectRecipient({ email: inquiry.email, name: inquiry.name }, checked as boolean)}
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <div>
+                          <div className="font-medium">{inquiry.name}</div>
+                          <div className="text-sm text-muted-foreground">{inquiry.email}</div>
                   </div>
-                  <Progress value={parseFloat(analytics?.clickRate || '0')} />
-                  
-                  <div className="flex items-center justify-between">
-                    <span>Bounce Rate</span>
-                    <span className="font-bold">{analytics?.bounceRate || '0'}%</span>
-                  </div>
-                  <Progress value={parseFloat(analytics?.bounceRate || '0')} />
-                  
-                  <div className="flex items-center justify-between">
-                    <span>Delivery Rate</span>
-                    <span className="font-bold">{analytics?.deliveryRate || '0'}%</span>
-                  </div>
-                  <Progress value={parseFloat(analytics?.deliveryRate || '0')} />
+                      </TableCell>
+                      <TableCell>{inquiry.subject || 'No subject'}</TableCell>
+                      <TableCell>{new Date(inquiry.createdAt).toLocaleDateString()}</TableCell>
+                      <TableCell>
+                        <Badge className={getStatusColor(inquiry.status)}>
+                          {inquiry.status}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => handleSendEmail([{ email: inquiry.email, name: inquiry.name }], `Re: ${inquiry.subject || 'Your Inquiry'}`)}
+                          title="Send follow-up email"
+                        >
+                          <Mail className="h-4 w-4" />
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
                 </CardContent>
               </Card>
+        </TabsContent>
 
-              <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
+        {/* Comments Tab */}
+        <TabsContent value="comments" className="space-y-6">
+          <Card>
                 <CardHeader>
-                  <CardTitle>Top Templates</CardTitle>
+              <CardTitle className="flex items-center space-x-2">
+                <FileText className="w-5 h-5" />
+                <span>Blog Commenters</span>
+              </CardTitle>
+              <CardDescription>
+                Send emails to blog commenters
+              </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-4">
-                    {(analytics?.topTemplates || []).map((template, index) => (
-                      <div key={index} className="flex items-center justify-between">
-                        <span className="text-sm">Template {template.templateId}</span>
-                        <span className="font-bold">{template._count?.templateId || 0}</span>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          </TabsContent>
-
-          {/* Settings Tab */}
-          <TabsContent value="settings" className="space-y-6">
-            <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
-              <CardHeader>
-                <CardTitle>Email Configuration</CardTitle>
-                <CardDescription>Manage email settings and preferences</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="text-sm font-medium">SMTP Host</label>
-                    <Input value="smtp.gmail.com" disabled />
-                  </div>
-                  <div>
-                    <label className="text-sm font-medium">SMTP Port</label>
-                    <Input value="587" disabled />
-                  </div>
-                </div>
-                <Button variant="outline" className="w-full">
-                  Test Email Configuration
+              <div className="flex items-center space-x-2 mb-4">
+                <Search className="w-4 h-4 text-muted-foreground" />
+                <Input
+                  placeholder="Search comments..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="max-w-sm"
+                />
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handleSelectAll(true, blogComments.filter(c => c.authorEmail).map(c => ({ email: c.authorEmail!, name: c.authorName })))}
+                >
+                  Select All
                 </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setSelectedRecipients([])}
+                >
+                  Clear Selection
+                </Button>
+                      </div>
+
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="w-12">
+                      <Checkbox
+                        checked={selectedRecipients.length === blogComments.filter(c => c.authorEmail).length && blogComments.filter(c => c.authorEmail).length > 0}
+                        onCheckedChange={(checked) => handleSelectAll(checked as boolean, blogComments.filter(c => c.authorEmail).map(c => ({ email: c.authorEmail!, name: c.authorName })))}
+                      />
+                    </TableHead>
+                    <TableHead>Commenter</TableHead>
+                    <TableHead>Post</TableHead>
+                    <TableHead>Comment</TableHead>
+                    <TableHead>Date</TableHead>
+                    <TableHead className="w-12">Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {blogComments
+                    .filter(comment => 
+                      comment.authorName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                      comment.authorEmail?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                      comment.post.title.toLowerCase().includes(searchTerm.toLowerCase())
+                    )
+                    .map((comment) => (
+                    <TableRow key={comment.id}>
+                      <TableCell>
+                        <Checkbox
+                          checked={selectedRecipients.some(r => r.email === comment.authorEmail)}
+                          onCheckedChange={(checked) => handleSelectRecipient({ email: comment.authorEmail!, name: comment.authorName }, checked as boolean)}
+                          disabled={!comment.authorEmail}
+                        />
+                      </TableCell>
+                      <TableCell>
+                  <div>
+                          <div className="font-medium">{comment.authorName}</div>
+                          <div className="text-sm text-muted-foreground">{comment.authorEmail || 'No email'}</div>
+                  </div>
+                      </TableCell>
+                      <TableCell>{comment.post.title}</TableCell>
+                      <TableCell className="max-w-xs truncate">{comment.content}</TableCell>
+                      <TableCell>{new Date(comment.createdAt).toLocaleDateString()}</TableCell>
+                      <TableCell>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => handleSendEmail([{ email: comment.authorEmail!, name: comment.authorName }], `Re: Your comment on "${comment.post.title}"`)}
+                          title="Send email to commenter"
+                          disabled={!comment.authorEmail}
+                        >
+                          <Mail className="h-4 w-4" />
+                </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
               </CardContent>
             </Card>
           </TabsContent>
         </Tabs>
-      </div>
+
+      {/* Compose Email Modal */}
+      <ComposeEmailModal
+        open={showComposeModal}
+        onOpenChange={setShowComposeModal}
+        recipients={composeData.recipients}
+        defaultSubject={composeData.subject}
+        defaultTemplate={composeData.template}
+      />
     </div>
   )
 } 

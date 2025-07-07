@@ -80,6 +80,11 @@ export function UserForm({ user, open, onOpenChange, onSuccess }: UserFormProps)
     city: '',
     address: ''
   })
+  const [showNewRoleForm, setShowNewRoleForm] = useState(false)
+  const [newRoleData, setNewRoleData] = useState({
+    roleName: '',
+    description: ''
+  })
   const { toast } = useToast()
 
   const isEditing = !!user
@@ -176,6 +181,45 @@ export function UserForm({ user, open, onOpenChange, onSuccess }: UserFormProps)
       ...prev,
       [field]: value
     }))
+  }
+
+  const handleCreateRole = async () => {
+    if (!newRoleData.roleName.trim()) {
+      toast({
+        title: "Error",
+        description: "Role name is required",
+        variant: "destructive",
+      })
+      return
+    }
+
+    try {
+      const response = await fetch('/api/admin/users/roles', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newRoleData)
+      })
+
+      if (response.ok) {
+        const newRole = await response.json()
+        setRoles(prev => [...prev, newRole])
+        setFormData(prev => ({ ...prev, roleId: newRole.id.toString() }))
+        setShowNewRoleForm(false)
+        setNewRoleData({ roleName: '', description: '' })
+        toast({
+          title: "Success",
+          description: "Role created successfully",
+        })
+      } else {
+        throw new Error('Failed to create role')
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to create role",
+        variant: "destructive",
+      })
+    }
   }
 
   return (
@@ -357,19 +401,65 @@ export function UserForm({ user, open, onOpenChange, onSuccess }: UserFormProps)
                 <CardContent className="space-y-4">
                   <div className="space-y-2">
                     <Label htmlFor="role">Role</Label>
-                    <Select value={formData.roleId || ""} onValueChange={(value) => handleInputChange('roleId', value || undefined)}>
+                    <Select value={formData.roleId || "none"} onValueChange={(value) => handleInputChange('roleId', value === "none" ? "" : value)}>
                       <SelectTrigger>
                         <SelectValue placeholder="Select role" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="">Select role</SelectItem>
+                        <SelectItem value="none">Select role</SelectItem>
                         {roles.map(role => (
                           <SelectItem key={role.id} value={role.id.toString()}>
                             {role.roleName}
                           </SelectItem>
                         ))}
+                        <SelectItem value="create-new">+ Create New Role</SelectItem>
                       </SelectContent>
                     </Select>
+                    
+                    {formData.roleId === "create-new" && (
+                      <div className="mt-4 p-4 border rounded-lg bg-muted/50">
+                        <div className="space-y-3">
+                          <div>
+                            <Label htmlFor="newRoleName">Role Name *</Label>
+                            <Input
+                              id="newRoleName"
+                              value={newRoleData.roleName}
+                              onChange={(e) => setNewRoleData(prev => ({ ...prev, roleName: e.target.value }))}
+                              placeholder="Enter role name"
+                            />
+                          </div>
+                          <div>
+                            <Label htmlFor="newRoleDescription">Description</Label>
+                            <Input
+                              id="newRoleDescription"
+                              value={newRoleData.description}
+                              onChange={(e) => setNewRoleData(prev => ({ ...prev, description: e.target.value }))}
+                              placeholder="Enter role description"
+                            />
+                          </div>
+                          <div className="flex space-x-2">
+                            <Button
+                              type="button"
+                              size="sm"
+                              onClick={handleCreateRole}
+                            >
+                              Create Role
+                            </Button>
+                            <Button
+                              type="button"
+                              size="sm"
+                              variant="outline"
+                              onClick={() => {
+                                setFormData(prev => ({ ...prev, roleId: "none" }))
+                                setNewRoleData({ roleName: '', description: '' })
+                              }}
+                            >
+                              Cancel
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </div>
 
                   <div className="flex items-center space-x-2">

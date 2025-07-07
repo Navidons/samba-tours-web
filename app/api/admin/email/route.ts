@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { PrismaClient } from '@prisma/client'
+import { prisma } from '@/lib/prisma'
 import { sendEmail, sendBulkEmail, EmailCampaignService, EmailAnalytics } from '@/lib/email-service'
-
-const prisma = new PrismaClient()
 
 // GET - Fetch email analytics, campaigns, and statistics
 export async function GET(request: NextRequest) {
@@ -85,11 +83,17 @@ export async function POST(request: NextRequest) {
       case 'test-email':
         return await testEmailConfiguration()
       default:
-        return NextResponse.json({ error: 'Invalid action' }, { status: 400 })
+        return NextResponse.json({ 
+          success: false, 
+          message: 'Invalid action' 
+        }, { status: 400 })
     }
   } catch (error) {
     console.error('Email API error:', error)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    return NextResponse.json({ 
+      success: false, 
+      message: 'Something went wrong. Please try again later.' 
+    }, { status: 500 })
   }
 }
 
@@ -210,7 +214,13 @@ async function getEmailDashboard() {
   } catch (error) {
     console.error('Error getting dashboard data:', error)
     return NextResponse.json({
-      dashboard: getDefaultData().dashboard
+      dashboard: {
+        totalEmails: 0,
+        totalCampaigns: 0,
+        templateCount: 1,
+        statusStats: {},
+        recentEmails: []
+      }
     })
   }
 }
@@ -292,7 +302,17 @@ async function getEmailAnalytics() {
   } catch (error) {
     console.error('Error getting analytics data:', error)
     return NextResponse.json({
-      analytics: getDefaultData().analytics
+      analytics: {
+        period: '30 days',
+        totalSent: 0,
+        emailsLast30Days: 0,
+        openRate: '0',
+        clickRate: '0',
+        bounceRate: '0',
+        deliveryRate: '0',
+        topTemplates: [],
+        emailTrends: []
+      }
     })
   }
 }
@@ -418,30 +438,80 @@ async function getEmailTemplates() {
     return NextResponse.json({ templates })
   } catch (error) {
     console.error('Error getting templates:', error)
-    return NextResponse.json({ templates: [] })
+    // Return default templates when database is not available
+    return NextResponse.json({ 
+      templates: [
+        {
+          id: 1,
+          name: 'Custom Email',
+          slug: 'custom',
+          subject: 'Custom Message',
+          htmlContent: '<p>Custom email content</p>',
+          isSystem: true,
+          isActive: true
+        }
+      ] 
+    })
   }
 }
 
 async function sendSingleEmail(data: any) {
   try {
-    const { to, template, subject, customData, attachments } = data
+    const { to, template, subject, customData, customMessage, attachments } = data
 
-    if (!to || !template) {
-      return NextResponse.json({ error: 'Recipient and template required' }, { status: 400 })
+    if (!to) {
+      return NextResponse.json({ 
+        success: false, 
+        message: 'Recipient email is required' 
+      }, { status: 400 })
+    }
+
+    // Process attachments if provided
+    let processedAttachments = []
+    if (attachments && Array.isArray(attachments)) {
+      processedAttachments = await Promise.all(attachments.map(async (file: File) => ({
+        filename: file.name,
+        content: Buffer.from(await file.arrayBuffer()),
+        contentType: file.type || 'application/octet-stream'
+      })))
+    }
+
+    // Prepare custom data with HTML content support
+    // Handle both customData.message and direct customMessage
+    const messageContent = customMessage || customData?.message || ''
+    const isHtml = customData?.isHtml || false
+    
+    const emailData = {
+      customMessage: messageContent,
+      subject: subject || 'Message from Samba Tours Uganda'
     }
 
     const result = await sendEmail({
       to,
-      template,
-      data: customData || {},
+      template: 'custom', // Always use custom template for admin emails
+      data: emailData,
       subject,
-      attachments
+      attachments: processedAttachments
     })
 
-    return NextResponse.json({ success: true, result })
+    if (result.success) {
+      return NextResponse.json({ 
+        success: true, 
+        message: 'Email sent successfully',
+        result 
+      })
+    } else {
+      return NextResponse.json({ 
+        success: false, 
+        message: result.error || 'Failed to send email' 
+      }, { status: 500 })
+    }
   } catch (error) {
     console.error('Error sending single email:', error)
-    return NextResponse.json({ error: 'Failed to send email' }, { status: 500 })
+    return NextResponse.json({ 
+      success: false, 
+      message: 'Failed to send email. Please try again later.' 
+    }, { status: 500 })
   }
 }
 
@@ -450,11 +520,17 @@ async function sendBulkEmails(data: any) {
     const { recipients, template, subject, customData, attachments } = data
 
     if (!recipients || !Array.isArray(recipients) || recipients.length === 0) {
-      return NextResponse.json({ error: 'Valid recipients array required' }, { status: 400 })
+      return NextResponse.json({ 
+        success: false, 
+        message: 'Valid recipients array is required' 
+      }, { status: 400 })
     }
 
     if (!template) {
-      return NextResponse.json({ error: 'Template required' }, { status: 400 })
+      return NextResponse.json({ 
+        success: false, 
+        message: 'Template is required' 
+      }, { status: 400 })
     }
 
     const results = await sendBulkEmail(recipients, {
@@ -478,7 +554,10 @@ async function sendBulkEmails(data: any) {
     })
   } catch (error) {
     console.error('Error sending bulk emails:', error)
-    return NextResponse.json({ error: 'Failed to send bulk emails' }, { status: 500 })
+    return NextResponse.json({ 
+      success: false, 
+      message: 'Failed to send bulk emails. Please try again later.' 
+    }, { status: 500 })
   }
 }
 

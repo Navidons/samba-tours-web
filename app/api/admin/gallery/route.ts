@@ -2,9 +2,6 @@ import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { PrismaClientInitializationError, PrismaClientKnownRequestError } from "@prisma/client/runtime/library"
 
-// Force dynamic rendering to prevent static generation errors
-export const dynamic = 'force-dynamic'
-
 // GET /api/admin/gallery - Get all galleries for admin management
 export async function GET(request: NextRequest) {
   try {
