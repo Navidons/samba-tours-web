@@ -117,7 +117,7 @@ export default function BlogPostHeader({ post }: BlogPostHeaderProps) {
               </Badge>
             </Link>
           )}
-          <h1 className="text-3xl md:text-5xl font-bold leading-tight mb-4 text-balance">{post.title}</h1>
+          <h2 className="text-3xl md:text-5xl font-bold leading-tight mb-4 text-balance">{post.title}</h2>
 
           <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-cream-200 mb-8">
             <div className="flex items-center space-x-2">

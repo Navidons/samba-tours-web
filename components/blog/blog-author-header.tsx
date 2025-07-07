@@ -92,7 +92,7 @@ export default function BlogAuthorHeader({ author }: BlogAuthorHeaderProps) {
                 <Badge variant="secondary">{author.postCount} Articles</Badge>
               </div>
 
-              <h1 className="text-4xl lg:text-5xl font-playfair font-bold mb-2 text-earth-900">{author.name}</h1>
+              <h2 className="text-4xl lg:text-5xl font-playfair font-bold mb-2 text-earth-900">{author.name}</h2>
 
               <p className="text-xl text-forest-600 mb-6">{author.role}</p>
 

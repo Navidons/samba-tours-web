@@ -15,12 +15,15 @@ interface BlogPostContentProps {
 }
 
 export default function BlogPostContent({ post }: BlogPostContentProps) {
+  // Convert any h1 tags to h2 tags in the content
+  const sanitizedContent = post.content.replace(/<h1/g, '<h2').replace(/<\/h1>/g, '</h2>')
+
   return (
     <article className="bg-white rounded-lg shadow-sm p-8 lg:p-12 mb-8">
       {/* Article Content */}
       <div
         className="prose prose-lg max-w-none prose-headings:font-playfair prose-headings:text-earth-900 prose-p:text-earth-700 prose-p:leading-relaxed prose-a:text-forest-600 prose-a:no-underline hover:prose-a:underline prose-strong:text-earth-900 prose-ul:text-earth-700 prose-li:text-earth-700 prose-blockquote:border-forest-500 prose-blockquote:text-earth-600"
-        dangerouslySetInnerHTML={{ __html: post.content }}
+        dangerouslySetInnerHTML={{ __html: sanitizedContent }}
       />
 
       {/* Tags */}

@@ -1,7 +1,11 @@
 import Image from "next/image"
 import { Camera, Video, Users } from "lucide-react"
 
-export default function GalleryHero() {
+interface GalleryHeroProps {
+  hideHeading?: boolean
+}
+
+export default function GalleryHero({ hideHeading }: GalleryHeroProps) {
   return (
     <section className="relative bg-gray-900 text-white">
       <div className="absolute inset-0">
@@ -16,9 +20,11 @@ export default function GalleryHero() {
       </div>
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-40 pb-20 text-center">
-        <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold font-playfair mb-4 text-shadow-lg">
-          A Glimpse of Uganda's Soul
-        </h1>
+        {!hideHeading && (
+          <h2 className="text-4xl sm:text-5xl md:text-6xl font-bold font-playfair mb-4 text-shadow-lg">
+            A Glimpse of Uganda's Soul
+          </h2>
+        )}
         <p className="mt-4 text-lg md:text-xl max-w-3xl mx-auto text-gray-300 text-shadow">
           Explore moments captured by our guides and fellow travelers. This is the magic that awaits you.
         </p>

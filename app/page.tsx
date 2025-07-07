@@ -32,8 +32,8 @@ const homepageFAQs = [
 ]
 
 export const metadata: Metadata = generateSEOMetadata({
-  title: "Uganda's Premier Safari & Adventure Travel Company",
-  description: "Experience authentic Uganda with Samba Tours. Expert-guided gorilla trekking, wildlife safaris, cultural tours, and adventure travel. Book your dream African safari today!",
+  title: "Uganda Safari & Adventure Tours | Samba Tours",
+  description: "Discover Uganda with expert-guided gorilla trekking, wildlife safaris, and cultural tours. Experience authentic African adventures with our local guides.",
   keywords: [
     'Uganda tours', 'Uganda safari', 'gorilla trekking Uganda', 'wildlife safari',
     'Bwindi gorilla trekking', 'Uganda travel', 'East Africa safari', 'adventure travel Uganda',

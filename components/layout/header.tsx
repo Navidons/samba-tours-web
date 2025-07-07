@@ -282,9 +282,9 @@ export default function Header() {
                 <span className="text-white font-bold text-lg md:text-xl">ST</span>
               </div>
               <div className="hidden sm:block">
-                <h1 className="text-xl md:text-2xl font-bold text-gray-900 group-hover:text-orange-600 transition-colors">
+                <h2 className="text-xl md:text-2xl font-bold text-gray-900 group-hover:text-orange-600 transition-colors">
                   Samba Tours
-                </h1>
+                </h2>
                 <p className="text-xs text-gray-600 -mt-1">
                   {currentTourTitle ? `Viewing: ${currentTourTitle}` : "Uganda's Premier Safari Company"}
                 </p>

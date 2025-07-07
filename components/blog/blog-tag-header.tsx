@@ -42,7 +42,7 @@ export default function BlogTagHeader({ tag }: BlogTagHeaderProps) {
             </Badge>
           </div>
 
-          <h1 className="text-4xl lg:text-5xl font-playfair font-bold mb-6 leading-tight">{tag.name}</h1>
+          <h2 className="text-4xl lg:text-5xl font-playfair font-bold mb-6 leading-tight">{tag.name}</h2>
 
           <p className="text-xl text-forest-100 max-w-3xl leading-relaxed">{tag.description}</p>
         </div>

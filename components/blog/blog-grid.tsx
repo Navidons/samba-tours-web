@@ -66,7 +66,7 @@ export default function BlogGrid({ posts }: BlogGridProps) {
   if (posts.length === 0) {
     return (
       <div className="text-center py-16 bg-orange-50/50 rounded-lg">
-        <h3 className="text-2xl font-playfair text-earth-800">No Articles Found</h3>
+        <h2 className="text-2xl font-playfair text-earth-800">No Articles Found</h2>
         <p className="text-earth-600 mt-2">Try adjusting your search query or clearing the filter.</p>
       </div>
     )

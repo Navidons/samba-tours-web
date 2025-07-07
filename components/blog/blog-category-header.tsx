@@ -48,7 +48,7 @@ export default function BlogCategoryHeader({ category }: BlogCategoryHeaderProps
               </Badge>
             </div>
 
-            <h1 className="text-4xl lg:text-5xl font-playfair font-bold mb-6 leading-tight">{category.name}</h1>
+            <h2 className="text-4xl lg:text-5xl font-playfair font-bold mb-6 leading-tight">{category.name}</h2>
 
             <p className="text-xl text-gray-200 max-w-3xl leading-relaxed">{category.description}</p>
           </div>

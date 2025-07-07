@@ -34,9 +34,10 @@ interface Tour {
 
 type TourHeroProps = {
   tour: Tour
+  isListingPage?: boolean
 }
 
-export default function TourHero({ tour }: TourHeroProps) {
+export default function TourHero({ tour, isListingPage = false }: TourHeroProps) {
   const averageRating = tour.rating || 0
   const reviewCount = tour.reviewCount || 0
 
@@ -54,50 +55,60 @@ export default function TourHero({ tour }: TourHeroProps) {
         )}
       </div>
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-16">
-        <div className="mb-6">
-          <Link
-            href="/tours"
-            className="inline-flex items-center gap-2 text-sm font-medium text-gray-300 hover:text-white transition-colors bg-black/30 backdrop-blur-sm px-3 py-1 rounded-full"
-          >
-            <ChevronLeft className="w-4 h-4" />
-            Back to All Tours
-          </Link>
-        </div>
-        <div className="md:flex justify-between items-end gap-8">
-          <div className="max-w-3xl">
-            <Badge variant="secondary" className="mb-3 bg-orange-500 text-white border-0">
-              {tour.category?.name || "Adventure"}
-            </Badge>
+        {!isListingPage && (
+          <div className="mb-6">
+            <Link
+              href="/tours"
+              className="inline-flex items-center gap-2 text-sm font-medium text-gray-300 hover:text-white transition-colors bg-black/30 backdrop-blur-sm px-3 py-1 rounded-full"
+            >
+              <ChevronLeft className="w-4 h-4" />
+              Back to All Tours
+            </Link>
+          </div>
+        )}
+        <div className={`${isListingPage ? 'text-center' : 'md:flex justify-between items-end gap-8'}`}>
+          <div className={`${isListingPage ? 'mx-auto' : 'max-w-3xl'}`}>
+            {!isListingPage && (
+              <Badge variant="secondary" className="mb-3 bg-orange-500 text-white border-0">
+                {tour.category?.name || "Adventure"}
+              </Badge>
+            )}
             <h1 className="text-4xl sm:text-5xl font-bold font-playfair text-shadow-lg">{tour.title}</h1>
-            <p className="mt-4 text-lg text-gray-200 max-w-2xl text-shadow">{tour.shortDescription || tour.title}</p>
+            <p className="mt-4 text-lg text-gray-200 max-w-2xl text-shadow mx-auto">{tour.shortDescription || tour.title}</p>
           </div>
-          <div className="mt-6 md:mt-0 flex-shrink-0">
-            <div className="text-3xl font-bold text-right">
-              ${tour.price}
-              <span className="text-base font-normal text-gray-300"> / person</span>
+          {!isListingPage && tour.price > 0 && (
+            <div className="mt-6 md:mt-0 flex-shrink-0">
+              <div className="text-3xl font-bold text-right">
+                ${tour.price}
+                <span className="text-base font-normal text-gray-300"> / person</span>
+              </div>
             </div>
-          </div>
+          )}
         </div>
-        <div className="mt-8 pt-6 border-t border-white/20 flex flex-wrap items-center gap-x-6 gap-y-3">
-          <div className="flex items-center gap-2">
-            <Star className="w-5 h-5 text-yellow-400" />
-            <span className="font-semibold">{averageRating.toFixed(1)}</span>
-            <span className="text-gray-300 text-sm">({reviewCount} reviews)</span>
+        {!isListingPage && (
+          <div className="mt-8 pt-6 border-t border-white/20 flex flex-wrap items-center gap-x-6 gap-y-3">
+            <div className="flex items-center gap-2">
+              <Star className="w-5 h-5 text-yellow-400" />
+              <span className="font-semibold">{averageRating.toFixed(1)}</span>
+              <span className="text-gray-300 text-sm">({reviewCount} reviews)</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <MapPin className="w-5 h-5 text-orange-400" />
+              <span className="font-medium">
+                {tour.locationRegion && tour.locationCountry 
+                  ? `${tour.locationRegion}, ${tour.locationCountry}`
+                  : tour.locationCountry || 'Location to be confirmed'
+                }
+              </span>
+            </div>
+            {tour.duration && (
+              <div className="flex items-center gap-2">
+                <Clock className="w-5 h-5 text-blue-400" />
+                <span className="font-medium">{tour.duration} days</span>
+              </div>
+            )}
           </div>
-          <div className="flex items-center gap-2">
-            <MapPin className="w-5 h-5 text-orange-400" />
-            <span className="font-medium">
-              {tour.locationRegion && tour.locationCountry 
-                ? `${tour.locationRegion}, ${tour.locationCountry}`
-                : tour.locationCountry || 'Location to be confirmed'
-              }
-            </span>
-          </div>
-          <div className="flex items-center gap-2">
-            <Clock className="w-5 h-5 text-blue-400" />
-            <span className="font-medium">{tour.duration} days</span>
-          </div>
-        </div>
+        )}
       </div>
     </section>
   )
