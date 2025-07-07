@@ -753,10 +753,10 @@ export default function ContactManagementClient() {
                 <div className="flex items-center space-x-4">
                   <div className="flex-1">
                     <label className="text-sm font-medium text-gray-700">To:</label>
-                    <div className="flex items-center space-x-2 mt-1 p-2 bg-gray-50 rounded-md">
-                      <User className="h-4 w-4 text-muted-foreground" />
-                      <span className="text-sm">{selectedInquiry.name} ({selectedInquiry.email || 'No email'})</span>
-                    </div>
+                                         <div className="flex items-center space-x-2 mt-1 p-2 bg-gray-50 rounded-md">
+                       <User className="h-4 w-4 text-muted-foreground" />
+                       <span className="text-sm">{selectedInquiry.name} ({selectedInquiry.email || 'No email'})</span>
+                     </div>
                   </div>
                 </div>
                 
@@ -863,56 +863,56 @@ export default function ContactManagementClient() {
 
               {/* Scrollable Content Area */}
               <div className="flex-1 overflow-y-auto">
-                {/* Message Editor */}
+              {/* Message Editor */}
                 <div className="p-4">
-                  {isHtmlMode ? (
-                    <div
-                      ref={editorRef}
-                      contentEditable
+                {isHtmlMode ? (
+                  <div
+                    ref={editorRef}
+                    contentEditable
                       className="min-h-[400px] p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      style={{ 
-                        fontFamily: 'Arial, sans-serif',
-                        fontSize: '14px',
-                        lineHeight: '1.5'
-                      }}
-                      onInput={handleEditorInput}
-                      suppressContentEditableWarning={true}
-                      data-placeholder="Type your reply message..."
-                    />
-                  ) : (
-                    <Textarea
-                      value={replyData.message}
-                      onChange={(e) => setReplyData({ ...replyData, message: e.target.value })}
-                      placeholder="Type your reply message..."
+                    style={{ 
+                      fontFamily: 'Arial, sans-serif',
+                      fontSize: '14px',
+                      lineHeight: '1.5'
+                    }}
+                    onInput={handleEditorInput}
+                    suppressContentEditableWarning={true}
+                    data-placeholder="Type your reply message..."
+                  />
+                ) : (
+                  <Textarea
+                    value={replyData.message}
+                    onChange={(e) => setReplyData({ ...replyData, message: e.target.value })}
+                    placeholder="Type your reply message..."
                       className="min-h-[400px] resize-none"
-                    />
-                  )}
-                </div>
-
-                {/* Attachments */}
-                {attachments.length > 0 && (
-                  <div className="px-4 pb-4">
-                    <h4 className="text-sm font-medium mb-2">Attachments ({attachments.length})</h4>
-                    <div className="space-y-2">
-                      {attachments.map((attachment) => (
-                        <div key={attachment.id} className="flex items-center justify-between p-2 bg-gray-50 rounded border">
-                          <div className="flex items-center space-x-2">
-                            <Paperclip className="h-4 w-4 text-gray-500" />
-                            <span className="text-sm font-medium">{attachment.name}</span>
-                            <span className="text-xs text-gray-500">({formatFileSize(attachment.size)})</span>
-                          </div>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => removeAttachment(attachment.id)}
-                          >
-                            <X className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
+                  />
                 )}
+              </div>
+
+              {/* Attachments */}
+              {attachments.length > 0 && (
+                  <div className="px-4 pb-4">
+                  <h4 className="text-sm font-medium mb-2">Attachments ({attachments.length})</h4>
+                  <div className="space-y-2">
+                    {attachments.map((attachment) => (
+                        <div key={attachment.id} className="flex items-center justify-between p-2 bg-gray-50 rounded border">
+                        <div className="flex items-center space-x-2">
+                          <Paperclip className="h-4 w-4 text-gray-500" />
+                          <span className="text-sm font-medium">{attachment.name}</span>
+                          <span className="text-xs text-gray-500">({formatFileSize(attachment.size)})</span>
+                        </div>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => removeAttachment(attachment.id)}
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
               </div>
 
               {/* Footer Actions - Fixed at bottom */}

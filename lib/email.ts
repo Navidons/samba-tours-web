@@ -301,26 +301,26 @@ export const emailTemplates = {
   // Custom message template
   custom: (data: { customMessage: string; subject?: string }) => {
     return {
-      subject: data.subject || 'Message from Samba Tours Uganda',
-      html: `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-          <div style="background: linear-gradient(135deg, #f97316, #dc2626); padding: 30px; text-align: center;">
-            <h1 style="color: white; margin: 0; font-size: 28px;">Samba Tours Uganda</h1>
-            <p style="color: white; margin: 10px 0 0 0; font-size: 16px;">Your Gateway to Authentic Africa</p>
-          </div>
-          
-          <div style="padding: 30px; background: #f9fafb;">
-            ${data.customMessage ? data.customMessage : '<p>No custom message provided</p>'}
-          </div>
-          
-          <div style="background: #1f2937; padding: 20px; text-align: center;">
-            <p style="color: #9ca3af; margin: 0; font-size: 14px;">
-              © ${new Date().getFullYear()} Samba Tours Uganda. All rights reserved.<br>
-              Plot 123, Kampala Road, Kampala, Uganda
-            </p>
-          </div>
+    subject: data.subject || 'Message from Samba Tours Uganda',
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <div style="background: linear-gradient(135deg, #f97316, #dc2626); padding: 30px; text-align: center;">
+          <h1 style="color: white; margin: 0; font-size: 28px;">Samba Tours Uganda</h1>
+          <p style="color: white; margin: 10px 0 0 0; font-size: 16px;">Your Gateway to Authentic Africa</p>
         </div>
-      `
+        
+        <div style="padding: 30px; background: #f9fafb;">
+            ${data.customMessage ? data.customMessage : '<p>No custom message provided</p>'}
+        </div>
+        
+        <div style="background: #1f2937; padding: 20px; text-align: center;">
+          <p style="color: #9ca3af; margin: 0; font-size: 14px;">
+            © ${new Date().getFullYear()} Samba Tours Uganda. All rights reserved.<br>
+            Plot 123, Kampala Road, Kampala, Uganda
+          </p>
+        </div>
+      </div>
+    `
     }
   }
 }
