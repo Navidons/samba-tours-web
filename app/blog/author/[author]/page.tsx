@@ -115,10 +115,10 @@ export default function BlogAuthorPage({ params }: { params: { author: string } 
 
   if (loading) {
     return (
-      <main className="min-h-screen bg-cream-50">
+      <main className="min-h-screen bg-gray-50">
         <div className="text-center py-16">
           <LoadingSpinner className="h-12 w-12 mx-auto" />
-          <p className="mt-4 text-earth-600">Loading posts...</p>
+          <p className="mt-4 text-gray-600">Loading posts...</p>
         </div>
       </main>
     )
@@ -126,7 +126,7 @@ export default function BlogAuthorPage({ params }: { params: { author: string } 
 
   if (error || !author) {
     return (
-      <main className="min-h-screen bg-cream-50">
+      <main className="min-h-screen bg-gray-50">
         <div className="text-center py-16">
           <p className="text-red-600 mb-4">{error || 'Author not found'}</p>
         </div>
@@ -150,7 +150,7 @@ export default function BlogAuthorPage({ params }: { params: { author: string } 
   }
 
   return (
-    <main className="min-h-screen bg-cream-50">
+    <main className="min-h-screen bg-gray-50">
       <BlogAuthorHeader author={transformedAuthor} />
 
       <section className="section-padding">

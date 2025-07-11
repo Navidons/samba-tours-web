@@ -105,7 +105,47 @@ export async function likeBlogComment(commentId: number): Promise<{ success: boo
   }
 }
 
-
+// Report a comment
+export async function reportBlogComment(
+  commentId: number, 
+  reporterName: string, 
+  reason: string, 
+  reporterEmail?: string
+): Promise<{ success: boolean; message?: string; error?: string }> {
+  try {
+    const response = await fetch(`/api/blog/comments/${commentId}/report`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        reporterName,
+        reporterEmail,
+        reason
+      }),
+    })
+    
+    const data = await response.json()
+    
+    if (!response.ok) {
+      return {
+        success: false,
+        error: data.error || 'Failed to report comment'
+      }
+    }
+    
+    return {
+      success: true,
+      message: data.message
+    }
+  } catch (error) {
+    console.error('Error reporting comment:', error)
+    return {
+      success: false,
+      error: 'Failed to report comment'
+    }
+  }
+}
 
 // Format comment date
 export function formatCommentDate(date: Date | string): string {

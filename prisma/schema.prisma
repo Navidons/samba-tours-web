@@ -385,6 +385,7 @@ model BlogComment {
   replies         BlogComment[] @relation("CommentReplies")
   post            BlogPost      @relation(fields: [postId], references: [id], onDelete: Cascade)
   user            User?         @relation(fields: [userId], references: [id])
+  reports         CommentReport[]
 
   @@index([postId])
   @@index([status])
@@ -392,6 +393,23 @@ model BlogComment {
   @@index([parentCommentId])
   @@index([userId], map: "blog_comments_user_id_fkey")
   @@map("blog_comments")
+}
+
+model CommentReport {
+  id          Int      @id @default(autoincrement())
+  commentId   Int      @map("comment_id")
+  reporterName String  @map("reporter_name") @db.VarChar(255)
+  reporterEmail String? @map("reporter_email") @db.VarChar(255)
+  reason      String   @db.Text
+  status      ReportStatus @default(pending)
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+  comment     BlogComment @relation(fields: [commentId], references: [id], onDelete: Cascade)
+
+  @@index([commentId])
+  @@index([status])
+  @@index([createdAt])
+  @@map("comment_reports")
 }
 
 model GalleryMediaCategory {
@@ -921,6 +939,13 @@ enum CommentStatus {
   pending
   approved
   spam
+}
+
+enum ReportStatus {
+  pending
+  reviewed
+  resolved
+  dismissed
 }
 
 enum CustomerStatus {

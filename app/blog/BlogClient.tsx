@@ -94,14 +94,14 @@ export default function BlogClient() {
 
   if (error) {
     return (
-      <main className="min-h-screen bg-cream-50">
+      <main className="min-h-screen bg-gray-50">
         <BlogHero />
         <div className="container-max px-4 py-16">
           <div className="text-center">
             <p className="text-red-600 mb-4">{error}</p>
             <button 
               onClick={fetchBlogPosts}
-              className="px-4 py-2 bg-orange-600 text-white rounded hover:bg-orange-700"
+              className="px-4 py-2 bg-emerald-600 text-white rounded hover:bg-emerald-700"
             >
               Try Again
             </button>
@@ -112,7 +112,7 @@ export default function BlogClient() {
   }
 
   return (
-    <main className="min-h-screen bg-cream-50">
+    <main className="min-h-screen bg-gray-50">
       <BlogHero />
 
       <div className="container-max px-4 py-16 md:py-24 space-y-16 md:space-y-24">

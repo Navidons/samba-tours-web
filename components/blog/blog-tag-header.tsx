@@ -15,7 +15,7 @@ interface BlogTagHeaderProps {
 
 export default function BlogTagHeader({ tag }: BlogTagHeaderProps) {
   return (
-    <header className="bg-gradient-to-r from-forest-600 to-forest-800 text-white">
+    <header className="bg-gradient-to-r from-emerald-600 to-emerald-800 text-white">
       <div className="container-max px-4 py-16">
         <div className="flex items-center space-x-4 mb-6">
           <Button
@@ -44,7 +44,7 @@ export default function BlogTagHeader({ tag }: BlogTagHeaderProps) {
 
           <h2 className="text-4xl lg:text-5xl font-playfair font-bold mb-6 leading-tight">{tag.name}</h2>
 
-          <p className="text-xl text-forest-100 max-w-3xl leading-relaxed">{tag.description}</p>
+          <p className="text-xl text-emerald-100 max-w-3xl leading-relaxed">{tag.description}</p>
         </div>
       </div>
     </header>

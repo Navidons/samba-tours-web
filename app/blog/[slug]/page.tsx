@@ -147,17 +147,19 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
     }
 
     return (
-      <div className="container mx-auto px-4 py-8 grid grid-cols-1 lg:grid-cols-12 gap-8">
-        <div className="lg:col-span-8">
-          <BlogPostHeader post={transformedPost as any} />
-          <Suspense fallback={<LoadingSpinner />}>
-            <BlogPostContent post={transformedPost as any} />
-          </Suspense>
-          <RelatedPosts currentPost={transformedPost as any} />
-          <BlogComments postId={post.id} />
-        </div>
-        <div className="lg:col-span-4">
-          <BlogPostSidebar post={transformedPost as any} />
+      <div className="min-h-screen bg-gray-50">
+        <div className="container mx-auto px-4 py-8 grid grid-cols-1 lg:grid-cols-12 gap-8">
+          <div className="lg:col-span-8">
+            <BlogPostHeader post={transformedPost as any} />
+            <Suspense fallback={<LoadingSpinner />}>
+              <BlogPostContent post={transformedPost as any} />
+            </Suspense>
+            <RelatedPosts currentPost={transformedPost as any} />
+            <BlogComments postId={post.id} />
+          </div>
+          <div className="lg:col-span-4">
+            <BlogPostSidebar post={transformedPost as any} />
+          </div>
         </div>
       </div>
     )

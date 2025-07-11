@@ -93,12 +93,12 @@ export default function RelatedPosts({ currentPost }: RelatedPostsProps) {
       <div className="container-max">
         <div className="text-center mb-12">
           <h2 className="heading-secondary">You Might Also Like</h2>
-          <p className="text-lg text-earth-600">More expert insights and stories from our Uganda travel specialists</p>
+          <p className="text-lg text-gray-600">More expert insights and stories from our Uganda travel specialists</p>
         </div>
 
         {loading ? (
           <div className="flex justify-center py-12">
-            <Loader2 className="h-8 w-8 animate-spin text-forest-600" />
+            <Loader2 className="h-8 w-8 animate-spin text-emerald-600" />
           </div>
         ) : relatedPosts.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -115,14 +115,14 @@ export default function RelatedPosts({ currentPost }: RelatedPostsProps) {
                     className="object-cover group-hover:scale-105 transition-transform duration-300"
                   />
                   <div className="absolute top-4 left-4">
-                    <Badge className="bg-forest-600 text-white border-none">
+                    <Badge className="bg-emerald-600 text-white border-none">
                       {post.category?.name || "Uncategorized"}
                     </Badge>
                   </div>
                 </div>
 
                 <CardContent className="p-6 flex flex-col h-[calc(100%-12rem)]">
-                  <div className="flex items-center space-x-4 text-sm text-earth-600 mb-3">
+                  <div className="flex items-center space-x-4 text-sm text-gray-600 mb-3">
                     <div className="flex items-center space-x-1">
                       <User className="h-4 w-4" />
                       <span>{post.author?.name || "Unknown Author"}</span>
@@ -133,14 +133,14 @@ export default function RelatedPosts({ currentPost }: RelatedPostsProps) {
                     </div>
                   </div>
 
-                  <h3 className="font-bold text-lg text-earth-900 mb-3 group-hover:text-forest-600 transition-colors line-clamp-2">
+                  <h3 className="font-bold text-lg text-gray-900 mb-3 group-hover:text-emerald-600 transition-colors line-clamp-2">
                     <Link href={`/blog/${post.slug}`}>{post.title}</Link>
                   </h3>
 
-                  <p className="text-earth-700 mb-4 line-clamp-3 flex-grow">{post.excerpt}</p>
+                  <p className="text-gray-700 mb-4 line-clamp-3 flex-grow">{post.excerpt}</p>
 
                   <div className="flex items-center justify-between mt-auto">
-                    <div className="flex items-center space-x-1 text-sm text-earth-500">
+                    <div className="flex items-center space-x-1 text-sm text-gray-500">
                       <Calendar className="h-4 w-4" />
                       <span>
                         {post.publishDate ? new Date(post.publishDate).toLocaleDateString("en-US", { month: "long", day: "numeric" }) : "Not published"}
@@ -149,7 +149,7 @@ export default function RelatedPosts({ currentPost }: RelatedPostsProps) {
 
                     <Link
                       href={`/blog/${post.slug}`}
-                      className="flex items-center space-x-1 text-forest-600 hover:text-forest-700 font-medium text-sm transition-colors"
+                      className="flex items-center space-x-1 text-emerald-600 hover:text-emerald-700 font-medium text-sm transition-colors"
                     >
                       <span>Read More</span>
                       <ArrowRight className="h-4 w-4" />
@@ -161,7 +161,7 @@ export default function RelatedPosts({ currentPost }: RelatedPostsProps) {
           </div>
         ) : (
           <div className="text-center py-12">
-            <p className="text-earth-600">No related posts found</p>
+            <p className="text-gray-600">No related posts found</p>
           </div>
         )}
       </div>

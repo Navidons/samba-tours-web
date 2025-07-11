@@ -22,16 +22,16 @@ export default function BlogPostContent({ post }: BlogPostContentProps) {
     <article className="bg-white rounded-lg shadow-sm p-8 lg:p-12 mb-8">
       {/* Article Content */}
       <div
-        className="prose prose-lg max-w-none prose-headings:font-playfair prose-headings:text-earth-900 prose-p:text-earth-700 prose-p:leading-relaxed prose-a:text-forest-600 prose-a:no-underline hover:prose-a:underline prose-strong:text-earth-900 prose-ul:text-earth-700 prose-li:text-earth-700 prose-blockquote:border-forest-500 prose-blockquote:text-earth-600"
+        className="prose prose-lg max-w-none prose-headings:font-playfair prose-headings:text-gray-900 prose-p:text-gray-700 prose-p:leading-relaxed prose-a:text-emerald-600 prose-a:no-underline hover:prose-a:underline prose-strong:text-gray-900 prose-ul:text-gray-700 prose-li:text-gray-700 prose-blockquote:border-emerald-500 prose-blockquote:text-gray-600"
         dangerouslySetInnerHTML={{ __html: sanitizedContent }}
       />
 
       {/* Tags */}
       <div className="mt-10 pt-8 border-t border-gray-200">
-        <h4 className="font-semibold text-earth-900 mb-4">Tags:</h4>
+        <h4 className="font-semibold text-gray-900 mb-4">Tags:</h4>
         <div className="flex flex-wrap gap-2">
           {post.tags.map((tag, index) => (
-            <Badge key={index} variant="secondary" className="hover:bg-forest-100 cursor-pointer text-sm px-3 py-1">
+            <Badge key={index} variant="secondary" className="hover:bg-emerald-100 cursor-pointer text-sm px-3 py-1">
               {tag}
             </Badge>
           ))}
@@ -53,7 +53,7 @@ export default function BlogPostContent({ post }: BlogPostContentProps) {
           </div>
 
           <div className="flex items-center space-x-2">
-            <span className="text-sm text-earth-600 mr-3">Share this article:</span>
+            <span className="text-sm text-gray-600 mr-3">Share this article:</span>
             <Button variant="ghost" size="icon" className="text-blue-600 hover:bg-blue-50 rounded-full">
               <Twitter className="h-5 w-5" />
             </Button>

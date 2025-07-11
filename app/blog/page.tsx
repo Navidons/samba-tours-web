@@ -22,10 +22,10 @@ export const metadata: Metadata = {
 export default function BlogPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen bg-cream-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <LoadingSpinner className="h-12 w-12" />
-          <p className="mt-4 text-earth-600">Loading blog...</p>
+          <p className="mt-4 text-gray-600">Loading blog...</p>
         </div>
       </div>
     }>

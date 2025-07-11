@@ -5,15 +5,23 @@ import { prisma } from '@/lib/prisma'
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
+    const postId = searchParams.get('postId')
     const page = parseInt(searchParams.get('page') || '1')
     const limit = parseInt(searchParams.get('limit') || '50')
     const search = searchParams.get('search') || ''
-    const status = searchParams.get('status') || ''
+    const status = searchParams.get('status') || 'approved'
 
     const skip = (page - 1) * limit
 
     // Build where clause
-    const where: any = {}
+    const where: any = {
+      status: status as any,
+      parentCommentId: null // Only get top-level comments
+    }
+    
+    if (postId) {
+      where.postId = parseInt(postId)
+    }
     
     if (search) {
       where.OR = [
@@ -24,14 +32,10 @@ export async function GET(request: NextRequest) {
       ]
     }
 
-    if (status) {
-      where.status = status
-    }
-
     // Get total count
     const total = await prisma.blogComment.count({ where })
 
-    // Get comments
+    // Get top-level comments with their replies
     const comments = await prisma.blogComment.findMany({
       where,
       select: {
@@ -43,6 +47,7 @@ export async function GET(request: NextRequest) {
         likes: true,
         createdAt: true,
         updatedAt: true,
+        parentCommentId: true,
         post: {
           select: {
             id: true,
@@ -56,10 +61,46 @@ export async function GET(request: NextRequest) {
             email: true,
             profile: {
               select: {
-                fullName: true
+                fullName: true,
+                firstName: true,
+                lastName: true,
+                avatarData: true,
+                avatarName: true,
+                avatarType: true,
               }
             }
           }
+        },
+        replies: {
+          where: { status: 'approved' },
+          select: {
+            id: true,
+            authorName: true,
+            authorEmail: true,
+            content: true,
+            status: true,
+            likes: true,
+            createdAt: true,
+            updatedAt: true,
+            parentCommentId: true,
+            user: {
+              select: {
+                id: true,
+                email: true,
+                profile: {
+                  select: {
+                    fullName: true,
+                    firstName: true,
+                    lastName: true,
+                    avatarData: true,
+                    avatarName: true,
+                    avatarType: true,
+                  }
+                }
+              }
+            }
+          },
+          orderBy: { createdAt: 'asc' }
         }
       },
       orderBy: {
@@ -69,8 +110,53 @@ export async function GET(request: NextRequest) {
       take: limit
     })
 
+    // Transform comments to match the expected interface
+    const transformedComments = comments.map(comment => ({
+      id: comment.id,
+      authorName: comment.authorName,
+      authorEmail: comment.authorEmail,
+      content: comment.content,
+      status: comment.status,
+      likes: comment.likes,
+      createdAt: comment.createdAt,
+      updatedAt: comment.updatedAt,
+      parentCommentId: comment.parentCommentId,
+      user: comment.user ? {
+        id: comment.user.id,
+        name: comment.user.profile?.fullName || 
+              `${comment.user.profile?.firstName || ''} ${comment.user.profile?.lastName || ''}`.trim() ||
+              'Unknown User',
+        avatar: comment.user.profile?.avatarData && comment.user.profile?.avatarType
+          ? `data:${comment.user.profile.avatarType};base64,${Buffer.from(comment.user.profile.avatarData).toString('base64')}`
+          : null
+      } : null,
+      replies: comment.replies.map(reply => ({
+        id: reply.id,
+        authorName: reply.authorName,
+        authorEmail: reply.authorEmail,
+        content: reply.content,
+        status: reply.status,
+        likes: reply.likes,
+        createdAt: reply.createdAt,
+        updatedAt: reply.updatedAt,
+        parentCommentId: reply.parentCommentId,
+        user: reply.user ? {
+          id: reply.user.id,
+          name: reply.user.profile?.fullName || 
+                `${reply.user.profile?.firstName || ''} ${reply.user.profile?.lastName || ''}`.trim() ||
+                'Unknown User',
+          avatar: reply.user.profile?.avatarData && reply.user.profile?.avatarType
+            ? `data:${reply.user.profile.avatarType};base64,${Buffer.from(reply.user.profile.avatarData).toString('base64')}`
+            : null
+        } : null,
+        replies: [],
+        replyCount: 0
+      })),
+      replyCount: comment.replies.length
+    }))
+
     return NextResponse.json({
-      comments,
+      comments: transformedComments,
       pagination: {
         page,
         limit,

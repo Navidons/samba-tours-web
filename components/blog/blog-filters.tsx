@@ -36,7 +36,7 @@ export default function BlogFilters() {
       {/* Search and Controls */}
       <div className="flex flex-col lg:flex-row gap-4 mb-6">
         <div className="flex-1 relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-earth-400" />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
           <Input
             placeholder="Search articles, guides, and stories..."
             value={searchTerm}
@@ -49,7 +49,7 @@ export default function BlogFilters() {
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value)}
-            className="px-4 py-2 border border-earth-200 rounded-lg bg-white text-earth-700 focus:outline-none focus:ring-2 focus:ring-forest-500"
+            className="px-4 py-2 border border-gray-200 rounded-lg bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-emerald-500"
           >
             {sortOptions.map((option) => (
               <option key={option.id} value={option.id}>
@@ -87,8 +87,8 @@ export default function BlogFilters() {
       {/* Category Filters */}
       <div className={`${showFilters ? "block" : "hidden lg:block"}`}>
         <div className="flex items-center mb-4">
-          <h3 className="font-semibold text-earth-900 mr-4">Categories:</h3>
-          <div className="flex items-center space-x-2 text-sm text-earth-600">
+          <h3 className="font-semibold text-gray-900 mr-4">Categories:</h3>
+          <div className="flex items-center space-x-2 text-sm text-gray-600">
             <TrendingUp className="h-4 w-4" />
             <span>Popular topics</span>
           </div>
@@ -103,8 +103,8 @@ export default function BlogFilters() {
               onClick={() => setActiveCategory(category.id)}
               className={`${
                 activeCategory === category.id
-                  ? "bg-forest-600 hover:bg-forest-700 text-white"
-                  : "hover:bg-forest-50 border-earth-200"
+                  ? "bg-emerald-600 hover:bg-emerald-700 text-white"
+                  : "hover:bg-emerald-50 border-gray-200"
               }`}
             >
               {category.label}

@@ -99,10 +99,10 @@ export default function BlogPostHeader({ post }: BlogPostHeaderProps) {
   }
 
   return (
-    <header className="relative bg-earth-800 text-white py-20 md:py-32">
+    <header className="relative bg-gray-800 text-white py-20 md:py-32">
       <div className="absolute inset-0">
         <Image src={post.thumbnail || "/placeholder.svg"} alt={post.title} fill className="object-cover" priority />
-        <div className="absolute inset-0 bg-gradient-to-t from-earth-900/90 via-earth-900/50 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-gray-900/90 via-gray-900/50 to-transparent" />
       </div>
 
       <div className="container-max relative z-10">
@@ -111,7 +111,7 @@ export default function BlogPostHeader({ post }: BlogPostHeaderProps) {
             <Link href={`/blog/category/${post.category.slug}`}>
               <Badge
                 variant="secondary"
-                className="mb-4 bg-orange-500/20 text-orange-300 border-orange-400/30 hover:bg-orange-500/30"
+                className="mb-4 bg-emerald-500/20 text-emerald-300 border-emerald-400/30 hover:bg-emerald-500/30"
               >
                 {post.category.name}
               </Badge>
@@ -119,7 +119,7 @@ export default function BlogPostHeader({ post }: BlogPostHeaderProps) {
           )}
           <h2 className="text-3xl md:text-5xl font-bold leading-tight mb-4 text-balance">{post.title}</h2>
 
-          <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-cream-200 mb-8">
+          <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-gray-200 mb-8">
             <div className="flex items-center space-x-2">
               <User className="h-4 w-4" />
               <span>{post.author?.name || "Unknown Author"}</span>
@@ -138,18 +138,18 @@ export default function BlogPostHeader({ post }: BlogPostHeaderProps) {
 
           <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-4">
             <div className="flex items-center space-x-4">
-              <div className="flex items-center space-x-1 text-cream-200">
+              <div className="flex items-center space-x-1 text-gray-200">
                 <Eye className="h-4 w-4" />
                 <span className="text-xs">{(post.viewCount ?? 0).toLocaleString()} views</span>
               </div>
-              <div className="flex items-center space-x-1 text-cream-200">
+              <div className="flex items-center space-x-1 text-gray-200">
                 <Heart className="h-4 w-4" />
                 <span className="text-xs">{(post.likeCount ?? 0).toLocaleString()} likes</span>
               </div>
             </div>
 
             <div className="flex items-center space-x-2">
-              <span className="text-sm font-medium text-cream-200">Share:</span>
+              <span className="text-sm font-medium text-gray-200">Share:</span>
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
