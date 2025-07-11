@@ -157,29 +157,29 @@ export default function VideoGallery() {
   // Show connection error state
   if (error?.type === 'CONNECTION_ERROR') {
     return (
-      <section className="py-24 bg-gradient-to-br from-orange-50 via-white to-red-50">
+      <section className="py-24 bg-gradient-to-br from-emerald-50 via-white to-green-50">
         <div className="container-max px-4">
           <div className="text-center">
             <div className="mb-8">
-              <h2 className="text-4xl md:text-5xl font-playfair font-bold text-earth-900 mb-6">
+              <h2 className="text-4xl md:text-5xl font-playfair font-bold text-gray-900 mb-6">
                 Video
-                <span className="block text-transparent bg-clip-text bg-gradient-to-r from-orange-600 to-red-600">
+                <span className="block text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 to-green-600">
                   Gallery
                 </span>
               </h2>
-              <div className="w-24 h-1 bg-gradient-to-r from-orange-500 to-red-500 mx-auto rounded-full"></div>
+              <div className="w-24 h-1 bg-gradient-to-r from-emerald-500 to-green-500 mx-auto rounded-full"></div>
             </div>
             
             <div className="max-w-md mx-auto">
-              <div className="bg-white rounded-2xl shadow-xl p-8 border border-orange-100">
+              <div className="bg-white rounded-2xl shadow-xl p-8 border border-emerald-100">
                 <div className="w-16 h-16 mx-auto mb-6 bg-red-100 rounded-full flex items-center justify-center">
                   <AlertCircle className="w-8 h-8 text-red-600" />
                 </div>
-                <h3 className="text-xl font-bold text-earth-900 mb-4">Connection Error</h3>
-                <p className="text-earth-600 mb-6">{error.message}</p>
+                <h3 className="text-xl font-bold text-gray-900 mb-4">Connection Error</h3>
+                <p className="text-gray-600 mb-6">{error.message}</p>
                 <Button 
                   onClick={handleRetry} 
-                  className="bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700 text-white px-6 py-3 rounded-xl"
+                  className="bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700 text-white px-6 py-3 rounded-xl"
                 >
                   <RefreshCw className="w-4 h-4 mr-2" />
                   Try Again
@@ -193,21 +193,21 @@ export default function VideoGallery() {
   }
 
   return (
-    <section className="py-24 bg-gradient-to-br from-orange-50 via-white to-red-50">
+    <section className="py-24 bg-gradient-to-br from-emerald-50 via-white to-green-50">
       <div className="container-max px-4">
         {/* Header Section */}
         <div className="text-center mb-16">
           <div className="mb-8">
-            <h2 className="text-4xl md:text-5xl font-playfair font-bold text-earth-900 mb-6">
+            <h2 className="text-4xl md:text-5xl font-playfair font-bold text-gray-900 mb-6">
               Video
-              <span className="block text-transparent bg-clip-text bg-gradient-to-r from-orange-600 to-red-600">
+              <span className="block text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 to-green-600">
                 Gallery
               </span>
             </h2>
-            <div className="w-24 h-1 bg-gradient-to-r from-orange-500 to-red-500 mx-auto rounded-full"></div>
+            <div className="w-24 h-1 bg-gradient-to-r from-emerald-500 to-green-500 mx-auto rounded-full"></div>
           </div>
           
-          <p className="text-xl text-earth-600 max-w-3xl mx-auto leading-relaxed">
+          <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
             Experience Uganda through motion. Our video collection captures the sounds, movements, and emotions of real
             adventures with our travelers.
           </p>
@@ -215,45 +215,45 @@ export default function VideoGallery() {
           {/* Stats */}
           <div className="flex justify-center items-center space-x-8 mt-8">
             <div className="text-center">
-              <div className="text-2xl font-bold text-earth-900">{pagination.total}</div>
-              <div className="text-sm text-earth-600">Videos</div>
+              <div className="text-2xl font-bold text-gray-900">{pagination.total}</div>
+              <div className="text-sm text-gray-600">Videos</div>
             </div>
-            <div className="w-px h-8 bg-orange-200"></div>
+            <div className="w-px h-8 bg-emerald-200"></div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-earth-900">
+              <div className="text-2xl font-bold text-gray-900">
                 {videos.reduce((sum, video) => sum + video.views, 0).toLocaleString()}
               </div>
-              <div className="text-sm text-earth-600">Total Views</div>
+              <div className="text-sm text-gray-600">Total Views</div>
             </div>
-            <div className="w-px h-8 bg-orange-200"></div>
+            <div className="w-px h-8 bg-emerald-200"></div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-earth-900">
+              <div className="text-2xl font-bold text-gray-900">
                 {videos.filter(v => v.featured).length}
               </div>
-              <div className="text-sm text-earth-600">Featured</div>
+              <div className="text-sm text-gray-600">Featured</div>
             </div>
           </div>
         </div>
 
         {/* Mode Description */}
         <div className="text-center mb-8 max-w-2xl mx-auto">
-          <div className="bg-white/50 backdrop-blur-sm rounded-2xl p-4 border border-orange-100">
-            <p className="text-sm text-earth-600 font-medium">
+          <div className="bg-white/50 backdrop-blur-sm rounded-2xl p-4 border border-emerald-100">
+            <p className="text-sm text-gray-600 font-medium">
               {viewMode === "thumbnail-only" && (
                 <>
-                  <Sparkles className="inline w-4 h-4 mr-2 text-orange-500" />
+                  <Sparkles className="inline w-4 h-4 mr-2 text-emerald-500" />
                   Click videos to watch in full-screen modal with cinematic experience
                 </>
               )}
               {viewMode === "hover-preview" && (
                 <>
-                  <MousePointer className="inline w-4 h-4 mr-2 text-orange-500" />
+                  <MousePointer className="inline w-4 h-4 mr-2 text-emerald-500" />
                   Hover over videos for instant preview, click for full playback
                 </>
               )}
               {viewMode === "inline" && (
                 <>
-                  <Monitor className="inline w-4 h-4 mr-2 text-orange-500" />
+                  <Monitor className="inline w-4 h-4 mr-2 text-emerald-500" />
                   Watch videos directly in the page with full controls
                 </>
               )}
@@ -264,7 +264,7 @@ export default function VideoGallery() {
         {/* Video Controls */}
         <div className="flex flex-col lg:flex-row justify-between items-center gap-6 mb-12">
           <div className="flex flex-wrap items-center gap-3">
-            <span className="text-sm font-semibold text-earth-700 mr-2">View Mode:</span>
+            <span className="text-sm font-semibold text-gray-700 mr-2">View Mode:</span>
             
             <Button
               variant={viewMode === "thumbnail-only" ? "default" : "outline"}
@@ -273,8 +273,8 @@ export default function VideoGallery() {
               className={cn(
                 "rounded-xl px-4 py-2 transition-all duration-300",
                 viewMode === "thumbnail-only"
-                  ? "bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white border-0 shadow-lg"
-                  : "border-orange-200 hover:bg-orange-50 text-earth-700"
+                  ? "bg-gradient-to-r from-emerald-500 to-green-500 hover:from-emerald-600 hover:to-green-600 text-white border-0 shadow-lg"
+                  : "border-emerald-200 hover:bg-emerald-50 text-gray-700"
               )}
             >
               <Grid className="h-4 w-4 mr-2" />
@@ -288,8 +288,8 @@ export default function VideoGallery() {
               className={cn(
                 "rounded-xl px-4 py-2 transition-all duration-300",
                 viewMode === "hover-preview"
-                  ? "bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white border-0 shadow-lg"
-                  : "border-orange-200 hover:bg-orange-50 text-earth-700"
+                  ? "bg-gradient-to-r from-emerald-500 to-green-500 hover:from-emerald-600 hover:to-green-600 text-white border-0 shadow-lg"
+                  : "border-emerald-200 hover:bg-emerald-50 text-gray-700"
               )}
             >
               <MousePointer className="h-4 w-4 mr-2" />
@@ -303,8 +303,8 @@ export default function VideoGallery() {
               className={cn(
                 "rounded-xl px-4 py-2 transition-all duration-300",
                 viewMode === "inline"
-                  ? "bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white border-0 shadow-lg"
-                  : "border-orange-200 hover:bg-orange-50 text-earth-700"
+                  ? "bg-gradient-to-r from-emerald-500 to-green-500 hover:from-emerald-600 hover:to-green-600 text-white border-0 shadow-lg"
+                  : "border-emerald-200 hover:bg-emerald-50 text-gray-700"
               )}
             >
               <Monitor className="h-4 w-4 mr-2" />
@@ -313,7 +313,7 @@ export default function VideoGallery() {
           </div>
 
           <div className="flex items-center gap-3">
-            <span className="text-sm font-semibold text-earth-700 mr-2">Size:</span>
+            <span className="text-sm font-semibold text-gray-700 mr-2">Size:</span>
             
             <Button
               variant={gridSize === "small" ? "default" : "outline"}
@@ -323,7 +323,7 @@ export default function VideoGallery() {
                 "rounded-xl px-3 py-1.5 transition-all duration-300",
                 gridSize === "small"
                   ? "bg-gradient-to-r from-blue-500 to-blue-600 text-white border-0 shadow-lg"
-                  : "border-orange-200 hover:bg-orange-50 text-earth-700"
+                  : "border-emerald-200 hover:bg-emerald-50 text-gray-700"
               )}
             >
               Small
@@ -337,7 +337,7 @@ export default function VideoGallery() {
                 "rounded-xl px-3 py-1.5 transition-all duration-300",
                 gridSize === "medium"
                   ? "bg-gradient-to-r from-blue-500 to-blue-600 text-white border-0 shadow-lg"
-                  : "border-orange-200 hover:bg-orange-50 text-earth-700"
+                  : "border-emerald-200 hover:bg-emerald-50 text-gray-700"
               )}
             >
               Medium
@@ -351,7 +351,7 @@ export default function VideoGallery() {
                 "rounded-xl px-3 py-1.5 transition-all duration-300",
                 gridSize === "large"
                   ? "bg-gradient-to-r from-blue-500 to-blue-600 text-white border-0 shadow-lg"
-                  : "border-orange-200 hover:bg-orange-50 text-earth-700"
+                  : "border-emerald-200 hover:bg-emerald-50 text-gray-700"
               )}
             >
               Large
@@ -361,15 +361,15 @@ export default function VideoGallery() {
 
         {/* Show other types of errors */}
         {error && error.type !== 'CONNECTION_ERROR' && (
-          <Alert className="mb-8 border-orange-200 bg-orange-50 max-w-md mx-auto rounded-xl">
-            <AlertCircle className="h-4 w-4 text-orange-600" />
-            <AlertDescription className="text-orange-800">
+          <Alert className="mb-8 border-emerald-200 bg-emerald-50 max-w-md mx-auto rounded-xl">
+            <AlertCircle className="h-4 w-4 text-emerald-600" />
+            <AlertDescription className="text-emerald-800">
               {error.message}
               <Button 
                 variant="ghost" 
                 size="sm" 
                 onClick={handleRetry}
-                className="ml-4 text-orange-600 hover:text-orange-700 hover:bg-orange-100 rounded-lg"
+                className="ml-4 text-emerald-600 hover:text-emerald-700 hover:bg-emerald-100 rounded-lg"
               >
                 <RefreshCw className="w-3 h-3 mr-1" />
                 Retry
@@ -382,25 +382,25 @@ export default function VideoGallery() {
         {loading ? (
           <div className="flex justify-center py-16">
             <div className="text-center">
-              <div className="bg-white rounded-2xl shadow-lg p-8 border border-orange-100">
+              <div className="bg-white rounded-2xl shadow-lg p-8 border border-emerald-100">
                 <LoadingSpinner />
-                <p className="mt-4 text-earth-600 font-medium">Loading videos...</p>
+                <p className="mt-4 text-gray-600 font-medium">Loading videos...</p>
               </div>
             </div>
           </div>
         ) : videos.length === 0 ? (
           <div className="text-center py-16">
-            <div className="bg-white rounded-2xl shadow-lg p-12 border border-orange-100 max-w-md mx-auto">
+            <div className="bg-white rounded-2xl shadow-lg p-12 border border-emerald-100 max-w-md mx-auto">
               <div className="text-gray-400 mb-6">
                 <Play className="w-16 h-16 mx-auto" />
               </div>
-              <h3 className="text-xl font-bold text-earth-900 mb-3">No videos available</h3>
-              <p className="text-earth-600 mb-6">
+              <h3 className="text-xl font-bold text-gray-900 mb-3">No videos available</h3>
+              <p className="text-gray-600 mb-6">
                 No featured videos are currently available in the gallery.
               </p>
               <Button 
                 variant="outline"
-                className="border-orange-200 hover:bg-orange-50 text-earth-700 rounded-xl"
+                className="border-emerald-200 hover:bg-emerald-50 text-gray-700 rounded-xl"
               >
                 <RefreshCw className="w-4 h-4 mr-2" />
                 Refresh
@@ -421,9 +421,9 @@ export default function VideoGallery() {
                 
                 {/* Video info below player (for inline mode) */}
                 {viewMode === "inline" && (
-                  <div className="bg-white rounded-2xl p-6 border border-orange-100 shadow-lg hover:shadow-xl transition-shadow duration-300">
+                  <div className="bg-white rounded-2xl p-6 border border-emerald-100 shadow-lg hover:shadow-xl transition-shadow duration-300">
                     <div className="flex items-start justify-between mb-4">
-                      <h3 className="font-bold text-lg text-earth-900 leading-tight flex-1">
+                      <h3 className="font-bold text-lg text-gray-900 leading-tight flex-1">
                         {video.title}
                       </h3>
                       {video.featured && (
@@ -434,23 +434,23 @@ export default function VideoGallery() {
                       )}
                     </div>
                     
-                    <p className="text-earth-700 mb-4 text-sm line-clamp-2 leading-relaxed">
+                    <p className="text-gray-700 mb-4 text-sm line-clamp-2 leading-relaxed">
                       {video.description}
                     </p>
                     
-                    <div className="flex items-center justify-between text-xs text-earth-600 mb-4">
+                    <div className="flex items-center justify-between text-xs text-gray-600 mb-4">
                       <div className="flex items-center space-x-4">
                         <div className="flex items-center space-x-1">
-                          <Eye className="h-3 w-3 text-orange-500" />
+                          <Eye className="h-3 w-3 text-emerald-500" />
                           <span>{video.views.toLocaleString()} views</span>
                         </div>
                         <div className="flex items-center space-x-1">
-                          <Calendar className="h-3 w-3 text-orange-500" />
+                          <Calendar className="h-3 w-3 text-emerald-500" />
                           <span>{formatDate(video.createdAt)}</span>
                         </div>
                         {video.duration && (
                           <div className="flex items-center space-x-1">
-                            <Clock className="h-3 w-3 text-orange-500" />
+                            <Clock className="h-3 w-3 text-emerald-500" />
                             <span>{formatDuration(video.duration)}</span>
                           </div>
                         )}
@@ -462,7 +462,7 @@ export default function VideoGallery() {
                         {video.category && (
                           <Badge 
                             className="text-white border-0 text-xs"
-                            style={{ backgroundColor: video.category.color || '#f97316' }}
+                            style={{ backgroundColor: video.category.color || '#10b981' }}
                           >
                             {video.category.name}
                           </Badge>
@@ -470,7 +470,7 @@ export default function VideoGallery() {
                       </div>
                       
                       {video.location && (
-                        <div className="flex items-center space-x-1 text-xs text-earth-500">
+                        <div className="flex items-center space-x-1 text-xs text-gray-500">
                           <MapPin className="h-3 w-3" />
                           <span>{video.location.name}</span>
                         </div>
@@ -485,16 +485,16 @@ export default function VideoGallery() {
 
         {/* Call to Action */}
         <div className="text-center mt-16">
-          <div className="bg-gradient-to-r from-orange-50 to-red-50 rounded-3xl p-8 border border-orange-100 max-w-2xl mx-auto">
-            <h3 className="text-2xl font-bold text-earth-900 mb-4">
+          <div className="bg-gradient-to-r from-emerald-50 to-green-50 rounded-3xl p-8 border border-emerald-100 max-w-2xl mx-auto">
+            <h3 className="text-2xl font-bold text-gray-900 mb-4">
               Explore More Videos
             </h3>
-            <p className="text-earth-600 mb-6">
+            <p className="text-gray-600 mb-6">
               Discover our complete collection of safari videos and travel experiences.
             </p>
             <Button
               size="lg"
-              className="bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700 text-white px-8 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
+              className="bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700 text-white px-8 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
             >
               View All Videos
               <ArrowRight className="w-4 h-4 ml-2" />

@@ -31,17 +31,17 @@ export default function GalleryHero({ hideHeading }: GalleryHeroProps) {
 
         <div className="mt-12 grid grid-cols-1 sm:grid-cols-3 gap-8 max-w-4xl mx-auto">
           <div className="bg-white/10 backdrop-blur-md p-6 rounded-lg border border-white/20">
-            <Camera className="h-10 w-10 mx-auto text-orange-400 mb-3" />
+            <Camera className="h-10 w-10 mx-auto text-emerald-400 mb-3" />
             <h3 className="text-xl font-semibold">1,200+ Photos</h3>
             <p className="text-gray-400 mt-1">A vibrant collection of wildlife and landscapes.</p>
           </div>
           <div className="bg-white/10 backdrop-blur-md p-6 rounded-lg border border-white/20">
-            <Video className="h-10 w-10 mx-auto text-orange-400 mb-3" />
+            <Video className="h-10 w-10 mx-auto text-emerald-400 mb-3" />
             <h3 className="text-xl font-semibold">50+ Videos</h3>
             <p className="text-gray-400 mt-1">Immersive footage from the heart of Africa.</p>
           </div>
           <div className="bg-white/10 backdrop-blur-md p-6 rounded-lg border border-white/20">
-            <Users className="h-10 w-10 mx-auto text-orange-400 mb-3" />
+            <Users className="h-10 w-10 mx-auto text-emerald-400 mb-3" />
             <h3 className="text-xl font-semibold">Traveler Submissions</h3>
             <p className="text-gray-400 mt-1">See Uganda through the eyes of our guests.</p>
           </div>

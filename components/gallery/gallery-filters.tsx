@@ -103,12 +103,12 @@ export default function GalleryFilters({
       {/* Search and View Toggle */}
       <div className="flex flex-col lg:flex-row gap-4 mb-6">
         <form onSubmit={handleSearchSubmit} className="flex-1 relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-orange-400" />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-emerald-400" />
           <Input
             placeholder="Search photos by location, activity, or description..."
             value={localSearchTerm}
             onChange={(e) => setLocalSearchTerm(e.target.value)}
-            className="pl-10 h-12 border-orange-200 focus:border-orange-400 focus:ring-orange-400"
+            className="pl-10 h-12 border-emerald-200 focus:border-emerald-400 focus:ring-emerald-400"
           />
           {localSearchTerm && (
             <Button
@@ -116,7 +116,7 @@ export default function GalleryFilters({
               variant="ghost"
               size="sm"
               onClick={() => setLocalSearchTerm("")}
-              className="absolute right-2 top-1/2 transform -translate-y-1/2 h-8 w-8 p-0 hover:bg-orange-100"
+              className="absolute right-2 top-1/2 transform -translate-y-1/2 h-8 w-8 p-0 hover:bg-emerald-100"
             >
               <X className="h-4 w-4" />
             </Button>
@@ -127,23 +127,23 @@ export default function GalleryFilters({
           <Button
             variant="outline"
             onClick={() => setShowFilters(!showFilters)}
-            className="lg:hidden border-orange-200 hover:bg-orange-50"
+            className="lg:hidden border-emerald-200 hover:bg-emerald-50"
           >
             <Filter className="h-4 w-4 mr-2" />
             Filters
             {hasActiveFilters && (
-              <Badge className="ml-2 h-5 w-5 rounded-full bg-orange-500 text-white text-xs p-0 flex items-center justify-center">
+              <Badge className="ml-2 h-5 w-5 rounded-full bg-emerald-500 text-white text-xs p-0 flex items-center justify-center">
                 !
               </Badge>
             )}
           </Button>
 
-          <div className="flex items-center bg-white rounded-lg border border-orange-200 p-1">
+          <div className="flex items-center bg-white rounded-lg border border-emerald-200 p-1">
             <Button
               variant={viewMode === "masonry" ? "default" : "ghost"}
               size="sm"
               onClick={() => onViewModeChange?.("masonry")}
-              className={`h-8 ${viewMode === "masonry" ? "bg-gradient-to-r from-orange-500 to-red-500 text-white" : "hover:bg-orange-50"}`}
+              className={`h-8 ${viewMode === "masonry" ? "bg-gradient-to-r from-emerald-500 to-green-500 text-white" : "hover:bg-emerald-50"}`}
               title="Masonry View"
             >
               <Grid className="h-4 w-4" />
@@ -152,7 +152,7 @@ export default function GalleryFilters({
               variant={viewMode === "grid" ? "default" : "ghost"}
               size="sm"
               onClick={() => onViewModeChange?.("grid")}
-              className={`h-8 ${viewMode === "grid" ? "bg-gradient-to-r from-orange-500 to-red-500 text-white" : "hover:bg-orange-50"}`}
+              className={`h-8 ${viewMode === "grid" ? "bg-gradient-to-r from-emerald-500 to-green-500 text-white" : "hover:bg-emerald-50"}`}
               title="Grid View"
             >
               <List className="h-4 w-4" />
@@ -163,18 +163,18 @@ export default function GalleryFilters({
 
       {/* Active Filters Display */}
       {hasActiveFilters && (
-        <div className="mb-4 p-3 bg-orange-50 rounded-lg border border-orange-200">
+        <div className="mb-4 p-3 bg-emerald-50 rounded-lg border border-emerald-200">
           <div className="flex flex-wrap items-center gap-2">
-            <span className="text-sm font-medium text-orange-900">Active filters:</span>
+            <span className="text-sm font-medium text-emerald-900">Active filters:</span>
             
             {selectedCategory && (
-              <Badge variant="secondary" className="bg-orange-100 text-orange-800">
+              <Badge variant="secondary" className="bg-emerald-100 text-emerald-800">
                 {categories.find(c => c.slug === selectedCategory)?.name}
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={() => handleCategoryChange("all")}
-                  className="ml-1 h-4 w-4 p-0 hover:bg-orange-200"
+                  className="ml-1 h-4 w-4 p-0 hover:bg-emerald-200"
                 >
                   <X className="h-3 w-3" />
                 </Button>
@@ -182,13 +182,13 @@ export default function GalleryFilters({
             )}
             
             {selectedLocation && (
-              <Badge variant="secondary" className="bg-orange-100 text-orange-800">
+              <Badge variant="secondary" className="bg-emerald-100 text-emerald-800">
                 {locations.find(l => l.slug === selectedLocation)?.name}
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={() => handleLocationChange("all")}
-                  className="ml-1 h-4 w-4 p-0 hover:bg-orange-200"
+                  className="ml-1 h-4 w-4 p-0 hover:bg-emerald-200"
                 >
                   <X className="h-3 w-3" />
                 </Button>
@@ -196,13 +196,13 @@ export default function GalleryFilters({
             )}
             
             {selectedFeatured === "true" && (
-              <Badge variant="secondary" className="bg-orange-100 text-orange-800">
+              <Badge variant="secondary" className="bg-emerald-100 text-emerald-800">
                 Featured only
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={() => handleFeaturedChange(false)}
-                  className="ml-1 h-4 w-4 p-0 hover:bg-orange-200"
+                  className="ml-1 h-4 w-4 p-0 hover:bg-emerald-200"
                 >
                   <X className="h-3 w-3" />
                 </Button>
@@ -210,13 +210,13 @@ export default function GalleryFilters({
             )}
             
             {searchQuery && (
-              <Badge variant="secondary" className="bg-orange-100 text-orange-800">
+              <Badge variant="secondary" className="bg-emerald-100 text-emerald-800">
                 &quot;{searchQuery}&quot;
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={() => updateFilters({ search: undefined })}
-                  className="ml-1 h-4 w-4 p-0 hover:bg-orange-200"
+                  className="ml-1 h-4 w-4 p-0 hover:bg-emerald-200"
                 >
                   <X className="h-3 w-3" />
                 </Button>
@@ -227,7 +227,7 @@ export default function GalleryFilters({
               variant="ghost"
               size="sm"
               onClick={clearAllFilters}
-              className="text-orange-600 hover:text-orange-700 hover:bg-orange-100"
+              className="text-emerald-600 hover:text-emerald-700 hover:bg-emerald-100"
             >
               Clear all
             </Button>
@@ -245,7 +245,7 @@ export default function GalleryFilters({
               checked={selectedFeatured === "true"}
               onCheckedChange={handleFeaturedChange}
             />
-            <Label htmlFor="featured" className="font-semibold text-earth-900">
+            <Label htmlFor="featured" className="font-semibold text-gray-900">
               Featured images only
             </Label>
           </div>
@@ -253,7 +253,7 @@ export default function GalleryFilters({
 
         {/* Category Filters */}
         <div>
-          <h3 className="font-semibold text-earth-900 mb-3">Categories</h3>
+          <h3 className="font-semibold text-gray-900 mb-3">Categories</h3>
           <div className="flex flex-wrap gap-2">
             {allCategories.map((category) => {
               const isActive = selectedCategory === category.slug || (!selectedCategory && category.slug === "all")
@@ -267,8 +267,8 @@ export default function GalleryFilters({
                   onClick={() => handleCategoryChange(category.slug)}
                   className={`${
                     isActive
-                      ? "bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white border-0"
-                      : "border-orange-200 hover:bg-orange-50 hover:border-orange-300"
+                      ? "bg-gradient-to-r from-emerald-500 to-green-500 hover:from-emerald-600 hover:to-green-600 text-white border-0"
+                      : "border-emerald-200 hover:bg-emerald-50 hover:border-emerald-300"
                   }`}
                 >
                   {category.name}
@@ -285,7 +285,7 @@ export default function GalleryFilters({
 
         {/* Location Filters */}
         <div>
-          <h3 className="font-semibold text-earth-900 mb-3">Locations</h3>
+          <h3 className="font-semibold text-gray-900 mb-3">Locations</h3>
           <div className="flex flex-wrap gap-2">
             {allLocations.map((location) => {
               const isActive = selectedLocation === location.slug || (!selectedLocation && location.slug === "all")
@@ -299,8 +299,8 @@ export default function GalleryFilters({
                   onClick={() => handleLocationChange(location.slug)}
                   className={`${
                     isActive
-                      ? "bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white border-0"
-                      : "border-orange-200 hover:bg-orange-50 hover:border-orange-300"
+                      ? "bg-gradient-to-r from-emerald-500 to-green-500 hover:from-emerald-600 hover:to-green-600 text-white border-0"
+                      : "border-emerald-200 hover:bg-emerald-50 hover:border-emerald-300"
                   }`}
                 >
                   {location.name}

@@ -148,10 +148,10 @@ export default function GalleryClient({ searchParams, hideMainHeading }: Gallery
   // Show loading state
   if (loading && images.length === 0) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-red-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-green-50 flex items-center justify-center">
         <div className="text-center">
           <LoadingSpinner />
-          <p className="mt-4 text-earth-600">Loading gallery images...</p>
+          <p className="mt-4 text-gray-600">Loading gallery images...</p>
         </div>
       </div>
     )
@@ -160,18 +160,18 @@ export default function GalleryClient({ searchParams, hideMainHeading }: Gallery
   // Show connection error state
   if (error?.type === 'CONNECTION_ERROR') {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-red-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-green-50 flex items-center justify-center">
         <div className="text-center max-w-md mx-auto p-8">
           <div className="w-16 h-16 mx-auto mb-4 bg-red-100 rounded-full flex items-center justify-center">
             <Database className="w-8 h-8 text-red-600" />
           </div>
-          <h2 className="text-2xl font-bold text-earth-900 mb-4">Database Connection Error</h2>
-          <p className="text-earth-600 mb-6">{error.message}</p>
-          <Button onClick={handleRetry} className="bg-orange-600 hover:bg-orange-700">
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">Database Connection Error</h2>
+          <p className="text-gray-600 mb-6">{error.message}</p>
+          <Button onClick={handleRetry} className="bg-emerald-600 hover:bg-emerald-700">
             <RefreshCw className="w-4 h-4 mr-2" />
             Try Again
           </Button>
-          <p className="text-sm text-earth-500 mt-4">
+          <p className="text-sm text-gray-500 mt-4">
             If this problem persists, please contact support.
           </p>
         </div>
@@ -180,19 +180,19 @@ export default function GalleryClient({ searchParams, hideMainHeading }: Gallery
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-red-50">
+    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-green-50">
       <GalleryHero hideHeading={hideMainHeading} />
 
       <section className="py-16">
         <div className="container-max px-4">
           <div className="text-center mb-12">
-            <h2 className="text-4xl md:text-5xl font-playfair font-bold text-earth-900 mb-6">
+            <h2 className="text-4xl md:text-5xl font-playfair font-bold text-gray-900 mb-6">
               Captured
-              <span className="block text-transparent bg-clip-text bg-gradient-to-r from-orange-600 to-red-600">
+              <span className="block text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 to-green-600">
                 Moments
               </span>
             </h2>
-            <p className="text-xl text-earth-600 max-w-3xl mx-auto leading-relaxed">
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
               Experience the beauty of Uganda through our lens. Every photo tells a story of adventure, wildlife
               encounters, and unforgettable moments from our safari expeditions.
             </p>
@@ -210,15 +210,15 @@ export default function GalleryClient({ searchParams, hideMainHeading }: Gallery
 
           {/* Show other types of errors */}
           {error && error.type !== 'CONNECTION_ERROR' && (
-            <Alert className="mb-8 border-orange-200 bg-orange-50">
-              <AlertCircle className="h-4 w-4 text-orange-600" />
-              <AlertDescription className="text-orange-800">
+            <Alert className="mb-8 border-emerald-200 bg-emerald-50">
+              <AlertCircle className="h-4 w-4 text-emerald-600" />
+              <AlertDescription className="text-emerald-800">
                 {error.message}
                 <Button 
                   variant="ghost" 
                   size="sm" 
                   onClick={handleRetry}
-                  className="ml-4 text-orange-600 hover:text-orange-700 hover:bg-orange-100"
+                  className="ml-4 text-emerald-600 hover:text-emerald-700 hover:bg-emerald-100"
                 >
                   <RefreshCw className="w-3 h-3 mr-1" />
                   Retry
@@ -248,7 +248,7 @@ export default function GalleryClient({ searchParams, hideMainHeading }: Gallery
                 <div className="flex justify-center py-12">
                   <div className="text-center">
                     <LoadingSpinner />
-                    <p className="mt-2 text-earth-600">Loading images...</p>
+                    <p className="mt-2 text-gray-600">Loading images...</p>
                   </div>
                 </div>
               ) : images.length === 0 ? (
@@ -269,7 +269,7 @@ export default function GalleryClient({ searchParams, hideMainHeading }: Gallery
                     <Button 
                       variant="outline"
                       onClick={() => router.replace('/gallery', { scroll: false })}
-                      className="border-orange-200 hover:bg-orange-50"
+                      className="border-emerald-200 hover:bg-emerald-50"
                     >
                       View All Images
                     </Button>
@@ -288,19 +288,19 @@ export default function GalleryClient({ searchParams, hideMainHeading }: Gallery
                       <button
                         onClick={() => navigateToPage(pagination.page - 1)}
                         disabled={pagination.page === 1}
-                        className="px-4 py-2 border border-orange-200 rounded-md text-earth-700 hover:bg-orange-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                        className="px-4 py-2 border border-emerald-200 rounded-md text-gray-700 hover:bg-emerald-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                       >
                         Previous
                       </button>
                       
-                      <span className="text-earth-600">
+                      <span className="text-gray-600">
                         Page {pagination.page} of {pagination.totalPages}
                       </span>
                       
                       <button
                         onClick={() => navigateToPage(pagination.page + 1)}
                         disabled={pagination.page === pagination.totalPages}
-                        className="px-4 py-2 border border-orange-200 rounded-md text-earth-700 hover:bg-orange-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                        className="px-4 py-2 border border-emerald-200 rounded-md text-gray-700 hover:bg-emerald-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                       >
                         Next
                       </button>

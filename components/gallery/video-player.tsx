@@ -350,7 +350,7 @@ export default function VideoPlayer({
       <div 
         className={cn(
           "relative group cursor-pointer overflow-hidden rounded-xl shadow-lg hover:shadow-2xl transition-all duration-500",
-          "bg-gradient-to-br from-orange-50 to-red-50 border border-orange-100",
+          "bg-gradient-to-br from-emerald-50 to-green-50 border border-emerald-100",
           getSizeClasses(),
           className
         )}
@@ -381,7 +381,7 @@ export default function VideoPlayer({
             {video.category && (
               <Badge 
                 className="text-white border-0 shadow-lg backdrop-blur-sm"
-                style={{ backgroundColor: video.category.color || '#f97316' }}
+                style={{ backgroundColor: video.category.color || '#10b981' }}
               >
                 {video.category.name}
               </Badge>
@@ -415,17 +415,17 @@ export default function VideoPlayer({
             <div className="flex items-center justify-between text-white/80 text-sm">
               <div className="flex items-center space-x-4">
                 <div className="flex items-center space-x-1">
-                  <Eye className="h-4 w-4 text-orange-400" />
+                  <Eye className="h-4 w-4 text-emerald-400" />
                   <span>{video.views.toLocaleString()} views</span>
                 </div>
                 <div className="flex items-center space-x-1">
-                  <Calendar className="h-4 w-4 text-orange-400" />
+                  <Calendar className="h-4 w-4 text-emerald-400" />
                   <span>{formatDate(video.createdAt)}</span>
                 </div>
               </div>
               {video.location && (
                 <div className="flex items-center space-x-1">
-                  <MapPin className="h-4 w-4 text-orange-400" />
+                  <MapPin className="h-4 w-4 text-emerald-400" />
                   <span>{video.location.name}</span>
                 </div>
               )}
@@ -531,7 +531,7 @@ export default function VideoPlayer({
                     onClick={handleSeek}
                   >
                     <div 
-                      className="h-full bg-gradient-to-r from-orange-500 to-red-500 rounded-full relative"
+                      className="h-full bg-gradient-to-r from-emerald-500 to-green-500 rounded-full relative"
                       style={{ width: `${duration > 0 ? (currentTime / duration) * 100 : 0}%` }}
                     >
                       <div className="absolute right-0 top-1/2 -translate-y-1/2 w-2 h-2 md:w-3 md:h-3 bg-white rounded-full opacity-0 group-hover/progress:opacity-100 transition-opacity" />
@@ -595,28 +595,28 @@ export default function VideoPlayer({
             </div>
             
             {/* Video info */}
-            <div className="bg-gradient-to-br from-orange-50 to-red-50 flex-1 overflow-y-auto">
+            <div className="bg-gradient-to-br from-emerald-50 to-green-50 flex-1 overflow-y-auto">
               <div className="p-4 md:p-6 max-w-4xl mx-auto">
                 <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4 mb-4 md:mb-6">
                   <div className="flex-1">
-                    <h2 className="text-xl md:text-2xl lg:text-3xl font-bold text-earth-900 mb-2 md:mb-3">{video.title}</h2>
-                    <p className="text-earth-700 text-sm md:text-base lg:text-lg leading-relaxed mb-3 md:mb-4">{video.description}</p>
+                    <h2 className="text-xl md:text-2xl lg:text-3xl font-bold text-gray-900 mb-2 md:mb-3">{video.title}</h2>
+                    <p className="text-gray-700 text-sm md:text-base lg:text-lg leading-relaxed mb-3 md:mb-4">{video.description}</p>
                     
-                    <div className="flex flex-wrap items-center gap-3 md:gap-6 text-xs md:text-sm text-earth-600">
-                                          <div className="flex items-center space-x-1 md:space-x-2">
-                      <Eye className="h-3 w-3 md:h-4 md:w-4 text-orange-500" />
-                      <span>{video.views.toLocaleString()} views</span>
-                    </div>
-                    <div className="flex items-center space-x-1 md:space-x-2">
-                      <Calendar className="h-3 w-3 md:h-4 md:w-4 text-orange-500" />
-                      <span>{formatDate(video.createdAt)}</span>
-                    </div>
-                    {video.duration && (
+                    <div className="flex flex-wrap items-center gap-3 md:gap-6 text-xs md:text-sm text-gray-600">
                       <div className="flex items-center space-x-1 md:space-x-2">
-                        <Clock className="h-3 w-3 md:h-4 md:w-4 text-orange-500" />
-                        <span>{formatDuration(video.duration)}</span>
+                        <Eye className="h-3 w-3 md:h-4 md:w-4 text-emerald-500" />
+                        <span>{video.views.toLocaleString()} views</span>
                       </div>
-                    )}
+                      <div className="flex items-center space-x-1 md:space-x-2">
+                        <Calendar className="h-3 w-3 md:h-4 md:w-4 text-emerald-500" />
+                        <span>{formatDate(video.createdAt)}</span>
+                      </div>
+                      {video.duration && (
+                        <div className="flex items-center space-x-1 md:space-x-2">
+                          <Clock className="h-3 w-3 md:h-4 md:w-4 text-emerald-500" />
+                          <span>{formatDuration(video.duration)}</span>
+                        </div>
+                      )}
                     </div>
                   </div>
                   
@@ -624,7 +624,7 @@ export default function VideoPlayer({
                     {video.category && (
                       <Badge 
                         className="text-white border-0 text-xs"
-                        style={{ backgroundColor: video.category.color || '#f97316' }}
+                        style={{ backgroundColor: video.category.color || '#10b981' }}
                       >
                         {video.category.name}
                       </Badge>
@@ -639,11 +639,11 @@ export default function VideoPlayer({
                 </div>
                 
                 {video.location && (
-                  <div className="flex items-center space-x-1 md:space-x-2 text-earth-600 text-xs md:text-sm">
-                    <MapPin className="h-3 w-3 md:h-4 md:w-4 text-orange-500" />
+                  <div className="flex items-center space-x-1 md:space-x-2 text-gray-600 text-xs md:text-sm">
+                    <MapPin className="h-3 w-3 md:h-4 md:w-4 text-emerald-500" />
                     <span className="font-medium">{video.location.name}</span>
                     {video.location.country && (
-                      <span className="text-earth-500">• {video.location.country}</span>
+                      <span className="text-gray-500">• {video.location.country}</span>
                     )}
                   </div>
                 )}
@@ -692,7 +692,7 @@ export default function VideoPlayer({
       <div 
         className={cn(
           "relative group cursor-pointer overflow-hidden rounded-xl shadow-lg hover:shadow-2xl transition-all duration-500",
-          "bg-gradient-to-br from-orange-50 to-red-50 border border-orange-100",
+          "bg-gradient-to-br from-emerald-50 to-green-50 border border-emerald-100",
           getSizeClasses(),
           className
         )}
@@ -740,7 +740,7 @@ export default function VideoPlayer({
             {video.category && (
               <Badge 
                 className="text-white border-0 shadow-lg backdrop-blur-sm"
-                style={{ backgroundColor: video.category.color || '#f97316' }}
+                style={{ backgroundColor: video.category.color || '#10b981' }}
               >
                 {video.category.name}
               </Badge>
@@ -774,17 +774,17 @@ export default function VideoPlayer({
             <div className="flex items-center justify-between text-white/80 text-sm">
               <div className="flex items-center space-x-4">
                 <div className="flex items-center space-x-1">
-                  <Eye className="h-4 w-4 text-orange-400" />
+                  <Eye className="h-4 w-4 text-emerald-400" />
                   <span>{video.views.toLocaleString()} views</span>
                 </div>
                 <div className="flex items-center space-x-1">
-                  <Calendar className="h-4 w-4 text-orange-400" />
+                  <Calendar className="h-4 w-4 text-emerald-400" />
                   <span>{formatDate(video.createdAt)}</span>
                 </div>
               </div>
               {video.location && (
                 <div className="flex items-center space-x-1">
-                  <MapPin className="h-4 w-4 text-orange-400" />
+                  <MapPin className="h-4 w-4 text-emerald-400" />
                   <span>{video.location.name}</span>
                 </div>
               )}
@@ -815,23 +815,23 @@ export default function VideoPlayer({
               </Button>
             </div>
             
-            <div className="bg-gradient-to-br from-orange-50 to-red-50 flex-1 overflow-y-auto">
+            <div className="bg-gradient-to-br from-emerald-50 to-green-50 flex-1 overflow-y-auto">
               <div className="p-4 md:p-6 max-w-4xl mx-auto">
-                <h2 className="text-xl md:text-2xl lg:text-3xl font-bold text-earth-900 mb-2 md:mb-3">{video.title}</h2>
-                <p className="text-sm md:text-base lg:text-lg text-earth-700 leading-relaxed mb-3 md:mb-4">{video.description}</p>
+                <h2 className="text-xl md:text-2xl lg:text-3xl font-bold text-gray-900 mb-2 md:mb-3">{video.title}</h2>
+                <p className="text-sm md:text-base lg:text-lg text-gray-700 leading-relaxed mb-3 md:mb-4">{video.description}</p>
                 
-                <div className="flex flex-wrap items-center gap-3 md:gap-6 text-xs md:text-sm text-earth-600">
+                <div className="flex flex-wrap items-center gap-3 md:gap-6 text-xs md:text-sm text-gray-600">
                   <div className="flex items-center space-x-1 md:space-x-2">
-                    <Eye className="h-3 w-3 md:h-4 md:w-4 text-orange-500" />
+                    <Eye className="h-3 w-3 md:h-4 md:w-4 text-emerald-500" />
                     <span>{video.views.toLocaleString()} views</span>
                   </div>
                   <div className="flex items-center space-x-1 md:space-x-2">
-                    <Calendar className="h-3 w-3 md:h-4 md:w-4 text-orange-500" />
+                    <Calendar className="h-3 w-3 md:h-4 md:w-4 text-emerald-500" />
                     <span>{formatDate(video.createdAt)}</span>
                   </div>
                   {video.location && (
                     <div className="flex items-center space-x-1 md:space-x-2">
-                      <MapPin className="h-3 w-3 md:h-4 md:w-4 text-orange-500" />
+                      <MapPin className="h-3 w-3 md:h-4 md:w-4 text-emerald-500" />
                       <span>{video.location.name}</span>
                     </div>
                   )}
