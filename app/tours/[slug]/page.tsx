@@ -20,6 +20,31 @@ interface TourPageProps {
   }
 }
 
+async function getRelatedTours(currentTour: any) {
+  try {
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
+    const categoryId = currentTour.category?.id
+    
+    if (!categoryId) {
+      return []
+    }
+
+    const response = await fetch(`${baseUrl}/api/tours?category=${categoryId}&limit=3&exclude=${currentTour.id}`, {
+      next: { revalidate: 3600 } // Cache for 1 hour
+    })
+    
+    if (!response.ok) {
+      return []
+    }
+    
+    const data = await response.json()
+    return data.success ? data.tours : []
+  } catch (error) {
+    console.error('Error fetching related tours:', error)
+    return []
+  }
+}
+
 export default async function TourPage({ params }: TourPageProps) {
   const tour = await getTour(params.slug)
 
@@ -28,6 +53,7 @@ export default async function TourPage({ params }: TourPageProps) {
   }
 
   const reviewsData = await getTourReviews(params.slug)
+  const relatedTours = await getRelatedTours(tour)
 
   // Generate structured data
   const tourSchema = generateTourSchema(tour)
@@ -65,34 +91,6 @@ export default async function TourPage({ params }: TourPageProps) {
             {/* Main Content */}
             <div className="lg:col-span-2 space-y-12">
               <TourDetails tour={tour} />
-              {tour.bestTime && Array.isArray(tour.bestTime) && tour.bestTime.length > 0 && (
-                <section className="mb-8">
-                  <h2 className="text-2xl font-bold text-gray-900 mb-4">Best Time to Visit</h2>
-                  <ul className="list-disc pl-6 text-gray-700 space-y-2">
-                    {tour.bestTime.map((item: any, idx: number) => (
-                      <li key={idx}>{item.item || item}</li>
-                    ))}
-                  </ul>
-                </section>
-              )}
-              {tour.whatToBring && Array.isArray(tour.whatToBring) && tour.whatToBring.length > 0 && (
-                <section className="mb-8">
-                  <h2 className="text-2xl font-bold text-gray-900 mb-4">What to Bring</h2>
-                  <ul className="list-disc pl-6 text-gray-700 space-y-2">
-                    {tour.whatToBring.map((item: any, idx: number) => (
-                      <li key={idx}>{item.item || item}</li>
-                    ))}
-                  </ul>
-                </section>
-              )}
-              {tour.physicalRequirements && (
-                <section className="mb-8">
-                  <h2 className="text-2xl font-bold text-gray-900 mb-4">Physical Requirements</h2>
-                  <div className="text-gray-700 prose prose-gray max-w-none">
-                    <p>{tour.physicalRequirements}</p>
-                  </div>
-                </section>
-              )}
               <TourItinerary itinerary={tour.itinerary} />
               <TourInclusions included={tour.inclusions} excluded={tour.exclusions} />
               <TourGallery images={tour.images} title={tour.title} />
@@ -117,9 +115,7 @@ export default async function TourPage({ params }: TourPageProps) {
           {/* Related Tours */}
           <section className="mt-16">
             <h2 className="text-3xl font-bold text-gray-900 mb-8">Related Tours</h2>
-            <Suspense fallback={<LoadingSpinner />}>
-              <RelatedTours currentTour={tour} relatedTours={[]} />
-            </Suspense>
+            <RelatedTours currentTour={tour} relatedTours={relatedTours} />
           </section>
         </div>
       </main>

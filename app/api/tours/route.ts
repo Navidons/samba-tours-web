@@ -24,6 +24,7 @@ export async function GET(request: NextRequest) {
     const destinations = searchParams.getAll('destinations')
     const sortBy = searchParams.get('sortBy') || 'popular'
     const sortOrder = searchParams.get('sortOrder') || 'desc'
+    const exclude = searchParams.get('exclude')
 
     // Build where clause - only show active tours
     const where: any = {
@@ -109,6 +110,16 @@ export async function GET(request: NextRequest) {
         { locationCountry: { contains: dest.toLowerCase() } },
         { locationRegion: { contains: dest.toLowerCase() } }
       ])
+    }
+
+    // Exclude specific tour IDs
+    if (exclude) {
+      const excludeIds = exclude.split(',').map(id => parseInt(id.trim())).filter(id => !isNaN(id))
+      if (excludeIds.length > 0) {
+        where.NOT = {
+          id: { in: excludeIds }
+        }
+      }
     }
 
     // Build orderBy clause
