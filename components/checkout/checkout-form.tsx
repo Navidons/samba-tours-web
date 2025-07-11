@@ -320,7 +320,7 @@ export default function CheckoutForm() {
             {/* Submit Button */}
             <Button
               type="submit"
-              className="w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600"
+              className="w-full bg-gradient-to-r from-emerald-500 to-green-500 hover:from-emerald-600 hover:to-green-600"
               disabled={isSubmitting}
             >
               {isSubmitting ? 'Processing Booking...' : 'Confirm Booking'}

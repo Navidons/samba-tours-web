@@ -32,7 +32,7 @@ export default function CartContent() {
           <ShoppingCart className="h-16 w-16 text-gray-400 mx-auto mb-4" />
           <h3 className="text-xl font-semibold text-gray-900 mb-2">Your cart is empty</h3>
           <p className="text-gray-600 mb-6">Start exploring our amazing tours and add them to your cart!</p>
-          <Button asChild className="bg-gradient-to-r from-orange-500 to-red-500">
+          <Button asChild className="bg-gradient-to-r from-emerald-500 to-green-500">
             <Link href="/tours">Browse Tours</Link>
           </Button>
         </CardContent>
@@ -55,7 +55,7 @@ export default function CartContent() {
                     fill 
                     className="object-cover" 
                   />
-                  <Badge className="absolute top-2 left-2 bg-orange-500">{item.category}</Badge>
+                  <Badge className="absolute top-2 left-2 bg-emerald-500">{item.category}</Badge>
                 </div>
 
                 <div className="flex-1">
@@ -143,7 +143,7 @@ export default function CartContent() {
             </div>
 
             <Button 
-              className="w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600"
+              className="w-full bg-gradient-to-r from-emerald-500 to-green-500 hover:from-emerald-600 hover:to-green-600"
               onClick={handleCheckout}
               disabled={isCheckingOut}
             >
