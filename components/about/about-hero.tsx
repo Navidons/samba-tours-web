@@ -26,17 +26,17 @@ export default function AboutHero() {
 
         <div className="mt-12 grid grid-cols-1 sm:grid-cols-3 gap-8 max-w-4xl mx-auto">
           <div className="bg-white/10 backdrop-blur-md p-6 rounded-lg border border-white/20">
-            <Award className="h-10 w-10 mx-auto text-orange-400 mb-3" />
+            <Award className="h-10 w-10 mx-auto text-emerald-400 mb-3" />
             <h3 className="text-xl font-semibold">10+ Years of Excellence</h3>
             <p className="text-gray-400 mt-1">Crafting unforgettable safari experiences since 2012.</p>
           </div>
           <div className="bg-white/10 backdrop-blur-md p-6 rounded-lg border border-white/20">
-            <Mountain className="h-10 w-10 mx-auto text-orange-400 mb-3" />
+            <Mountain className="h-10 w-10 mx-auto text-emerald-400 mb-3" />
             <h3 className="text-xl font-semibold">Local Expertise</h3>
             <p className="text-gray-400 mt-1">100% Ugandan team with deep-rooted local knowledge.</p>
           </div>
           <div className="bg-white/10 backdrop-blur-md p-6 rounded-lg border border-white/20">
-            <Users className="h-10 w-10 mx-auto text-orange-400 mb-3" />
+            <Users className="h-10 w-10 mx-auto text-emerald-400 mb-3" />
             <h3 className="text-xl font-semibold">5,000+ Happy Travelers</h3>
             <p className="text-gray-400 mt-1">Join our family of adventurers from around the globe.</p>
           </div>

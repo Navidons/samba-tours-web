@@ -40,7 +40,7 @@ const values = [
 
 export default function ValuesSection() {
   return (
-    <section className="py-20 bg-gradient-to-br from-orange-50 to-red-50">
+    <section className="py-20 bg-gradient-to-br from-emerald-50 to-green-50">
       <div className="max-w-7xl mx-auto px-4">
         <div className="text-center mb-16">
           <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-6">Our Core Values</h2>
@@ -54,9 +54,9 @@ export default function ValuesSection() {
           {values.map((value, index) => (
             <div
               key={index}
-              className="group text-center p-8 rounded-xl bg-white hover:bg-gradient-to-br hover:from-orange-50 hover:to-red-50 transition-all duration-300 shadow-lg hover:shadow-xl border border-orange-100"
+              className="group text-center p-8 rounded-xl bg-white hover:bg-gradient-to-br hover:from-emerald-50 hover:to-green-50 transition-all duration-300 shadow-lg hover:shadow-xl border border-emerald-100"
             >
-              <div className="w-16 h-16 bg-gradient-to-br from-orange-500 to-red-500 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg">
+              <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-green-500 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg">
                 <value.icon className="h-8 w-8 text-white" />
               </div>
               <h3 className="text-xl font-bold text-gray-900 mb-4">{value.title}</h3>

@@ -72,9 +72,9 @@ export default function AchievementsSection() {
           {statistics.map((stat, index) => (
             <div
               key={index}
-              className="text-center p-6 bg-gradient-to-br from-orange-50 to-red-50 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 border border-orange-100"
+              className="text-center p-6 bg-gradient-to-br from-emerald-50 to-green-50 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 border border-emerald-100"
             >
-              <div className="text-3xl lg:text-4xl font-bold bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent mb-2">
+              <div className="text-3xl lg:text-4xl font-bold bg-gradient-to-r from-emerald-600 to-green-600 bg-clip-text text-transparent mb-2">
                 {stat.number}
               </div>
               <div className="font-semibold text-gray-900 mb-1 text-sm lg:text-base">{stat.label}</div>
@@ -86,15 +86,15 @@ export default function AchievementsSection() {
         {/* Awards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {achievements.map((achievement, index) => (
-            <Card key={index} className="hover:shadow-xl transition-all duration-300 border border-orange-100 bg-white">
+            <Card key={index} className="hover:shadow-xl transition-all duration-300 border border-emerald-100 bg-white">
               <CardContent className="p-8">
                 <div className="flex items-start space-x-4">
-                  <div className="w-14 h-14 bg-gradient-to-br from-orange-500 to-red-500 rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg">
+                  <div className="w-14 h-14 bg-gradient-to-br from-emerald-500 to-green-500 rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg">
                     <achievement.icon className="h-7 w-7 text-white" />
                   </div>
                   <div className="flex-1">
                     <div className="flex items-center justify-between mb-3">
-                      <span className="text-sm font-medium text-orange-700 bg-orange-100 px-3 py-1 rounded-full">
+                      <span className="text-sm font-medium text-emerald-700 bg-emerald-100 px-3 py-1 rounded-full">
                         {achievement.category}
                       </span>
                       <span className="text-sm text-gray-500 font-medium">{achievement.year}</span>

@@ -76,7 +76,7 @@ export default function TeamSection() {
           {teamMembers.map((member, index) => (
             <Card
               key={index}
-              className="group hover:shadow-2xl transition-all duration-300 overflow-hidden bg-white border border-orange-100"
+              className="group hover:shadow-2xl transition-all duration-300 overflow-hidden bg-white border border-emerald-100"
             >
               <div className="relative h-64 overflow-hidden">
                 <Image
@@ -91,7 +91,7 @@ export default function TeamSection() {
               <CardContent className="p-6">
                 <div className="mb-4">
                   <h3 className="text-xl font-bold text-gray-900 mb-1">{member.name}</h3>
-                  <p className="text-orange-600 font-semibold">{member.role}</p>
+                  <p className="text-emerald-600 font-semibold">{member.role}</p>
                 </div>
 
                 <p className="text-gray-700 text-sm mb-4 leading-relaxed">{member.bio}</p>
@@ -104,7 +104,7 @@ export default function TeamSection() {
                         <Badge
                           key={idx}
                           variant="secondary"
-                          className="text-xs bg-orange-100 text-orange-700 hover:bg-orange-200"
+                          className="text-xs bg-emerald-100 text-emerald-700 hover:bg-emerald-200"
                         >
                           {specialty}
                         </Badge>
@@ -113,12 +113,12 @@ export default function TeamSection() {
                   </div>
 
                   <div className="flex items-center text-sm text-gray-600">
-                    <Languages className="h-4 w-4 mr-2 text-orange-500" />
+                    <Languages className="h-4 w-4 mr-2 text-emerald-500" />
                     <span>{member.languages.join(", ")}</span>
                   </div>
 
                   <div className="flex items-start text-sm text-gray-600">
-                    <Award className="h-4 w-4 mr-2 mt-0.5 flex-shrink-0 text-orange-500" />
+                    <Award className="h-4 w-4 mr-2 mt-0.5 flex-shrink-0 text-emerald-500" />
                     <span>{member.certifications.join(", ")}</span>
                   </div>
                 </div>
