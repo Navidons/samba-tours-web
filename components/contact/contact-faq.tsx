@@ -57,8 +57,8 @@ export default function ContactFAQ() {
   return (
     <section className="mb-16">
       <div className="text-center mb-12">
-        <h2 className="text-3xl md:text-4xl font-playfair font-bold text-earth-900 mb-4">Frequently Asked Questions</h2>
-        <p className="text-lg text-earth-600 max-w-2xl mx-auto">
+        <h2 className="text-3xl md:text-4xl font-playfair font-bold text-gray-900 mb-4">Frequently Asked Questions</h2>
+        <p className="text-lg text-gray-600 max-w-2xl mx-auto">
           Quick answers to common questions about our tours and services
         </p>
       </div>
@@ -66,26 +66,26 @@ export default function ContactFAQ() {
       <div className="max-w-4xl mx-auto">
         <div className="space-y-4">
           {faqs.map((faq, index) => (
-            <Card key={index} className="border border-earth-200">
+            <Card key={index} className="border border-gray-200">
               <CardHeader
-                className="cursor-pointer hover:bg-cream-50 transition-colors"
+                className="cursor-pointer hover:bg-emerald-50 transition-colors"
                 onClick={() => toggleItem(index)}
               >
                 <CardTitle className="flex items-center justify-between text-lg">
                   <span className="flex items-center gap-3">
-                    <HelpCircle className="h-5 w-5 text-forest-600" />
+                    <HelpCircle className="h-5 w-5 text-emerald-600" />
                     {faq.question}
                   </span>
                   {openItems.includes(index) ? (
-                    <ChevronUp className="h-5 w-5 text-earth-600" />
+                    <ChevronUp className="h-5 w-5 text-gray-600" />
                   ) : (
-                    <ChevronDown className="h-5 w-5 text-earth-600" />
+                    <ChevronDown className="h-5 w-5 text-gray-600" />
                   )}
                 </CardTitle>
               </CardHeader>
               {openItems.includes(index) && (
                 <CardContent className="pt-0">
-                  <p className="text-earth-600 leading-relaxed pl-8">{faq.answer}</p>
+                  <p className="text-gray-600 leading-relaxed pl-8">{faq.answer}</p>
                 </CardContent>
               )}
             </Card>
@@ -93,7 +93,7 @@ export default function ContactFAQ() {
         </div>
 
         <div className="text-center mt-8">
-          <p className="text-earth-600 mb-4">Can't find what you're looking for?</p>
+          <p className="text-gray-600 mb-4">Can't find what you're looking for?</p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <a
               href="#contact-form"

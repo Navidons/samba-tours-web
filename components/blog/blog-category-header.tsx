@@ -39,7 +39,7 @@ export default function BlogCategoryHeader({ category }: BlogCategoryHeaderProps
         <div className="container-max">
           <div className="max-w-4xl">
             <div className="flex items-center space-x-3 mb-4">
-              <Badge className="bg-forest-600 text-white flex items-center space-x-2">
+              <Badge className="bg-emerald-600 text-white flex items-center space-x-2">
                 <BookOpen className="h-4 w-4" />
                 <span>Category</span>
               </Badge>

@@ -203,7 +203,7 @@ export default function GalleryGrid({ images = galleryItems, viewMode = "masonry
     return (
       <Card
         key={item.id}
-        className={`gallery-image group overflow-hidden hover:shadow-xl transition-all duration-300 cursor-pointer border-orange-100 hover:border-orange-200 ${
+        className={`gallery-image group overflow-hidden hover:shadow-xl transition-all duration-300 cursor-pointer border-emerald-100 hover:border-emerald-200 ${
           viewMode === "masonry" ? "break-inside-avoid mb-4" : ""
         }`}
         onClick={() => setSelectedImage(index)}
@@ -229,15 +229,15 @@ export default function GalleryGrid({ images = galleryItems, viewMode = "masonry
 
             {/* Loading skeleton */}
             {!loadedImages.has(item.id) && (
-              <div className="absolute inset-0 bg-orange-100 animate-pulse" />
+              <div className="absolute inset-0 bg-emerald-100 animate-pulse" />
             )}
 
             {/* Overlay */}
-            <div className="absolute inset-0 bg-gradient-to-t from-orange-900/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            <div className="absolute inset-0 bg-gradient-to-t from-emerald-900/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
             {/* Category badge */}
             <div className="absolute top-3 left-3">
-              <Badge className="bg-gradient-to-r from-orange-500 to-red-500 text-white capitalize border-0">
+              <Badge className="bg-gradient-to-r from-emerald-500 to-green-500 text-white capitalize border-0">
                 {item.category.replace("-", " ")}
               </Badge>
             </div>
@@ -247,32 +247,32 @@ export default function GalleryGrid({ images = galleryItems, viewMode = "masonry
               <Button
                 size="sm"
                 variant="secondary"
-                className="h-8 w-8 p-0 bg-white/90 hover:bg-white border-orange-200"
+                className="h-8 w-8 p-0 bg-white/90 hover:bg-white border-emerald-200"
                 onClick={(e) => {
                   e.stopPropagation()
                   toggleLike(item.id)
                 }}
               >
                 <Heart
-                  className={`h-4 w-4 ${likedImages.has(item.id) ? "fill-red-500 text-red-500" : "text-orange-600"}`}
+                  className={`h-4 w-4 ${likedImages.has(item.id) ? "fill-red-500 text-red-500" : "text-emerald-600"}`}
                 />
               </Button>
               <Button
                 size="sm"
                 variant="secondary"
-                className="h-8 w-8 p-0 bg-white/90 hover:bg-white border-orange-200"
+                className="h-8 w-8 p-0 bg-white/90 hover:bg-white border-emerald-200"
                 onClick={(e) => e.stopPropagation()}
               >
-                <Share2 className="h-4 w-4 text-orange-600" />
+                <Share2 className="h-4 w-4 text-emerald-600" />
               </Button>
             </div>
 
             {/* Bottom info overlay */}
             <div className="absolute bottom-0 left-0 right-0 p-4 text-white transform translate-y-full group-hover:translate-y-0 transition-transform duration-300">
               <h3 className="font-semibold mb-1">{item.title}</h3>
-              <p className="text-sm text-orange-100 mb-2 line-clamp-2">{item.description}</p>
+              <p className="text-sm text-emerald-100 mb-2 line-clamp-2">{item.description}</p>
 
-              <div className="flex items-center justify-between text-xs text-orange-200">
+              <div className="flex items-center justify-between text-xs text-emerald-200">
                 <div className="flex items-center space-x-3">
                   <div className="flex items-center space-x-1">
                     <MapPin className="h-3 w-3" />
@@ -304,13 +304,13 @@ export default function GalleryGrid({ images = galleryItems, viewMode = "masonry
   return (
     <>
       <div className="text-center mb-12">
-        <h2 className="text-4xl md:text-5xl font-playfair font-bold text-earth-900 mb-6">
+        <h2 className="text-4xl md:text-5xl font-playfair font-bold text-gray-900 mb-6">
           Captured
-          <span className="block text-transparent bg-clip-text bg-gradient-to-r from-orange-600 to-red-600">
+          <span className="block text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 to-green-600">
             Moments
           </span>
         </h2>
-        <p className="text-xl text-earth-600 max-w-3xl mx-auto leading-relaxed">
+        <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
           Experience the beauty of Uganda through our lens. Every photo tells a story of adventure, wildlife
           encounters, and unforgettable moments from our safari expeditions.
         </p>
@@ -329,8 +329,10 @@ export default function GalleryGrid({ images = galleryItems, viewMode = "masonry
       {selectedImage !== null && (
         <GalleryLightbox
           images={images}
-          initialIndex={selectedImage}
+          currentIndex={selectedImage}
           onClose={() => setSelectedImage(null)}
+          onNext={() => setSelectedImage((selectedImage + 1) % images.length)}
+          onPrev={() => setSelectedImage(selectedImage === 0 ? images.length - 1 : selectedImage - 1)}
         />
       )}
     </>

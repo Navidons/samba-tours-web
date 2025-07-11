@@ -114,7 +114,7 @@ export default function BlogPostSidebar({ post }: BlogPostSidebarProps) {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
-            <User className="h-5 w-5 text-forest-600" />
+            <User className="h-5 w-5 text-emerald-600" />
             <span>About the Author</span>
           </CardTitle>
         </CardHeader>
@@ -130,17 +130,17 @@ export default function BlogPostSidebar({ post }: BlogPostSidebarProps) {
                 />
               </div>
               <div>
-                <h4 className="font-semibold text-earth-900">{post.author.name}</h4>
+                <h4 className="font-semibold text-gray-900">{post.author.name}</h4>
                 {post.author.email && (
-                  <p className="text-sm text-forest-600 mb-2">{post.author.email}</p>
+                  <p className="text-sm text-emerald-600 mb-2">{post.author.email}</p>
                 )}
                 {post.author.bio && (
-                  <p className="text-sm text-earth-700">{post.author.bio}</p>
+                  <p className="text-sm text-gray-700">{post.author.bio}</p>
                 )}
               </div>
             </div>
           ) : (
-            <p className="text-earth-600 text-sm">Author information not available</p>
+            <p className="text-gray-600 text-sm">Author information not available</p>
           )}
         </CardContent>
       </Card>
@@ -150,7 +150,7 @@ export default function BlogPostSidebar({ post }: BlogPostSidebarProps) {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
-              <BookOpen className="h-5 w-5 text-forest-600" />
+              <BookOpen className="h-5 w-5 text-emerald-600" />
               <span>In This Article</span>
             </CardTitle>
           </CardHeader>
@@ -162,8 +162,8 @@ export default function BlogPostSidebar({ post }: BlogPostSidebarProps) {
                   href={`#${heading.id}`}
                   data-active={heading.id === activeId}
                   className={cn(
-                    "block text-earth-700 hover:text-forest-600 transition-colors",
-                    "data-[active=true]:font-semibold data-[active=true]:text-orange-600",
+                    "block text-gray-700 hover:text-emerald-600 transition-colors",
+                    "data-[active=true]:font-semibold data-[active=true]:text-emerald-600",
                   )}
                 >
                   {heading.text}
@@ -178,7 +178,7 @@ export default function BlogPostSidebar({ post }: BlogPostSidebarProps) {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
-            <MapPin className="h-5 w-5 text-forest-600" />
+            <MapPin className="h-5 w-5 text-emerald-600" />
             <span>Related Tours</span>
           </CardTitle>
         </CardHeader>
@@ -206,24 +206,24 @@ export default function BlogPostSidebar({ post }: BlogPostSidebarProps) {
                       className="object-cover group-hover:scale-105 transition-transform duration-200"
                     />
                   ) : (
-                    <div className="w-full h-full bg-gradient-to-br from-orange-100 to-red-100 flex items-center justify-center">
-                      <MapPin className="h-6 w-6 text-orange-400" />
+                    <div className="w-full h-full bg-gradient-to-br from-emerald-100 to-green-100 flex items-center justify-center">
+                      <MapPin className="h-6 w-6 text-emerald-400" />
                     </div>
                   )}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h4 className="font-semibold text-sm text-earth-900 group-hover:text-forest-600 transition-colors line-clamp-2 mb-1">
+                  <h4 className="font-semibold text-sm text-gray-900 group-hover:text-emerald-600 transition-colors line-clamp-2 mb-1">
                     <Link href={`/tours/${tour.slug}`}>{tour.title}</Link>
                   </h4>
-                  <div className="flex items-center justify-between text-xs text-earth-600">
+                  <div className="flex items-center justify-between text-xs text-gray-600">
                     <span>{tour.duration}</span>
-                    <span className="font-semibold text-forest-600">{formatPrice(tour.price)}</span>
+                    <span className="font-semibold text-emerald-600">{formatPrice(tour.price)}</span>
                   </div>
                 </div>
               </div>
             ))
           ) : (
-            <p className="text-sm text-earth-600 text-center py-4">
+            <p className="text-sm text-gray-600 text-center py-4">
               No tours available at the moment
             </p>
           )}

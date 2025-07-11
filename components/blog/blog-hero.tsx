@@ -8,13 +8,13 @@ export default function BlogHero() {
       backgroundPosition: 'center'
     }}>
       <div className="container-max px-4 pt-40 pb-24 text-center relative">
-        <div className="absolute -top-1/4 -left-24 w-96 h-96 bg-orange-500/10 rounded-full filter blur-3xl opacity-50" />
-        <div className="absolute -bottom-1/4 -right-24 w-96 h-96 bg-red-500/10 rounded-full filter blur-3xl opacity-50" />
+        <div className="absolute -top-1/4 -left-24 w-96 h-96 bg-emerald-500/10 rounded-full filter blur-3xl opacity-50" />
+        <div className="absolute -bottom-1/4 -right-24 w-96 h-96 bg-emerald-500/10 rounded-full filter blur-3xl opacity-50" />
 
         <div className="relative">
           <div className="flex justify-center mb-6">
-            <div className="p-4 bg-orange-500/20 rounded-full border border-orange-500/30">
-              <Feather className="h-8 w-8 text-orange-400" />
+            <div className="p-4 bg-emerald-500/20 rounded-full border border-emerald-500/30">
+              <Feather className="h-8 w-8 text-emerald-400" />
             </div>
           </div>
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold font-playfair mb-4">

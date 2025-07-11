@@ -93,30 +93,30 @@ export default function FeaturedTours() {
   }
 
   return (
-    <section className="py-20 bg-gradient-to-br from-earth-50 via-white to-forest-50 relative overflow-hidden">
+    <section className="py-20 bg-gradient-to-br from-emerald-50 via-white to-green-50 relative overflow-hidden">
       {/* Background Elements */}
       <div className="absolute inset-0 opacity-10">
-        <div className="absolute top-20 left-20 w-64 h-64 bg-forest-600 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-20 right-20 w-80 h-80 bg-orange-500 rounded-full blur-3xl"></div>
+        <div className="absolute top-20 left-20 w-64 h-64 bg-emerald-600 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-20 right-20 w-80 h-80 bg-green-500 rounded-full blur-3xl"></div>
       </div>
 
       <div className="container-max px-4 relative">
         {/* Section Header */}
         <div className="text-center mb-16">
-          <div className="inline-flex items-center bg-gradient-to-r from-yellow-100 via-orange-100 to-red-100 text-orange-700 px-6 py-3 rounded-full text-sm font-bold mb-6 border border-orange-200 shadow-lg">
+          <div className="inline-flex items-center bg-gradient-to-r from-green-100 via-emerald-100 to-teal-100 text-green-700 px-6 py-3 rounded-full text-sm font-bold mb-6 border border-green-200 shadow-lg">
             <Award className="h-4 w-4 mr-2" />
-            <Zap className="h-4 w-4 mr-2 text-yellow-600" />
+            <Zap className="h-4 w-4 mr-2 text-emerald-600" />
             Most Popular Adventures
           </div>
 
-          <h2 className="text-5xl md:text-6xl font-playfair font-bold text-earth-900 mb-6 leading-tight">
+          <h2 className="text-5xl md:text-6xl font-playfair font-bold text-gray-900 mb-6 leading-tight">
             Extraordinary
-            <span className="block text-transparent bg-clip-text bg-gradient-to-r from-forest-600 via-orange-600 to-red-600">
+            <span className="block text-transparent bg-clip-text bg-gradient-to-r from-green-600 via-emerald-600 to-teal-600">
               Safari Experiences
             </span>
           </h2>
 
-          <p className="text-xl md:text-2xl text-earth-600 max-w-4xl mx-auto leading-relaxed mb-8">
+          <p className="text-xl md:text-2xl text-gray-600 max-w-4xl mx-auto leading-relaxed mb-8">
             Handpicked adventures that showcase the very best of Uganda's wildlife, landscapes, and cultural heritage.
             Each tour is crafted to create unforgettable memories.
           </p>
@@ -124,16 +124,16 @@ export default function FeaturedTours() {
           {/* Quick Stats */}
           <div className="flex flex-wrap justify-center gap-6 mb-12">
             <div className="bg-white rounded-full px-6 py-3 shadow-lg border border-gray-200">
-              <span className="text-2xl font-bold text-forest-600">50+</span>
-              <span className="text-earth-600 ml-2">Unique Tours</span>
+              <span className="text-2xl font-bold text-green-600">50+</span>
+              <span className="text-gray-600 ml-2">Unique Tours</span>
             </div>
             <div className="bg-white rounded-full px-6 py-3 shadow-lg border border-gray-200">
-              <span className="text-2xl font-bold text-orange-600">98%</span>
-              <span className="text-earth-600 ml-2">Satisfaction</span>
+              <span className="text-2xl font-bold text-emerald-600">98%</span>
+              <span className="text-gray-600 ml-2">Satisfaction</span>
             </div>
             <div className="bg-white rounded-full px-6 py-3 shadow-lg border border-gray-200">
-              <span className="text-2xl font-bold text-red-600">24/7</span>
-              <span className="text-earth-600 ml-2">Support</span>
+              <span className="text-2xl font-bold text-teal-600">24/7</span>
+              <span className="text-gray-600 ml-2">Support</span>
             </div>
           </div>
         </div>
@@ -159,7 +159,7 @@ export default function FeaturedTours() {
             ))
           ) : error ? (
             <div className="col-span-full text-center py-12">
-              <p className="text-earth-600 text-lg">{error}</p>
+              <p className="text-gray-600 text-lg">{error}</p>
               <Button onClick={loadFeaturedTours} className="mt-4">
                 Try Again
               </Button>
@@ -180,8 +180,8 @@ export default function FeaturedTours() {
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 filter group-hover:brightness-110"
                     />
                   ) : (
-                    <div className="w-full h-full bg-gradient-to-br from-orange-100 to-red-100 flex items-center justify-center">
-                      <MapPin className="h-16 w-16 text-orange-400" />
+                    <div className="w-full h-full bg-gradient-to-br from-green-100 to-emerald-100 flex items-center justify-center">
+                      <MapPin className="h-16 w-16 text-green-400" />
                     </div>
                   )}
 
@@ -192,17 +192,17 @@ export default function FeaturedTours() {
                 {/* Floating Badges */}
                 <div className="absolute top-4 left-4 flex flex-col gap-2">
                   {tour.featured && (
-                    <Badge className="bg-gradient-to-r from-yellow-500 to-orange-500 text-white border-0 shadow-xl px-3 py-1 font-bold">
+                    <Badge className="bg-gradient-to-r from-green-500 to-emerald-500 text-white border-0 shadow-xl px-3 py-1 font-bold">
                       ⭐ Featured
                     </Badge>
                   )}
                   {tour.popular && (
-                    <Badge className="bg-gradient-to-r from-red-500 to-pink-500 text-white border-0 shadow-xl px-3 py-1 font-bold animate-pulse">
+                    <Badge className="bg-gradient-to-r from-emerald-500 to-teal-500 text-white border-0 shadow-xl px-3 py-1 font-bold animate-pulse">
                       🔥 Hot Deal
                     </Badge>
                   )}
                   {tour.isNew && (
-                    <Badge className="bg-gradient-to-r from-green-500 to-emerald-500 text-white border-0 shadow-xl px-3 py-1 font-bold">
+                    <Badge className="bg-gradient-to-r from-teal-500 to-green-500 text-white border-0 shadow-xl px-3 py-1 font-bold">
                       ✨ New
                     </Badge>
                   )}
@@ -211,7 +211,7 @@ export default function FeaturedTours() {
                 {/* Wishlist & Photo Count */}
                 <div className="absolute top-4 right-4 flex flex-col gap-2">
                   <button className="w-12 h-12 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white transition-all duration-300 group/heart shadow-lg">
-                    <Heart className="h-5 w-5 text-gray-600 group-hover/heart:text-red-500 group-hover/heart:scale-110 transition-all duration-300" />
+                    <Heart className="h-5 w-5 text-gray-600 group-hover/heart:text-green-500 group-hover/heart:scale-110 transition-all duration-300" />
                   </button>
                   <div className="bg-black/70 backdrop-blur-sm rounded-full px-3 py-1 flex items-center">
                     <Camera className="h-4 w-4 text-white mr-1" />
@@ -225,7 +225,7 @@ export default function FeaturedTours() {
                     {tour.originalPrice && (
                       <div className="text-sm text-gray-500 line-through">${tour.originalPrice}</div>
                     )}
-                    <div className="text-2xl font-bold text-forest-600">${tour.price}</div>
+                    <div className="text-2xl font-bold text-green-600">${tour.price}</div>
                     <div className="text-xs text-gray-600">per person</div>
                   </div>
                 </div>
@@ -235,7 +235,7 @@ export default function FeaturedTours() {
                   <div className="transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
                     <Button
                       size="lg"
-                      className="bg-white text-earth-900 hover:bg-gray-100 font-bold px-8 py-3 rounded-full shadow-xl"
+                      className="bg-white text-gray-900 hover:bg-gray-100 font-bold px-8 py-3 rounded-full shadow-xl"
                       asChild
                     >
                       <Link href={`/tours/${tour.slug}`}>
@@ -250,36 +250,36 @@ export default function FeaturedTours() {
               <CardContent className="p-8">
                 {/* Tour Category & Location */}
                 <div className="flex items-center justify-between mb-4">
-                  <Badge variant="outline" className="text-forest-600 border-forest-200 bg-forest-50 font-medium">
+                  <Badge variant="outline" className="text-green-600 border-green-200 bg-green-50 font-medium">
                     {tour.category?.name || 'Uncategorized'}
                   </Badge>
-                  <div className="flex items-center text-earth-600 text-sm">
+                  <div className="flex items-center text-gray-600 text-sm">
                     <MapPin className="h-4 w-4 mr-1" />
                     <span>{tour.location.region || tour.location.country}</span>
                   </div>
                 </div>
 
                 {/* Title */}
-                <h3 className="text-2xl font-bold text-earth-900 mb-4 group-hover:text-forest-600 transition-colors duration-300 leading-tight">
+                <h3 className="text-2xl font-bold text-gray-900 mb-4 group-hover:text-green-600 transition-colors duration-300 leading-tight">
                   {tour.title}
                 </h3>
 
                 {/* Description */}
-                <p className="text-earth-600 mb-6 leading-relaxed line-clamp-3">{tour.shortDescription}</p>
+                <p className="text-gray-600 mb-6 leading-relaxed line-clamp-3">{tour.shortDescription}</p>
 
                 {/* Tour Details Grid */}
                 <div className="grid grid-cols-2 gap-4 mb-6">
-                  <div className="flex items-center text-earth-600 bg-gray-50 rounded-lg p-3">
-                    <Clock className="h-5 w-5 mr-2 text-forest-600" />
+                  <div className="flex items-center text-gray-600 bg-gray-50 rounded-lg p-3">
+                    <Clock className="h-5 w-5 mr-2 text-green-600" />
                     <div>
-                      <div className="font-semibold text-earth-900">{tour.duration}</div>
+                      <div className="font-semibold text-gray-900">{tour.duration}</div>
                       <div className="text-xs">Duration</div>
                     </div>
                   </div>
-                  <div className="flex items-center text-earth-600 bg-gray-50 rounded-lg p-3">
-                    <Users className="h-5 w-5 mr-2 text-forest-600" />
+                  <div className="flex items-center text-gray-600 bg-gray-50 rounded-lg p-3">
+                    <Users className="h-5 w-5 mr-2 text-emerald-600" />
                     <div>
-                      <div className="font-semibold text-earth-900">{tour.groupSize}</div>
+                      <div className="font-semibold text-gray-900">{tour.groupSize}</div>
                       <div className="text-xs">Group Size</div>
                     </div>
                   </div>
@@ -298,8 +298,8 @@ export default function FeaturedTours() {
                         />
                       ))}
                     </div>
-                    <span className="font-bold text-earth-900 text-lg">{tour.rating}</span>
-                    <span className="text-earth-600 ml-2">({tour.reviewCount} reviews)</span>
+                    <span className="font-bold text-gray-900 text-lg">{tour.rating}</span>
+                    <span className="text-gray-600 ml-2">({tour.reviewCount} reviews)</span>
                   </div>
                   <Badge
                     variant="outline"
@@ -318,7 +318,7 @@ export default function FeaturedTours() {
                 {/* CTA Button */}
                 <Button
                   asChild
-                  className="w-full bg-gradient-to-r from-forest-600 to-forest-700 hover:from-forest-700 hover:to-forest-800 text-white font-bold py-4 text-lg rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+                  className="w-full bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold py-4 text-lg rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
                 >
                   <Link href={`/tours/${tour.slug}`}>
                     Book This Adventure
@@ -330,23 +330,23 @@ export default function FeaturedTours() {
           ))
           ) : (
             <div className="col-span-full text-center py-12">
-              <p className="text-earth-600 text-lg">No featured tours available at the moment.</p>
+              <p className="text-gray-600 text-lg">No featured tours available at the moment.</p>
             </div>
           )}
         </div>
 
         {/* Bottom CTA Section */}
-        <div className="text-center bg-gradient-to-r from-forest-600 to-forest-800 rounded-3xl p-12 text-white relative overflow-hidden">
+        <div className="text-center bg-gradient-to-r from-green-500 to-emerald-600 rounded-3xl p-12 text-white relative overflow-hidden">
           <div className="absolute inset-0 bg-black/10"></div>
           <div className="relative">
             <h3 className="text-3xl md:text-4xl font-bold mb-4">Ready for Your Dream Adventure?</h3>
-            <p className="text-xl text-forest-100 mb-8 max-w-2xl mx-auto">
+            <p className="text-xl text-emerald-100 mb-8 max-w-2xl mx-auto">
               Join thousands of satisfied travelers who have experienced the magic of Uganda with us
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button
                 size="lg"
-                className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white px-8 py-4 text-lg font-bold rounded-full shadow-xl"
+                className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white px-8 py-4 text-lg font-bold rounded-full shadow-xl"
                 asChild
               >
                 <Link href="/tours">
@@ -357,7 +357,7 @@ export default function FeaturedTours() {
               <Button
                 size="lg"
                 variant="outline"
-                className="border-2 border-white text-white hover:bg-white hover:text-forest-900 px-8 py-4 text-lg font-bold rounded-full bg-transparent"
+                className="border-2 border-white text-white hover:bg-white hover:text-emerald-900 px-8 py-4 text-lg font-bold rounded-full bg-transparent"
                 asChild
               >
                 <Link href="/contact">Plan Custom Trip</Link>

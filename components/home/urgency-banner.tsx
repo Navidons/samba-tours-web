@@ -36,7 +36,7 @@ export default function UrgencyBanner() {
   if (!isVisible) return null
 
   return (
-    <div className="bg-gradient-to-r from-red-600 via-orange-600 to-yellow-600 text-white py-3 px-4 relative overflow-hidden">
+    <div className="bg-gradient-to-r from-green-600 via-emerald-600 to-teal-600 text-white py-3 px-4 relative overflow-hidden">
       <div className="absolute inset-0 bg-black/10"></div>
       <div className="relative max-w-7xl mx-auto flex items-center justify-between">
         <div className="flex items-center space-x-6 flex-1">
@@ -80,7 +80,7 @@ export default function UrgencyBanner() {
         <div className="flex items-center space-x-4">
           <Button
             size="sm"
-            className="bg-white text-red-600 hover:bg-gray-100 font-bold px-6 py-2 rounded-full shadow-lg"
+            className="bg-white text-green-600 hover:bg-gray-100 font-bold px-6 py-2 rounded-full shadow-lg"
             asChild
           >
             <Link href="/tours?category=gorilla-trekking">Claim Offer Now</Link>

@@ -44,8 +44,8 @@ export default function ContactMap() {
   return (
     <section className="mb-16">
       <div className="text-center mb-12">
-        <h2 className="text-3xl md:text-4xl font-playfair font-bold text-earth-900 mb-4">Visit Our Offices</h2>
-        <p className="text-lg text-earth-600 max-w-2xl mx-auto">
+        <h2 className="text-3xl md:text-4xl font-playfair font-bold text-gray-900 mb-4">Visit Our Offices</h2>
+        <p className="text-lg text-gray-600 max-w-2xl mx-auto">
           We have multiple locations across Uganda to serve you better
         </p>
       </div>
@@ -57,7 +57,7 @@ export default function ContactMap() {
             <Card
               key={location.id}
               className={`cursor-pointer transition-all duration-300 ${
-                selectedLocation.id === location.id ? "ring-2 ring-forest-500 bg-forest-50" : "hover:shadow-lg"
+                selectedLocation.id === location.id ? "ring-2 ring-emerald-500 bg-emerald-50" : "hover:shadow-lg"
               }`}
               onClick={() => setSelectedLocation(location)}
             >
@@ -65,32 +65,32 @@ export default function ContactMap() {
                 <div className="flex items-start gap-3">
                   <div
                     className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                      location.isMain ? "bg-forest-600" : "bg-earth-600"
+                      location.isMain ? "bg-emerald-600" : "bg-gray-600"
                     }`}
                   >
                     <MapPin className="h-5 w-5 text-white" />
                   </div>
                   <div className="flex-1">
-                    <h3 className="font-semibold text-earth-900 mb-1">
+                    <h3 className="font-semibold text-gray-900 mb-1">
                       {location.name}
                       {location.isMain && (
-                        <span className="ml-2 text-xs bg-forest-100 text-forest-700 px-2 py-1 rounded">
+                        <span className="ml-2 text-xs bg-emerald-100 text-emerald-700 px-2 py-1 rounded">
                           Main Office
                         </span>
                       )}
                     </h3>
-                    <p className="text-sm text-earth-600 mb-2">{location.address}</p>
-                    <div className="flex items-center gap-1 text-sm text-earth-600 mb-2">
+                    <p className="text-sm text-gray-600 mb-2">{location.address}</p>
+                    <div className="flex items-center gap-1 text-sm text-gray-600 mb-2">
                       <Phone className="h-3 w-3" />
                       {location.phone}
                     </div>
-                    <div className="flex items-center gap-1 text-sm text-earth-600 mb-3">
+                    <div className="flex items-center gap-1 text-sm text-gray-600 mb-3">
                       <Clock className="h-3 w-3" />
                       {location.hours}
                     </div>
                     <div className="flex flex-wrap gap-1">
                       {location.services.map((service, index) => (
-                        <span key={index} className="text-xs bg-earth-100 text-earth-700 px-2 py-1 rounded">
+                        <span key={index} className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded">
                           {service}
                         </span>
                       ))}
@@ -122,12 +122,12 @@ export default function ContactMap() {
             </CardHeader>
             <CardContent>
               {/* Interactive Map Placeholder */}
-              <div className="aspect-video bg-gradient-to-br from-forest-100 to-earth-100 rounded-lg mb-6 flex items-center justify-center relative overflow-hidden">
+              <div className="aspect-video bg-gradient-to-br from-emerald-100 to-gray-100 rounded-lg mb-6 flex items-center justify-center relative overflow-hidden">
                 <div className="absolute inset-0 bg-[url('/placeholder.svg?height=400&width=600')] bg-cover bg-center opacity-20" />
                 <div className="relative z-10 text-center">
-                  <MapPin className="h-12 w-12 text-forest-600 mx-auto mb-2" />
-                  <p className="text-earth-700 font-medium">Interactive Map</p>
-                  <p className="text-sm text-earth-600">Click "Get Directions" for navigation</p>
+                  <MapPin className="h-12 w-12 text-emerald-600 mx-auto mb-2" />
+                  <p className="text-gray-700 font-medium">Interactive Map</p>
+                  <p className="text-sm text-gray-600">Click "Get Directions" for navigation</p>
                 </div>
 
                 {/* Map Markers */}
@@ -139,32 +139,32 @@ export default function ContactMap() {
               {/* Location Details */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <h4 className="font-semibold text-earth-900 mb-3">Contact Information</h4>
+                  <h4 className="font-semibold text-gray-900 mb-3">Contact Information</h4>
                   <div className="space-y-2">
                     <div className="flex items-center gap-2">
-                      <MapPin className="h-4 w-4 text-earth-600" />
-                      <span className="text-sm text-earth-700">{selectedLocation.address}</span>
+                      <MapPin className="h-4 w-4 text-gray-600" />
+                      <span className="text-sm text-gray-700">{selectedLocation.address}</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <Phone className="h-4 w-4 text-earth-600" />
-                      <a href={`tel:${selectedLocation.phone}`} className="text-sm text-forest-600 hover:underline">
+                      <Phone className="h-4 w-4 text-gray-600" />
+                      <a href={`tel:${selectedLocation.phone}`} className="text-sm text-emerald-600 hover:underline">
                         {selectedLocation.phone}
                       </a>
                     </div>
                     <div className="flex items-center gap-2">
-                      <Clock className="h-4 w-4 text-earth-600" />
-                      <span className="text-sm text-earth-700">{selectedLocation.hours}</span>
+                      <Clock className="h-4 w-4 text-gray-600" />
+                      <span className="text-sm text-gray-700">{selectedLocation.hours}</span>
                     </div>
                   </div>
                 </div>
 
                 <div>
-                  <h4 className="font-semibold text-earth-900 mb-3">Services Available</h4>
+                  <h4 className="font-semibold text-gray-900 mb-3">Services Available</h4>
                   <div className="space-y-2">
                     {selectedLocation.services.map((service, index) => (
                       <div key={index} className="flex items-center gap-2">
-                        <div className="w-2 h-2 bg-forest-500 rounded-full" />
-                        <span className="text-sm text-earth-700">{service}</span>
+                        <div className="w-2 h-2 bg-emerald-500 rounded-full" />
+                        <span className="text-sm text-gray-700">{service}</span>
                       </div>
                     ))}
                   </div>
@@ -172,7 +172,7 @@ export default function ContactMap() {
               </div>
 
               {/* Quick Actions */}
-              <div className="flex flex-col sm:flex-row gap-3 mt-6 pt-6 border-t border-earth-200">
+              <div className="flex flex-col sm:flex-row gap-3 mt-6 pt-6 border-t border-gray-200">
                 <Button asChild className="flex-1">
                   <a href={`tel:${selectedLocation.phone}`}>
                     <Phone className="h-4 w-4 mr-2" />

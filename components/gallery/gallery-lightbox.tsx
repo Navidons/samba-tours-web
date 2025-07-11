@@ -18,6 +18,7 @@ interface GalleryItem {
   date: string
   likes: number
   views: number
+  aspectRatio: string
 }
 
 interface GalleryLightboxProps {
@@ -108,41 +109,41 @@ export default function GalleryLightbox({ images, currentIndex, onClose, onNext,
         </div>
 
         {/* Info panel */}
-        <div className="lg:w-80 bg-gradient-to-br from-orange-900/20 to-red-900/20 backdrop-blur-sm rounded-lg p-6 text-white lg:ml-6 mt-4 lg:mt-0 border border-orange-500/20">
+        <div className="lg:w-80 bg-gradient-to-br from-emerald-900/20 to-green-900/20 backdrop-blur-sm rounded-lg p-6 text-white lg:ml-6 mt-4 lg:mt-0 border border-emerald-500/20">
           <div className="flex items-center justify-between mb-4">
-            <Badge className="bg-gradient-to-r from-orange-500 to-red-500 text-white capitalize border-0">
+            <Badge className="bg-gradient-to-r from-emerald-500 to-green-500 text-white capitalize border-0">
               {currentImage.category.replace("-", " ")}
             </Badge>
-            <span className="text-sm text-orange-200">
+            <span className="text-sm text-emerald-200">
               {currentIndex + 1} of {images.length}
             </span>
           </div>
 
-          <h2 className="text-2xl font-bold mb-3 text-orange-100">{currentImage.title}</h2>
-          <p className="text-orange-200 mb-6 leading-relaxed">{currentImage.description}</p>
+          <h2 className="text-2xl font-bold mb-3 text-emerald-100">{currentImage.title}</h2>
+          <p className="text-emerald-200 mb-6 leading-relaxed">{currentImage.description}</p>
 
           <div className="space-y-3 mb-6">
             <div className="flex items-center space-x-2 text-sm">
-              <MapPin className="h-4 w-4 text-orange-300" />
-              <span className="text-orange-200">{currentImage.location}</span>
+              <MapPin className="h-4 w-4 text-emerald-300" />
+              <span className="text-emerald-200">{currentImage.location}</span>
             </div>
             <div className="flex items-center space-x-2 text-sm">
-              <Camera className="h-4 w-4 text-orange-300" />
-              <span className="text-orange-200">Photo by {currentImage.photographer}</span>
+              <Camera className="h-4 w-4 text-emerald-300" />
+              <span className="text-emerald-200">Photo by {currentImage.photographer}</span>
             </div>
             <div className="flex items-center space-x-2 text-sm">
-              <Calendar className="h-4 w-4 text-orange-300" />
-              <span className="text-orange-200">{new Date(currentImage.date).toLocaleDateString()}</span>
+              <Calendar className="h-4 w-4 text-emerald-300" />
+              <span className="text-emerald-200">{new Date(currentImage.date).toLocaleDateString()}</span>
             </div>
           </div>
 
           <div className="flex items-center justify-between mb-6 text-sm">
             <div className="flex items-center space-x-4">
-              <div className="flex items-center space-x-1 text-orange-200">
+              <div className="flex items-center space-x-1 text-emerald-200">
                 <Heart className="h-4 w-4" />
                 <span>{currentImage.likes}</span>
               </div>
-              <div className="flex items-center space-x-1 text-orange-200">
+              <div className="flex items-center space-x-1 text-emerald-200">
                 <Eye className="h-4 w-4" />
                 <span>{currentImage.views}</span>
               </div>
@@ -152,21 +153,21 @@ export default function GalleryLightbox({ images, currentIndex, onClose, onNext,
           <div className="flex space-x-2">
             <Button
               size="sm"
-              className="flex-1 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 border-0"
+              className="flex-1 bg-gradient-to-r from-emerald-500 to-green-500 hover:from-emerald-600 hover:to-green-600 border-0"
             >
               <Heart className="h-4 w-4 mr-2" />
               Like
             </Button>
             <Button
               size="sm"
-              className="flex-1 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 border-0"
+              className="flex-1 bg-gradient-to-r from-emerald-500 to-green-500 hover:from-emerald-600 hover:to-green-600 border-0"
             >
               <Share2 className="h-4 w-4 mr-2" />
               Share
             </Button>
             <Button
               size="sm"
-              className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 border-0"
+              className="bg-gradient-to-r from-emerald-500 to-green-500 hover:from-emerald-600 hover:to-green-600 border-0"
             >
               <Download className="h-4 w-4" />
             </Button>
@@ -182,7 +183,7 @@ export default function GalleryLightbox({ images, currentIndex, onClose, onNext,
             <div
               key={image.id}
               className={`relative w-16 h-16 flex-shrink-0 rounded cursor-pointer overflow-hidden ${
-                actualIndex === currentIndex ? "ring-2 ring-orange-400" : "opacity-60 hover:opacity-100"
+                actualIndex === currentIndex ? "ring-2 ring-emerald-400" : "opacity-60 hover:opacity-100"
               }`}
               onClick={() => {
                 const newIndex = actualIndex

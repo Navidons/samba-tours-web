@@ -65,9 +65,9 @@ export default function BlogGrid({ posts }: BlogGridProps) {
 
   if (posts.length === 0) {
     return (
-      <div className="text-center py-16 bg-orange-50/50 rounded-lg">
-        <h2 className="text-2xl font-playfair text-earth-800">No Articles Found</h2>
-        <p className="text-earth-600 mt-2">Try adjusting your search query or clearing the filter.</p>
+      <div className="text-center py-16 bg-emerald-50/50 rounded-lg">
+        <h2 className="text-2xl font-playfair text-gray-800">No Articles Found</h2>
+        <p className="text-gray-600 mt-2">Try adjusting your search query or clearing the filter.</p>
       </div>
     )
   }
@@ -92,17 +92,17 @@ export default function BlogGrid({ posts }: BlogGridProps) {
             </Link>
             <div className="p-6 flex flex-col flex-grow">
               <div className="mb-4">
-                <Badge className="bg-orange-100 text-orange-800 hover:bg-orange-200">
+                <Badge className="bg-emerald-100 text-emerald-800 hover:bg-emerald-200">
                   {post.category?.name || "Uncategorized"}
                 </Badge>
               </div>
               <Link href={`/blog/${post.slug}`} className="block">
-                <h3 className="font-playfair text-xl font-bold text-earth-900 group-hover:text-orange-600 transition-colors mb-3 line-clamp-2">
+                <h3 className="font-playfair text-xl font-bold text-gray-900 group-hover:text-emerald-600 transition-colors mb-3 line-clamp-2">
                   {post.title}
                 </h3>
               </Link>
-              <p className="text-earth-600 text-sm line-clamp-3 flex-grow">{post.excerpt}</p>
-              <div className="mt-4 pt-4 border-t border-gray-100 flex items-center justify-between text-xs text-earth-500">
+              <p className="text-gray-600 text-sm line-clamp-3 flex-grow">{post.excerpt}</p>
+              <div className="mt-4 pt-4 border-t border-gray-100 flex items-center justify-between text-xs text-gray-500">
                 <div className="flex items-center space-x-2">
                   <User className="h-4 w-4" />
                   <span>{post.author?.name || "Unknown Author"}</span>
@@ -125,10 +125,10 @@ export default function BlogGrid({ posts }: BlogGridProps) {
 
       {hasMorePosts && (
         <div className="text-center mt-12">
-          <p className="text-sm text-earth-600 mb-4">
+          <p className="text-sm text-gray-600 mb-4">
             Showing {Math.min(visiblePosts, posts.length)} of {posts.length} articles
           </p>
-          <Button onClick={loadMorePosts} disabled={isLoading} className="bg-orange-600 hover:bg-orange-700" size="lg">
+          <Button onClick={loadMorePosts} disabled={isLoading} className="bg-emerald-600 hover:bg-emerald-700" size="lg">
             {isLoading ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />

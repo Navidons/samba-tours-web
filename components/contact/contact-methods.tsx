@@ -48,7 +48,7 @@ const contactMethods = [
     action: "Start Chat",
     href: "#live-chat",
     availability: "Online Now",
-    color: "bg-orange-500",
+    color: "bg-emerald-500",
   },
   {
     icon: FileText,
@@ -74,10 +74,10 @@ export default function ContactMethods() {
   return (
     <section className="mb-16">
       <div className="text-center mb-12">
-        <h2 className="text-3xl md:text-4xl font-playfair font-bold text-earth-900 mb-4">
+        <h2 className="text-3xl md:text-4xl font-playfair font-bold text-gray-900 mb-4">
           Choose Your Preferred Contact Method
         </h2>
-        <p className="text-lg text-earth-600 max-w-2xl mx-auto">
+        <p className="text-lg text-gray-600 max-w-2xl mx-auto">
           We offer multiple ways to connect with us. Pick the method that works best for you.
         </p>
       </div>
@@ -91,9 +91,9 @@ export default function ContactMethods() {
               >
                 <method.icon className="h-8 w-8 text-white" />
               </div>
-              <h3 className="text-xl font-semibold text-earth-900 mb-2">{method.title}</h3>
-              <p className="text-earth-600 mb-4">{method.description}</p>
-              <div className="text-sm text-forest-600 font-medium mb-4">{method.availability}</div>
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">{method.title}</h3>
+              <p className="text-gray-600 mb-4">{method.description}</p>
+              <div className="text-sm text-emerald-600 font-medium mb-4">{method.availability}</div>
               <Button onClick={() => handleMethodClick(method.href)} className="w-full btn-primary">
                 {method.action}
               </Button>

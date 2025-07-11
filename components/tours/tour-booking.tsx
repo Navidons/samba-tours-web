@@ -122,12 +122,12 @@ export default function TourBooking({ tour }: TourBookingProps) {
   return (
     <div className="space-y-6">
       {/* Price Card */}
-      <Card className="sticky top-8">
+      <Card className="sticky top-8 border-emerald-100">
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
               <div className="flex items-center space-x-2">
-                <span className="text-3xl font-bold text-orange-600">${tour.price.toLocaleString()}</span>
+                <span className="text-3xl font-bold text-emerald-600">${tour.price.toLocaleString()}</span>
                 {tour.originalPrice && (
                   <span className="text-lg text-gray-400 line-through">${tour.originalPrice.toLocaleString()}</span>
                 )}
@@ -140,7 +140,7 @@ export default function TourBooking({ tour }: TourBookingProps) {
               <span className="text-sm text-gray-500">({tour.reviewCount})</span>
             </div>
           </div>
-          {savings > 0 && <Badge className="bg-green-100 text-green-800 w-fit">Save ${savings.toLocaleString()} total</Badge>}
+          {savings > 0 && <Badge className="bg-emerald-100 text-emerald-800 w-fit">Save ${savings.toLocaleString()} total</Badge>}
         </CardHeader>
 
         <CardContent className="space-y-6">
@@ -161,7 +161,7 @@ export default function TourBooking({ tour }: TourBookingProps) {
           <div className="space-y-2">
             <Label htmlFor="guests">Number of Guests *</Label>
             <Select value={guests} onValueChange={setGuests}>
-              <SelectTrigger>
+              <SelectTrigger className="border-emerald-200 focus:ring-emerald-500">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -178,7 +178,7 @@ export default function TourBooking({ tour }: TourBookingProps) {
           </div>
 
           {/* Price Breakdown */}
-          <div className="space-y-2 p-4 bg-gray-50 rounded-lg">
+          <div className="space-y-2 p-4 bg-emerald-50/50 rounded-lg border border-emerald-100">
             <div className="flex justify-between text-sm">
               <span>
                 ${tour.price.toLocaleString()} × {guests} guests
@@ -186,12 +186,12 @@ export default function TourBooking({ tour }: TourBookingProps) {
               <span>${totalPrice.toLocaleString()}</span>
             </div>
             {savings > 0 && (
-              <div className="flex justify-between text-sm text-green-600">
+              <div className="flex justify-between text-sm text-emerald-600">
                 <span>Discount</span>
                 <span>-${savings.toLocaleString()}</span>
               </div>
             )}
-            <div className="border-t pt-2 flex justify-between font-semibold">
+            <div className="border-t border-emerald-100 pt-2 flex justify-between font-semibold">
               <span>Total</span>
               <span>${(totalPrice - savings).toLocaleString()}</span>
             </div>
@@ -201,7 +201,7 @@ export default function TourBooking({ tour }: TourBookingProps) {
           <Button
             onClick={handleAddToCart}
             disabled={!startDate || isAddingToCart}
-            className="w-full bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700"
+            className="w-full bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700 text-white shadow-lg hover:shadow-xl transition-all duration-300"
             size="lg"
           >
             {isAddingToCart ? (
@@ -220,11 +220,19 @@ export default function TourBooking({ tour }: TourBookingProps) {
 
           {/* Quick Actions */}
           <div className="flex gap-2">
-            <Button variant="outline" size="sm" className="flex-1">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="flex-1 border-emerald-200 hover:bg-emerald-50 hover:text-emerald-700 transition-colors duration-300"
+            >
               <Heart className="mr-2 h-4 w-4" />
               Wishlist
             </Button>
-            <Button variant="outline" size="sm" className="flex-1">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="flex-1 border-emerald-200 hover:bg-emerald-50 hover:text-emerald-700 transition-colors duration-300"
+            >
               <Share2 className="mr-2 h-4 w-4" />
               Share
             </Button>

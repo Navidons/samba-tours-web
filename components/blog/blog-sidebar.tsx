@@ -110,7 +110,7 @@ export default function BlogSidebar({ searchQuery, onSearchChange }: BlogSidebar
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center space-x-2 font-playfair text-xl">
-            <Search className="h-5 w-5 text-orange-600" />
+            <Search className="h-5 w-5 text-emerald-600" />
             <span>Search Articles</span>
           </CardTitle>
         </CardHeader>
@@ -122,7 +122,7 @@ export default function BlogSidebar({ searchQuery, onSearchChange }: BlogSidebar
               value={searchQuery}
               onChange={(e) => onSearchChange(e.target.value)}
             />
-            <Button type="submit" className="bg-orange-600 hover:bg-orange-700">
+            <Button type="submit" className="bg-emerald-600 hover:bg-emerald-700">
               <Search className="h-4 w-4" />
             </Button>
           </form>
@@ -133,14 +133,14 @@ export default function BlogSidebar({ searchQuery, onSearchChange }: BlogSidebar
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center space-x-2 font-playfair text-xl">
-            <TrendingUp className="h-5 w-5 text-orange-600" />
+            <TrendingUp className="h-5 w-5 text-emerald-600" />
             <span>Popular Posts</span>
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           {loading ? (
             <div className="flex justify-center py-4">
-              <Loader2 className="h-6 w-6 animate-spin text-orange-600" />
+              <Loader2 className="h-6 w-6 animate-spin text-emerald-600" />
             </div>
           ) : popularPosts.length > 0 ? (
             popularPosts.map((post) => (
@@ -154,10 +154,10 @@ export default function BlogSidebar({ searchQuery, onSearchChange }: BlogSidebar
                     className="w-20 h-20 object-cover rounded-lg flex-shrink-0"
                   />
                   <div className="flex-1 min-w-0">
-                    <h4 className="font-medium text-earth-900 group-hover:text-orange-600 transition-colors line-clamp-2 mb-2">
+                    <h4 className="font-medium text-gray-900 group-hover:text-emerald-600 transition-colors line-clamp-2 mb-2">
                       {post.title}
                     </h4>
-                    <div className="flex items-center space-x-3 text-xs text-earth-600">
+                    <div className="flex items-center space-x-3 text-xs text-gray-600">
                       <div className="flex items-center space-x-1">
                         <TrendingUp className="h-3 w-3" />
                         <span>{post.viewCount.toLocaleString()} views</span>
@@ -168,7 +168,7 @@ export default function BlogSidebar({ searchQuery, onSearchChange }: BlogSidebar
               </Link>
             ))
           ) : (
-            <p className="text-earth-600 text-sm">No popular posts available</p>
+            <p className="text-gray-600 text-sm">No popular posts available</p>
           )}
         </CardContent>
       </Card>
@@ -177,28 +177,28 @@ export default function BlogSidebar({ searchQuery, onSearchChange }: BlogSidebar
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center space-x-2 font-playfair text-xl">
-            <Folder className="h-5 w-5 text-orange-600" />
+            <Folder className="h-5 w-5 text-emerald-600" />
             <span>Categories</span>
           </CardTitle>
         </CardHeader>
         <CardContent>
           {loading ? (
             <div className="flex justify-center py-4">
-              <Loader2 className="h-6 w-6 animate-spin text-orange-600" />
+              <Loader2 className="h-6 w-6 animate-spin text-emerald-600" />
             </div>
           ) : categories.length > 0 ? (
             <div className="space-y-2">
               {categories.map((category) => (
                 <Link key={category.id} href={`/blog/category/${category.slug}`}>
-                  <div className="flex items-center justify-between p-3 rounded-lg hover:bg-orange-50 transition-colors group">
-                    <span className="text-earth-900 group-hover:text-orange-600">{category.name}</span>
-                    <Badge className="bg-orange-100 text-orange-800 font-mono">{category.postCount}</Badge>
+                  <div className="flex items-center justify-between p-3 rounded-lg hover:bg-emerald-50 transition-colors group">
+                    <span className="text-gray-900 group-hover:text-emerald-600">{category.name}</span>
+                    <Badge className="bg-emerald-100 text-emerald-800 font-mono">{category.postCount}</Badge>
                   </div>
                 </Link>
               ))}
             </div>
           ) : (
-            <p className="text-earth-600 text-sm">No categories available</p>
+            <p className="text-gray-600 text-sm">No categories available</p>
           )}
         </CardContent>
       </Card>
@@ -207,14 +207,14 @@ export default function BlogSidebar({ searchQuery, onSearchChange }: BlogSidebar
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center space-x-2 font-playfair text-xl">
-            <Tag className="h-5 w-5 text-orange-600" />
+            <Tag className="h-5 w-5 text-emerald-600" />
             <span>Popular Tags</span>
           </CardTitle>
         </CardHeader>
         <CardContent>
           {loading ? (
             <div className="flex justify-center py-4">
-              <Loader2 className="h-6 w-6 animate-spin text-orange-600" />
+              <Loader2 className="h-6 w-6 animate-spin text-emerald-600" />
             </div>
           ) : tags.length > 0 ? (
             <div className="flex flex-wrap gap-2">
@@ -222,7 +222,7 @@ export default function BlogSidebar({ searchQuery, onSearchChange }: BlogSidebar
                 <Link key={tag.id} href={`/blog/tag/${tag.slug}`}>
                   <Badge
                     variant="outline"
-                    className="hover:bg-orange-50 hover:border-orange-300 hover:text-orange-700 transition-colors cursor-pointer"
+                    className="hover:bg-emerald-50 hover:border-emerald-300 hover:text-emerald-700 transition-colors cursor-pointer"
                     style={{ borderColor: tag.color, color: tag.color }}
                   >
                     #{tag.name}
@@ -231,26 +231,26 @@ export default function BlogSidebar({ searchQuery, onSearchChange }: BlogSidebar
               ))}
             </div>
           ) : (
-            <p className="text-earth-600 text-sm">No tags available</p>
+            <p className="text-gray-600 text-sm">No tags available</p>
           )}
         </CardContent>
       </Card>
 
       {/* Newsletter */}
-      <Card className="bg-gradient-to-br from-orange-50 to-red-50 border-orange-200">
+      <Card className="bg-gradient-to-br from-emerald-50 to-green-50 border-emerald-200">
         <CardHeader>
-          <CardTitle className="flex items-center space-x-2 text-orange-900 font-playfair text-xl">
+          <CardTitle className="flex items-center space-x-2 text-emerald-900 font-playfair text-xl">
             <Mail className="h-5 w-5" />
             <span>Stay Updated</span>
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-orange-800 mb-4">Get the latest stories and tips delivered to your inbox.</p>
+          <p className="text-emerald-800 mb-4">Get the latest stories and tips delivered to your inbox.</p>
           <form className="space-y-3">
             <Input placeholder="Your email address" className="bg-white" />
             <Button
               type="submit"
-              className="w-full bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700"
+              className="w-full bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700"
             >
               Subscribe Now
             </Button>

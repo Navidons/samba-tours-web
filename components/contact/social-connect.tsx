@@ -63,10 +63,10 @@ export default function SocialConnect() {
   return (
     <section className="mb-16">
       <div className="text-center mb-12">
-        <h2 className="text-3xl md:text-4xl font-playfair font-bold text-earth-900 mb-4">
+        <h2 className="text-3xl md:text-4xl font-playfair font-bold text-gray-900 mb-4">
           Connect With Us on Social Media
         </h2>
-        <p className="text-lg text-earth-600 max-w-2xl mx-auto">
+        <p className="text-lg text-gray-600 max-w-2xl mx-auto">
           Follow our adventures, get travel inspiration, and stay updated with the latest from Uganda
         </p>
       </div>
@@ -82,14 +82,14 @@ export default function SocialConnect() {
                   <platform.icon className="h-6 w-6 text-white" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-earth-900">{platform.name}</h3>
-                  <p className="text-sm text-earth-600">{platform.handle}</p>
+                  <h3 className="font-semibold text-gray-900">{platform.name}</h3>
+                  <p className="text-sm text-gray-600">{platform.handle}</p>
                 </div>
               </div>
 
               <div className="mb-4">
-                <div className="text-2xl font-bold text-earth-900 mb-1">{platform.followers}</div>
-                <p className="text-sm text-earth-600">{platform.description}</p>
+                <div className="text-2xl font-bold text-gray-900 mb-1">{platform.followers}</div>
+                <p className="text-sm text-gray-600">{platform.description}</p>
               </div>
 
               <Button asChild className={`w-full ${platform.color} text-white border-0`}>
@@ -103,23 +103,23 @@ export default function SocialConnect() {
       </div>
 
       {/* Social Feed Preview */}
-      <div className="mt-12 bg-gradient-to-r from-forest-50 to-earth-50 p-8 rounded-2xl">
+      <div className="mt-12 bg-gradient-to-r from-emerald-50 to-gray-50 p-8 rounded-2xl">
         <div className="text-center mb-8">
-          <h3 className="text-2xl font-playfair font-bold text-earth-900 mb-2">Latest from Our Social Media</h3>
-          <p className="text-earth-600">See what our travelers are sharing about their Uganda adventures</p>
+          <h3 className="text-2xl font-playfair font-bold text-gray-900 mb-2">Latest from Our Social Media</h3>
+          <p className="text-gray-600">See what our travelers are sharing about their Uganda adventures</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {[1, 2, 3].map((item) => (
             <div key={item} className="bg-white rounded-lg p-4 shadow-sm">
-              <div className="aspect-square bg-gradient-to-br from-forest-200 to-earth-200 rounded-lg mb-3 flex items-center justify-center">
-                <Instagram className="h-8 w-8 text-earth-600" />
+              <div className="aspect-square bg-gradient-to-br from-emerald-200 to-gray-200 rounded-lg mb-3 flex items-center justify-center">
+                <Instagram className="h-8 w-8 text-gray-600" />
               </div>
-              <p className="text-sm text-earth-600 mb-2">
+              <p className="text-sm text-gray-600 mb-2">
                 "Amazing gorilla trekking experience with @sambatours_uganda! The guides were incredible and the
                 wildlife was breathtaking. #UgandaSafari #GorillaTracking"
               </p>
-              <div className="flex items-center justify-between text-xs text-earth-500">
+              <div className="flex items-center justify-between text-xs text-gray-500">
                 <span>@traveler{item}</span>
                 <span>2 hours ago</span>
               </div>

@@ -159,7 +159,7 @@ export default function TourGrid({ filters, sortBy }: TourGridProps) {
     return (
       <div className="space-y-8">
         <div className="flex justify-center items-center py-12">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-600"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600"></div>
         </div>
       </div>
     )
@@ -171,17 +171,17 @@ export default function TourGrid({ filters, sortBy }: TourGridProps) {
         {/* Results Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
-            <h2 className="text-2xl font-bold text-earth-900">
+            <h2 className="text-2xl font-bold text-gray-900">
               {filteredTours.length === 0 ? "No Tours Found" : "Available Tours"}
             </h2>
-            <p className="text-earth-600">
+            <p className="text-gray-600">
               {filteredTours.length === 0
                 ? "Try adjusting your filters to find more tours"
                 : `Showing ${filteredTours.length} amazing adventure${filteredTours.length !== 1 ? "s" : ""}`}
             </p>
           </div>
           {comparisonTours.length > 0 && (
-            <div className="text-sm text-earth-600">
+            <div className="text-sm text-gray-600">
               {comparisonTours.length} tour{comparisonTours.length !== 1 ? "s" : ""} selected for comparison
             </div>
           )}
@@ -191,16 +191,16 @@ export default function TourGrid({ filters, sortBy }: TourGridProps) {
         {filteredTours.length === 0 && (
           <div className="text-center py-12">
             <div className="max-w-md mx-auto">
-              <div className="w-24 h-24 mx-auto mb-6 bg-orange-100 rounded-full flex items-center justify-center">
-                <MapPin className="h-12 w-12 text-orange-600" />
+              <div className="w-24 h-24 mx-auto mb-6 bg-emerald-100 rounded-full flex items-center justify-center">
+                <MapPin className="h-12 w-12 text-emerald-600" />
               </div>
-              <h3 className="text-xl font-semibold text-earth-900 mb-2">No tours match your criteria</h3>
-              <p className="text-earth-600 mb-6">
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">No tours match your criteria</h3>
+              <p className="text-gray-600 mb-6">
                 Try adjusting your filters or search terms to discover more amazing adventures in Uganda.
               </p>
               <Button
                 variant="outline"
-                className="border-orange-200 text-orange-700 hover:bg-orange-50 bg-transparent"
+                className="border-emerald-200 text-emerald-700 hover:bg-emerald-50 bg-transparent"
                 onClick={() => window.location.reload()}
               >
                 Reset All Filters
@@ -213,7 +213,7 @@ export default function TourGrid({ filters, sortBy }: TourGridProps) {
         {filteredTours.length > 0 && (
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
             {filteredTours.map((tour) => (
-              <Card key={tour.id} className="group hover:shadow-xl transition-all duration-300 overflow-hidden">
+              <Card key={tour.id} className="group hover:shadow-xl transition-all duration-300 overflow-hidden border border-emerald-100">
                 <div className="relative">
                   <Image
                     src={tour.images[0] || "/placeholder.svg"}
@@ -225,7 +225,7 @@ export default function TourGrid({ filters, sortBy }: TourGridProps) {
                   <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
 
                   {/* Category Badge */}
-                  <Badge className="absolute top-4 left-4 bg-orange-600 text-white border-0">{tour.category}</Badge>
+                  <Badge className="absolute top-4 left-4 bg-emerald-600 text-white border-0">{tour.category}</Badge>
 
                   {/* Action Buttons */}
                   <div className="absolute top-4 right-4 flex gap-2">
@@ -237,7 +237,7 @@ export default function TourGrid({ filters, sortBy }: TourGridProps) {
                       variant="secondary"
                       className={`${
                         isInComparison(tour.id)
-                          ? "bg-orange-600 text-white hover:bg-orange-700"
+                          ? "bg-emerald-600 text-white hover:bg-emerald-700"
                           : "bg-white/90 hover:bg-white"
                       } ${!canAddMore && !isInComparison(tour.id) ? "opacity-50 cursor-not-allowed" : ""}`}
                       onClick={() => handleComparisonToggle(tour)}
@@ -250,97 +250,79 @@ export default function TourGrid({ filters, sortBy }: TourGridProps) {
                             : "Maximum 3 tours can be compared"
                       }
                     >
-                      {isInComparison(tour.id) ? <Check className="h-4 w-4" /> : <Scale className="h-4 w-4" />}
+                      <Scale className="h-4 w-4" />
                     </Button>
                   </div>
 
-                  {/* Quick Info */}
-                  <div className="absolute bottom-4 left-4 right-4">
-                    <div className="flex items-center justify-between text-white text-sm">
-                      <div className="flex items-center space-x-1">
-                        <Star className="h-4 w-4 text-yellow-400 fill-current" />
-                        <span>{tour.rating}</span>
-                        <span>({tour.reviewCount})</span>
-                      </div>
-                      <Badge variant="secondary" className="bg-white/20 text-white border-0">
-                        {tour.difficulty}
-                      </Badge>
-                    </div>
+                  {/* Price Badge */}
+                  <div className="absolute bottom-4 right-4">
+                    <Badge className="bg-emerald-600 text-white border-0 text-lg px-3 py-1">
+                      ${tour.price.toLocaleString()}
+                    </Badge>
                   </div>
                 </div>
 
                 <CardContent className="p-6">
                   <div className="space-y-4">
+                    {/* Title and Rating */}
                     <div>
-                      <h3 className="font-semibold text-lg text-earth-900 group-hover:text-orange-600 transition-colors mb-2">
-                        {tour.title}
-                      </h3>
-                      <div className="flex items-center text-earth-600 text-sm">
-                        <MapPin className="h-4 w-4 mr-1" />
-                        <span>
+                      <Link href={`/tours/${tour.slug}`} className="hover:text-emerald-600 transition-colors">
+                        <h3 className="text-xl font-semibold text-gray-900 mb-2">{tour.title}</h3>
+                      </Link>
+                      <div className="flex items-center gap-2">
+                        <div className="flex items-center">
+                          {[...Array(5)].map((_, i) => (
+                            <Star
+                              key={i}
+                              className={`h-4 w-4 ${
+                                i < Math.floor(tour.rating) ? "text-yellow-500 fill-current" : "text-gray-300"
+                              }`}
+                            />
+                          ))}
+                        </div>
+                        <span className="text-sm text-gray-500">({tour.reviewCount} reviews)</span>
+                      </div>
+                    </div>
+
+                    {/* Tour Details */}
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2 text-gray-600">
+                        <MapPin className="h-4 w-4 text-emerald-600" />
+                        <span className="text-sm">
                           {tour.location.region}, {tour.location.country}
                         </span>
                       </div>
+                      <div className="flex items-center gap-2 text-gray-600">
+                        <Clock className="h-4 w-4 text-emerald-600" />
+                        <span className="text-sm">{tour.duration}</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-gray-600">
+                        <Users className="h-4 w-4 text-emerald-600" />
+                        <span className="text-sm">Max {tour.maxGroupSize} people</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-gray-600">
+                        <Calendar className="h-4 w-4 text-emerald-600" />
+                        <span className="text-sm">Available year-round</span>
+                      </div>
                     </div>
 
-                    <p className="text-earth-700 text-sm line-clamp-2">{tour.shortDescription}</p>
-
-                    <div className="grid grid-cols-2 gap-4 text-sm text-earth-600">
-                      <div className="flex items-center">
-                        <Clock className="h-4 w-4 mr-1" />
-                        <span>{tour.duration}</span>
-                      </div>
-                      <div className="flex items-center">
-                        <Users className="h-4 w-4 mr-1" />
-                        <span>{tour.groupSize}</span>
-                      </div>
-                    </div>
-
-                    <div className="flex flex-wrap gap-1">
-                      {tour.highlights.slice(0, 2).map((highlight, index) => (
-                        <Badge key={index} variant="outline" className="text-xs border-orange-200 text-orange-700">
-                          {highlight}
-                        </Badge>
-                      ))}
-                      {tour.highlights.length > 2 && (
-                        <Badge variant="outline" className="text-xs border-orange-200 text-orange-700">
-                          +{tour.highlights.length - 2} more
-                        </Badge>
-                      )}
-                    </div>
-
-                    <div className="flex items-center justify-between pt-4 border-t">
-                      <div>
-                        <span className="text-2xl font-bold text-earth-900">${tour.price}</span>
-                        <span className="text-sm text-earth-600"> per person</span>
-                      </div>
-                      {tour.originalPrice && (
-                        <div className="text-right text-xs text-earth-500">
-                          <div className="line-through">${tour.originalPrice}</div>
-                          <div className="text-green-600 font-medium">Save ${tour.originalPrice - tour.price}</div>
+                    {/* Highlights */}
+                    <div className="space-y-2">
+                      {tour.highlights.slice(0, 3).map((highlight, index) => (
+                        <div key={index} className="flex items-center gap-2 text-gray-600">
+                          <Check className="h-4 w-4 text-emerald-600 flex-shrink-0" />
+                          <span className="text-sm">{highlight}</span>
                         </div>
-                      )}
+                      ))}
                     </div>
 
-                    <div className="flex gap-2 pt-2">
-                      <Button
-                        size="sm"
-                        className="flex-1 bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700"
-                        asChild
-                      >
-                        <Link href={`/tours/${tour.slug}`}>
-                          View Details
-                          <ArrowRight className="h-4 w-4 ml-1" />
-                        </Link>
+                    {/* Action Button */}
+                    <Link href={`/tours/${tour.slug}`}>
+                      <Button className="w-full bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700 text-white">
+                        View Details
+                        <ArrowRight className="h-4 w-4 ml-2" />
                       </Button>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        className="border-orange-200 text-orange-700 hover:bg-orange-50 bg-transparent"
-                      >
-                        <Calendar className="h-4 w-4" />
-                      </Button>
-                    </div>
+                    </Link>
                   </div>
                 </CardContent>
               </Card>
@@ -349,8 +331,8 @@ export default function TourGrid({ filters, sortBy }: TourGridProps) {
         )}
       </div>
 
-      {/* Tour Comparison Modal */}
-      <TourComparison tours={comparisonTours} onRemoveTour={removeFromComparison} onClearAll={clearComparison} />
+      {/* Tour Comparison */}
+      {comparisonTours.length > 0 && <TourComparison />}
     </>
   )
 }

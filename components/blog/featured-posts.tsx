@@ -72,8 +72,8 @@ export default function FeaturedPosts() {
   if (loading) {
     return (
       <div className="text-center py-12">
-        <Loader2 className="h-8 w-8 animate-spin text-orange-600 mx-auto mb-4" />
-        <p className="text-earth-600">Loading featured posts...</p>
+        <Loader2 className="h-8 w-8 animate-spin text-emerald-600 mx-auto mb-4" />
+        <p className="text-gray-600">Loading featured posts...</p>
       </div>
     )
   }
@@ -81,11 +81,11 @@ export default function FeaturedPosts() {
   if (featuredPosts.length === 0) {
     return (
       <div className="text-center py-12">
-        <h2 className="font-playfair text-4xl font-bold text-earth-900 mb-4">Featured Stories</h2>
-        <p className="text-xl text-earth-600 max-w-3xl mx-auto">
+        <h2 className="font-playfair text-4xl font-bold text-gray-900 mb-4">Featured Stories</h2>
+        <p className="text-xl text-gray-600 max-w-3xl mx-auto">
           Our most popular and inspiring travel stories from Uganda's wilderness
         </p>
-        <p className="text-earth-600 mt-4">No featured posts available at the moment.</p>
+        <p className="text-gray-600 mt-4">No featured posts available at the moment.</p>
       </div>
     )
   }
@@ -93,8 +93,8 @@ export default function FeaturedPosts() {
   return (
     <div>
       <div className="text-center mb-12">
-        <h2 className="font-playfair text-4xl font-bold text-earth-900 mb-4">Featured Stories</h2>
-        <p className="text-xl text-earth-600 max-w-3xl mx-auto">
+        <h2 className="font-playfair text-4xl font-bold text-gray-900 mb-4">Featured Stories</h2>
+        <p className="text-xl text-gray-600 max-w-3xl mx-auto">
           Our most popular and inspiring travel stories from Uganda's wilderness
         </p>
       </div>
@@ -120,7 +120,7 @@ export default function FeaturedPosts() {
                   priority={index === 0}
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
-                <Badge className="absolute top-4 left-4 bg-orange-600 text-white border-0">
+                <Badge className="absolute top-4 left-4 bg-emerald-600 text-white border-0">
                   {post.category?.name || "Uncategorized"}
                 </Badge>
                 <div className="absolute bottom-4 left-4 right-4">
@@ -139,7 +139,7 @@ export default function FeaturedPosts() {
 
               <CardContent className={`p-6 md:p-8 ${index === 0 ? "md:w-1/2" : ""}`}>
                 <div className="space-y-4">
-                  <div className="flex items-center space-x-4 text-sm text-earth-600">
+                  <div className="flex items-center space-x-4 text-sm text-gray-600">
                     <div className="flex items-center space-x-1">
                       <Calendar className="h-4 w-4" />
                       <span>
@@ -153,21 +153,21 @@ export default function FeaturedPosts() {
                   </div>
 
                   <h3
-                    className={`font-playfair font-bold text-earth-900 group-hover:text-orange-600 transition-colors ${
+                    className={`font-playfair font-bold text-gray-900 group-hover:text-emerald-600 transition-colors ${
                       index === 0 ? "text-3xl" : "text-xl"
                     }`}
                   >
                     {post.title}
                   </h3>
 
-                  <p className="text-earth-700 leading-relaxed">{post.excerpt}</p>
+                  <p className="text-gray-700 leading-relaxed">{post.excerpt}</p>
 
                   <div className="flex flex-wrap gap-2 mb-4">
                     {post.tags.slice(0, 3).map((tag) => (
                       <Badge 
                         key={tag.id} 
                         variant="outline" 
-                        className="text-xs border-orange-200 text-orange-700"
+                        className="text-xs border-emerald-200 text-emerald-700"
                         style={{ borderColor: tag.color, color: tag.color }}
                       >
                         {tag.name}
@@ -177,7 +177,7 @@ export default function FeaturedPosts() {
 
                   <Button
                     asChild
-                    className="bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700 text-white border-0"
+                    className="bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700 text-white border-0"
                   >
                     <Link href={`/blog/${post.slug}`} className="flex items-center space-x-2">
                       <span>Read Full Story</span>

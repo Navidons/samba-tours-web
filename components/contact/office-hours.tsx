@@ -19,24 +19,24 @@ export default function OfficeHours() {
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          <Clock className="h-5 w-5 text-forest-600" />
+          <Clock className="h-5 w-5 text-emerald-600" />
           Office Hours & Availability
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
         {/* Local Office Hours */}
         <div>
-          <h4 className="font-semibold text-earth-900 mb-3">Kampala Office Hours</h4>
+          <h4 className="font-semibold text-gray-900 mb-3">Kampala Office Hours</h4>
           <div className="space-y-2">
             {officeHours.map((schedule, index) => (
               <div
                 key={index}
                 className="flex justify-between items-center py-2 border-b border-gray-100 last:border-0"
               >
-                <span className="text-earth-700">{schedule.day}</span>
+                <span className="text-gray-700">{schedule.day}</span>
                 <div className="text-right">
-                  <div className="font-medium text-earth-900">{schedule.hours}</div>
-                  <div className="text-xs text-earth-500">{schedule.timezone}</div>
+                  <div className="font-medium text-gray-900">{schedule.hours}</div>
+                  <div className="text-xs text-gray-500">{schedule.timezone}</div>
                 </div>
               </div>
             ))}
@@ -45,16 +45,16 @@ export default function OfficeHours() {
 
         {/* Timezone Support */}
         <div>
-          <h4 className="font-semibold text-earth-900 mb-3 flex items-center gap-2">
+          <h4 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
             <Globe className="h-4 w-4" />
             Global Support Coverage
           </h4>
           <div className="space-y-2">
             {timezoneSupport.map((zone, index) => (
               <div key={index} className="flex justify-between items-center py-2">
-                <span className="text-earth-700">{zone.region}</span>
+                <span className="text-gray-700">{zone.region}</span>
                 <div className="flex items-center gap-2">
-                  <span className="text-sm text-earth-600">{zone.time}</span>
+                  <span className="text-sm text-gray-600">{zone.time}</span>
                   <div
                     className={`w-2 h-2 rounded-full ${
                       zone.status === "online"

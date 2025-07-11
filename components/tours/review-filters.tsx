@@ -13,10 +13,10 @@ interface ReviewFiltersProps {
 
 export function ReviewFilters({ sortBy, setSortBy, filterBy, setFilterBy, reviewCount }: ReviewFiltersProps) {
   return (
-    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 p-4 bg-gray-50 rounded-lg">
+    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 p-4 bg-emerald-50/50 rounded-lg border border-emerald-100">
       <div className="flex items-center space-x-2">
-        <Filter className="h-4 w-4 text-earth-600" />
-        <span className="text-earth-700 font-medium">
+        <Filter className="h-4 w-4 text-emerald-600" />
+        <span className="text-gray-700 font-medium">
           Showing {reviewCount} review{reviewCount !== 1 ? "s" : ""}
         </span>
       </div>
@@ -24,9 +24,9 @@ export function ReviewFilters({ sortBy, setSortBy, filterBy, setFilterBy, review
       <div className="flex flex-col sm:flex-row gap-3">
         {/* Filter by Rating */}
         <div className="flex items-center space-x-2">
-          <span className="text-sm text-earth-600 whitespace-nowrap">Filter by:</span>
+          <span className="text-sm text-gray-600 whitespace-nowrap">Filter by:</span>
           <Select value={filterBy} onValueChange={setFilterBy}>
-            <SelectTrigger className="w-32">
+            <SelectTrigger className="w-32 border-emerald-200 focus:ring-emerald-500">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -42,9 +42,9 @@ export function ReviewFilters({ sortBy, setSortBy, filterBy, setFilterBy, review
 
         {/* Sort by */}
         <div className="flex items-center space-x-2">
-          <span className="text-sm text-earth-600 whitespace-nowrap">Sort by:</span>
+          <span className="text-sm text-gray-600 whitespace-nowrap">Sort by:</span>
           <Select value={sortBy} onValueChange={setSortBy}>
-            <SelectTrigger className="w-32">
+            <SelectTrigger className="w-32 border-emerald-200 focus:ring-emerald-500">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>

@@ -11,9 +11,9 @@ export default function CartIcon() {
 
   return (
     <Link href="/cart" className="relative">
-      <ShoppingCart className="h-6 w-6 text-gray-700 hover:text-orange-600 transition-colors" />
+      <ShoppingCart className="h-6 w-6 text-gray-700 hover:text-green-600 transition-colors" />
       {itemCount > 0 && (
-        <Badge className="absolute -top-2 -right-2 h-5 w-5 rounded-full bg-orange-500 text-white text-xs flex items-center justify-center p-0">
+        <Badge className="absolute -top-2 -right-2 h-5 w-5 rounded-full bg-green-500 text-white text-xs flex items-center justify-center p-0">
           {itemCount}
         </Badge>
       )}

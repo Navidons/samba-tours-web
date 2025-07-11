@@ -85,23 +85,23 @@ export default function BlogAuthorHeader({ author }: BlogAuthorHeaderProps) {
           <div className="lg:col-span-2">
             <div className="text-center lg:text-left">
               <div className="flex items-center justify-center lg:justify-start space-x-3 mb-4">
-                <Badge className="bg-forest-600 text-white flex items-center space-x-2">
+                <Badge className="bg-emerald-600 text-white flex items-center space-x-2">
                   <User className="h-4 w-4" />
                   <span>Author</span>
                 </Badge>
                 <Badge variant="secondary">{author.postCount} Articles</Badge>
               </div>
 
-              <h2 className="text-4xl lg:text-5xl font-playfair font-bold mb-2 text-earth-900">{author.name}</h2>
+              <h2 className="text-4xl lg:text-5xl font-playfair font-bold mb-2 text-gray-900">{author.name}</h2>
 
-              <p className="text-xl text-forest-600 mb-6">{author.role}</p>
+              <p className="text-xl text-emerald-600 mb-6">{author.role}</p>
 
-              <p className="text-earth-700 leading-relaxed mb-6 max-w-3xl">{author.bio}</p>
+              <p className="text-gray-700 leading-relaxed mb-6 max-w-3xl">{author.bio}</p>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <h3 className="font-semibold text-earth-900 mb-3 flex items-center space-x-2">
-                    <Award className="h-5 w-5 text-forest-600" />
+                  <h3 className="font-semibold text-gray-900 mb-3 flex items-center space-x-2">
+                    <Award className="h-5 w-5 text-emerald-600" />
                     <span>Expertise</span>
                   </h3>
                   <div className="flex flex-wrap gap-2">
@@ -114,11 +114,11 @@ export default function BlogAuthorHeader({ author }: BlogAuthorHeaderProps) {
                 </div>
 
                 <div>
-                  <h3 className="font-semibold text-earth-900 mb-3 flex items-center space-x-2">
-                    <Calendar className="h-5 w-5 text-forest-600" />
+                  <h3 className="font-semibold text-gray-900 mb-3 flex items-center space-x-2">
+                    <Calendar className="h-5 w-5 text-emerald-600" />
                     <span>Experience</span>
                   </h3>
-                  <p className="text-earth-700">{author.experience} in Uganda tourism</p>
+                  <p className="text-gray-700">{author.experience} in Uganda tourism</p>
                 </div>
               </div>
             </div>

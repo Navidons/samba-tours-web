@@ -90,29 +90,29 @@ export default function TestimonialsPreview() {
   const currentTestimonial = testimonials[currentIndex]
 
   return (
-    <section className="py-20 bg-gradient-to-br from-forest-50 via-white to-orange-50 relative overflow-hidden">
+    <section className="py-20 bg-gradient-to-br from-emerald-50 via-white to-green-50 relative overflow-hidden">
       {/* Background Elements */}
       <div className="absolute inset-0 opacity-10">
-        <div className="absolute top-20 right-20 w-72 h-72 bg-orange-500 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-40 left-20 w-96 h-96 bg-forest-600 rounded-full blur-3xl"></div>
+        <div className="absolute top-20 right-20 w-72 h-72 bg-green-500 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-40 left-20 w-96 h-96 bg-emerald-600 rounded-full blur-3xl"></div>
       </div>
 
       <div className="container-max px-4 relative">
         {/* Section Header */}
         <div className="text-center mb-16">
-          <div className="inline-flex items-center bg-gradient-to-r from-orange-100 to-yellow-100 text-orange-700 px-6 py-3 rounded-full text-sm font-bold mb-6 border border-orange-200">
+          <div className="inline-flex items-center bg-gradient-to-r from-green-100 to-emerald-100 text-green-700 px-6 py-3 rounded-full text-sm font-bold mb-6 border border-green-200">
             <Quote className="h-4 w-4 mr-2" />
             What Our Travelers Say
           </div>
 
-          <h2 className="text-4xl md:text-5xl font-playfair font-bold text-earth-900 mb-6">
+          <h2 className="text-4xl md:text-5xl font-playfair font-bold text-gray-900 mb-6">
             Stories from
-            <span className="block text-transparent bg-clip-text bg-gradient-to-r from-orange-600 to-red-600">
+            <span className="block text-transparent bg-clip-text bg-gradient-to-r from-green-600 to-emerald-600">
               Happy Adventurers
             </span>
           </h2>
 
-          <p className="text-xl text-earth-600 max-w-3xl mx-auto mb-8">
+          <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
             Don't just take our word for it. Hear from thousands of travelers who have experienced the magic of Uganda
             with Samba Tours.
           </p>
@@ -121,11 +121,11 @@ export default function TestimonialsPreview() {
           <div className="flex flex-wrap justify-center gap-8 mb-12">
             {stats.map((stat, index) => (
               <div key={index} className="text-center">
-                <div className="w-16 h-16 bg-gradient-to-br from-orange-100 to-red-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                  <stat.icon className="h-8 w-8 text-orange-600" />
+                <div className="w-16 h-16 bg-gradient-to-br from-green-100 to-emerald-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                  <stat.icon className="h-8 w-8 text-green-600" />
                 </div>
-                <div className="text-3xl font-bold text-earth-900 mb-1">{stat.value}</div>
-                <div className="text-earth-600 text-sm">{stat.label}</div>
+                <div className="text-3xl font-bold text-gray-900 mb-1">{stat.value}</div>
+                <div className="text-gray-600 text-sm">{stat.label}</div>
               </div>
             ))}
           </div>
@@ -139,19 +139,19 @@ export default function TestimonialsPreview() {
                 {/* Left Side - Testimonial Content */}
                 <div className="p-12 flex flex-col justify-center">
                   <div className="mb-6">
-                    <Quote className="h-12 w-12 text-orange-500 mb-4" />
-                    <p className="text-xl md:text-2xl text-earth-700 leading-relaxed mb-6 font-medium">
+                    <Quote className="h-12 w-12 text-green-500 mb-4" />
+                    <p className="text-xl md:text-2xl text-gray-700 leading-relaxed mb-6 font-medium">
                       "{currentTestimonial.text}"
                     </p>
 
-                    <div className="bg-gradient-to-r from-orange-100 to-yellow-100 rounded-lg p-4 mb-6">
-                      <p className="text-orange-800 font-bold text-lg">"{currentTestimonial.highlight}"</p>
+                    <div className="bg-gradient-to-r from-green-100 to-emerald-100 rounded-lg p-4 mb-6">
+                      <p className="text-green-800 font-bold text-lg">"{currentTestimonial.highlight}"</p>
                     </div>
                   </div>
 
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-4">
-                      <div className="w-16 h-16 rounded-full overflow-hidden border-3 border-orange-200">
+                      <div className="w-16 h-16 rounded-full overflow-hidden border-3 border-green-200">
                         <img
                           src={currentTestimonial.image || "/placeholder.svg"}
                           alt={currentTestimonial.name}
@@ -159,9 +159,9 @@ export default function TestimonialsPreview() {
                         />
                       </div>
                       <div>
-                        <h4 className="font-bold text-earth-900 text-lg">{currentTestimonial.name}</h4>
-                        <p className="text-earth-600">{currentTestimonial.location}</p>
-                        <p className="text-orange-600 font-medium text-sm">{currentTestimonial.tour}</p>
+                        <h4 className="font-bold text-gray-900 text-lg">{currentTestimonial.name}</h4>
+                        <p className="text-gray-600">{currentTestimonial.location}</p>
+                        <p className="text-green-600 font-medium text-sm">{currentTestimonial.tour}</p>
                       </div>
                     </div>
 
@@ -171,20 +171,20 @@ export default function TestimonialsPreview() {
                           <Star key={i} className="h-5 w-5 text-yellow-400 fill-current" />
                         ))}
                       </div>
-                      <p className="text-earth-600 text-sm">{currentTestimonial.date}</p>
+                      <p className="text-gray-600 text-sm">{currentTestimonial.date}</p>
                     </div>
                   </div>
                 </div>
 
                 {/* Right Side - Video/Image */}
-                <div className="relative bg-gradient-to-br from-orange-500 to-red-500 flex items-center justify-center min-h-[400px]">
+                <div className="relative bg-gradient-to-br from-green-500 to-emerald-500 flex items-center justify-center min-h-[400px]">
                   <div className="absolute inset-0 bg-black/20"></div>
                   <div className="relative text-center text-white">
                     <div className="w-24 h-24 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center mx-auto mb-6 hover:bg-white/30 transition-colors cursor-pointer group">
                       <Play className="h-12 w-12 text-white group-hover:scale-110 transition-transform" />
                     </div>
                     <h3 className="text-2xl font-bold mb-2">Watch Their Story</h3>
-                    <p className="text-orange-100">See their amazing journey</p>
+                    <p className="text-green-100">See their amazing journey</p>
                   </div>
                 </div>
               </div>
@@ -198,7 +198,7 @@ export default function TestimonialsPreview() {
             variant="outline"
             size="lg"
             onClick={prevTestimonial}
-            className="w-14 h-14 rounded-full border-2 border-orange-300 hover:bg-orange-500 hover:text-white hover:border-orange-500 transition-all duration-300 bg-transparent"
+            className="w-14 h-14 rounded-full border-2 border-green-300 hover:bg-green-500 hover:text-white hover:border-green-500 transition-all duration-300 bg-transparent"
           >
             <ArrowLeft className="h-6 w-6" />
           </Button>
@@ -213,7 +213,7 @@ export default function TestimonialsPreview() {
                 }}
                 className={`transition-all duration-300 rounded-full ${
                   index === currentIndex
-                    ? "bg-gradient-to-r from-orange-500 to-red-500 w-12 h-4"
+                    ? "bg-gradient-to-r from-green-500 to-emerald-500 w-12 h-4"
                     : "bg-gray-300 hover:bg-gray-400 w-4 h-4"
                 }`}
               />
@@ -224,7 +224,7 @@ export default function TestimonialsPreview() {
             variant="outline"
             size="lg"
             onClick={nextTestimonial}
-            className="w-14 h-14 rounded-full border-2 border-orange-300 hover:bg-orange-500 hover:text-white hover:border-orange-500 transition-all duration-300 bg-transparent"
+            className="w-14 h-14 rounded-full border-2 border-green-300 hover:bg-green-500 hover:text-white hover:border-green-500 transition-all duration-300 bg-transparent"
           >
             <ArrowRight className="h-6 w-6" />
           </Button>
@@ -236,7 +236,7 @@ export default function TestimonialsPreview() {
             <Card
               key={testimonial.id}
               className={`cursor-pointer transition-all duration-300 hover:shadow-xl transform hover:-translate-y-2 ${
-                index === currentIndex ? "ring-2 ring-orange-500 shadow-xl" : ""
+                index === currentIndex ? "ring-2 ring-green-500 shadow-xl" : ""
               }`}
               onClick={() => setCurrentIndex(index)}
             >
@@ -248,47 +248,36 @@ export default function TestimonialsPreview() {
                     className="w-12 h-12 rounded-full object-cover mr-4"
                   />
                   <div>
-                    <h4 className="font-bold text-earth-900">{testimonial.name}</h4>
-                    <p className="text-earth-600 text-sm">{testimonial.location}</p>
+                    <h4 className="font-bold text-gray-900">{testimonial.name}</h4>
+                    <p className="text-gray-600 text-sm">{testimonial.location}</p>
                   </div>
                 </div>
-                <div className="flex items-center mb-3">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="h-4 w-4 text-yellow-400 fill-current" />
-                  ))}
+                <p className="text-gray-700 mb-4 line-clamp-3">{testimonial.text}</p>
+                <div className="flex items-center justify-between">
+                  <div className="flex">
+                    {[...Array(testimonial.rating)].map((_, i) => (
+                      <Star key={i} className="h-4 w-4 text-yellow-400 fill-current" />
+                    ))}
+                  </div>
+                  <p className="text-green-600 text-sm font-medium">{testimonial.date}</p>
                 </div>
-                <p className="text-earth-700 text-sm line-clamp-3">{testimonial.text}</p>
               </CardContent>
             </Card>
           ))}
         </div>
 
-        {/* CTA Section */}
-        <div className="text-center bg-gradient-to-r from-orange-600 to-red-600 rounded-3xl p-12 text-white">
-          <h3 className="text-3xl font-bold mb-4">Ready to Create Your Own Story?</h3>
-          <p className="text-xl text-orange-100 mb-8 max-w-2xl mx-auto">
-            Join thousands of satisfied travelers and experience the adventure of a lifetime
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button
-              size="lg"
-              className="bg-white text-orange-600 hover:bg-gray-100 px-8 py-4 text-lg font-bold rounded-full shadow-xl"
-              asChild
-            >
-              <Link href="/tours">
-                Start Your Adventure
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Link>
-            </Button>
-            <Button
-              size="lg"
-              variant="outline"
-              className="border-2 border-white text-white hover:bg-white hover:text-orange-600 px-8 py-4 text-lg font-bold rounded-full bg-transparent"
-              asChild
-            >
-              <Link href="/contact">Plan Custom Trip</Link>
-            </Button>
-          </div>
+        {/* CTA */}
+        <div className="text-center">
+          <Button
+            size="lg"
+            className="bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white px-8 py-6 text-lg font-bold rounded-full shadow-lg hover:shadow-xl transition-all duration-300"
+            asChild
+          >
+            <Link href="/reviews">
+              Read More Reviews
+              <ArrowRight className="ml-2 h-5 w-5" />
+            </Link>
+          </Button>
         </div>
       </div>
     </section>

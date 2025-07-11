@@ -30,7 +30,7 @@ async function getRelatedTours(currentTour: any) {
     }
 
     const response = await fetch(`${baseUrl}/api/tours?category=${categoryId}&limit=3&exclude=${currentTour.id}`, {
-      next: { revalidate: 3600 } // Cache for 1 hour
+      next: { revalidate: 3600 } // 
     })
     
     if (!response.ok) {

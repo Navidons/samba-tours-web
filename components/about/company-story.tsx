@@ -103,7 +103,7 @@ export default function CompanyStory() {
           <h3 className="text-3xl font-bold text-center text-gray-900 mb-16">Our Journey</h3>
           <div className="relative">
             {/* Timeline line */}
-            <div className="absolute left-1/2 transform -translate-x-1/2 w-1 h-full bg-gradient-to-b from-orange-300 to-red-300 hidden lg:block"></div>
+            <div className="absolute left-1/2 transform -translate-x-1/2 w-1 h-full bg-gradient-to-b from-emerald-300 to-green-300 hidden lg:block"></div>
 
             <div className="space-y-12">
               {milestones.map((milestone, index) => (
@@ -114,12 +114,12 @@ export default function CompanyStory() {
                   <div
                     className={`flex-1 ${index % 2 === 0 ? "lg:text-right" : "lg:text-left"} text-center lg:text-left`}
                   >
-                    <div className="bg-white p-8 rounded-xl shadow-lg border border-orange-100 hover:shadow-xl transition-shadow duration-300">
+                    <div className="bg-white p-8 rounded-xl shadow-lg border border-emerald-100 hover:shadow-xl transition-shadow duration-300">
                       <div className="flex items-center justify-center lg:justify-start mb-4">
-                        <div className="w-14 h-14 bg-gradient-to-br from-orange-500 to-red-500 rounded-full flex items-center justify-center mr-4 shadow-lg">
+                        <div className="w-14 h-14 bg-gradient-to-br from-emerald-500 to-green-500 rounded-full flex items-center justify-center mr-4 shadow-lg">
                           <milestone.icon className="h-7 w-7 text-white" />
                         </div>
-                        <span className="text-3xl font-bold bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent">
+                        <span className="text-3xl font-bold bg-gradient-to-r from-emerald-600 to-green-600 bg-clip-text text-transparent">
                           {milestone.year}
                         </span>
                       </div>
@@ -129,7 +129,7 @@ export default function CompanyStory() {
                   </div>
 
                   {/* Timeline dot */}
-                  <div className="hidden lg:block w-6 h-6 bg-gradient-to-br from-orange-500 to-red-500 rounded-full border-4 border-white shadow-lg z-10"></div>
+                  <div className="hidden lg:block w-6 h-6 bg-gradient-to-br from-emerald-500 to-green-500 rounded-full border-4 border-white shadow-lg z-10"></div>
 
                   <div className="flex-1"></div>
                 </div>

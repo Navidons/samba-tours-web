@@ -132,16 +132,16 @@ export default function TourFilters({ onFiltersChange }: TourFiltersProps) {
       {/* Filter Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-2">
-          <Filter className="h-5 w-5 text-orange-600" />
-          <h2 className="text-lg font-semibold text-earth-900">Filters</h2>
-          {activeFilterCount > 0 && <Badge className="bg-orange-600 text-white">{activeFilterCount}</Badge>}
+          <Filter className="h-5 w-5 text-emerald-600" />
+          <h2 className="text-lg font-semibold text-gray-900">Filters</h2>
+          {activeFilterCount > 0 && <Badge className="bg-emerald-600 text-white">{activeFilterCount}</Badge>}
         </div>
         {activeFilterCount > 0 && (
           <Button
             variant="ghost"
             size="sm"
             onClick={clearAllFilters}
-            className="text-red-600 hover:text-red-700 hover:bg-red-50"
+            className="text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50"
           >
             <X className="h-4 w-4 mr-1" />
             Clear All
@@ -150,31 +150,31 @@ export default function TourFilters({ onFiltersChange }: TourFiltersProps) {
       </div>
 
       {/* Search */}
-      <Card>
+      <Card className="border-emerald-100">
         <CardHeader className="pb-3">
           <CardTitle className="flex items-center space-x-2 text-base">
-            <Search className="h-4 w-4 text-orange-600" />
+            <Search className="h-4 w-4 text-emerald-600" />
             <span>Search Tours</span>
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-earth-400" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
             <Input
               placeholder="Search tours, destinations, activities..."
               value={filters.search}
               onChange={(e) => handleSearchChange(e.target.value)}
-              className="pl-10 border-orange-200 focus:border-orange-500"
+              className="pl-10 border-emerald-200 focus:border-emerald-500 focus:ring-emerald-500"
             />
           </div>
         </CardContent>
       </Card>
 
       {/* Categories */}
-      <Card>
+      <Card className="border-emerald-100">
         <CardHeader className="pb-3">
           <CardTitle className="flex items-center space-x-2 text-base">
-            <MapPin className="h-4 w-4 text-orange-600" />
+            <MapPin className="h-4 w-4 text-emerald-600" />
             <span>Categories</span>
           </CardTitle>
         </CardHeader>
@@ -186,22 +186,23 @@ export default function TourFilters({ onFiltersChange }: TourFiltersProps) {
                   id={category.id}
                   checked={filters.categories.includes(category.id)}
                   onCheckedChange={(checked) => handleCategoryChange(category.id, checked as boolean)}
+                  className="border-emerald-200 text-emerald-600 focus:ring-emerald-500"
                 />
-                <Label htmlFor={category.id} className="text-sm font-medium cursor-pointer">
+                <Label htmlFor={category.id} className="text-sm font-medium cursor-pointer text-gray-700">
                   {category.name}
                 </Label>
               </div>
-              <span className="text-xs text-earth-500">({category.count})</span>
+              <span className="text-xs text-gray-500">({category.count})</span>
             </div>
           ))}
         </CardContent>
       </Card>
 
       {/* Duration */}
-      <Card>
+      <Card className="border-emerald-100">
         <CardHeader className="pb-3">
           <CardTitle className="flex items-center space-x-2 text-base">
-            <Clock className="h-4 w-4 text-orange-600" />
+            <Clock className="h-4 w-4 text-emerald-600" />
             <span>Duration</span>
           </CardTitle>
         </CardHeader>
@@ -213,22 +214,23 @@ export default function TourFilters({ onFiltersChange }: TourFiltersProps) {
                   id={duration.id}
                   checked={filters.durations.includes(duration.id)}
                   onCheckedChange={(checked) => handleDurationChange(duration.id, checked as boolean)}
+                  className="border-emerald-200 text-emerald-600 focus:ring-emerald-500"
                 />
-                <Label htmlFor={duration.id} className="text-sm font-medium cursor-pointer">
+                <Label htmlFor={duration.id} className="text-sm font-medium cursor-pointer text-gray-700">
                   {duration.name}
                 </Label>
               </div>
-              <span className="text-xs text-earth-500">({duration.count})</span>
+              <span className="text-xs text-gray-500">({duration.count})</span>
             </div>
           ))}
         </CardContent>
       </Card>
 
       {/* Difficulty */}
-      <Card>
+      <Card className="border-emerald-100">
         <CardHeader className="pb-3">
           <CardTitle className="flex items-center space-x-2 text-base">
-            <Star className="h-4 w-4 text-orange-600" />
+            <Star className="h-4 w-4 text-emerald-600" />
             <span>Difficulty</span>
           </CardTitle>
         </CardHeader>
@@ -240,22 +242,23 @@ export default function TourFilters({ onFiltersChange }: TourFiltersProps) {
                   id={difficulty.id}
                   checked={filters.difficulties.includes(difficulty.id)}
                   onCheckedChange={(checked) => handleDifficultyChange(difficulty.id, checked as boolean)}
+                  className="border-emerald-200 text-emerald-600 focus:ring-emerald-500"
                 />
-                <Label htmlFor={difficulty.id} className="text-sm font-medium cursor-pointer">
+                <Label htmlFor={difficulty.id} className="text-sm font-medium cursor-pointer text-gray-700">
                   {difficulty.name}
                 </Label>
               </div>
-              <span className="text-xs text-earth-500">({difficulty.count})</span>
+              <span className="text-xs text-gray-500">({difficulty.count})</span>
             </div>
           ))}
         </CardContent>
       </Card>
 
       {/* Destinations */}
-      <Card>
+      <Card className="border-emerald-100">
         <CardHeader className="pb-3">
           <CardTitle className="flex items-center space-x-2 text-base">
-            <MapPin className="h-4 w-4 text-orange-600" />
+            <MapPin className="h-4 w-4 text-emerald-600" />
             <span>Destinations</span>
           </CardTitle>
         </CardHeader>
@@ -267,39 +270,40 @@ export default function TourFilters({ onFiltersChange }: TourFiltersProps) {
                   id={destination.id}
                   checked={filters.destinations.includes(destination.id)}
                   onCheckedChange={(checked) => handleDestinationChange(destination.id, checked as boolean)}
+                  className="border-emerald-200 text-emerald-600 focus:ring-emerald-500"
                 />
-                <Label htmlFor={destination.id} className="text-sm font-medium cursor-pointer">
+                <Label htmlFor={destination.id} className="text-sm font-medium cursor-pointer text-gray-700">
                   {destination.name}
                 </Label>
               </div>
-              <span className="text-xs text-earth-500">({destination.count})</span>
+              <span className="text-xs text-gray-500">({destination.count})</span>
             </div>
           ))}
         </CardContent>
       </Card>
 
       {/* Price Range */}
-      <Card>
+      <Card className="border-emerald-100">
         <CardHeader className="pb-3">
           <CardTitle className="flex items-center space-x-2 text-base">
-            <DollarSign className="h-4 w-4 text-orange-600" />
+            <DollarSign className="h-4 w-4 text-emerald-600" />
             <span>Price Range</span>
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="px-2">
+        <CardContent>
+          <div className="space-y-4">
             <Slider
               value={[filters.minPrice, filters.maxPrice]}
-              onValueChange={handlePriceChange}
-              max={2000}
               min={100}
-              step={50}
-              className="w-full"
+              max={2000}
+              step={100}
+              onValueChange={handlePriceChange}
+              className="[&>.slider-thumb]:border-emerald-600 [&>.slider-thumb]:bg-emerald-600 [&>.slider-track]:bg-emerald-200"
             />
-          </div>
-          <div className="flex items-center justify-between text-sm text-earth-600">
-            <span>${filters.minPrice}</span>
-            <span>${filters.maxPrice}</span>
+            <div className="flex items-center justify-between text-sm text-gray-600">
+              <span>${filters.minPrice}</span>
+              <span>${filters.maxPrice}</span>
+            </div>
           </div>
         </CardContent>
       </Card>
