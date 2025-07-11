@@ -88,11 +88,11 @@ export default function ContactForm() {
 
   if (submitStatus === "success") {
     return (
-      <Card className="border-0 shadow-xl bg-gradient-to-br from-orange-50 to-red-50">
+      <Card className="border-0 shadow-xl bg-gradient-to-br from-emerald-50 to-green-50">
         <CardContent className="p-8 text-center">
           <div className="mb-6">
             <CheckCircle className="h-20 w-20 text-green-500 mx-auto mb-4" />
-            <h3 className="text-3xl font-bold bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent mb-2">
+            <h3 className="text-3xl font-bold bg-gradient-to-r from-emerald-600 to-green-600 bg-clip-text text-transparent mb-2">
               Thank You!
             </h3>
             <p className="text-gray-600 text-lg mb-6">
@@ -110,7 +110,7 @@ export default function ContactForm() {
             </ul>
           </div>
 
-          <Button onClick={resetForm} variant="outline" className="border-orange-200 hover:bg-orange-50 bg-transparent">
+          <Button onClick={resetForm} variant="outline" className="border-emerald-200 hover:bg-emerald-50 bg-transparent">
             Send Another Message
           </Button>
         </CardContent>
@@ -119,9 +119,9 @@ export default function ContactForm() {
   }
 
   return (
-    <Card className="border-0 shadow-xl bg-gradient-to-br from-orange-50 to-red-50">
+    <Card className="border-0 shadow-xl bg-gradient-to-br from-emerald-50 to-green-50">
       <CardHeader className="text-center">
-        <CardTitle className="text-3xl font-bold bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent">
+        <CardTitle className="text-3xl font-bold bg-gradient-to-r from-emerald-600 to-green-600 bg-clip-text text-transparent">
           Plan Your Adventure
         </CardTitle>
         <CardDescription className="text-lg text-gray-600">
@@ -149,7 +149,7 @@ export default function ContactForm() {
                 value={formData.name}
                 onChange={(e) => handleInputChange("name", e.target.value)}
                 placeholder="Your full name"
-                className="border-orange-200 focus:border-orange-400 focus:ring-orange-400"
+                className="border-emerald-200 focus:border-emerald-400 focus:ring-emerald-400"
               />
             </div>
             <div className="space-y-2">
@@ -163,7 +163,7 @@ export default function ContactForm() {
                 value={formData.email}
                 onChange={(e) => handleInputChange("email", e.target.value)}
                 placeholder="your@email.com"
-                className="border-orange-200 focus:border-orange-400 focus:ring-orange-400"
+                className="border-emerald-200 focus:border-emerald-400 focus:ring-emerald-400"
               />
             </div>
           </div>
@@ -179,7 +179,7 @@ export default function ContactForm() {
                 value={formData.phone}
                 onChange={(e) => handleInputChange("phone", e.target.value)}
                 placeholder="+256 700 123 456"
-                className="border-orange-200 focus:border-orange-400 focus:ring-orange-400"
+                className="border-emerald-200 focus:border-emerald-400 focus:ring-emerald-400"
               />
             </div>
             <div className="space-y-2">
@@ -187,7 +187,7 @@ export default function ContactForm() {
                 Tour Type *
               </Label>
               <Select value={formData.tourType} onValueChange={(value) => handleInputChange("tourType", value)}>
-                <SelectTrigger className="border-orange-200 focus:border-orange-400 focus:ring-orange-400">
+                <SelectTrigger className="border-emerald-200 focus:border-emerald-400 focus:ring-emerald-400">
                   <SelectValue placeholder="Select tour type" />
                 </SelectTrigger>
                 <SelectContent>
@@ -211,7 +211,7 @@ export default function ContactForm() {
                 type="date"
                 value={formData.travelDate}
                 onChange={(e) => handleInputChange("travelDate", e.target.value)}
-                className="border-orange-200 focus:border-orange-400 focus:ring-orange-400"
+                className="border-emerald-200 focus:border-emerald-400 focus:ring-emerald-400"
               />
             </div>
             <div className="space-y-2">
@@ -219,7 +219,7 @@ export default function ContactForm() {
                 Group Size
               </Label>
               <Select value={formData.groupSize} onValueChange={(value) => handleInputChange("groupSize", value)}>
-                <SelectTrigger className="border-orange-200 focus:border-orange-400 focus:ring-orange-400">
+                <SelectTrigger className="border-emerald-200 focus:border-emerald-400 focus:ring-emerald-400">
                   <SelectValue placeholder="Number of travelers" />
                 </SelectTrigger>
                 <SelectContent>
@@ -243,13 +243,13 @@ export default function ContactForm() {
               value={formData.message}
               onChange={(e) => handleInputChange("message", e.target.value)}
               placeholder="Tell us about your dream safari experience, special requirements, dietary restrictions, or any questions you have..."
-              className="border-orange-200 focus:border-orange-400 focus:ring-orange-400"
+              className="border-emerald-200 focus:border-emerald-400 focus:ring-emerald-400"
             />
           </div>
 
           <Button
             type="submit"
-            className="w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-semibold py-3 text-lg shadow-lg hover:shadow-xl transition-all duration-300"
+            className="w-full bg-gradient-to-r from-emerald-500 to-green-500 hover:from-emerald-600 hover:to-green-600 text-white font-semibold py-3 text-lg shadow-lg hover:shadow-xl transition-all duration-300"
             disabled={isSubmitting}
           >
             {isSubmitting ? (

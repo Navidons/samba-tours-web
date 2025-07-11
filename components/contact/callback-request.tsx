@@ -43,40 +43,40 @@ export default function CallbackRequest() {
     <Card id="callback-request">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          <Phone className="h-5 w-5 text-forest-600" />
+          <Phone className="h-5 w-5 text-emerald-600" />
           Request a Callback
         </CardTitle>
-        <p className="text-earth-600">Schedule a convenient time for our travel experts to call you</p>
+        <p className="text-gray-600">Schedule a convenient time for our travel experts to call you</p>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-earth-700 mb-2">Your Name *</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Your Name *</label>
               <Input required placeholder="Full name" />
             </div>
             <div>
-              <label className="block text-sm font-medium text-earth-700 mb-2">Phone Number *</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Phone Number *</label>
               <Input required type="tel" placeholder="+256 700 123 456" />
             </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-earth-700 mb-2">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
                 <Calendar className="h-4 w-4 inline mr-1" />
                 Preferred Date *
               </label>
               <Input required type="date" min={new Date().toISOString().split("T")[0]} />
             </div>
             <div>
-              <label className="block text-sm font-medium text-earth-700 mb-2">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
                 <Clock className="h-4 w-4 inline mr-1" />
                 Preferred Time *
               </label>
               <select
                 required
-                className="w-full px-3 py-2 border border-earth-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-forest-500"
+                className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
               >
                 <option value="">Select time slot</option>
                 {timeSlots.map((slot, index) => (
@@ -89,7 +89,7 @@ export default function CallbackRequest() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-earth-700 mb-2">What would you like to discuss?</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">What would you like to discuss?</label>
             <Textarea placeholder="Tour planning, pricing, custom itinerary, etc." rows={3} />
           </div>
 

@@ -59,24 +59,24 @@ export default function VideoCallBooking() {
     <Card id="video-booking">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          <Video className="h-5 w-5 text-forest-600" />
+          <Video className="h-5 w-5 text-emerald-600" />
           Book a Video Consultation
         </CardTitle>
-        <p className="text-earth-600">Free 30-minute video call with our travel experts</p>
+        <p className="text-gray-600">Free 30-minute video call with our travel experts</p>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Consultant Selection */}
           <div>
-            <label className="block text-sm font-medium text-earth-700 mb-3">Choose Your Consultant</label>
+            <label className="block text-sm font-medium text-gray-700 mb-3">Choose Your Consultant</label>
             <div className="space-y-3">
               {consultants.map((consultant, index) => (
                 <div
                   key={index}
                   className={`p-4 border rounded-lg cursor-pointer transition-all ${
                     selectedConsultant === consultant.name
-                      ? "border-forest-500 bg-forest-50"
-                      : "border-earth-200 hover:border-forest-300"
+                      ? "border-emerald-500 bg-emerald-50"
+                      : "border-gray-200 hover:border-emerald-300"
                   }`}
                   onClick={() => setSelectedConsultant(consultant.name)}
                 >
@@ -87,11 +87,11 @@ export default function VideoCallBooking() {
                       className="w-12 h-12 rounded-full object-cover"
                     />
                     <div className="flex-1">
-                      <h4 className="font-semibold text-earth-900">{consultant.name}</h4>
-                      <p className="text-sm text-earth-600">{consultant.title}</p>
+                      <h4 className="font-semibold text-gray-900">{consultant.name}</h4>
+                      <p className="text-sm text-gray-600">{consultant.title}</p>
                       <div className="flex flex-wrap gap-1 mt-1">
                         {consultant.specialties.map((specialty, idx) => (
-                          <span key={idx} className="text-xs bg-forest-100 text-forest-700 px-2 py-1 rounded">
+                          <span key={idx} className="text-xs bg-emerald-100 text-emerald-700 px-2 py-1 rounded">
                             {specialty}
                           </span>
                         ))}
@@ -109,31 +109,31 @@ export default function VideoCallBooking() {
           {/* Booking Details */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-earth-700 mb-2">Your Name *</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Your Name *</label>
               <Input required placeholder="Full name" />
             </div>
             <div>
-              <label className="block text-sm font-medium text-earth-700 mb-2">Email Address *</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Email Address *</label>
               <Input required type="email" placeholder="your.email@example.com" />
             </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-earth-700 mb-2">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
                 <Calendar className="h-4 w-4 inline mr-1" />
                 Preferred Date *
               </label>
               <Input required type="date" min={new Date().toISOString().split("T")[0]} />
             </div>
             <div>
-              <label className="block text-sm font-medium text-earth-700 mb-2">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
                 <Clock className="h-4 w-4 inline mr-1" />
                 Preferred Time *
               </label>
               <select
                 required
-                className="w-full px-3 py-2 border border-earth-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-forest-500"
+                className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
               >
                 <option value="">Select time</option>
                 <option value="09:00">9:00 AM EAT</option>
@@ -147,10 +147,10 @@ export default function VideoCallBooking() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-earth-700 mb-2">What would you like to discuss? *</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">What would you like to discuss? *</label>
             <select
               required
-              className="w-full px-3 py-2 border border-earth-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-forest-500"
+              className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
             >
               <option value="">Select topic</option>
               <option value="safari-planning">Safari Planning</option>

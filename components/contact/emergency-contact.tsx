@@ -15,7 +15,7 @@ const emergencyContacts = [
     phone: "+256 700 123 457",
     description: "Lost documents, missed flights, urgent changes",
     icon: Phone,
-    color: "text-orange-600",
+    color: "text-emerald-600",
   },
   {
     title: "Security Assistance",
@@ -43,8 +43,8 @@ export default function EmergencyContact() {
             <div className="flex items-start gap-3">
               <contact.icon className={`h-5 w-5 mt-1 ${contact.color}`} />
               <div className="flex-1">
-                <h4 className="font-semibold text-earth-900 mb-1">{contact.title}</h4>
-                <p className="text-sm text-earth-600 mb-2">{contact.description}</p>
+                <h4 className="font-semibold text-gray-900 mb-1">{contact.title}</h4>
+                <p className="text-sm text-gray-600 mb-2">{contact.description}</p>
                 <div className="flex gap-2">
                   <Button size="sm" variant="outline" asChild>
                     <a href={`tel:${contact.phone}`}>
@@ -65,8 +65,8 @@ export default function EmergencyContact() {
         ))}
 
         <div className="bg-white p-4 rounded-lg border border-red-200">
-          <h4 className="font-semibold text-earth-900 mb-2">Embassy Contacts</h4>
-          <div className="text-sm text-earth-600 space-y-1">
+          <h4 className="font-semibold text-gray-900 mb-2">Embassy Contacts</h4>
+          <div className="text-sm text-gray-600 space-y-1">
             <div>US Embassy: +256 414 259 791</div>
             <div>UK Embassy: +256 312 312 000</div>
             <div>German Embassy: +256 414 501 111</div>

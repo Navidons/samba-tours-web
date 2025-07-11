@@ -10,7 +10,7 @@ import {
 
 export default function ContactHero() {
   return (
-    <section className="relative bg-gray-800 text-white">
+    <section className="relative bg-emerald-800 text-white">
       <div className="absolute inset-0">
         <Image
           src="/photos/giraffe-uganda-savana-hero.jpg"
@@ -19,14 +19,14 @@ export default function ContactHero() {
           className="object-cover"
           priority
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/60 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-emerald-900/80 via-emerald-800/60 to-transparent" />
       </div>
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-48 pb-24">
         <div className="max-w-3xl">
           <Breadcrumb>
             <BreadcrumbList>
               <BreadcrumbItem>
-                <BreadcrumbLink href="/" className="text-gray-300 hover:text-white">
+                <BreadcrumbLink href="/" className="text-emerald-200 hover:text-white">
                   Home
                 </BreadcrumbLink>
               </BreadcrumbItem>
@@ -37,7 +37,7 @@ export default function ContactHero() {
             </BreadcrumbList>
           </Breadcrumb>
           <h1 className="mt-4 text-4xl sm:text-5xl md:text-6xl font-bold font-playfair text-shadow-lg">Get in Touch</h1>
-          <p className="mt-4 text-lg md:text-xl text-gray-200 max-w-2xl text-shadow">
+          <p className="mt-4 text-lg md:text-xl text-emerald-100 max-w-2xl text-shadow">
             Have a question or ready to plan your adventure? Our team of safari experts is here to help you every step
             of the way.
           </p>

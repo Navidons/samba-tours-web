@@ -51,8 +51,8 @@ export default function ContactInfo() {
           {contactMethods.map((method, index) => (
             <div key={index} className="flex items-start space-x-4">
               <div className="flex-shrink-0">
-                <div className="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">
-                  <method.icon className="h-5 w-5 text-orange-600" />
+                <div className="w-10 h-10 bg-emerald-100 rounded-lg flex items-center justify-center">
+                  <method.icon className="h-5 w-5 text-emerald-600" />
                 </div>
               </div>
               <div>
@@ -77,7 +77,7 @@ export default function ContactInfo() {
           <div className="grid grid-cols-2 gap-4">
             {trustIndicators.map((indicator, index) => (
               <div key={index} className="flex items-center space-x-2">
-                <indicator.icon className="h-5 w-5 text-orange-600" />
+                <indicator.icon className="h-5 w-5 text-emerald-600" />
                 <span className="text-sm font-medium">{indicator.text}</span>
               </div>
             ))}
@@ -94,11 +94,11 @@ export default function ContactInfo() {
         </CardContent>
       </Card>
 
-      <Card className="bg-gradient-to-r from-orange-50 to-red-50 border-orange-200">
+      <Card className="bg-gradient-to-r from-emerald-50 to-green-50 border-emerald-200">
         <CardContent className="p-6">
           <h4 className="font-bold text-gray-900 mb-2">Emergency Contact</h4>
           <p className="text-gray-600 mb-2">24/7 emergency support for travelers</p>
-          <p className="font-semibold text-orange-600">+256 700 999 888</p>
+          <p className="font-semibold text-emerald-600">+256 700 999 888</p>
         </CardContent>
       </Card>
     </div>
