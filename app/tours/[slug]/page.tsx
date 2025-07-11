@@ -12,6 +12,7 @@ import LoadingSpinner from "@/components/ui/loading-spinner"
 import Breadcrumbs from "@/components/seo/breadcrumbs"
 import StructuredData from "@/components/seo/structured-data"
 import { generateSEOMetadata, generateTourSchema, generateFAQSchema } from "@/lib/seo"
+import { getTour, getTourReviews } from "@/lib/tours-service"
 
 interface TourPageProps {
   params: {
@@ -19,46 +20,8 @@ interface TourPageProps {
   }
 }
 
-async function getTourData(slug: string) {
-  try {
-    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://sambatours.org'
-    const response = await fetch(`${baseUrl}/api/tours/${slug}`, {
-      cache: "no-store",
-    })
-
-    if (!response.ok) {
-      return null
-    }
-
-    const data = await response.json()
-    return data.success ? data.tour : null
-  } catch (error) {
-    console.error("Error fetching tour:", error)
-    return null
-  }
-}
-
-async function getTourReviews(tourSlug: string) {
-  try {
-    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://sambatours.org'
-    const response = await fetch(`${baseUrl}/api/tours/${tourSlug}/reviews`, {
-      cache: "no-store",
-    })
-
-    if (!response.ok) {
-      return { reviews: [], pagination: { total: 0 } }
-    }
-
-    const data = await response.json()
-    return data
-  } catch (error) {
-    console.error("Error fetching reviews:", error)
-    return { reviews: [], pagination: { total: 0 } }
-  }
-}
-
 export default async function TourPage({ params }: TourPageProps) {
-  const tour = await getTourData(params.slug)
+  const tour = await getTour(params.slug)
 
   if (!tour) {
     notFound()
@@ -88,7 +51,7 @@ export default async function TourPage({ params }: TourPageProps) {
     <>
       <StructuredData data={schemas} />
       
-      <main className="min-h-screen bg-white">
+      <main className="min-h-screen bg-gradient-to-br from-white via-emerald-50/30 to-green-50/30">
         {/* Breadcrumbs */}
         <div className="container-max pt-6">
           <Breadcrumbs items={breadcrumbItems} />
@@ -104,8 +67,8 @@ export default async function TourPage({ params }: TourPageProps) {
               <TourDetails tour={tour} />
               {tour.bestTime && Array.isArray(tour.bestTime) && tour.bestTime.length > 0 && (
                 <section className="mb-8">
-                  <h2 className="text-2xl font-bold text-earth-900 mb-4">Best Time to Visit</h2>
-                  <ul className="list-disc pl-6 text-earth-700 space-y-2">
+                  <h2 className="text-2xl font-bold text-gray-900 mb-4">Best Time to Visit</h2>
+                  <ul className="list-disc pl-6 text-gray-700 space-y-2">
                     {tour.bestTime.map((item: any, idx: number) => (
                       <li key={idx}>{item.item || item}</li>
                     ))}
@@ -114,8 +77,8 @@ export default async function TourPage({ params }: TourPageProps) {
               )}
               {tour.whatToBring && Array.isArray(tour.whatToBring) && tour.whatToBring.length > 0 && (
                 <section className="mb-8">
-                  <h2 className="text-2xl font-bold text-earth-900 mb-4">What to Bring</h2>
-                  <ul className="list-disc pl-6 text-earth-700 space-y-2">
+                  <h2 className="text-2xl font-bold text-gray-900 mb-4">What to Bring</h2>
+                  <ul className="list-disc pl-6 text-gray-700 space-y-2">
                     {tour.whatToBring.map((item: any, idx: number) => (
                       <li key={idx}>{item.item || item}</li>
                     ))}
@@ -124,8 +87,8 @@ export default async function TourPage({ params }: TourPageProps) {
               )}
               {tour.physicalRequirements && (
                 <section className="mb-8">
-                  <h2 className="text-2xl font-bold text-earth-900 mb-4">Physical Requirements</h2>
-                  <div className="text-earth-700 prose prose-earth max-w-none">
+                  <h2 className="text-2xl font-bold text-gray-900 mb-4">Physical Requirements</h2>
+                  <div className="text-gray-700 prose prose-gray max-w-none">
                     <p>{tour.physicalRequirements}</p>
                   </div>
                 </section>
@@ -153,7 +116,7 @@ export default async function TourPage({ params }: TourPageProps) {
 
           {/* Related Tours */}
           <section className="mt-16">
-            <h2 className="text-3xl font-bold text-earth-900 mb-8">Related Tours</h2>
+            <h2 className="text-3xl font-bold text-gray-900 mb-8">Related Tours</h2>
             <Suspense fallback={<LoadingSpinner />}>
               <RelatedTours currentTour={tour} relatedTours={[]} />
             </Suspense>
@@ -165,7 +128,7 @@ export default async function TourPage({ params }: TourPageProps) {
 }
 
 export async function generateMetadata({ params }: TourPageProps) {
-  const tour = await getTourData(params.slug)
+  const tour = await getTour(params.slug)
 
   if (!tour) {
     return generateSEOMetadata({
@@ -192,8 +155,10 @@ export async function generateMetadata({ params }: TourPageProps) {
   ]
 
   const images = tour.images && tour.images.length > 0 
-    ? tour.images.slice(0, 4).map((img: string) => 
-        img.startsWith('http') ? img : `/images/tours/${img}`
+    ? tour.images.slice(0, 4).map((img: any) => 
+        typeof img === 'string' 
+          ? (img.startsWith('http') ? img : `/images/tours/${img}`)
+          : (img.data?.startsWith('http') ? img.data : `/images/tours/${img.data || ''}`)
       )
     : []
 
@@ -202,7 +167,7 @@ export async function generateMetadata({ params }: TourPageProps) {
     description,
     keywords,
     images,
-    type: 'product',
+    type: 'website',
     canonical: `/tours/${tour.slug}`,
     alternates: {
       'application/ld+json': `/api/tours/${tour.slug}/schema`

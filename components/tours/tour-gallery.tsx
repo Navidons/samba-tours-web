@@ -34,10 +34,10 @@ export default function TourGallery({ gallery, images, title }: TourGalleryProps
   // Don't render if no images
   if (imageArray.length === 0) {
     return (
-      <Card>
+      <Card className="border-emerald-100">
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
-            <Camera className="h-5 w-5 text-forest-600" />
+            <Camera className="h-5 w-5 text-emerald-600" />
             <span>Photo Gallery</span>
           </CardTitle>
         </CardHeader>
@@ -90,10 +90,10 @@ export default function TourGallery({ gallery, images, title }: TourGalleryProps
 
   return (
     <>
-      <Card>
+      <Card className="border-emerald-100">
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
-            <Camera className="h-5 w-5 text-forest-600" />
+            <Camera className="h-5 w-5 text-emerald-600" />
             <span>Photo Gallery</span>
           </CardTitle>
         </CardHeader>

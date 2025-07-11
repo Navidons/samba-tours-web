@@ -203,8 +203,10 @@ export function generateTourSchema(tour: any) {
     "@type": "TouristTrip",
     "name": tour.title,
     "description": tour.description || tour.shortDescription,
-    "image": tour.images?.map((img: string) => 
-      img.startsWith('http') ? img : `${SEO_CONFIG.siteUrl}${img}`
+    "image": tour.images?.map((img: any) => 
+      typeof img === 'string' 
+        ? (img.startsWith('http') ? img : `${SEO_CONFIG.siteUrl}${img}`)
+        : (img.data?.startsWith('http') ? img.data : `${SEO_CONFIG.siteUrl}${img.data || ''}`)
     ) || [],
     "url": `${SEO_CONFIG.siteUrl}/tours/${tour.slug}`,
     "duration": tour.duration ? `P${tour.duration}D` : undefined,

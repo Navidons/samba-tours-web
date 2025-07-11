@@ -20,15 +20,15 @@ export default function RelatedTours({ currentTour, relatedTours }: RelatedTours
     <section className="section-padding bg-white">
       <div className="container-max">
         <div className="text-center mb-12">
-          <h2 className="text-3xl lg:text-4xl font-playfair font-bold text-earth-900 mb-4">Similar Adventures</h2>
-          <p className="text-xl text-earth-600 max-w-2xl mx-auto">
+          <h2 className="text-3xl lg:text-4xl font-playfair font-bold text-gray-900 mb-4">Similar Adventures</h2>
+          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
             Discover more incredible experiences in the same category
           </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {relatedTours.map((tour) => (
-            <Card key={tour.id} className="group overflow-hidden hover:shadow-xl transition-all duration-300">
+            <Card key={tour.id} className="group overflow-hidden hover:shadow-xl transition-all duration-300 border border-emerald-100">
               <div className="relative aspect-[4/3] overflow-hidden">
                 <Image
                   src={tour.images[0] || "/placeholder.svg"}
@@ -37,8 +37,8 @@ export default function RelatedTours({ currentTour, relatedTours }: RelatedTours
                   className="object-cover group-hover:scale-105 transition-transform duration-300"
                 />
                 <div className="absolute top-4 left-4 flex flex-wrap gap-2">
-                  <Badge className="bg-orange-600 text-white">{tour.category}</Badge>
-                  {tour.featured && <Badge className="bg-red-600 text-white">Featured</Badge>}
+                  <Badge className="bg-emerald-600 text-white">{tour.category}</Badge>
+                  {tour.featured && <Badge className="bg-emerald-500 text-white">Featured</Badge>}
                   {tour.isNew && <Badge className="bg-green-600 text-white">New</Badge>}
                 </div>
                 <div className="absolute top-4 right-4">
@@ -51,34 +51,34 @@ export default function RelatedTours({ currentTour, relatedTours }: RelatedTours
 
               <CardContent className="p-6">
                 <div className="mb-4">
-                  <h3 className="text-xl font-bold text-earth-900 mb-2 group-hover:text-orange-600 transition-colors">
+                  <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-emerald-600 transition-colors">
                     {tour.title}
                   </h3>
-                  <p className="text-earth-600 text-sm line-clamp-2">{tour.shortDescription}</p>
+                  <p className="text-gray-600 text-sm line-clamp-2">{tour.shortDescription}</p>
                 </div>
 
-                <div className="flex items-center justify-between text-sm text-earth-500 mb-4">
+                <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
                   <div className="flex items-center space-x-1">
-                    <Clock className="h-4 w-4" />
+                    <Clock className="h-4 w-4 text-emerald-600" />
                     <span>{tour.duration}</span>
                   </div>
                   <div className="flex items-center space-x-1">
-                    <Users className="h-4 w-4" />
+                    <Users className="h-4 w-4 text-emerald-600" />
                     <span>Max {tour.groupSize}</span>
                   </div>
                 </div>
 
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-2">
-                    <span className="text-2xl font-bold text-orange-600">${tour.price}</span>
+                    <span className="text-2xl font-bold text-emerald-600">${tour.price}</span>
                     {tour.originalPrice && (
-                      <span className="text-sm text-earth-400 line-through">${tour.originalPrice}</span>
+                      <span className="text-sm text-gray-400 line-through">${tour.originalPrice}</span>
                     )}
                   </div>
                   <Button
                     asChild
                     size="sm"
-                    className="bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700"
+                    className="bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700"
                   >
                     <Link href={`/tours/${tour.slug}`} className="flex items-center space-x-1">
                       <span>View Details</span>
@@ -96,7 +96,7 @@ export default function RelatedTours({ currentTour, relatedTours }: RelatedTours
             asChild
             size="lg"
             variant="outline"
-            className="border-orange-600 text-orange-600 hover:bg-orange-600 hover:text-white bg-transparent"
+            className="border-emerald-600 text-emerald-600 hover:bg-emerald-600 hover:text-white bg-transparent"
           >
             <Link href="/tours">View All Tours</Link>
           </Button>

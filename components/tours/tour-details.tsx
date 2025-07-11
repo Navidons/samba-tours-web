@@ -43,39 +43,39 @@ export default function TourDetails({ tour }: TourDetailsProps) {
   return (
     <div className="space-y-8">
       {/* Overview */}
-      <Card className="border-orange-100 shadow-lg">
-        <CardHeader className="bg-gradient-to-r from-orange-50 to-red-50">
+      <Card className="border-emerald-100 shadow-lg">
+        <CardHeader className="bg-gradient-to-r from-emerald-50 to-green-50">
           <CardTitle className="flex items-center space-x-2 text-2xl">
-            <Info className="h-6 w-6 text-orange-600" />
-            <span className="text-earth-900">Tour Overview</span>
+            <Info className="h-6 w-6 text-emerald-600" />
+            <span className="text-gray-900">Tour Overview</span>
           </CardTitle>
         </CardHeader>
         <CardContent className="p-8">
-          <p className="text-earth-700 leading-relaxed mb-8 text-lg">{tour.description}</p>
+          <p className="text-gray-700 leading-relaxed mb-8 text-lg">{tour.description}</p>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div className="space-y-6">
-              <div className="flex items-center space-x-4 p-4 bg-orange-50 rounded-lg">
-                <Clock className="h-6 w-6 text-orange-600 flex-shrink-0" />
+              <div className="flex items-center space-x-4 p-4 bg-emerald-50 rounded-lg">
+                <Clock className="h-6 w-6 text-emerald-600 flex-shrink-0" />
                 <div>
-                  <p className="font-semibold text-earth-900 text-lg">Duration</p>
-                  <p className="text-earth-700">{tour.duration}</p>
+                  <p className="font-semibold text-gray-900 text-lg">Duration</p>
+                  <p className="text-gray-700">{tour.duration}</p>
                 </div>
               </div>
-              <div className="flex items-center space-x-4 p-4 bg-red-50 rounded-lg">
-                <Users className="h-6 w-6 text-red-600 flex-shrink-0" />
+              <div className="flex items-center space-x-4 p-4 bg-green-50 rounded-lg">
+                <Users className="h-6 w-6 text-green-600 flex-shrink-0" />
                 <div>
-                  <p className="font-semibold text-earth-900 text-lg">Group Size</p>
-                  <p className="text-earth-700">Maximum {tour.groupSize}</p>
+                  <p className="font-semibold text-gray-900 text-lg">Group Size</p>
+                  <p className="text-gray-700">Maximum {tour.groupSize}</p>
                 </div>
               </div>
             </div>
             <div className="space-y-6">
-              <div className="flex items-center space-x-4 p-4 bg-orange-50 rounded-lg">
-                <MapPin className="h-6 w-6 text-orange-600 flex-shrink-0" />
+              <div className="flex items-center space-x-4 p-4 bg-emerald-50 rounded-lg">
+                <MapPin className="h-6 w-6 text-emerald-600 flex-shrink-0" />
                 <div>
-                  <p className="font-semibold text-earth-900 text-lg">Location</p>
-                  <p className="text-earth-700">
+                  <p className="font-semibold text-gray-900 text-lg">Location</p>
+                  <p className="text-gray-700">
                     {tour.location.region && tour.location.country 
                       ? `${tour.location.region}, ${tour.location.country}`
                       : tour.location.country || 'Location to be confirmed'
@@ -83,13 +83,13 @@ export default function TourDetails({ tour }: TourDetailsProps) {
                   </p>
                 </div>
               </div>
-              <div className="flex items-center space-x-4 p-4 bg-red-50 rounded-lg">
-                <Star className="h-6 w-6 text-red-600 flex-shrink-0" />
+              <div className="flex items-center space-x-4 p-4 bg-green-50 rounded-lg">
+                <Star className="h-6 w-6 text-green-600 flex-shrink-0" />
                 <div>
-                  <p className="font-semibold text-earth-900 text-lg">Rating</p>
+                  <p className="font-semibold text-gray-900 text-lg">Rating</p>
                   <div className="flex items-center space-x-2">
-                    <span className="text-earth-700">{tour.rating}/5</span>
-                    <span className="text-earth-500">({tour.reviewCount} reviews)</span>
+                    <span className="text-gray-700">{tour.rating}/5</span>
+                    <span className="text-gray-500">({tour.reviewCount} reviews)</span>
                   </div>
                 </div>
               </div>
@@ -99,11 +99,11 @@ export default function TourDetails({ tour }: TourDetailsProps) {
       </Card>
 
       {/* Highlights */}
-      <Card className="border-orange-100 shadow-lg">
-        <CardHeader className="bg-gradient-to-r from-orange-50 to-red-50">
+      <Card className="border-emerald-100 shadow-lg">
+        <CardHeader className="bg-gradient-to-r from-emerald-50 to-green-50">
           <CardTitle className="flex items-center space-x-2 text-2xl">
-            <CheckCircle className="h-6 w-6 text-orange-600" />
-            <span className="text-earth-900">Tour Highlights</span>
+            <CheckCircle className="h-6 w-6 text-emerald-600" />
+            <span className="text-gray-900">Tour Highlights</span>
           </CardTitle>
         </CardHeader>
         <CardContent className="p-8">
@@ -112,23 +112,23 @@ export default function TourDetails({ tour }: TourDetailsProps) {
               tour.highlights.map((highlight, index) => (
                 <div
                   key={highlight.id || index}
-                  className="flex items-center space-x-3 p-3 bg-gradient-to-r from-orange-50 to-red-50 rounded-lg"
+                  className="flex items-center space-x-3 p-3 bg-gradient-to-r from-emerald-50 to-green-50 rounded-lg"
                 >
-                  <CheckCircle className="h-5 w-5 text-orange-600 flex-shrink-0" />
-                  <span className="text-earth-700 font-medium">{highlight.highlight}</span>
+                  <CheckCircle className="h-5 w-5 text-emerald-600 flex-shrink-0" />
+                  <span className="text-gray-700 font-medium">{highlight.highlight}</span>
                 </div>
               ))
             ) : (
-              <p className="text-earth-500 col-span-2">No highlights listed for this tour.</p>
+              <p className="text-gray-500 col-span-2">No highlights listed for this tour.</p>
             )}
           </div>
         </CardContent>
       </Card>
 
       {/* Physical Requirements */}
-      <Card className="border-orange-100 shadow-lg">
-        <CardHeader className="bg-gradient-to-r from-orange-50 to-red-50">
-          <CardTitle className="text-2xl text-earth-900">Physical Requirements</CardTitle>
+      <Card className="border-emerald-100 shadow-lg">
+        <CardHeader className="bg-gradient-to-r from-emerald-50 to-green-50">
+          <CardTitle className="text-2xl text-gray-900">Physical Requirements</CardTitle>
         </CardHeader>
         <CardContent className="p-8">
           <div className="space-y-4">
@@ -149,20 +149,20 @@ export default function TourDetails({ tour }: TourDetailsProps) {
                   const itemText = typeof item === 'string' ? item : (item && typeof item === 'object' && 'item' in item ? item.item : String(item))
                   return (
                     <div key={index} className="flex items-start space-x-3">
-                      <CheckCircle className="h-5 w-5 text-orange-600 flex-shrink-0 mt-0.5" />
-                      <span className="text-earth-700">{itemText}</span>
+                      <CheckCircle className="h-5 w-5 text-emerald-600 flex-shrink-0 mt-0.5" />
+                      <span className="text-gray-700">{itemText}</span>
                     </div>
                   )
                 })
               } else if (requirements) {
                 return (
-                  <p className="text-earth-700 leading-relaxed mb-6 text-lg">
+                  <p className="text-gray-700 leading-relaxed mb-6 text-lg">
                     {requirements}
                   </p>
                 )
               } else {
                 return (
-                  <p className="text-earth-700 leading-relaxed mb-6 text-lg">
+                  <p className="text-gray-700 leading-relaxed mb-6 text-lg">
                     No specific physical requirements listed for this tour.
                   </p>
                 )
@@ -172,10 +172,10 @@ export default function TourDetails({ tour }: TourDetailsProps) {
           <Badge
             className={`text-lg px-4 py-2 mt-4 ${
               tour.difficulty === "Easy"
-                ? "bg-green-100 text-green-800 border-green-200"
+                ? "bg-emerald-100 text-emerald-800 border-emerald-200"
                 : tour.difficulty === "Moderate"
-                  ? "bg-orange-100 text-orange-800 border-orange-200"
-                  : "bg-red-100 text-red-800 border-red-200"
+                  ? "bg-green-100 text-green-800 border-green-200"
+                  : "bg-yellow-100 text-yellow-800 border-yellow-200"
             }`}
           >
             {tour.difficulty} Level
@@ -184,9 +184,9 @@ export default function TourDetails({ tour }: TourDetailsProps) {
       </Card>
 
       {/* What to Bring */}
-      <Card className="border-orange-100 shadow-lg">
-        <CardHeader className="bg-gradient-to-r from-orange-50 to-red-50">
-          <CardTitle className="text-2xl text-earth-900">What to Bring</CardTitle>
+      <Card className="border-emerald-100 shadow-lg">
+        <CardHeader className="bg-gradient-to-r from-emerald-50 to-green-50">
+          <CardTitle className="text-2xl text-gray-900">What to Bring</CardTitle>
         </CardHeader>
         <CardContent className="p-8">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -208,23 +208,23 @@ export default function TourDetails({ tour }: TourDetailsProps) {
                   return (
                     <div
                       key={index}
-                      className="flex items-center space-x-3 p-3 bg-gradient-to-r from-orange-50 to-red-50 rounded-lg"
+                      className="flex items-center space-x-3 p-3 bg-gradient-to-r from-emerald-50 to-green-50 rounded-lg"
                     >
-                      <CheckCircle className="h-5 w-5 text-orange-600 flex-shrink-0" />
-                      <span className="text-earth-700 font-medium">{itemText}</span>
+                      <CheckCircle className="h-5 w-5 text-emerald-600 flex-shrink-0" />
+                      <span className="text-gray-700 font-medium">{itemText}</span>
                     </div>
                   )
                 })
               } else if (items) {
                 return (
-                  <div className="flex items-center space-x-3 p-3 bg-gradient-to-r from-orange-50 to-red-50 rounded-lg col-span-2">
-                    <CheckCircle className="h-5 w-5 text-orange-600 flex-shrink-0" />
-                    <span className="text-earth-700 font-medium">{items}</span>
+                  <div className="flex items-center space-x-3 p-3 bg-gradient-to-r from-emerald-50 to-green-50 rounded-lg col-span-2">
+                    <CheckCircle className="h-5 w-5 text-emerald-600 flex-shrink-0" />
+                    <span className="text-gray-700 font-medium">{items}</span>
                   </div>
                 )
               } else {
                 return (
-                  <p className="text-earth-500 col-span-2">No specific items listed to bring for this tour.</p>
+                  <p className="text-gray-500 col-span-2">No specific items listed to bring for this tour.</p>
                 )
               }
             })()}
@@ -233,15 +233,15 @@ export default function TourDetails({ tour }: TourDetailsProps) {
       </Card>
 
       {/* Best Time to Visit */}
-      <Card className="border-orange-100 shadow-lg">
-        <CardHeader className="bg-gradient-to-r from-orange-50 to-red-50">
+      <Card className="border-emerald-100 shadow-lg">
+        <CardHeader className="bg-gradient-to-r from-emerald-50 to-green-50">
           <CardTitle className="flex items-center space-x-2 text-2xl">
-            <Calendar className="h-6 w-6 text-orange-600" />
-            <span className="text-earth-900">Best Time to Visit</span>
+            <Calendar className="h-6 w-6 text-emerald-600" />
+            <span className="text-gray-900">Best Time to Visit</span>
           </CardTitle>
         </CardHeader>
         <CardContent className="p-8">
-          <p className="text-earth-700 leading-relaxed text-lg">
+          <p className="text-gray-700 leading-relaxed text-lg">
             {(() => {
               let bestTime = tour.bestTime
               

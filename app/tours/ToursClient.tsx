@@ -200,8 +200,8 @@ export default function ToursClient({
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
       case 'Easy': return 'bg-green-100 text-green-800 border-green-200'
-      case 'Moderate': return 'bg-orange-100 text-orange-800 border-orange-200'
-      case 'Challenging': return 'bg-red-100 text-red-800 border-red-200'
+      case 'Moderate': return 'bg-emerald-100 text-emerald-800 border-emerald-200'
+      case 'Challenging': return 'bg-teal-100 text-teal-800 border-teal-200'
       default: return 'bg-gray-100 text-gray-800 border-gray-200'
     }
   }
@@ -224,21 +224,21 @@ export default function ToursClient({
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
               <Input
                 placeholder="Search tours..."
-                className="pl-10 bg-white text-gray-900 border-0 focus:ring-2 focus:ring-orange-300"
+                className="pl-10 bg-white text-gray-900 border-0 focus:ring-2 focus:ring-emerald-300"
                 value={filters.search}
                 onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
               />
               <Button 
                 type="submit"
                 size="sm"
-                className="absolute right-1 top-1/2 transform -translate-y-1/2 bg-orange-500 hover:bg-orange-600 text-white px-3 py-1 h-8"
+                className="absolute right-1 top-1/2 transform -translate-y-1/2 bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1 h-8"
               >
                 Search
               </Button>
             </form>
             <Button 
               variant="outline" 
-              className="border-orange-200 text-orange-600 hover:bg-orange-50 hover:border-orange-300"
+              className="border-emerald-200 text-emerald-600 hover:bg-emerald-50 hover:border-emerald-300"
               onClick={() => setShowFilters(!showFilters)}
             >
               <Filter className="h-4 w-4 mr-2" />
@@ -252,19 +252,19 @@ export default function ToursClient({
           <div className="max-w-7xl mx-auto px-4">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
               <div className="group">
-                <div className="text-4xl font-bold text-orange-600 group-hover:text-orange-700 transition-colors">{totalTours}+</div>
+                <div className="text-4xl font-bold text-emerald-600 group-hover:text-emerald-700 transition-colors">{totalTours}+</div>
                 <div className="text-gray-600 font-medium">Tour Packages</div>
               </div>
               <div className="group">
-                <div className="text-4xl font-bold text-orange-600 group-hover:text-orange-700 transition-colors">{categories.length}+</div>
+                <div className="text-4xl font-bold text-emerald-600 group-hover:text-emerald-700 transition-colors">{categories.length}+</div>
                 <div className="text-gray-600 font-medium">Categories</div>
               </div>
               <div className="group">
-                <div className="text-4xl font-bold text-orange-600 group-hover:text-orange-700 transition-colors">500+</div>
+                <div className="text-4xl font-bold text-emerald-600 group-hover:text-emerald-700 transition-colors">500+</div>
                 <div className="text-gray-600 font-medium">Happy Travelers</div>
               </div>
               <div className="group">
-                <div className="text-4xl font-bold text-orange-600 group-hover:text-orange-700 transition-colors">10+</div>
+                <div className="text-4xl font-bold text-emerald-600 group-hover:text-emerald-700 transition-colors">10+</div>
                 <div className="text-gray-600 font-medium">Years Experience</div>
               </div>
             </div>
@@ -275,7 +275,7 @@ export default function ToursClient({
         <main className="max-w-7xl mx-auto px-4 py-12">
           {/* Filters */}
           {showFilters && (
-            <Card className="mb-8 border-orange-200 shadow-lg">
+            <Card className="mb-8 border-emerald-200 shadow-lg">
               <CardContent className="p-6">
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                   <Select 
@@ -288,7 +288,7 @@ export default function ToursClient({
                       handleFiltersChange(newFilters)
                     }}
                   >
-                    <SelectTrigger className="border-orange-200 focus:border-orange-500 focus:ring-orange-500">
+                    <SelectTrigger className="border-emerald-200 focus:border-emerald-500 focus:ring-emerald-500">
                       <SelectValue placeholder="Category" />
                     </SelectTrigger>
                     <SelectContent>
@@ -311,7 +311,7 @@ export default function ToursClient({
                       handleFiltersChange(newFilters)
                     }}
                   >
-                    <SelectTrigger className="border-orange-200 focus:border-orange-500 focus:ring-orange-500">
+                    <SelectTrigger className="border-emerald-200 focus:border-emerald-500 focus:ring-emerald-500">
                       <SelectValue placeholder="Difficulty" />
                     </SelectTrigger>
                     <SelectContent>
@@ -329,7 +329,7 @@ export default function ToursClient({
                       setCurrentPage(1)
                     }}
                   >
-                    <SelectTrigger className="border-orange-200 focus:border-orange-500 focus:ring-orange-500">
+                    <SelectTrigger className="border-emerald-200 focus:border-emerald-500 focus:ring-emerald-500">
                       <SelectValue placeholder="Sort by" />
                     </SelectTrigger>
                     <SelectContent>
@@ -344,14 +344,14 @@ export default function ToursClient({
 
                   <div className="flex items-center gap-2">
                     <div className="text-sm text-gray-600 flex items-center justify-center bg-gray-50 rounded-lg px-3 py-2 flex-1">
-                      <Globe className="h-4 w-4 mr-2 text-orange-600" />
+                      <Globe className="h-4 w-4 mr-2 text-emerald-600" />
                       {tours.length} of {totalTours}
                     </div>
                     <Button 
                       variant="outline" 
                       size="sm"
                       onClick={clearFilters}
-                      className="border-orange-200 text-orange-600 hover:bg-orange-50 hover:border-orange-300"
+                      className="border-emerald-200 text-emerald-600 hover:bg-emerald-50 hover:border-emerald-300"
                     >
                       Clear
                     </Button>
@@ -365,7 +365,7 @@ export default function ToursClient({
           {loading ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {Array.from({ length: 6 }).map((_, i) => (
-                <Card key={i} className="overflow-hidden border-orange-200 shadow-lg">
+                <Card key={i} className="overflow-hidden border-emerald-200 shadow-lg">
                   <Skeleton className="h-64 w-full" />
                   <CardContent className="p-6">
                     <Skeleton className="h-6 w-3/4 mb-2" />
@@ -382,7 +382,7 @@ export default function ToursClient({
             <>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {tours.map((tour) => (
-                  <Card key={tour.id} className="overflow-hidden hover:shadow-xl transition-all duration-300 group border-orange-200">
+                  <Card key={tour.id} className="overflow-hidden hover:shadow-xl transition-all duration-300 group border-emerald-200">
                     {/* Tour Image */}
                     <div className="relative h-64 overflow-hidden">
                       {tour.featuredImage && tour.featuredImage.data ? (
@@ -394,15 +394,15 @@ export default function ToursClient({
                           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                         />
                       ) : (
-                        <div className="w-full h-full bg-gradient-to-br from-orange-100 to-red-100 flex items-center justify-center">
-                          <MapPin className="h-16 w-16 text-orange-400" />
+                        <div className="w-full h-full bg-gradient-to-br from-emerald-100 to-green-100 flex items-center justify-center">
+                          <MapPin className="h-16 w-16 text-emerald-400" />
                         </div>
                       )}
                       
                       {/* Badges */}
                       <div className="absolute top-4 left-4 flex flex-col gap-2">
                         {tour.featured && (
-                          <Badge className="bg-gradient-to-r from-yellow-500 to-orange-500 text-white border-0 shadow-lg">
+                          <Badge className="bg-gradient-to-r from-yellow-500 to-emerald-500 text-white border-0 shadow-lg">
                             <Star className="h-3 w-3 mr-1" />
                             Featured
                           </Badge>
@@ -414,7 +414,7 @@ export default function ToursClient({
                           </Badge>
                         )}
                         {tour.isNew && (
-                          <Badge className="bg-gradient-to-r from-blue-500 to-indigo-500 text-white border-0 shadow-lg">
+                          <Badge className="bg-gradient-to-r from-teal-500 to-emerald-500 text-white border-0 shadow-lg">
                             <Award className="h-3 w-3 mr-1" />
                             New
                           </Badge>
@@ -423,7 +423,7 @@ export default function ToursClient({
 
                       {/* Price */}
                       <div className="absolute top-4 right-4 bg-white/95 backdrop-blur-sm rounded-lg px-3 py-2 shadow-lg">
-                        <div className="text-lg font-bold text-orange-600">
+                        <div className="text-lg font-bold text-emerald-600">
                           {formatPrice(tour.price)}
                         </div>
                         {tour.originalPrice && tour.originalPrice > tour.price && (
@@ -439,7 +439,7 @@ export default function ToursClient({
                       <div className="space-y-4">
                         {/* Header */}
                         <div>
-                          <h3 className="text-xl font-semibold text-gray-900 mb-2 group-hover:text-orange-600 transition-colors">
+                          <h3 className="text-xl font-semibold text-gray-900 mb-2 group-hover:text-emerald-600 transition-colors">
                             {tour.title}
                           </h3>
                           <p className="text-gray-600 text-sm line-clamp-2">
@@ -450,15 +450,15 @@ export default function ToursClient({
                         {/* Tour Details */}
                         <div className="grid grid-cols-2 gap-3 text-sm">
                           <div className="flex items-center gap-2">
-                            <Calendar className="h-4 w-4 text-orange-500" />
+                            <Calendar className="h-4 w-4 text-emerald-500" />
                             <span className="text-gray-600">{tour.duration}</span>
                           </div>
                           <div className="flex items-center gap-2">
-                            <Users className="h-4 w-4 text-orange-500" />
+                            <Users className="h-4 w-4 text-emerald-500" />
                             <span className="text-gray-600">{tour.groupSize}</span>
                           </div>
                           <div className="flex items-center gap-2">
-                            <MapPin className="h-4 w-4 text-orange-500" />
+                            <MapPin className="h-4 w-4 text-emerald-500" />
                             <span className="text-gray-600">{tour.location.region || tour.location.country}</span>
                           </div>
                           <div className="flex items-center gap-2">
@@ -470,7 +470,7 @@ export default function ToursClient({
                         {/* Category & Difficulty */}
                         <div className="flex gap-2">
                           {tour.category && (
-                            <Badge variant="outline" className="text-xs border-orange-200 text-orange-700">
+                            <Badge variant="outline" className="text-xs border-emerald-200 text-emerald-700">
                               {tour.category.name}
                             </Badge>
                           )}
@@ -481,8 +481,8 @@ export default function ToursClient({
 
                         {/* Highlights Preview */}
                         {tour.highlights.length > 0 && (
-                          <div className="text-xs text-gray-600 bg-orange-50 p-2 rounded-lg">
-                            <span className="font-medium text-orange-700">Highlights: </span>
+                          <div className="text-xs text-gray-600 bg-emerald-50 p-2 rounded-lg">
+                            <span className="font-medium text-emerald-700">Highlights: </span>
                             {tour.highlights.slice(0, 2).map(h => h.highlight).join(', ')}
                             {tour.highlights.length > 2 && '...'}
                           </div>
@@ -490,7 +490,7 @@ export default function ToursClient({
 
                         {/* Action Button */}
                         <Button 
-                          className="w-full bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 text-white font-semibold transition-all duration-300 shadow-lg hover:shadow-xl"
+                          className="w-full bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700 text-white font-semibold transition-all duration-300 shadow-lg hover:shadow-xl"
                           asChild
                         >
                           <a href={`/tours/${tour.slug}`}>
@@ -510,7 +510,7 @@ export default function ToursClient({
                     variant="outline"
                     onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
                     disabled={currentPage === 1}
-                    className="border-orange-200 text-orange-600 hover:bg-orange-50 hover:border-orange-300"
+                    className="border-emerald-200 text-emerald-600 hover:bg-emerald-50 hover:border-emerald-300"
                   >
                     Previous
                   </Button>
@@ -521,7 +521,7 @@ export default function ToursClient({
                     variant="outline"
                     onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
                     disabled={currentPage === totalPages}
-                    className="border-orange-200 text-orange-600 hover:bg-orange-50 hover:border-orange-300"
+                    className="border-emerald-200 text-emerald-600 hover:bg-emerald-50 hover:border-emerald-300"
                   >
                     Next
                   </Button>
@@ -530,8 +530,8 @@ export default function ToursClient({
             </>
           ) : (
             <div className="text-center py-20">
-              <div className="w-24 h-24 bg-gradient-to-br from-orange-100 to-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                <MapPin className="h-12 w-12 text-orange-400" />
+              <div className="w-24 h-24 bg-gradient-to-br from-emerald-100 to-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                <MapPin className="h-12 w-12 text-emerald-400" />
               </div>
               <h3 className="text-2xl font-semibold text-gray-900 mb-4">No tours found</h3>
               <p className="text-gray-600 mb-6 max-w-md mx-auto">
@@ -542,7 +542,7 @@ export default function ToursClient({
               <Button 
                 variant="outline"
                 onClick={clearFilters}
-                className="border-orange-200 text-orange-600 hover:bg-orange-50 hover:border-orange-300"
+                className="border-emerald-200 text-emerald-600 hover:bg-emerald-50 hover:border-emerald-300"
               >
                 Clear Filters
               </Button>

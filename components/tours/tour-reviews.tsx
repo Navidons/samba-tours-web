@@ -101,14 +101,14 @@ export default function TourReviews({
   }))
 
   return (
-    <Card className="border-orange-100 shadow-lg">
-      <CardHeader className="bg-gradient-to-r from-orange-50 to-red-50">
+    <Card className="border-emerald-100 shadow-lg">
+      <CardHeader className="bg-gradient-to-r from-emerald-50 to-green-50">
         <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
           <CardTitle className="flex items-center space-x-2 text-2xl">
-            <Star className="h-6 w-6 text-orange-600" />
-            <span className="text-earth-900">Customer Reviews</span>
+            <Star className="h-6 w-6 text-emerald-600" />
+            <span className="text-gray-900">Customer Reviews</span>
           </CardTitle>
-          <Button onClick={() => setShowReviewForm(true)} className="bg-orange-600 hover:bg-orange-700 text-white">
+          <Button onClick={() => setShowReviewForm(true)} className="bg-emerald-600 hover:bg-emerald-700 text-white">
             <MessageCircle className="h-4 w-4 mr-2" />
             Write a Review
           </Button>
@@ -120,7 +120,7 @@ export default function TourReviews({
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
           {/* Overall Rating */}
           <div className="text-center">
-            <div className="text-5xl font-bold text-orange-600 mb-2">{rating}</div>
+            <div className="text-5xl font-bold text-emerald-600 mb-2">{rating}</div>
             <div className="flex justify-center items-center space-x-1 mb-2">
               {[...Array(5)].map((_, i) => (
                 <Star
@@ -129,7 +129,7 @@ export default function TourReviews({
                 />
               ))}
             </div>
-            <p className="text-earth-600">{reviewCount} reviews</p>
+            <p className="text-gray-600">{reviewCount} reviews</p>
           </div>
 
           {/* Rating Distribution */}
@@ -137,14 +137,14 @@ export default function TourReviews({
             <div className="space-y-2">
               {ratingDistribution.map(({ rating, count, percentage }) => (
                 <div key={rating} className="flex items-center space-x-3">
-                  <span className="text-sm font-medium text-earth-700 w-8">{rating}★</span>
-                  <div className="flex-1 bg-gray-200 rounded-full h-2">
+                  <span className="text-sm font-medium text-gray-700 w-8">{rating}★</span>
+                  <div className="flex-1 bg-emerald-100 rounded-full h-2">
                     <div
-                      className="bg-orange-500 h-2 rounded-full transition-all duration-300"
+                      className="bg-emerald-500 h-2 rounded-full transition-all duration-300"
                       style={{ width: `${percentage}%` }}
                     />
                   </div>
-                  <span className="text-sm text-earth-600 w-8">{count}</span>
+                  <span className="text-sm text-gray-600 w-8">{count}</span>
                 </div>
               ))}
             </div>
@@ -164,7 +164,7 @@ export default function TourReviews({
         <div className="space-y-6">
           {filteredAndSortedReviews.length > 0 ? (
             filteredAndSortedReviews.map((review) => (
-              <div key={review.id} className="border-b border-gray-200 pb-6 last:border-b-0">
+              <div key={review.id} className="border-b border-emerald-100 pb-6 last:border-b-0">
                 <div className="flex items-start space-x-4">
                   <div className="relative w-12 h-12 rounded-full overflow-hidden flex-shrink-0">
                     <Image
@@ -177,9 +177,9 @@ export default function TourReviews({
                   <div className="flex-1">
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-2">
                       <div className="flex items-center space-x-2 mb-2 sm:mb-0">
-                        <h4 className="font-semibold text-earth-900">{review.userName}</h4>
+                        <h4 className="font-semibold text-gray-900">{review.userName}</h4>
                         {review.verified && (
-                          <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">Verified</span>
+                          <span className="bg-emerald-100 text-emerald-800 text-xs px-2 py-1 rounded-full">Verified</span>
                         )}
                       </div>
                       <div className="flex items-center space-x-2">
@@ -188,13 +188,13 @@ export default function TourReviews({
                             <Star key={i} className="h-4 w-4 text-yellow-500 fill-current" />
                           ))}
                         </div>
-                        <span className="text-sm text-earth-500">{new Date(review.date).toLocaleDateString()}</span>
+                        <span className="text-sm text-gray-500">{new Date(review.date).toLocaleDateString()}</span>
                       </div>
                     </div>
 
-                    {review.title && <h5 className="font-medium text-earth-900 mb-2">{review.title}</h5>}
+                    {review.title && <h5 className="font-medium text-gray-900 mb-2">{review.title}</h5>}
 
-                    <p className="text-earth-700 leading-relaxed mb-3">{review.comment}</p>
+                    <p className="text-gray-700 leading-relaxed mb-3">{review.comment}</p>
 
                     {review.images && review.images.length > 0 && (
                       <div className="flex space-x-2 mb-3">
@@ -215,31 +215,31 @@ export default function TourReviews({
                       <div className="flex items-center space-x-4">
                         <button
                           onClick={() => handleHelpful(review.id)}
-                          className="flex items-center space-x-1 text-sm text-earth-600 hover:text-orange-600 transition-colors"
+                          className="flex items-center space-x-1 text-sm text-gray-600 hover:text-emerald-600 transition-colors"
                         >
                           <ThumbsUp className="h-4 w-4" />
                           <span>Helpful ({review.helpful})</span>
                         </button>
-                        <button className="flex items-center space-x-1 text-sm text-earth-600 hover:text-red-600 transition-colors">
+                        <button className="flex items-center space-x-1 text-sm text-gray-600 hover:text-emerald-600 transition-colors">
                           <Flag className="h-4 w-4" />
                           <span>Report</span>
                         </button>
                       </div>
-                      <span className="text-sm text-earth-500">
+                      <span className="text-sm text-gray-500">
                         Tour date: {new Date(review.tourDate).toLocaleDateString()}
                       </span>
                     </div>
 
                     {/* Company Response */}
                     {review.response && (
-                      <div className="mt-4 bg-orange-50 p-4 rounded-lg border-l-4 border-orange-500">
+                      <div className="mt-4 bg-emerald-50 p-4 rounded-lg border-l-4 border-emerald-500">
                         <div className="flex items-center space-x-2 mb-2">
-                          <span className="font-semibold text-earth-900">Response from {review.response.author}</span>
-                          <span className="text-sm text-earth-500">
+                          <span className="font-semibold text-gray-900">Response from {review.response.author}</span>
+                          <span className="text-sm text-gray-500">
                             {new Date(review.response.date).toLocaleDateString()}
                           </span>
                         </div>
-                        <p className="text-earth-700">{review.response.message}</p>
+                        <p className="text-gray-700">{review.response.message}</p>
                       </div>
                     )}
                   </div>
@@ -248,21 +248,20 @@ export default function TourReviews({
             ))
           ) : (
             <div className="text-center py-8">
-              <MessageCircle className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-semibold text-earth-900 mb-2">No reviews yet</h3>
-              <p className="text-earth-600 mb-4">Be the first to share your experience!</p>
-              <Button onClick={() => setShowReviewForm(true)} className="bg-orange-600 hover:bg-orange-700 text-white">
-                Write the First Review
-              </Button>
+              <p className="text-gray-500">No reviews found matching your filters.</p>
             </div>
           )}
         </div>
-      </CardContent>
 
-      {/* Review Form Modal */}
-      {showReviewForm && (
-        <ReviewForm tourId={tourId} onSubmit={handleAddReview} onClose={() => setShowReviewForm(false)} />
-      )}
+        {/* Review Form Modal */}
+        {showReviewForm && (
+          <ReviewForm
+            tourId={tourId}
+            onSubmit={handleAddReview}
+            onClose={() => setShowReviewForm(false)}
+          />
+        )}
+      </CardContent>
     </Card>
   )
 }

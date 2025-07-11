@@ -110,26 +110,26 @@ export function ReviewForm({ tourId, onSubmit, onClose }: ReviewFormProps) {
     <Dialog open={true} onOpenChange={onClose}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="text-2xl font-bold text-earth-900">Write a Review</DialogTitle>
+          <DialogTitle className="text-2xl font-bold text-gray-900">Write a Review</DialogTitle>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Personal Information */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="name" className="text-earth-900 font-medium">
+              <Label htmlFor="name" className="text-gray-900 font-medium">
                 Name *
               </Label>
               <Input
                 id="name"
                 value={formData.name}
                 onChange={(e) => setFormData((prev) => ({ ...prev, name: e.target.value }))}
-                className="mt-1"
+                className="mt-1 border-emerald-200 focus:border-emerald-500 focus:ring-emerald-500"
                 required
               />
             </div>
             <div>
-              <Label htmlFor="email" className="text-earth-900 font-medium">
+              <Label htmlFor="email" className="text-gray-900 font-medium">
                 Email *
               </Label>
               <Input
@@ -137,7 +137,7 @@ export function ReviewForm({ tourId, onSubmit, onClose }: ReviewFormProps) {
                 type="email"
                 value={formData.email}
                 onChange={(e) => setFormData((prev) => ({ ...prev, email: e.target.value }))}
-                className="mt-1"
+                className="mt-1 border-emerald-200 focus:border-emerald-500 focus:ring-emerald-500"
                 required
               />
             </div>
@@ -145,7 +145,7 @@ export function ReviewForm({ tourId, onSubmit, onClose }: ReviewFormProps) {
 
           {/* Tour Date */}
           <div>
-            <Label htmlFor="tourDate" className="text-earth-900 font-medium">
+            <Label htmlFor="tourDate" className="text-gray-900 font-medium">
               When did you take this tour? *
             </Label>
             <Input
@@ -153,14 +153,14 @@ export function ReviewForm({ tourId, onSubmit, onClose }: ReviewFormProps) {
               type="date"
               value={formData.tourDate}
               onChange={(e) => setFormData((prev) => ({ ...prev, tourDate: e.target.value }))}
-              className="mt-1"
+              className="mt-1 border-emerald-200 focus:border-emerald-500 focus:ring-emerald-500"
               required
             />
           </div>
 
           {/* Rating */}
           <div>
-            <Label className="text-earth-900 font-medium mb-2 block">Overall Rating *</Label>
+            <Label className="text-gray-900 font-medium mb-2 block">Overall Rating *</Label>
             <div className="flex items-center space-x-1">
               {[1, 2, 3, 4, 5].map((rating) => (
                 <button
@@ -178,7 +178,7 @@ export function ReviewForm({ tourId, onSubmit, onClose }: ReviewFormProps) {
                   />
                 </button>
               ))}
-              <span className="ml-3 text-earth-600">
+              <span className="ml-3 text-gray-600">
                 {formData.rating > 0 && (
                   <>
                     {formData.rating} star{formData.rating !== 1 ? "s" : ""} -{formData.rating === 5 && " Excellent"}
@@ -194,7 +194,7 @@ export function ReviewForm({ tourId, onSubmit, onClose }: ReviewFormProps) {
 
           {/* Review Title */}
           <div>
-            <Label htmlFor="title" className="text-earth-900 font-medium">
+            <Label htmlFor="title" className="text-gray-900 font-medium">
               Review Title
             </Label>
             <Input
@@ -202,13 +202,13 @@ export function ReviewForm({ tourId, onSubmit, onClose }: ReviewFormProps) {
               value={formData.title}
               onChange={(e) => setFormData((prev) => ({ ...prev, title: e.target.value }))}
               placeholder="Summarize your experience"
-              className="mt-1"
+              className="mt-1 border-emerald-200 focus:border-emerald-500 focus:ring-emerald-500"
             />
           </div>
 
           {/* Review Comment */}
           <div>
-            <Label htmlFor="comment" className="text-earth-900 font-medium">
+            <Label htmlFor="comment" className="text-gray-900 font-medium">
               Your Review *
             </Label>
             <Textarea
@@ -217,15 +217,15 @@ export function ReviewForm({ tourId, onSubmit, onClose }: ReviewFormProps) {
               onChange={(e) => setFormData((prev) => ({ ...prev, comment: e.target.value }))}
               placeholder="Tell others about your experience..."
               rows={5}
-              className="mt-1"
+              className="mt-1 border-emerald-200 focus:border-emerald-500 focus:ring-emerald-500"
               required
             />
           </div>
 
           {/* Photo Upload */}
           <div>
-            <Label className="text-earth-900 font-medium mb-2 block">Add Photos (Optional)</Label>
-            <div className="border-2 border-dashed border-gray-300 rounded-lg p-4">
+            <Label className="text-gray-900 font-medium mb-2 block">Add Photos (Optional)</Label>
+            <div className="border-2 border-dashed border-emerald-200 rounded-lg p-4">
               <input
                 type="file"
                 multiple
@@ -235,9 +235,9 @@ export function ReviewForm({ tourId, onSubmit, onClose }: ReviewFormProps) {
                 id="image-upload"
               />
               <label htmlFor="image-upload" className="flex flex-col items-center justify-center cursor-pointer">
-                <Upload className="h-8 w-8 text-gray-400 mb-2" />
-                <span className="text-earth-600">Click to upload photos</span>
-                <span className="text-sm text-earth-500">PNG, JPG up to 5MB each</span>
+                <Upload className="h-8 w-8 text-emerald-400 mb-2" />
+                <span className="text-gray-600">Click to upload photos</span>
+                <span className="text-sm text-gray-500">PNG, JPG up to 5MB each</span>
               </label>
             </div>
 
@@ -271,9 +271,9 @@ export function ReviewForm({ tourId, onSubmit, onClose }: ReviewFormProps) {
               id="recommend"
               checked={formData.wouldRecommend}
               onChange={(e) => setFormData((prev) => ({ ...prev, wouldRecommend: e.target.checked }))}
-              className="w-4 h-4 text-orange-600 border-gray-300 rounded focus:ring-orange-500"
+              className="w-4 h-4 text-emerald-600 border-gray-300 rounded focus:ring-emerald-500"
             />
-            <Label htmlFor="recommend" className="text-earth-900">
+            <Label htmlFor="recommend" className="text-gray-900">
               I would recommend this tour to others
             </Label>
           </div>
@@ -283,7 +283,7 @@ export function ReviewForm({ tourId, onSubmit, onClose }: ReviewFormProps) {
             <Button type="button" variant="outline" onClick={onClose} disabled={isSubmitting}>
               Cancel
             </Button>
-            <Button type="submit" disabled={isSubmitting} className="bg-orange-600 hover:bg-orange-700 text-white">
+            <Button type="submit" disabled={isSubmitting} className="bg-emerald-600 hover:bg-emerald-700 text-white">
               {isSubmitting ? "Submitting..." : "Submit Review"}
             </Button>
           </div>

@@ -46,6 +46,30 @@ export const getTours = cache(async (params: TourParams = {}) => {
   return data
 })
 
+export const getTour = cache(async (slug: string) => {
+  const baseUrl = getBaseUrl()
+  const response = await fetch(`${baseUrl}/api/tours/${slug}`)
+  const data = await response.json()
+
+  if (!data.success) {
+    return null
+  }
+
+  return data.tour
+})
+
+export const getTourReviews = cache(async (slug: string) => {
+  const baseUrl = getBaseUrl()
+  const response = await fetch(`${baseUrl}/api/tours/${slug}/reviews`)
+  const data = await response.json()
+
+  if (!data.success) {
+    return { reviews: [], pagination: { total: 0 } }
+  }
+
+  return data
+})
+
 export const getCategories = cache(async () => {
   const baseUrl = getBaseUrl()
   const response = await fetch(`${baseUrl}/api/tours/categories`)

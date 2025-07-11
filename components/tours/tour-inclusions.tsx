@@ -48,9 +48,9 @@ export default function TourInclusions({ inclusions, included, excluded }: TourI
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
       {/* Included */}
       {includedItems.length > 0 && (
-        <Card>
+        <Card className="border-emerald-100">
           <CardHeader>
-            <CardTitle className="flex items-center space-x-2 text-green-700">
+            <CardTitle className="flex items-center space-x-2 text-emerald-700">
               <CheckCircle className="h-5 w-5" />
               <span>What's Included</span>
             </CardTitle>
@@ -59,8 +59,8 @@ export default function TourInclusions({ inclusions, included, excluded }: TourI
             <div className="space-y-3">
               {includedItems.map((item, index) => (
                 <div key={typeof item === 'object' && item.id ? item.id : index} className="flex items-start space-x-3">
-                  <CheckCircle className="h-4 w-4 text-green-600 flex-shrink-0 mt-0.5" />
-                  <span className="text-earth-700">{getItemText(item)}</span>
+                  <CheckCircle className="h-4 w-4 text-emerald-600 flex-shrink-0 mt-0.5" />
+                  <span className="text-gray-700">{getItemText(item)}</span>
                 </div>
               ))}
             </div>
@@ -70,7 +70,7 @@ export default function TourInclusions({ inclusions, included, excluded }: TourI
 
       {/* Excluded */}
       {excludedItems.length > 0 && (
-        <Card>
+        <Card className="border-red-100">
           <CardHeader>
             <CardTitle className="flex items-center space-x-2 text-red-700">
               <XCircle className="h-5 w-5" />
@@ -82,7 +82,7 @@ export default function TourInclusions({ inclusions, included, excluded }: TourI
               {excludedItems.map((item, index) => (
                 <div key={typeof item === 'object' && item.id ? item.id : index} className="flex items-start space-x-3">
                   <XCircle className="h-4 w-4 text-red-600 flex-shrink-0 mt-0.5" />
-                  <span className="text-earth-700">{getItemText(item)}</span>
+                  <span className="text-gray-700">{getItemText(item)}</span>
                 </div>
               ))}
             </div>
