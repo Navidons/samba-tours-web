@@ -4,6 +4,9 @@ import { useEffect, useRef } from 'react'
 import { usePathname } from 'next/navigation'
 
 export default function VisitorTracker() {
+  // Temporarily disabled until database is configured
+  return null
+
   const pathname = usePathname()
   const lastTrackedRef = useRef<string>('')
 

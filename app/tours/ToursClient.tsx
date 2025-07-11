@@ -13,6 +13,7 @@ import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
+import Image from "next/image"
 
 interface Tour {
   id: number
@@ -385,10 +386,12 @@ export default function ToursClient({
                     {/* Tour Image */}
                     <div className="relative h-64 overflow-hidden">
                       {tour.featuredImage && tour.featuredImage.data ? (
-                        <img
-                          src={tour.featuredImage.data}
+                        <Image
+                          src={tour.featuredImage.data.startsWith('/') ? tour.featuredImage.data : tour.featuredImage.data}
                           alt={tour.title}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                          fill
+                          className="object-cover group-hover:scale-105 transition-transform duration-500"
+                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                         />
                       ) : (
                         <div className="w-full h-full bg-gradient-to-br from-orange-100 to-red-100 flex items-center justify-center">

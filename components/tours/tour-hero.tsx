@@ -41,17 +41,29 @@ export default function TourHero({ tour, isListingPage = false }: TourHeroProps)
   const averageRating = tour.rating || 0
   const reviewCount = tour.reviewCount || 0
 
+  // Get the featured or first image
+  const heroImage = tour.images?.find(img => img.isFeatured) || tour.images?.[0]
+
+  // Determine if the image data is a path or base64
+  const imageSource = heroImage?.data ? (
+    heroImage.data.startsWith('/') ? heroImage.data : heroImage.data
+  ) : ''
+
   return (
-    <section className="relative text-white">
-      <div className="absolute inset-0 bg-black">
-        {tour.images && tour.images.length > 0 && tour.images[0].data ? (
-          <img
-            src={tour.images[0].data.startsWith('data:') ? tour.images[0].data : `data:${tour.images[0].type};base64,${tour.images[0].data}`}
-            alt={tour.images[0].altText || tour.title}
-            className="w-full h-full object-cover opacity-60"
+    <section className="relative text-white min-h-[60vh]">
+      <div className="absolute inset-0 bg-black/60">
+        {imageSource ? (
+          <Image
+            src={imageSource}
+            alt={heroImage?.altText || tour.title}
+            fill
+            priority
+            className="object-cover"
+            sizes="100vw"
+            quality={90}
           />
         ) : (
-          <div className="w-full h-full bg-gradient-to-br from-gray-800 to-gray-900" />
+          <div className="w-full h-full bg-gradient-to-br from-gray-800 to-gray-900 opacity-90" />
         )}
       </div>
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-16">

@@ -234,7 +234,7 @@ export default function Header() {
   return (
     <>
       {/* Top Bar */}
-      <div className="bg-gradient-to-r from-orange-600 to-red-600 text-white py-2 px-4 hidden md:block">
+      <div className="bg-gradient-to-r from-green-600 to-emerald-600 text-white py-2 px-4 hidden md:block">
         <div className="container mx-auto max-w-7xl flex justify-between items-center text-sm">
           <div className="flex items-center space-x-6">
             <a href="tel:+256700123456" className="flex items-center space-x-2 hover:text-orange-200 transition-colors">
@@ -251,15 +251,15 @@ export default function Header() {
           </div>
           <div className="flex items-center space-x-4">
             {pathname.startsWith("/tours") && (
-              <div className="flex items-center space-x-1 bg-orange-400/20 px-2 py-1 rounded-full border border-orange-400/50">
-                <Calendar className="h-3 w-3 text-orange-400" />
+              <div className="flex items-center space-x-1 bg-green-400/20 px-2 py-1 rounded-full border border-green-400/50">
+                <Calendar className="h-3 w-3 text-green-400" />
                 <span className="font-bold text-xs">
                   {pathname === "/tours" ? "Exploring Tours" : "Tour Details"}
                 </span>
               </div>
             )}
-            <div className="flex items-center space-x-1 bg-yellow-400/20 px-2 py-1 rounded-full border border-yellow-400/50">
-              <Star className="h-3 w-3 text-yellow-400 fill-current" />
+            <div className="flex items-center space-x-1 bg-green-400/20 px-2 py-1 rounded-full border border-green-400/50">
+              <Star className="h-3 w-3 text-green-400 fill-current" />
               <span className="font-bold text-xs">4.9/5 Customer Rating</span>
             </div>
           </div>
@@ -278,7 +278,7 @@ export default function Header() {
           <div className="flex h-16 md:h-20 items-center justify-between">
             {/* Logo */}
             <Link href="/" className="flex items-center space-x-3 group">
-              <div className="w-10 h-10 md:w-12 md:h-12 bg-gradient-to-br from-orange-500 to-red-600 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg">
+              <div className="w-10 h-10 md:w-12 md:h-12 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg">
                 <span className="text-white font-bold text-lg md:text-xl">ST</span>
               </div>
               <div className="hidden sm:block">
@@ -298,8 +298,8 @@ export default function Header() {
                 <DropdownMenuTrigger asChild>
                   <Button
                     variant="ghost"
-                    className={`flex items-center space-x-1 font-medium transition-colors hover:text-orange-600 hover:bg-orange-50 ${
-                      pathname.startsWith("/tours") ? "text-orange-600 bg-orange-50" : "text-gray-700"
+                    className={`flex items-center space-x-1 font-medium transition-colors hover:text-green-600 hover:bg-green-50 ${
+                      pathname.startsWith("/tours") ? "text-green-600 bg-green-50" : "text-gray-700"
                     }`}
                   >
                     <span>Tours</span>
@@ -321,8 +321,8 @@ export default function Header() {
                               href={`/tours?category=${category.slug}`}
                               className={`flex items-center space-x-3 rounded-md p-3 leading-none no-underline outline-none transition-colors group ${
                                 isActiveCategory 
-                                  ? "bg-orange-100 text-orange-700 border-l-4 border-orange-500" 
-                                  : "hover:bg-orange-50 hover:text-orange-600"
+                                  ? "bg-green-100 text-green-700 border-l-4 border-green-500" 
+                                  : "hover:bg-green-50 hover:text-green-600"
                               }`}
                             >
                               <span className="text-2xl">🌍</span>
@@ -330,7 +330,7 @@ export default function Header() {
                                 <div className="flex items-center">
                                   <span className="text-sm font-medium">{category.name}</span>
                                   {isActiveCategory && (
-                                    <Badge className="ml-2 bg-orange-500 text-white text-xs">Active</Badge>
+                                    <Badge className="ml-2 bg-green-500 text-white text-xs">Active</Badge>
                                   )}
                                 </div>
                                 <p className="text-xs text-gray-500 mt-1">{category.description || 'Explore amazing tours'}</p>
@@ -371,7 +371,7 @@ export default function Header() {
                                 }}
                               />
                             ) : null}
-                            <div className={`w-full h-full bg-gradient-to-br from-orange-100 to-red-100 flex items-center justify-center ${tour.featuredImage?.data ? 'hidden' : ''}`}>
+                            <div className={`w-full h-full bg-gradient-to-br from-green-100 to-emerald-100 flex items-center justify-center ${tour.featuredImage?.data ? 'hidden' : ''}`}>
                               <span className="text-2xl">🌍</span>
                             </div>
                             <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-colors duration-200"></div>
@@ -391,7 +391,7 @@ export default function Header() {
                         Array.from({ length: 4 }).map((_, index) => (
                           <div
                             key={index}
-                            className="group relative aspect-square rounded-lg overflow-hidden border border-gray-200 bg-gradient-to-br from-orange-100 to-red-100 flex items-center justify-center"
+                            className="group relative aspect-square rounded-lg overflow-hidden border border-gray-200 bg-gradient-to-br from-green-100 to-emerald-100 flex items-center justify-center"
                           >
                             <span className="text-2xl">🌍</span>
                             <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-colors duration-200"></div>
@@ -411,7 +411,7 @@ export default function Header() {
                     <Button 
                       asChild 
                       size="sm" 
-                      className="w-full bg-orange-500 hover:bg-orange-600"
+                      className="w-full bg-green-500 hover:bg-green-600"
                     >
                       <Link href="/tours">
                         View All Tours
@@ -432,7 +432,7 @@ export default function Header() {
                 variant="ghost"
                 size="icon"
                 onClick={() => setIsSearchOpen(!isSearchOpen)}
-                className="text-gray-600 hover:text-orange-600 hover:bg-orange-50"
+                className="text-gray-600 hover:text-green-600 hover:bg-green-50"
               >
                 <Search className="h-5 w-5" />
               </Button>
@@ -440,7 +440,7 @@ export default function Header() {
                 variant="ghost"
                 size="icon"
                 asChild
-                className="text-gray-600 hover:text-orange-600 hover:bg-orange-50 relative"
+                className="text-gray-600 hover:text-green-600 hover:bg-green-50 relative"
               >
                 <Link href="/cart">
                   <ShoppingCart className="h-5 w-5" />
@@ -452,7 +452,7 @@ export default function Header() {
                 </Link>
               </Button>
               <Button
-                className="bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 text-white font-semibold px-4 py-2 rounded-full shadow-lg hidden lg:flex transition-all duration-300 hover:shadow-xl"
+                className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-semibold px-4 py-2 rounded-full shadow-lg hidden lg:flex transition-all duration-300 hover:shadow-xl"
                 asChild
               >
                 <Link href="/contact">
@@ -487,12 +487,12 @@ export default function Header() {
                         <AccordionItem value="tours" className="border-b-0">
                           <AccordionTrigger
                             className={`flex justify-between items-center w-full py-3 px-4 rounded-lg font-medium transition-colors hover:bg-gray-100 ${
-                              pathname.startsWith("/tours") ? "text-orange-600 bg-orange-50" : "text-gray-700"
+                              pathname.startsWith("/tours") ? "text-green-600 bg-green-50" : "text-gray-700"
                             }`}
                           >
                             Tours
                             {pathname.startsWith("/tours") && (
-                              <Badge className="ml-2 bg-orange-500 text-white text-xs">Active</Badge>
+                              <Badge className="ml-2 bg-green-500 text-white text-xs">Active</Badge>
                             )}
                           </AccordionTrigger>
                           <AccordionContent className="pt-2 pl-4">
@@ -502,8 +502,8 @@ export default function Header() {
                                   href="/tours"
                                   className={`block py-2 px-4 rounded-md transition-colors ${
                                     pathname === "/tours" 
-                                      ? "text-orange-600 bg-orange-50 font-medium" 
-                                      : "text-gray-600 hover:text-orange-600 hover:bg-gray-100"
+                                      ? "text-green-600 bg-green-50 font-medium" 
+                                      : "text-gray-600 hover:text-green-600 hover:bg-gray-100"
                                   }`}
                                 >
                                   All Tours
@@ -519,14 +519,14 @@ export default function Header() {
                                         href={`/tours?category=${category.slug}`}
                                         className={`flex items-center space-x-3 py-2 px-4 rounded-md transition-colors ${
                                           isActiveCategory 
-                                            ? "text-orange-600 bg-orange-50 font-medium" 
-                                            : "text-gray-600 hover:text-orange-600 hover:bg-gray-100"
+                                            ? "text-green-600 bg-green-50 font-medium" 
+                                            : "text-gray-600 hover:text-green-600 hover:bg-gray-100"
                                         }`}
                                       >
                                         <span className="text-lg">🌍</span>
                                         <span>{category.name}</span>
                                         {isActiveCategory && (
-                                          <Badge className="ml-auto bg-orange-500 text-white text-xs">Active</Badge>
+                                          <Badge className="ml-auto bg-green-500 text-white text-xs">Active</Badge>
                                         )}
                                       </Link>
                                     </SheetClose>
@@ -554,7 +554,7 @@ export default function Header() {
                       </Link>
                     </Button>
                     <Button
-                      className="w-full bg-gradient-to-r from-orange-500 to-red-600 text-white font-semibold"
+                      className="w-full bg-gradient-to-r from-green-500 to-emerald-600 text-white font-semibold"
                       asChild
                     >
                       <Link href="/contact">
@@ -576,10 +576,10 @@ export default function Header() {
                     placeholder="Search tours, destinations, activities..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="flex-1 border-orange-300 focus:border-orange-500 focus:ring-orange-500"
+                    className="flex-1 border-green-300 focus:border-green-500 focus:ring-green-500"
                     autoFocus
                   />
-                  <Button type="submit" className="bg-orange-500 hover:bg-orange-600">
+                  <Button type="submit" className="bg-green-500 hover:bg-green-600">
                     <Search className="h-4 w-4 mr-2" /> Search
                   </Button>
                   <Button type="button" variant="outline" onClick={() => setIsSearchOpen(false)}>

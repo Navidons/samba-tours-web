@@ -30,11 +30,11 @@ export default async function ToursPage() {
     },
     images: [{
       id: "hero",
-      data: "/photos/murchison-falls-spectacular.jpg",
-      name: "Murchison Falls",
+      data: "/photos/giraffe-uganda-savana-hero.jpg",
+      name: "Uganda Safari",
       type: "image/jpeg",
       size: 0,
-      altText: "Spectacular view of Murchison Falls in Uganda",
+      altText: "Giraffe in Uganda's beautiful savanna landscape",
       isFeatured: true,
       displayOrder: 1
     }]

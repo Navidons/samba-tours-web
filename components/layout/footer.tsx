@@ -124,30 +124,30 @@ export default function Footer() {
       <div className="relative border-b border-white/10">
         <div className="max-w-7xl mx-auto px-4 py-16">
           <div className="max-w-4xl mx-auto text-center">
-            <div className="inline-flex items-center bg-gradient-to-r from-orange-500/20 to-red-500/20 text-orange-300 px-6 py-3 rounded-full text-sm font-bold mb-6 border border-orange-500/30 backdrop-blur-sm">
+            <div className="inline-flex items-center bg-gradient-to-r from-green-500/20 to-emerald-500/20 text-green-300 px-6 py-3 rounded-full text-sm font-bold mb-6 border border-green-500/30 backdrop-blur-sm">
               <Mail className="h-4 w-4 mr-2" />
               Stay Updated with Safari Deals
             </div>
-            <h3 className="text-3xl md:text-4xl font-bold mb-4 bg-gradient-to-r from-orange-400 to-red-400 bg-clip-text text-transparent">
+            <h3 className="text-3xl md:text-4xl font-bold mb-4 bg-gradient-to-r from-green-400 to-emerald-400 bg-clip-text text-transparent">
               Get Exclusive Safari Deals & Travel Tips
             </h3>
             <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto leading-relaxed">
-              Join over <span className="text-orange-400 font-semibold">10,000+</span> adventure seekers who receive our monthly newsletter with special offers, travel guides,
+              Join over <span className="text-green-400 font-semibold">10,000+</span> adventure seekers who receive our monthly newsletter with special offers, travel guides,
               and insider tips for unforgettable Uganda experiences.
             </p>
             
             {/* Stats */}
             <div className="grid grid-cols-3 gap-6 mb-8 max-w-md mx-auto">
               <div className="text-center">
-                <div className="text-2xl font-bold text-orange-400">500+</div>
+                <div className="text-2xl font-bold text-green-400">500+</div>
                 <div className="text-sm text-gray-400">Happy Travelers</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-orange-400">50+</div>
+                <div className="text-2xl font-bold text-green-400">50+</div>
                 <div className="text-sm text-gray-400">Tour Packages</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-orange-400">4.9★</div>
+                <div className="text-2xl font-bold text-green-400">4.9★</div>
                 <div className="text-sm text-gray-400">Average Rating</div>
               </div>
             </div>
@@ -159,7 +159,7 @@ export default function Footer() {
                   placeholder="Enter your email address"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className={`bg-white/10 border-white/20 text-white placeholder:text-gray-400 focus:bg-white/20 focus:border-orange-500 pr-10 transition-all duration-300 ${
+                  className={`bg-white/10 border-white/20 text-white placeholder:text-gray-400 focus:bg-white/20 focus:border-green-500 pr-10 transition-all duration-300 ${
                     subscriptionStatus === "success" ? "border-green-500" : 
                     subscriptionStatus === "error" ? "border-red-500" : ""
                   }`}
@@ -175,7 +175,7 @@ export default function Footer() {
               <Button 
                 type="submit"
                 disabled={isSubmitting}
-                className="bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 font-semibold px-8 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 shadow-lg hover:shadow-xl"
+                className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 font-semibold px-8 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 shadow-lg hover:shadow-xl"
               >
                 {isSubmitting ? "Subscribing..." : "Subscribe"}
               </Button>
@@ -191,11 +191,11 @@ export default function Footer() {
           {/* Company Info */}
           <div className="lg:col-span-1">
             <Link href="/" className="flex items-center space-x-3 mb-6 group">
-              <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-red-600 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg">
+              <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg">
                 <span className="text-white font-bold text-xl">ST</span>
               </div>
               <div>
-                <h2 className="text-2xl font-bold group-hover:text-orange-400 transition-colors">Samba Tours</h2>
+                <h2 className="text-2xl font-bold group-hover:text-green-400 transition-colors">Samba Tours</h2>
                 <p className="text-sm text-gray-400">Uganda Safari Adventures</p>
               </div>
             </Link>
@@ -209,15 +209,15 @@ export default function Footer() {
             <div className="space-y-3 mb-6">
               <div className="flex items-center space-x-3 text-sm group">
                 <Award className="h-5 w-5 text-yellow-500 group-hover:scale-110 transition-transform" />
-                <span className="group-hover:text-orange-400 transition-colors">Licensed Tour Operator</span>
+                <span className="group-hover:text-green-400 transition-colors">Licensed Tour Operator</span>
               </div>
               <div className="flex items-center space-x-3 text-sm group">
                 <Shield className="h-5 w-5 text-green-500 group-hover:scale-110 transition-transform" />
-                <span className="group-hover:text-orange-400 transition-colors">Fully Insured & Bonded</span>
+                <span className="group-hover:text-green-400 transition-colors">Fully Insured & Bonded</span>
               </div>
               <div className="flex items-center space-x-3 text-sm group">
                 <Heart className="h-5 w-5 text-red-500 group-hover:scale-110 transition-transform" />
-                <span className="group-hover:text-orange-400 transition-colors">98% Customer Satisfaction</span>
+                <span className="group-hover:text-green-400 transition-colors">98% Customer Satisfaction</span>
               </div>
             </div>
 
@@ -244,7 +244,7 @@ export default function Footer() {
 
           {/* Quick Links */}
           <div>
-            <h3 className="text-lg font-bold mb-6 text-orange-400">Quick Links</h3>
+            <h3 className="text-lg font-bold mb-6 text-green-400">Quick Links</h3>
             <ul className="space-y-3">
               {quickLinks.map((link) => (
                 <li key={link.name}>
@@ -262,7 +262,7 @@ export default function Footer() {
 
           {/* Tour Categories */}
           <div>
-            <h3 className="text-lg font-bold mb-6 text-orange-400">Popular Tours</h3>
+            <h3 className="text-lg font-bold mb-6 text-green-400">Popular Tours</h3>
             <ul className="space-y-3">
               {tourCategories.map((category) => (
                 <li key={category.name}>
@@ -280,12 +280,12 @@ export default function Footer() {
 
           {/* Contact & Support */}
           <div>
-            <h3 className="text-lg font-bold mb-6 text-orange-400">Contact & Support</h3>
+            <h3 className="text-lg font-bold mb-6 text-green-400">Contact & Support</h3>
 
             {/* Contact Info */}
             <div className="space-y-4 mb-6">
               <div className="flex items-start space-x-3 group">
-                <MapPin className="h-5 w-5 text-orange-500 mt-0.5 flex-shrink-0 group-hover:scale-110 transition-transform" />
+                <MapPin className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0 group-hover:scale-110 transition-transform" />
                 <div>
                   <p className="text-gray-300 group-hover:text-white transition-colors">Plot 123, Kampala Road</p>
                   <p className="text-gray-300 group-hover:text-white transition-colors">Kampala, Uganda</p>
@@ -293,7 +293,7 @@ export default function Footer() {
               </div>
 
               <div className="flex items-center space-x-3 group">
-                <Phone className="h-5 w-5 text-orange-500 flex-shrink-0 group-hover:scale-110 transition-transform" />
+                <Phone className="h-5 w-5 text-green-500 flex-shrink-0 group-hover:scale-110 transition-transform" />
                 <div>
                   <p className="text-gray-300 group-hover:text-white transition-colors">+256 700 123 456</p>
                   <p className="text-gray-300 group-hover:text-white transition-colors">+256 800 987 654</p>
@@ -301,12 +301,12 @@ export default function Footer() {
               </div>
 
               <div className="flex items-center space-x-3 group">
-                <Mail className="h-5 w-5 text-orange-500 flex-shrink-0 group-hover:scale-110 transition-transform" />
+                <Mail className="h-5 w-5 text-green-500 flex-shrink-0 group-hover:scale-110 transition-transform" />
                 <p className="text-gray-300 group-hover:text-white transition-colors">info@sambatours.com</p>
               </div>
 
               <div className="flex items-center space-x-3 group">
-                <Clock className="h-5 w-5 text-orange-500 flex-shrink-0 group-hover:scale-110 transition-transform" />
+                <Clock className="h-5 w-5 text-green-500 flex-shrink-0 group-hover:scale-110 transition-transform" />
                 <div>
                   <p className="text-gray-300 group-hover:text-white transition-colors">Mon - Fri: 8AM - 6PM</p>
                   <p className="text-gray-300 group-hover:text-white transition-colors">Sat - Sun: 9AM - 5PM</p>
@@ -342,15 +342,15 @@ export default function Footer() {
             <div className="flex flex-col md:flex-row items-center space-y-2 md:space-y-0 md:space-x-6 text-sm text-gray-400">
               <p>&copy; {new Date().getFullYear()} Samba Tours Uganda. All rights reserved.</p>
               <div className="flex items-center space-x-4">
-                <Link href="/terms" className="hover:text-orange-400 transition-colors">
+                <Link href="/terms" className="hover:text-green-400 transition-colors">
                   Terms of Service
                 </Link>
                 <span>•</span>
-                <Link href="/privacy" className="hover:text-orange-400 transition-colors">
+                <Link href="/privacy" className="hover:text-green-400 transition-colors">
                   Privacy Policy
                 </Link>
                 <span>•</span>
-                <Link href="/cookies" className="hover:text-orange-400 transition-colors">
+                <Link href="/cookies" className="hover:text-green-400 transition-colors">
                   Cookie Policy
                 </Link>
               </div>

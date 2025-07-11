@@ -144,7 +144,7 @@ export default function HeroSection() {
         <div className="max-w-5xl mx-auto">
           {/* Premium Badge */}
           <div className="mb-6 flex justify-center">
-            <Badge className="bg-gradient-to-r from-yellow-500 via-orange-500 to-red-500 text-white px-6 py-2 text-sm font-bold border-0 shadow-lg animate-pulse">
+            <Badge className="bg-gradient-to-r from-green-500 via-emerald-500 to-teal-500 text-white px-6 py-2 text-sm font-bold border-0 shadow-lg animate-pulse">
               <Award className="w-4 h-4 mr-2" />
               {current.badge}
             </Badge>
@@ -152,13 +152,13 @@ export default function HeroSection() {
 
           {/* Main Heading */}
           <h1 className="text-5xl md:text-7xl font-bold mb-4 leading-tight text-shadow-lg">
-            <span className="block font-playfair bg-gradient-to-r from-white via-orange-100 to-yellow-200 bg-clip-text text-transparent">
+            <span className="block font-playfair bg-gradient-to-r from-white via-emerald-100 to-green-200 bg-clip-text text-transparent">
               {current.title}
             </span>
           </h1>
 
           {/* Subtitle */}
-          <h2 className="text-2xl md:text-3xl text-orange-200 font-light mb-8 tracking-wide text-shadow">
+          <h2 className="text-2xl md:text-3xl text-emerald-200 font-light mb-8 tracking-wide text-shadow">
             {current.subtitle}
           </h2>
 
@@ -175,7 +175,7 @@ export default function HeroSection() {
               <span className="text-gray-300 text-sm">({current.stats.reviews} reviews)</span>
             </div>
             <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-4 py-2 border border-white/20">
-              <Users className="w-5 h-5 text-blue-400" />
+              <Users className="w-5 h-5 text-emerald-400" />
               <span className="font-semibold text-md">{current.stats.bookings}</span>
               <span className="text-gray-300 text-sm">happy travelers</span>
             </div>
@@ -190,7 +190,7 @@ export default function HeroSection() {
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
             <Button
               size="lg"
-              className="bg-gradient-to-r from-orange-500 via-red-500 to-pink-500 hover:from-orange-600 hover:via-red-600 hover:to-pink-600 text-white px-8 py-6 text-lg font-bold shadow-lg transform hover:scale-105 transition-transform duration-300 border-0 rounded-full w-full sm:w-auto"
+              className="bg-gradient-to-r from-green-500 via-emerald-500 to-teal-500 hover:from-green-600 hover:via-emerald-600 hover:to-teal-600 text-white px-8 py-6 text-lg font-bold shadow-lg transform hover:scale-105 transition-transform duration-300 border-0 rounded-full w-full sm:w-auto"
               asChild
             >
               <Link href="/tours">
@@ -225,7 +225,7 @@ export default function HeroSection() {
                 }}
                 className={`transition-all duration-500 rounded-full ${
                   index === currentSlide
-                    ? "bg-gradient-to-r from-yellow-400 to-orange-400 w-8 h-2"
+                    ? "bg-gradient-to-r from-green-400 to-emerald-400 w-8 h-2"
                     : "bg-white/30 hover:bg-white/50 w-2 h-2"
                 }`}
                 aria-label={`Go to slide ${index + 1}`}
