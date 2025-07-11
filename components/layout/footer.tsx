@@ -13,7 +13,6 @@ const quickLinks = [
   { name: "Gallery", href: "/gallery", icon: "📸" },
   { name: "Blog", href: "/blog", icon: "📝" },
   { name: "Contact", href: "/contact", icon: "📞" },
-  { name: "Careers", href: "/careers", icon: "💼" },
 ]
 
 const tourCategories = [
@@ -25,20 +24,11 @@ const tourCategories = [
   { name: "Adventure Tours", href: "/tours?category=adventure", icon: "🎯" },
 ]
 
-const supportLinks = [
-  { name: "Help Center", href: "/help", icon: "❓" },
-  { name: "Booking Terms", href: "/terms", icon: "📋" },
-  { name: "Privacy Policy", href: "/privacy", icon: "🔒" },
-  { name: "Cancellation Policy", href: "/cancellation", icon: "🔄" },
-  { name: "Travel Insurance", href: "/insurance", icon: "🛡️" },
-  { name: "FAQs", href: "/faqs", icon: "❔" },
-]
-
 const socialLinks = [
   { name: "Facebook", href: "#", icon: Facebook, color: "hover:text-blue-500" },
   { name: "Twitter", href: "#", icon: Twitter, color: "hover:text-sky-500" },
   { name: "Instagram", href: "#", icon: Instagram, color: "hover:text-pink-500" },
-  { name: "YouTube", href: "#", icon: Youtube, color: "hover:text-red-500" },
+  { name: "YouTube", href: "#", icon: Youtube, color: "hover:text-emerald-500" },
 ]
 
 export default function Footer() {
@@ -169,7 +159,7 @@ export default function Footer() {
                   <CheckCircle className="absolute right-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-green-500" />
                 )}
                 {subscriptionStatus === "error" && (
-                  <AlertCircle className="absolute right-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-red-500" />
+                  <AlertCircle className="absolute right-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-emerald-500" />
                 )}
               </div>
               <Button 
@@ -195,7 +185,7 @@ export default function Footer() {
                 <span className="text-white font-bold text-xl">ST</span>
               </div>
               <div>
-                <h2 className="text-2xl font-bold group-hover:text-green-400 transition-colors">Samba Tours</h2>
+                <h2 className="text-2xl font-bold group-hover:text-emerald-400 transition-colors">Samba Tours</h2>
                 <p className="text-sm text-gray-400">Uganda Safari Adventures</p>
               </div>
             </Link>
@@ -208,16 +198,16 @@ export default function Footer() {
             {/* Trust Indicators */}
             <div className="space-y-3 mb-6">
               <div className="flex items-center space-x-3 text-sm group">
-                <Award className="h-5 w-5 text-yellow-500 group-hover:scale-110 transition-transform" />
-                <span className="group-hover:text-green-400 transition-colors">Licensed Tour Operator</span>
+                <Award className="h-5 w-5 text-emerald-500 group-hover:scale-110 transition-transform" />
+                <span className="group-hover:text-emerald-400 transition-colors">Licensed Tour Operator</span>
               </div>
               <div className="flex items-center space-x-3 text-sm group">
-                <Shield className="h-5 w-5 text-green-500 group-hover:scale-110 transition-transform" />
-                <span className="group-hover:text-green-400 transition-colors">Fully Insured & Bonded</span>
+                <Shield className="h-5 w-5 text-emerald-500 group-hover:scale-110 transition-transform" />
+                <span className="group-hover:text-emerald-400 transition-colors">Fully Insured & Bonded</span>
               </div>
               <div className="flex items-center space-x-3 text-sm group">
-                <Heart className="h-5 w-5 text-red-500 group-hover:scale-110 transition-transform" />
-                <span className="group-hover:text-green-400 transition-colors">98% Customer Satisfaction</span>
+                <Heart className="h-5 w-5 text-emerald-500 group-hover:scale-110 transition-transform" />
+                <span className="group-hover:text-emerald-400 transition-colors">98% Customer Satisfaction</span>
               </div>
             </div>
 
@@ -313,24 +303,6 @@ export default function Footer() {
                 </div>
               </div>
             </div>
-
-            {/* Support Links */}
-            <div>
-              <h4 className="font-semibold mb-3 text-gray-200">Support</h4>
-              <ul className="space-y-2">
-                {supportLinks.slice(0, 4).map((link) => (
-                  <li key={link.name}>
-                    <Link
-                      href={link.href}
-                      className="text-sm text-gray-400 hover:text-white transition-colors duration-200 flex items-center group"
-                    >
-                      <span className="mr-2">{link.icon}</span>
-                      <span className="group-hover:translate-x-1 transition-transform duration-200">{link.name}</span>
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
           </div>
         </div>
       </div>
@@ -358,7 +330,7 @@ export default function Footer() {
 
             <div className="flex items-center space-x-4 text-sm text-gray-400">
               <span>Made with</span>
-              <Heart className="h-4 w-4 text-red-500 animate-pulse" />
+              <Heart className="h-4 w-4 text-emerald-500 animate-pulse" />
               <span>in Uganda</span>
             </div>
           </div>

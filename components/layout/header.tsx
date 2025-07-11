@@ -199,8 +199,8 @@ export default function Header() {
   const NavLink = ({ href, children }: { href: string; children: React.ReactNode }) => (
     <Link
       href={href}
-      className={`font-medium transition-colors hover:text-orange-600 ${
-        pathname === href ? "text-orange-600" : "text-gray-700"
+      className={`font-medium transition-colors hover:text-emerald-600 ${
+        pathname === href ? "text-emerald-600" : "text-gray-700"
       }`}
     >
       {children}
@@ -210,8 +210,8 @@ export default function Header() {
   const TourNavLink = ({ href, children }: { href: string; children: React.ReactNode }) => (
     <Link
       href={href}
-      className={`font-medium transition-colors hover:text-orange-600 ${
-        pathname.startsWith("/tours") ? "text-orange-600" : "text-gray-700"
+      className={`font-medium transition-colors hover:text-emerald-600 ${
+        pathname.startsWith("/tours") ? "text-emerald-600" : "text-gray-700"
       }`}
     >
       {children}
@@ -223,7 +223,7 @@ export default function Header() {
       <Link
         href={href}
         className={`block py-3 px-4 rounded-lg font-medium transition-colors ${
-          pathname === href ? "bg-orange-50 text-orange-600" : "text-gray-700 hover:bg-gray-100"
+          pathname === href ? "bg-emerald-50 text-emerald-600" : "text-gray-700 hover:bg-gray-100"
         }`}
       >
         {children}
@@ -237,13 +237,13 @@ export default function Header() {
       <div className="bg-gradient-to-r from-green-600 to-emerald-600 text-white py-2 px-4 hidden md:block">
         <div className="container mx-auto max-w-7xl flex justify-between items-center text-sm">
           <div className="flex items-center space-x-6">
-            <a href="tel:+256700123456" className="flex items-center space-x-2 hover:text-orange-200 transition-colors">
+            <a href="tel:+256700123456" className="flex items-center space-x-2 hover:text-emerald-200 transition-colors">
               <Phone className="h-4 w-4" />
               <span>+256 700 123 456</span>
             </a>
             <a
               href="mailto:info@sambatours.com"
-              className="flex items-center space-x-2 hover:text-orange-200 transition-colors"
+              className="flex items-center space-x-2 hover:text-emerald-200 transition-colors"
             >
               <Mail className="h-4 w-4" />
               <span>info@sambatours.com</span>
@@ -282,7 +282,7 @@ export default function Header() {
                 <span className="text-white font-bold text-lg md:text-xl">ST</span>
               </div>
               <div className="hidden sm:block">
-                <h2 className="text-xl md:text-2xl font-bold text-gray-900 group-hover:text-orange-600 transition-colors">
+                <h2 className="text-xl md:text-2xl font-bold text-gray-900 group-hover:text-emerald-600 transition-colors">
                   Samba Tours
                 </h2>
                 <p className="text-xs text-gray-600 -mt-1">
@@ -353,7 +353,7 @@ export default function Header() {
                           <Link
                             key={tour.id}
                             href={`/tours/${tour.slug}`}
-                            className="group relative aspect-square rounded-lg overflow-hidden border border-gray-200 hover:border-orange-300 transition-all duration-200 hover:shadow-md"
+                            className="group relative aspect-square rounded-lg overflow-hidden border border-gray-200 hover:border-emerald-300 transition-all duration-200 hover:shadow-md"
                           >
                             {tour.featuredImage?.data ? (
                               <img
@@ -464,7 +464,7 @@ export default function Header() {
               {/* Mobile Menu Trigger */}
               <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
                 <SheetTrigger asChild>
-                  <Button variant="ghost" size="icon" className="lg:hidden hover:bg-orange-50">
+                  <Button variant="ghost" size="icon" className="lg:hidden hover:bg-emerald-50">
                     <Menu className="h-6 w-6" />
                     <span className="sr-only">Open menu</span>
                   </Button>
