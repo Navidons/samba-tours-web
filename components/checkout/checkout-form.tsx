@@ -33,6 +33,7 @@ export default function CheckoutForm() {
   const { items, getTotal, clearCart } = useCart()
   const router = useRouter()
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isRedirecting, setIsRedirecting] = useState(false)
   
   const [customerInfo, setCustomerInfo] = useState<CustomerInfo>({
     name: "",
@@ -75,7 +76,7 @@ export default function CheckoutForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     
-    console.log('Submitting booking with data:', { customerInfo, guests: guests.length, items: items.length, total })
+    
     
     if (!customerInfo.name || !customerInfo.email || !customerInfo.phone) {
       toast.error("Please fill in all required customer information")
@@ -99,7 +100,7 @@ export default function CheckoutForm() {
         bookingReference: `SB${Date.now()}`
       }
 
-      console.log('Sending booking data:', bookingData)
+
 
       const response = await fetch('/api/bookings', {
         method: 'POST',
@@ -115,14 +116,72 @@ export default function CheckoutForm() {
         throw new Error(result.error || 'Failed to create booking')
       }
 
-      // Clear cart
-      clearCart()
+      // Show success message and set redirecting state
+      toast.success("Booking confirmed! Redirecting to confirmation page...")
+      setIsRedirecting(true)
 
-      // Show success message
-      toast.success("Booking confirmed! Check your email for confirmation details.")
+      // Prepare confirmation data
+      const confirmationData = {
+        bookingReference: result.booking?.bookingReference || bookingReference,
+        customerName: customerInfo.name,
+        customerEmail: customerInfo.email,
+        totalAmount: total,
+        numberOfGuests: guests.length,
+        tourTitle: items[0]?.title || 'Tour',
+        tourDate: items[0]?.startDate || new Date().toISOString(),
+        tourPrice: items[0]?.price || 0,
+        specialRequests: customerInfo.specialRequests
+      }
 
-      // Redirect to confirmation page
-      router.push(`/booking-confirmation/${result.booking.bookingReference}`)
+      console.log('Prepared confirmation data:', confirmationData)
+
+      // Store in session storage as backup
+      sessionStorage.setItem('bookingConfirmation', JSON.stringify(confirmationData))
+
+      // Build URL with query parameters
+      const params = new URLSearchParams({
+        reference: confirmationData.bookingReference,
+        name: confirmationData.customerName,
+        email: confirmationData.customerEmail,
+        total: confirmationData.totalAmount.toString(),
+        guests: confirmationData.numberOfGuests.toString(),
+        tour: confirmationData.tourTitle,
+        date: confirmationData.tourDate,
+        price: confirmationData.tourPrice.toString(),
+        ...(confirmationData.specialRequests && { requests: confirmationData.specialRequests })
+      })
+
+      const confirmationUrl = `/booking-confirmation?${params.toString()}`
+      console.log('Redirecting to confirmation page:', confirmationUrl)
+      
+      // Use replace to prevent back button issues and add a small delay for better UX
+      setTimeout(() => {
+        console.log('Executing redirect now...')
+        // Clear cart after successful redirect
+        clearCart()
+        
+        // Try multiple redirect methods
+        try {
+          router.replace(confirmationUrl)
+        } catch (redirectError) {
+          console.error('Router redirect failed:', redirectError)
+          // Fallback to window.location
+          window.location.href = confirmationUrl
+        }
+      }, 1000)
+
+      // Fallback redirect in case the first one fails
+      setTimeout(() => {
+        console.log('Fallback redirect...')
+        if (window.location.pathname !== '/booking-confirmation') {
+          try {
+            router.push(confirmationUrl)
+          } catch (fallbackError) {
+            console.error('Fallback redirect failed:', fallbackError)
+            window.location.href = confirmationUrl
+          }
+        }
+      }, 3000)
 
     } catch (error) {
       console.error('Booking error:', error)
@@ -321,9 +380,9 @@ export default function CheckoutForm() {
             <Button
               type="submit"
               className="w-full bg-gradient-to-r from-emerald-500 to-green-500 hover:from-emerald-600 hover:to-green-600"
-              disabled={isSubmitting}
+              disabled={isSubmitting || isRedirecting}
             >
-              {isSubmitting ? 'Processing Booking...' : 'Confirm Booking'}
+              {isRedirecting ? 'Redirecting to Confirmation...' : isSubmitting ? 'Processing Booking...' : 'Confirm Booking'}
             </Button>
 
             <p className="text-xs text-gray-500 text-center">

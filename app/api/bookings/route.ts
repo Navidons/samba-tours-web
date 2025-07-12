@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
-import { sendEmail } from "@/lib/email-service"
+import { sendEmail } from "@/lib/email"
 import { PrismaClientInitializationError, PrismaClientKnownRequestError } from "@prisma/client/runtime/library"
 import { BookingStatus } from "@prisma/client"
 
@@ -128,11 +128,29 @@ export async function POST(request: NextRequest) {
         <p>Best regards,<br>The Samba Tours Team</p>
       `
 
-      // Use a simpler email approach to avoid the email service issues
+      // Send confirmation email
       console.log('Sending email to:', customerInfo.email)
       
-      // For now, just log the email content instead of sending
-      console.log('Email content:', emailContent)
+      try {
+        // Use the custom template with the email content
+        const result = await sendEmail(
+          customerInfo.email,
+          'custom',
+          {
+            customMessage: emailContent,
+            subject: `Booking Confirmation - ${bookingReference}`
+          }
+        )
+        
+        if (result.success) {
+          console.log('Email sent successfully to:', customerInfo.email)
+        } else {
+          console.error('Email sending failed:', result.error)
+        }
+      } catch (emailSendError) {
+        console.error('Failed to send email:', emailSendError)
+        // Continue with booking even if email fails
+      }
 
       // Update all bookings to mark email as sent
       await Promise.all(
