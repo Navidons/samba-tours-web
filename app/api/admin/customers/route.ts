@@ -105,16 +105,16 @@ export async function GET(request: NextRequest) {
     // Format the response
     const formattedCustomers = customers.map(customer => ({
       ...customer,
-      recent_bookings: customer.bookings.map(booking => ({
+      recentBookings: customer.bookings.map(booking => ({
         id: booking.id,
         reference: booking.bookingReference,
-        start_date: booking.startDate,
-        end_date: booking.endDate,
+        startDate: booking.startDate,
+        endDate: booking.endDate,
         amount: booking.totalAmount,
         status: booking.status,
-        created_at: booking.createdAt
+        createdAt: booking.createdAt
       })),
-      last_booking: customer.bookings[0] ? {
+      lastBooking: customer.bookings[0] ? {
         reference: customer.bookings[0].bookingReference,
         date: customer.bookings[0].startDate,
         amount: customer.bookings[0].totalAmount,

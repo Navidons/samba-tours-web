@@ -40,7 +40,7 @@ interface Customer {
     amount: number
     status: string
   } | null
-  recentBookings: Array<{
+  recentBookings?: Array<{
     id: number
     reference: string
     startDate: string
@@ -67,6 +67,14 @@ interface CustomerResponse {
   hasMore: boolean
   stats: CustomerStats
   error?: string
+}
+
+interface FetchParams {
+  page: number;
+  search?: string;
+  status?: string;
+  customerType?: string;
+  limit?: number;
 }
 
 const getStatusColor = (status: "active" | "inactive" | "blocked") => {
@@ -128,7 +136,7 @@ export default function CustomersClient() {
       setLoading(true)
       const searchParams = new URLSearchParams({
         page: params.page.toString(),
-        limit: params.limit.toString(),
+        limit: params.limit?.toString() || '10', // Default to 10 if not provided
         search: params.search || '',
         status: params.status || '',
         customerType: params.customerType || ''
@@ -223,7 +231,10 @@ export default function CustomersClient() {
   }
 
   const handleViewCustomer = (customer: Customer) => {
-    setSelectedCustomer(customer)
+    setSelectedCustomer({
+      ...customer,
+      recentBookings: customer.recentBookings ?? []
+    })
     setShowViewDialog(true)
   }
 
@@ -249,9 +260,27 @@ export default function CustomersClient() {
 
     try {
       setSendingEmail(true)
-      // TODO: Implement email sending API
-      await new Promise(resolve => setTimeout(resolve, 2000)) // Simulate API call
-      
+      // Map frontend template to backend template key
+      let templateKey = emailData.template;
+      if (emailData.template === 'welcome' || emailData.template === 'promotion') templateKey = 'custom';
+      // Real API call
+      let templateData;
+      if (emailData.template === 'custom' || emailData.template === 'welcome' || emailData.template === 'promotion') {
+        templateData = { customMessage: emailData.message, subject: emailData.subject };
+      } else {
+        templateData = { name: selectedCustomer.name, subject: emailData.subject, message: emailData.message };
+      }
+      const response = await fetch('/api/email/send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          to: selectedCustomer.email,
+          subject: emailData.subject,
+          template: templateKey,
+          data: templateData
+        })
+      })
+      if (!response.ok) throw new Error('Failed to send email')
       toast({
         title: "Success",
         description: `Email sent to ${selectedCustomer.email}`
@@ -361,7 +390,7 @@ export default function CustomersClient() {
               <p className="text-earth-600">Manage customer accounts and profiles</p>
             </div>
             <div className="flex gap-2">
-              <Button variant="outline" onClick={fetchCustomers}>
+              <Button variant="outline" onClick={() => fetchCustomers({ page, search, status, customerType })}>
                 <RefreshCw className="h-4 w-4 mr-2" />
                 Refresh
               </Button>
@@ -376,25 +405,25 @@ export default function CustomersClient() {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
             <Card>
               <CardContent className="p-6">
-                <div className="text-2xl font-bold text-earth-900">{stats.totalCustomers.toLocaleString()}</div>
+                <div className="text-2xl font-bold text-earth-900">{(stats.totalCustomers ?? 0).toLocaleString()}</div>
                 <p className="text-sm text-earth-600">Total Customers</p>
               </CardContent>
             </Card>
             <Card>
               <CardContent className="p-6">
-                <div className="text-2xl font-bold text-green-600">{stats.activeCustomers.toLocaleString()}</div>
+                <div className="text-2xl font-bold text-green-600">{(stats.activeCustomers ?? 0).toLocaleString()}</div>
                 <p className="text-sm text-earth-600">Active Customers</p>
               </CardContent>
             </Card>
             <Card>
               <CardContent className="p-6">
-                <div className="text-2xl font-bold text-forest-600">{formatCurrency(stats.totalRevenue)}</div>
+                <div className="text-2xl font-bold text-forest-600">{formatCurrency(stats.totalRevenue ?? 0)}</div>
                 <p className="text-sm text-earth-600">Total Revenue</p>
               </CardContent>
             </Card>
             <Card>
               <CardContent className="p-6">
-                <div className="text-2xl font-bold text-blue-600">{formatCurrency(stats.avgOrderValue)}</div>
+                <div className="text-2xl font-bold text-blue-600">{formatCurrency(stats.avgOrderValue ?? 0)}</div>
                 <p className="text-sm text-earth-600">Avg. Order Value</p>
               </CardContent>
             </Card>
@@ -664,7 +693,7 @@ export default function CustomersClient() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  {selectedCustomer.recentBookings.length > 0 ? (
+                  {selectedCustomer.recentBookings && selectedCustomer.recentBookings.length > 0 ? (
                     <div className="space-y-4">
                       {selectedCustomer.recentBookings.map((booking) => (
                         <div key={booking.id} className="border border-gray-200 rounded-lg p-4">
