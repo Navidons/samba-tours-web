@@ -1,8 +1,7 @@
 "use client"
 
 import type React from "react"
-
-import { useState } from "react"
+import { useState, useRef, useEffect } from "react"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
@@ -78,6 +77,20 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const pathname = usePathname()
   const router = useRouter()
+  const sidebarScrollRef = useRef<HTMLDivElement>(null)
+
+  // Persist sidebar scroll position
+  useEffect(() => {
+    const ref = sidebarScrollRef.current
+    if (!ref) return
+    // Restore scroll position
+    const saved = localStorage.getItem("adminSidebarScroll")
+    if (saved) ref.scrollTop = parseInt(saved, 10)
+    // Save on scroll
+    const handler = () => localStorage.setItem("adminSidebarScroll", ref.scrollTop.toString())
+    ref.addEventListener("scroll", handler)
+    return () => ref.removeEventListener("scroll", handler)
+  }, [pathname])
 
   const handleSignOut = async () => {
     await fetch("/api/admin/logout", { method: "POST" })
@@ -87,26 +100,19 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const Sidebar = ({ mobile = false }: { mobile?: boolean }) => (
     <div className="flex flex-col h-full">
       {/* Logo - Fixed */}
-      <div className="flex-shrink-0 flex items-center px-6 py-4 border-b border-white/10">
-        <div className="flex items-center space-x-3">
-          <div className="w-10 h-10 bg-gradient-to-br from-orange-400 to-red-500 rounded-xl flex items-center justify-center">
-            <Mountain className="h-6 w-6 text-white" />
-          </div>
-          <div>
-            <h2 className="text-lg font-bold text-white">Samba Tours</h2>
-            <p className="text-xs text-orange-200">Admin Panel</p>
-          </div>
-        </div>
+      <div className="flex-shrink-0 flex items-center justify-center px-6 py-6 border-b border-white/10">
+        <img src="/logo/samba tours-01.png" alt="Samba Tours Logo" className="h-12 w-auto" />
       </div>
 
       {/* Navigation Container - Scrollable */}
       <div className="flex-1 min-h-0">
-        <div 
-          className="h-full overflow-y-auto px-4 py-6 space-y-2" 
-          style={{ 
+        <div
+          ref={sidebarScrollRef}
+          className="h-full overflow-y-auto px-4 py-6 space-y-2"
+          style={{
             maxHeight: 'calc(100vh - 200px)',
             scrollbarWidth: 'thin',
-            scrollbarColor: 'rgba(255, 255, 255, 0.3) transparent'
+            scrollbarColor: 'rgba(16, 185, 129, 0.3) transparent'
           }}
         >
           <style jsx>{`
@@ -117,16 +123,16 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               background: transparent;
             }
             div::-webkit-scrollbar-thumb {
-              background: rgba(255, 255, 255, 0.3);
+              background: rgba(16, 185, 129, 0.3);
               border-radius: 3px;
             }
             div::-webkit-scrollbar-thumb:hover {
-              background: rgba(255, 255, 255, 0.5);
+              background: rgba(16, 185, 129, 0.5);
             }
           `}</style>
           {navigation.map((section) => (
             <div key={section.section}>
-              <div className="mt-6 mb-2 px-4 text-xs font-bold text-orange-200 uppercase tracking-wider">
+              <div className="mt-6 mb-2 px-4 text-xs font-bold text-emerald-200 uppercase tracking-wider">
                 {section.section}
               </div>
               {section.items.map((item) => {
@@ -138,7 +144,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                     href={item.href}
                     onClick={() => mobile && setSidebarOpen(false)}
                     className={`flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-all duration-200 ${
-                      isActive ? "bg-white/20 text-white shadow-lg" : "text-orange-100 hover:bg-white/10 hover:text-white"
+                      isActive ? "bg-white/20 text-white shadow-lg" : "text-emerald-100 hover:bg-white/10 hover:text-white"
                     }`}
                   >
                     <Icon className="mr-3 h-5 w-5 flex-shrink-0" />
@@ -156,11 +162,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <div className="flex items-center space-x-3">
           <Avatar className="h-8 w-8 flex-shrink-0">
             <AvatarImage src="/placeholder.svg" />
-            <AvatarFallback className="bg-orange-500 text-white text-xs">A</AvatarFallback>
+            <AvatarFallback className="bg-emerald-500 text-white text-xs">A</AvatarFallback>
           </Avatar>
           <div className="flex-1 min-w-0">
             <p className="text-sm font-medium text-white truncate">Admin</p>
-            <p className="text-xs text-orange-200 truncate">admin@sambatours.com</p>
+            <p className="text-xs text-emerald-200 truncate">admin@sambatours.com</p>
           </div>
         </div>
       </div>
@@ -169,7 +175,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <button
           type="button"
           onClick={handleSignOut}
-          className="flex items-center w-full px-4 py-3 text-sm font-medium rounded-lg transition-all duration-200 text-orange-100 hover:bg-white/10 hover:text-white"
+          className="flex items-center w-full px-4 py-3 text-sm font-medium rounded-lg transition-all duration-200 text-emerald-100 hover:bg-white/10 hover:text-white"
         >
           <LogOut className="mr-3 h-5 w-5 flex-shrink-0" />
           <span className="truncate">Logout</span>
@@ -186,14 +192,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     <div className="flex h-screen bg-gray-50">
       {/* Desktop Sidebar - Fixed */}
       <div className="hidden lg:flex lg:w-64 lg:flex-col lg:fixed lg:inset-y-0 lg:z-50">
-        <div className="flex flex-col flex-1 bg-gradient-to-b from-orange-600 to-red-700">
+        <div className="flex flex-col flex-1 bg-gradient-to-b from-emerald-600 to-emerald-800">
           <Sidebar />
         </div>
       </div>
 
       {/* Mobile Sidebar */}
       <Sheet open={sidebarOpen} onOpenChange={setSidebarOpen}>
-        <SheetContent side="left" className="p-0 w-64 bg-gradient-to-b from-orange-600 to-red-700">
+        <SheetContent side="left" className="p-0 w-64 bg-gradient-to-b from-emerald-600 to-emerald-800">
           <Sidebar mobile />
         </SheetContent>
       </Sheet>
@@ -229,7 +235,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                   <Button variant="ghost" className="relative h-8 w-8 rounded-full">
                     <Avatar className="h-8 w-8">
                       <AvatarImage src="/placeholder.svg" />
-                      <AvatarFallback className="bg-orange-500 text-white">A</AvatarFallback>
+                      <AvatarFallback className="bg-emerald-500 text-white">A</AvatarFallback>
                     </Avatar>
                   </Button>
                 </DropdownMenuTrigger>
