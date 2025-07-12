@@ -2,7 +2,6 @@ import type { Metadata } from "next"
 import AboutHero from "@/components/about/about-hero"
 import CompanyStory from "@/components/about/company-story"
 import ValuesSection from "@/components/about/values-section"
-import TeamSection from "@/components/about/team-section"
 import AchievementsSection from "@/components/about/achievements-section"
 import WhyChooseUs from "@/components/about/why-choose-us"
 import CallToAction from "@/components/about/call-to-action"
@@ -21,7 +20,6 @@ export default function AboutPage() {
       <ValuesSection />
       <AchievementsSection />
       <WhyChooseUs />
-      <TeamSection />
       <CallToAction />
     </div>
   )

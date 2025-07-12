@@ -1,3 +1,4 @@
+import Image from "next/image"
 import { Shield, Heart, Leaf, Users, Award, Globe } from "lucide-react"
 
 const values = [
@@ -40,8 +41,18 @@ const values = [
 
 export default function ValuesSection() {
   return (
-    <section className="py-20 bg-gradient-to-br from-emerald-50 to-green-50">
-      <div className="max-w-7xl mx-auto px-4">
+    <section className="py-20 bg-gradient-to-br from-emerald-50 to-green-50 relative overflow-hidden">
+      {/* Background Image */}
+      <div className="absolute inset-0 opacity-10">
+        <Image
+          src="/photos/uganda-wildlife.jpg"
+          alt="Uganda wildlife background"
+          fill
+          className="object-cover"
+        />
+      </div>
+      
+      <div className="max-w-7xl mx-auto px-4 relative z-10">
         <div className="text-center mb-16">
           <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-6">Our Core Values</h2>
           <p className="text-xl text-gray-700 max-w-3xl mx-auto leading-relaxed">

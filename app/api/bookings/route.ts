@@ -10,7 +10,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const { customerInfo, guests, items, total, bookingReference } = body
 
-    console.log('Booking request data:', { customerInfo, guests: guests?.length, items: items?.length, total, bookingReference })
+
 
     // Validate required data
     if (!customerInfo?.name || !customerInfo?.email || !customerInfo?.phone) {
@@ -43,7 +43,7 @@ export async function POST(request: NextRequest) {
       items.map(async (item: any, index: number) => {
         const itemBookingReference = `${bookingReference}-${index + 1}`
         
-        console.log('Creating booking for item:', { tourId: item.tourId, title: item.title, guests: item.guests })
+
         
         return await prisma.booking.create({
           data: {
@@ -70,7 +70,7 @@ export async function POST(request: NextRequest) {
       })
     )
 
-    console.log('Created bookings:', bookings.map(b => ({ id: b.id, reference: b.bookingReference, tourId: b.tourId })))
+
 
     // Create guest records for the first booking (main booking)
     const mainBooking = bookings[0]
@@ -89,7 +89,7 @@ export async function POST(request: NextRequest) {
       )
     )
 
-    console.log('Created guest records:', guestRecords.length)
+
 
     // Send confirmation email
     try {
@@ -129,7 +129,6 @@ export async function POST(request: NextRequest) {
       `
 
       // Send confirmation email
-      console.log('Sending email to:', customerInfo.email)
       
       try {
         // Use the custom template with the email content
@@ -142,13 +141,10 @@ export async function POST(request: NextRequest) {
           }
         )
         
-        if (result.success) {
-          console.log('Email sent successfully to:', customerInfo.email)
-        } else {
+        if (!result.success) {
           console.error('Email sending failed:', result.error)
         }
       } catch (emailSendError) {
-        console.error('Failed to send email:', emailSendError)
         // Continue with booking even if email fails
       }
 
@@ -166,7 +162,6 @@ export async function POST(request: NextRequest) {
       )
 
     } catch (emailError) {
-      console.error('Failed to send confirmation email:', emailError)
       // Don't fail the booking if email fails
     }
 
@@ -184,7 +179,6 @@ export async function POST(request: NextRequest) {
     })
 
   } catch (error) {
-    console.error('Error creating booking:', error)
     
     if (error instanceof PrismaClientInitializationError) {
       return NextResponse.json(
@@ -323,8 +317,6 @@ export async function GET(request: NextRequest) {
     })
 
   } catch (error) {
-    console.error('Error fetching bookings:', error)
-    
     return NextResponse.json(
       { 
         error: 'An unexpected error occurred while fetching bookings.',

@@ -61,16 +61,16 @@ export default function CompanyStory() {
               <div className="space-y-4">
                 <div className="relative h-48 rounded-xl overflow-hidden shadow-lg">
                   <Image
-                    src="/placeholder.svg?height=300&width=400"
-                    alt="Samba Tours founders"
+                    src="/photos/kampala-city-ug.jpg"
+                    alt="Kampala city - Our home and starting point"
                     fill
                     className="object-cover hover:scale-105 transition-transform duration-300"
                   />
                 </div>
                 <div className="relative h-32 rounded-xl overflow-hidden shadow-lg">
                   <Image
-                    src="/placeholder.svg?height=200&width=400"
-                    alt="Team planning expedition"
+                    src="/tours-attractions/tourists.jpg"
+                    alt="Happy tourists enjoying their safari experience"
                     fill
                     className="object-cover hover:scale-105 transition-transform duration-300"
                   />
@@ -79,16 +79,16 @@ export default function CompanyStory() {
               <div className="space-y-4 pt-8">
                 <div className="relative h-32 rounded-xl overflow-hidden shadow-lg">
                   <Image
-                    src="/placeholder.svg?height=200&width=400"
-                    alt="Community engagement"
+                    src="/photos/queen-elizabeth-national-park-uganda.jpg"
+                    alt="Queen Elizabeth National Park - One of our premier destinations"
                     fill
                     className="object-cover hover:scale-105 transition-transform duration-300"
                   />
                 </div>
                 <div className="relative h-48 rounded-xl overflow-hidden shadow-lg">
                   <Image
-                    src="/placeholder.svg?height=300&width=400"
-                    alt="Award ceremony"
+                    src="/photos/fort-portal-crater-hero.jpg"
+                    alt="Fort Portal crater lakes - Natural beauty we showcase"
                     fill
                     className="object-cover hover:scale-105 transition-transform duration-300"
                   />

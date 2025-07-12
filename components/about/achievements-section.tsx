@@ -1,3 +1,4 @@
+import Image from "next/image"
 import { Card, CardContent } from "@/components/ui/card"
 import { Trophy, Star, Users, Globe, Award, Heart } from "lucide-react"
 
@@ -67,20 +68,63 @@ export default function AchievementsSection() {
           </p>
         </div>
 
-        {/* Statistics */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6 mb-16">
-          {statistics.map((stat, index) => (
-            <div
-              key={index}
-              className="text-center p-6 bg-gradient-to-br from-emerald-50 to-green-50 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 border border-emerald-100"
-            >
-              <div className="text-3xl lg:text-4xl font-bold bg-gradient-to-r from-emerald-600 to-green-600 bg-clip-text text-transparent mb-2">
-                {stat.number}
+        {/* Visual Statistics */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-16">
+          {/* Statistics */}
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
+            {statistics.map((stat, index) => (
+              <div
+                key={index}
+                className="text-center p-6 bg-gradient-to-br from-emerald-50 to-green-50 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 border border-emerald-100"
+              >
+                <div className="text-3xl lg:text-4xl font-bold bg-gradient-to-r from-emerald-600 to-green-600 bg-clip-text text-transparent mb-2">
+                  {stat.number}
+                </div>
+                <div className="font-semibold text-gray-900 mb-1 text-sm lg:text-base">{stat.label}</div>
+                <div className="text-xs text-gray-600">{stat.description}</div>
               </div>
-              <div className="font-semibold text-gray-900 mb-1 text-sm lg:text-base">{stat.label}</div>
-              <div className="text-xs text-gray-600">{stat.description}</div>
+            ))}
+          </div>
+          
+          {/* Achievement Images */}
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-4">
+              <div className="relative h-32 rounded-xl overflow-hidden shadow-lg">
+                <Image
+                  src="/tours-attractions/tourists (1).jpg"
+                  alt="Happy tourists on safari"
+                  fill
+                  className="object-cover hover:scale-105 transition-transform duration-300"
+                />
+              </div>
+              <div className="relative h-48 rounded-xl overflow-hidden shadow-lg">
+                <Image
+                  src="/photos/queen-elizabeth-national-park-uganda.jpg"
+                  alt="Queen Elizabeth National Park"
+                  fill
+                  className="object-cover hover:scale-105 transition-transform duration-300"
+                />
+              </div>
             </div>
-          ))}
+            <div className="space-y-4 pt-8">
+              <div className="relative h-48 rounded-xl overflow-hidden shadow-lg">
+                <Image
+                  src="/tours-attractions/elephant 2.jpg"
+                  alt="Elephant in Uganda"
+                  fill
+                  className="object-cover hover:scale-105 transition-transform duration-300"
+                />
+              </div>
+              <div className="relative h-32 rounded-xl overflow-hidden shadow-lg">
+                <Image
+                  src="/photos/lake-victoria-hero.jpg"
+                  alt="Lake Victoria"
+                  fill
+                  className="object-cover hover:scale-105 transition-transform duration-300"
+                />
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Awards */}

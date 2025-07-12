@@ -49,7 +49,6 @@ export default function CheckoutForm() {
   useEffect(() => {
     if (items.length > 0) {
       const totalGuests = items.reduce((sum, item) => sum + item.guests, 0)
-      console.log('Initializing guests array:', { totalGuests, items })
       setGuests(Array(totalGuests).fill(null).map(() => ({
         name: "",
         age: 0,
@@ -133,8 +132,6 @@ export default function CheckoutForm() {
         specialRequests: customerInfo.specialRequests
       }
 
-      console.log('Prepared confirmation data:', confirmationData)
-
       // Store in session storage as backup
       sessionStorage.setItem('bookingConfirmation', JSON.stringify(confirmationData))
 
@@ -152,39 +149,22 @@ export default function CheckoutForm() {
       })
 
       const confirmationUrl = `/booking-confirmation?${params.toString()}`
-      console.log('Redirecting to confirmation page:', confirmationUrl)
       
       // Use replace to prevent back button issues and add a small delay for better UX
       setTimeout(() => {
-        console.log('Executing redirect now...')
         // Clear cart after successful redirect
         clearCart()
-        
-        // Try multiple redirect methods
-        try {
-          router.replace(confirmationUrl)
-        } catch (redirectError) {
-          console.error('Router redirect failed:', redirectError)
-          // Fallback to window.location
-          window.location.href = confirmationUrl
-        }
+        router.replace(confirmationUrl)
       }, 1000)
 
       // Fallback redirect in case the first one fails
       setTimeout(() => {
-        console.log('Fallback redirect...')
         if (window.location.pathname !== '/booking-confirmation') {
-          try {
-            router.push(confirmationUrl)
-          } catch (fallbackError) {
-            console.error('Fallback redirect failed:', fallbackError)
-            window.location.href = confirmationUrl
-          }
+          router.push(confirmationUrl)
         }
       }, 3000)
 
     } catch (error) {
-      console.error('Booking error:', error)
       toast.error(error instanceof Error ? error.message : "Failed to create booking")
     } finally {
       setIsSubmitting(false)

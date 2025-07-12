@@ -1,3 +1,4 @@
+import Image from "next/image"
 import { CheckCircle, Clock, Shield, Users, Award, Headphones } from "lucide-react"
 
 const reasons = [
@@ -40,8 +41,18 @@ const reasons = [
 
 export default function WhyChooseUs() {
   return (
-    <section className="py-20 bg-gradient-to-br from-emerald-50 to-green-50">
-      <div className="max-w-7xl mx-auto px-4">
+    <section className="py-20 bg-gradient-to-br from-emerald-50 to-green-50 relative overflow-hidden">
+      {/* Background Image */}
+      <div className="absolute inset-0 opacity-5">
+        <Image
+          src="/photos/savannah-plains-kidepo-uganda-1024x683.webp"
+          alt="Uganda savannah background"
+          fill
+          className="object-cover"
+        />
+      </div>
+      
+      <div className="max-w-7xl mx-auto px-4 relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
           <div>
             <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-6 leading-tight">Why Choose Samba Tours?</h2>
@@ -71,7 +82,18 @@ export default function WhyChooseUs() {
           <div className="relative">
             <div className="bg-gradient-to-br from-emerald-600 to-green-600 rounded-2xl p-8 text-white shadow-2xl">
               <h3 className="text-2xl font-bold mb-6">What Our Travelers Say</h3>
-              <div className="space-y-6">
+              
+              {/* Background Image */}
+              <div className="absolute inset-0 rounded-2xl overflow-hidden opacity-10">
+                <Image
+                  src="/tours-attractions/tourists.jpg"
+                  alt="Happy tourists"
+                  fill
+                  className="object-cover"
+                />
+              </div>
+              
+              <div className="space-y-6 relative z-10">
                 <blockquote className="border-l-4 border-emerald-300 pl-4 bg-white/10 p-4 rounded-lg backdrop-blur-sm">
                   <p className="italic mb-3 leading-relaxed">
                     "Samba Tours didn't just show us Uganda – they helped us fall in love with it. Every detail was

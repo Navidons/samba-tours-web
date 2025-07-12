@@ -7,7 +7,7 @@ const teamMembers = [
   {
     name: "David Mukasa",
     role: "Founder & CEO",
-    image: "/photos/chimpanzee-bwindi-forest-impenetrable-park.jpg",
+    image: "/photos/kampala-city-ug.jpg",
     bio: "With over 10 years in Uganda's tourism industry, David founded Samba Tours with a vision to showcase authentic Uganda experiences.",
     specialties: ["Wildlife Safari", "Gorilla Trekking", "Cultural Tours"],
     languages: ["English", "Luganda", "Swahili"],
@@ -16,7 +16,7 @@ const teamMembers = [
   {
     name: "Sarah Namukasa",
     role: "Operations Manager",
-    image: "/photos/queen-elizabeth-national-park-ug-kasese-hero.jpg",
+    image: "/photos/queen-elizabeth-national-park-uganda.jpg",
     bio: "Sarah ensures every detail of your journey is perfectly planned. Her attention to detail and customer service excellence is unmatched.",
     specialties: ["Tour Planning", "Customer Service", "Logistics"],
     languages: ["English", "Luganda", "French"],
@@ -25,7 +25,7 @@ const teamMembers = [
   {
     name: "James Okello",
     role: "Senior Safari Guide",
-    image: "/photos/uganda-monkeys.jpg",
+    image: "/tours-attractions/lion.jpg",
     bio: "Born and raised near Queen Elizabeth National Park, James has an encyclopedic knowledge of Uganda's wildlife and ecosystems.",
     specialties: ["Big Five Safari", "Bird Watching", "Photography Tours"],
     languages: ["English", "Runyankole", "Swahili"],
@@ -34,7 +34,7 @@ const teamMembers = [
   {
     name: "Mary Atuhaire",
     role: "Cultural Experience Coordinator",
-    image: "/photos/lake-victoria-ug-hero.jpg",
+    image: "/tours-attractions/woman tourist.jpg",
     bio: "Mary bridges the gap between visitors and local communities, creating meaningful cultural exchanges and authentic experiences.",
     specialties: ["Cultural Tours", "Community Engagement", "Traditional Crafts"],
     languages: ["English", "Rukiga", "Luganda"],
@@ -52,7 +52,7 @@ const teamMembers = [
   {
     name: "Grace Nakato",
     role: "Gorilla Trekking Specialist",
-    image: "/photos/fort-portal-crater-hero.jpg",
+    image: "/photos/chimpanzee-bwindi-forest-impenetrable-park.jpg",
     bio: "Grace has led over 200 gorilla trekking expeditions and is passionate about gorilla conservation and education.",
     specialties: ["Gorilla Trekking", "Primate Tours", "Conservation"],
     languages: ["English", "Luganda", "Rukiga"],
