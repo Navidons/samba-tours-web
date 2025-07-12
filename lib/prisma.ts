@@ -37,17 +37,14 @@ export const prisma =
 
 if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma
 
-// Graceful shutdown
-process.on('beforeExit', async () => {
-  await prisma.$disconnect()
-})
+// Only add event listeners once to prevent memory leaks
+if (!globalForPrisma.prisma) {
+  // Graceful shutdown
+  const gracefulShutdown = async () => {
+    await prisma.$disconnect()
+  }
 
-process.on('SIGINT', async () => {
-  await prisma.$disconnect()
-  process.exit(0)
-})
-
-process.on('SIGTERM', async () => {
-  await prisma.$disconnect()
-  process.exit(0)
-}) 
+  process.on('beforeExit', gracefulShutdown)
+  process.on('SIGINT', gracefulShutdown)
+  process.on('SIGTERM', gracefulShutdown)
+} 

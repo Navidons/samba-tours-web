@@ -1572,14 +1572,14 @@ export default function AdminEmailPage() {
                           <div className="text-sm text-muted-foreground">{comment.authorEmail || 'No email'}</div>
                   </div>
                       </TableCell>
-                      <TableCell>{comment.post.title}</TableCell>
+                      <TableCell>{comment.post?.title || "Unknown Post"}</TableCell>
                       <TableCell className="max-w-xs truncate">{comment.content}</TableCell>
                       <TableCell>{new Date(comment.createdAt).toLocaleDateString()}</TableCell>
                       <TableCell>
                         <Button
                           size="sm"
                           variant="ghost"
-                          onClick={() => handleSendEmail([{ email: comment.authorEmail!, name: comment.authorName }], `Re: Your comment on "${comment.post.title}"`)}
+                          onClick={() => handleSendEmail([{ email: comment.authorEmail!, name: comment.authorName }], `Re: Your comment on "${comment.post?.title || 'Unknown Post'}"`)}
                           title="Send email to commenter"
                           disabled={!comment.authorEmail}
                         >
