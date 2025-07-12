@@ -322,7 +322,19 @@ export const emailTemplates = {
       </div>
     `
     }
-  }
+  },
+
+  // Aliases for frontend compatibility
+  bookingConfirmed: function(data: {
+    bookingId: string
+    customerName: string
+    tourName: string
+    startDate: string
+    endDate: string
+    totalAmount: number
+    participants: number
+  }) { return emailTemplates.bookingConfirmation(data); },
+  paymentConfirmation: function(data: { customMessage: string; subject?: string }) { return emailTemplates.custom(data); },
 }
 
 // Email sending function

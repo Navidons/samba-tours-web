@@ -22,32 +22,32 @@ interface Customer {
   country: string
   city: string
   address: string
-  total_bookings: number
-  total_spent: number
-  first_booking_date: string | null
-  last_booking_date: string | null
+  totalBookings: number
+  totalSpent: number
+  firstBookingDate: string | null
+  lastBookingDate: string | null
   status: "active" | "inactive" | "blocked"
-  customer_type: "regular" | "vip" | "repeat" | "new"
-  loyalty_points: number
-  preferred_contact_method: "email" | "phone" | "whatsapp"
-  preferred_contact_time: string
+  customerType: "regular" | "vip" | "repeat" | "new"
+  loyaltyPoints: number
+  preferredContactMethod: "email" | "phone" | "whatsapp"
+  preferredContactTime: string
   notes: string
-  join_date: string
-  updated_at: string
-  last_booking: {
+  joinDate: string
+  updatedAt: string
+  lastBooking: {
     reference: string
     date: string
     amount: number
     status: string
   } | null
-  recent_bookings: Array<{
+  recentBookings: Array<{
     id: number
     reference: string
-    start_date: string
-    end_date: string
+    startDate: string
+    endDate: string
     amount: number
     status: string
-    created_at: string
+    createdAt: string
   }>
 }
 
@@ -467,7 +467,7 @@ export default function CustomersClient() {
                         <div className="flex items-center gap-3 mb-2">
                           <h3 className="text-lg font-semibold text-earth-900">{customer.name}</h3>
                           <Badge className={getStatusColor(customer.status)}>{customer.status}</Badge>
-                          <Badge className={getCustomerTypeColor(customer.customer_type)}>{customer.customer_type}</Badge>
+                          <Badge className={getCustomerTypeColor(customer.customerType)}>{customer.customerType}</Badge>
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-sm text-earth-600">
@@ -483,15 +483,15 @@ export default function CustomersClient() {
                           </div>
                           <div>
                             <p className="font-medium">Bookings</p>
-                            <p>{customer.total_bookings} total</p>
-                            <p>Last: {customer.last_booking ? formatDate(customer.last_booking.date) : "No bookings"}</p>
+                            <p>{customer.totalBookings} total</p>
+                            <p>Last: {customer.lastBooking ? formatDate(customer.lastBooking.date) : "No bookings"}</p>
                           </div>
                           <div>
                             <p className="font-medium">Total Spent</p>
                             <p className="text-lg font-semibold text-forest-600">
-                              {formatCurrency(customer.total_spent)}
+                              {formatCurrency(customer.totalSpent)}
                             </p>
-                            <p className="text-xs text-gray-500">{customer.loyalty_points} loyalty points</p>
+                            <p className="text-xs text-gray-500">{customer.loyaltyPoints} loyalty points</p>
                           </div>
                         </div>
                       </div>
@@ -600,7 +600,7 @@ export default function CustomersClient() {
                       </div>
                       <div>
                         <label className="text-sm font-medium text-gray-600">Preferred Contact Method</label>
-                        <p className="text-gray-900 capitalize">{selectedCustomer.preferred_contact_method}</p>
+                        <p className="text-gray-900 capitalize">{selectedCustomer.preferredContactMethod}</p>
                       </div>
                     </div>
                     <div className="space-y-4">
@@ -618,7 +618,7 @@ export default function CustomersClient() {
                       </div>
                       <div>
                         <label className="text-sm font-medium text-gray-600">Preferred Contact Time</label>
-                        <p className="text-gray-900">{selectedCustomer.preferred_contact_time || 'N/A'}</p>
+                        <p className="text-gray-900">{selectedCustomer.preferredContactTime || 'N/A'}</p>
                       </div>
                     </div>
                   </div>
@@ -636,19 +636,19 @@ export default function CustomersClient() {
                 <CardContent>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                     <div className="text-center p-4 bg-blue-50 rounded-lg">
-                      <div className="text-2xl font-bold text-blue-600">{selectedCustomer.total_bookings}</div>
+                      <div className="text-2xl font-bold text-blue-600">{selectedCustomer.totalBookings}</div>
                       <p className="text-sm text-blue-600">Total Bookings</p>
                     </div>
                     <div className="text-center p-4 bg-green-50 rounded-lg">
-                      <div className="text-2xl font-bold text-green-600">{formatCurrency(selectedCustomer.total_spent)}</div>
+                      <div className="text-2xl font-bold text-green-600">{formatCurrency(selectedCustomer.totalSpent)}</div>
                       <p className="text-sm text-green-600">Total Spent</p>
                     </div>
                     <div className="text-center p-4 bg-purple-50 rounded-lg">
-                      <div className="text-2xl font-bold text-purple-600">{selectedCustomer.loyalty_points}</div>
+                      <div className="text-2xl font-bold text-purple-600">{selectedCustomer.loyaltyPoints}</div>
                       <p className="text-sm text-purple-600">Loyalty Points</p>
                     </div>
                     <div className="text-center p-4 bg-orange-50 rounded-lg">
-                      <div className="text-2xl font-bold text-orange-600">{selectedCustomer.customer_type}</div>
+                      <div className="text-2xl font-bold text-orange-600">{selectedCustomer.customerType}</div>
                       <p className="text-sm text-orange-600">Customer Type</p>
                     </div>
                   </div>
@@ -664,15 +664,15 @@ export default function CustomersClient() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  {selectedCustomer.recent_bookings.length > 0 ? (
+                  {selectedCustomer.recentBookings.length > 0 ? (
                     <div className="space-y-4">
-                      {selectedCustomer.recent_bookings.map((booking) => (
+                      {selectedCustomer.recentBookings.map((booking) => (
                         <div key={booking.id} className="border border-gray-200 rounded-lg p-4">
                           <div className="flex justify-between items-start mb-2">
                             <div>
                               <h4 className="font-semibold">Booking #{booking.reference}</h4>
                               <p className="text-sm text-gray-600">
-                                {formatDate(booking.start_date)} - {formatDate(booking.end_date)}
+                                {formatDate(booking.startDate)} - {formatDate(booking.endDate)}
                               </p>
                             </div>
                             <Badge className={getStatusColor(booking.status as any)}>
@@ -684,7 +684,7 @@ export default function CustomersClient() {
                               {formatCurrency(booking.amount)}
                             </span>
                             <span className="text-sm text-gray-500">
-                              {formatDate(booking.created_at)}
+                              {formatDate(booking.createdAt)}
                             </span>
                           </div>
                         </div>
@@ -710,24 +710,24 @@ export default function CustomersClient() {
                       <div className="w-3 h-3 bg-green-500 rounded-full"></div>
                       <div>
                         <p className="font-medium">Customer Joined</p>
-                        <p className="text-sm text-gray-600">{formatDate(selectedCustomer.join_date)}</p>
+                        <p className="text-sm text-gray-600">{formatDate(selectedCustomer.joinDate)}</p>
                       </div>
                     </div>
-                    {selectedCustomer.first_booking_date && (
+                    {selectedCustomer.firstBookingDate && (
                       <div className="flex items-center gap-4">
                         <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
                         <div>
                           <p className="font-medium">First Booking</p>
-                          <p className="text-sm text-gray-600">{formatDate(selectedCustomer.first_booking_date)}</p>
+                          <p className="text-sm text-gray-600">{formatDate(selectedCustomer.firstBookingDate)}</p>
                         </div>
                       </div>
                     )}
-                    {selectedCustomer.last_booking_date && (
+                    {selectedCustomer.lastBookingDate && (
                       <div className="flex items-center gap-4">
                         <div className="w-3 h-3 bg-purple-500 rounded-full"></div>
                         <div>
                           <p className="font-medium">Last Booking</p>
-                          <p className="text-sm text-gray-600">{formatDate(selectedCustomer.last_booking_date)}</p>
+                          <p className="text-sm text-gray-600">{formatDate(selectedCustomer.lastBookingDate)}</p>
                         </div>
                       </div>
                     )}
@@ -735,7 +735,7 @@ export default function CustomersClient() {
                       <div className="w-3 h-3 bg-orange-500 rounded-full"></div>
                       <div>
                         <p className="font-medium">Last Updated</p>
-                        <p className="text-sm text-gray-600">{formatDate(selectedCustomer.updated_at)}</p>
+                        <p className="text-sm text-gray-600">{formatDate(selectedCustomer.updatedAt)}</p>
                       </div>
                     </div>
                   </div>

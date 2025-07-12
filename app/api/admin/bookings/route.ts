@@ -34,34 +34,60 @@ export async function GET(request: NextRequest) {
 
     // Get bookings
     const bookings = await prisma.booking.findMany({
-        where,
+      where,
       select: {
         id: true,
         bookingReference: true,
+        tourId: true,
+        userId: true,
+        customerId: true,
         customerName: true,
         customerEmail: true,
         customerPhone: true,
+        customerCountry: true,
         startDate: true,
         endDate: true,
         guestCount: true,
         totalAmount: true,
+        discountAmount: true,
         finalAmount: true,
+        specialRequests: true,
         status: true,
         paymentStatus: true,
+        cancellationReason: true,
+        staffNotes: true,
+        contactMethod: true,
+        preferredContactTime: true,
+        emailSent: true,
+        emailSentAt: true,
         createdAt: true,
-          tour: {
-            select: {
-              id: true,
-              title: true,
+        updatedAt: true,
+        tour: {
+          select: {
+            id: true,
+            title: true,
             slug: true
           }
-            }
-          },
+        },
+        guests: {
+          select: {
+            id: true,
+            guestName: true,
+            guestAge: true,
+            dietaryRestrictions: true,
+            medicalConditions: true,
+            passportNumber: true,
+            nationality: true,
+            emergencyContact: true,
+            createdAt: true
+          }
+        }
+      },
       orderBy: {
         createdAt: 'desc'
       },
       skip,
-        take: limit
+      take: limit
     })
 
     return NextResponse.json({

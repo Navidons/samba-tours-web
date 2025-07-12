@@ -158,31 +158,31 @@ interface BookingGuest {
 
 interface Booking {
   id: number
-  booking_reference: string
-  tour_id: number
-  user_id?: number
-  customer_id?: number
-  customer_name: string
-  customer_email: string
-  customer_phone?: string
-  customer_country?: string
-  start_date: string
-  end_date: string
-  guest_count: number
-  total_amount: number
-  discount_amount: number
-  final_amount: number
-  special_requests?: string
+  bookingReference: string
+  tourId: number
+  userId?: number
+  customerId?: number
+  customerName: string
+  customerEmail: string
+  customerPhone?: string
+  customerCountry?: string
+  startDate: string
+  endDate: string
+  guestCount: number
+  totalAmount: number
+  discountAmount: number
+  finalAmount: number
+  specialRequests?: string
   status: "pending" | "confirmed" | "cancelled" | "completed"
-  payment_status: "pending" | "paid" | "failed" | "refunded"
-  cancellation_reason?: string
-  staff_notes?: string
-  contact_method: "email" | "phone" | "whatsapp" | "in_person"
-  preferred_contact_time?: string
-  email_sent: boolean
-  email_sent_at?: string
-  created_at: string
-  updated_at: string
+  paymentStatus: "pending" | "paid" | "failed" | "refunded"
+  cancellationReason?: string
+  staffNotes?: string
+  contactMethod: "email" | "phone" | "whatsapp" | "in_person"
+  preferredContactTime?: string
+  emailSent: boolean
+  emailSentAt?: string
+  createdAt: string
+  updatedAt: string
   items?: BookingItem[]
   guests?: BookingGuest[]
   customer?: {
@@ -192,10 +192,10 @@ interface Booking {
     phone: string
     country: string
     city: string
-    total_bookings: number
-    total_spent: number
-    customer_type: string
-    loyalty_points: number
+    totalBookings: number
+    totalSpent: number
+    customerType: string
+    loyaltyPoints: number
   } | null
 }
 
@@ -238,7 +238,26 @@ export default function BookingsManagement() {
         const data = await response.json()
 
         if (data.success) {
-          setBookings(data.bookings || [])
+          // Map tour details to items if items are missing
+          const bookingsWithItems = (data.bookings || []).map((booking: any) => {
+            if (!booking.items && booking.tour) {
+              return {
+                ...booking,
+                items: [
+                  {
+                    id: booking.tour.id,
+                    tour_title: booking.tour.title,
+                    travel_date: booking.startDate,
+                    number_of_guests: booking.guestCount,
+                    tour_price: booking.totalAmount,
+                    total_price: booking.totalAmount
+                  }
+                ]
+              }
+            }
+            return booking
+          })
+          setBookings(bookingsWithItems)
         } else {
           setLoadError(data.error || 'Failed to load bookings')
           setBookings([])
@@ -268,9 +287,9 @@ export default function BookingsManagement() {
   // Filter bookings based on search and status
   const filteredBookings = bookings.filter((booking) => {
     const matchesSearch = 
-      (booking.customer_name?.toLowerCase() || '').includes(searchQuery.toLowerCase()) ||
-      (booking.customer_email?.toLowerCase() || '').includes(searchQuery.toLowerCase()) ||
-      (booking.booking_reference?.toLowerCase() || '').includes(searchQuery.toLowerCase()) ||
+      (booking.customerName?.toLowerCase() || '').includes(searchQuery.toLowerCase()) ||
+      (booking.customerEmail?.toLowerCase() || '').includes(searchQuery.toLowerCase()) ||
+      (booking.bookingReference?.toLowerCase() || '').includes(searchQuery.toLowerCase()) ||
       (booking.items && booking.items.some((item: BookingItem) => 
         (item.tour_title?.toLowerCase() || '').includes(searchQuery.toLowerCase())
       ))
@@ -381,13 +400,13 @@ const getPaymentStatusColor = (status: string) => {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            to: booking.customer_email,
-            subject: `Your Booking is Confirmed! #${booking.booking_reference}`,
+            to: booking.customerEmail,
+            subject: `Your Booking is Confirmed! #${booking.bookingReference}`,
             template: 'bookingConfirmed',
             data: {
-              customerName: booking.customer_name,
-              bookingReference: booking.booking_reference,
-              bookingDate: new Date(booking.created_at).toLocaleDateString(),
+              customerName: booking.customerName,
+              bookingReference: booking.bookingReference,
+              bookingDate: new Date(booking.createdAt).toLocaleDateString(),
             }
           })
         })
@@ -423,7 +442,7 @@ const getPaymentStatusColor = (status: string) => {
     }
   }
 
-  const handlePaymentStatusUpdate = async (bookingId: number, newPaymentStatus: Booking['payment_status']) => {
+  const handlePaymentStatusUpdate = async (bookingId: number, newPaymentStatus: Booking['paymentStatus']) => {
     try {
       setUpdatingStatus(true)
       
@@ -465,14 +484,19 @@ const getPaymentStatusColor = (status: string) => {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            to: booking.customer_email,
-            subject: `Payment Received for Booking #${booking.booking_reference}`,
+            to: booking.customerEmail,
+            subject: `Payment Received for Booking #${booking.bookingReference}`,
             template: 'paymentConfirmation',
             data: {
-              customerName: booking.customer_name,
-              bookingReference: booking.booking_reference,
-              paymentDate: new Date().toLocaleDateString(),
-              paymentAmount: booking.total_amount,
+              customMessage: `
+                <h2>Payment Received for Booking <span style='color:#10b981;'>#${booking.bookingReference}</span></h2>
+                <p>Dear ${booking.customerName},</p>
+                <p>We have received your payment of <strong>$${booking.totalAmount.toLocaleString()}</strong> for your booking.</p>
+                <p>Your booking is now confirmed. Thank you for choosing Samba Tours Uganda!</p>
+                <p>If you have any questions, reply to this email or contact us at info@sambatours.com.</p>
+                <p>Best regards,<br>The Samba Tours Team</p>
+              `,
+              subject: `Payment Received for Booking #${booking.bookingReference}`
             }
           })
         })
@@ -487,10 +511,10 @@ const getPaymentStatusColor = (status: string) => {
       // -----------------------------------------------------------
 
       setBookings(prev => prev.map(booking => 
-        booking.id === bookingId ? { ...booking, payment_status: newPaymentStatus } : booking
+        booking.id === bookingId ? { ...booking, paymentStatus: newPaymentStatus } : booking
       ))
       if (selectedBooking && selectedBooking.id === bookingId) {
-        setSelectedBooking((prev: Booking | null) => prev ? { ...prev, payment_status: newPaymentStatus } : null)
+        setSelectedBooking((prev: Booking | null) => prev ? { ...prev, paymentStatus: newPaymentStatus } : null)
       }
       toast({
         title: "Success",
@@ -566,17 +590,17 @@ const getPaymentStatusColor = (status: string) => {
     const csvContent = [
       ['Booking Reference', 'Customer Name', 'Email', 'Phone', 'Tour', 'Date', 'Guests', 'Status', 'Payment Status', 'Amount', 'Created Date'],
       ...filteredBookings.map(booking => [
-        booking.booking_reference,
-        booking.customer_name,
-        booking.customer_email,
-        booking.customer_phone,
+        booking.bookingReference,
+        booking.customerName,
+        booking.customerEmail,
+        booking.customerPhone,
         booking.items?.[0]?.tour_title || 'N/A',
         booking.items?.[0]?.travel_date || 'N/A',
         booking.items?.[0]?.number_of_guests || 'N/A',
         booking.status,
-        booking.payment_status,
-        `$${booking.total_amount}`,
-        new Date(booking.created_at!).toLocaleDateString()
+        booking.paymentStatus,
+        `$${booking.totalAmount}`,
+        new Date(booking.createdAt!).toLocaleDateString()
       ])
     ].map(row => row.join(',')).join('\n')
 
@@ -627,6 +651,20 @@ const getPaymentStatusColor = (status: string) => {
     } finally {
       setLoading(false)
     }
+  }
+
+  // Utility function to abbreviate large currency values
+  function formatCurrencyAbbreviated(amount: number) {
+    if (amount >= 1_000_000_000) {
+      return `$${(amount / 1_000_000_000).toLocaleString(undefined, { maximumFractionDigits: amount < 10_000_000_000 ? 2 : 0 })}B`;
+    }
+    if (amount >= 1_000_000) {
+      return `$${(amount / 1_000_000).toLocaleString(undefined, { maximumFractionDigits: amount < 10_000_000 ? 2 : 0 })}M`;
+    }
+    if (amount >= 1_000) {
+      return `$${(amount / 1_000).toLocaleString(undefined, { maximumFractionDigits: amount < 10_000 ? 2 : 0 })}K`;
+    }
+    return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(amount);
   }
 
   if (loading) {
@@ -691,6 +729,7 @@ const getPaymentStatusColor = (status: string) => {
 
             {/* Stats Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
+              {/* Total Bookings */}
               <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-sm hover:shadow-md transition-all duration-200">
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
@@ -705,51 +744,52 @@ const getPaymentStatusColor = (status: string) => {
                 </CardContent>
               </Card>
 
+              {/* Confirmed & Paid */}
               <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-sm hover:shadow-md transition-all duration-200">
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm font-medium text-gray-600">Customer Bookings</p>
-                      <p className="text-3xl font-bold text-purple-700">
-                        {filteredBookings.filter(b => b.status === 'confirmed' && b.payment_status === 'paid').length}
-                      </p>
-                      <p className="text-xs text-gray-500">Confirmed + Paid</p>
-                    </div>
-                    <div className="p-3 bg-purple-100 rounded-full">
-                      <Users className="h-6 w-6 text-purple-600" />
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-sm hover:shadow-md transition-all duration-200">
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-medium text-gray-600">Customer Revenue</p>
+                      <p className="text-sm font-medium text-gray-600">Confirmed & Paid</p>
                       <p className="text-3xl font-bold text-emerald-700">
-                        ${filteredBookings
-                          .filter(b => b.status === 'confirmed' && b.payment_status === 'paid')
-                          .reduce((sum, b) => sum + b.total_amount, 0).toLocaleString()}
+                        {filteredBookings.filter(b => b.status === 'confirmed' && b.paymentStatus === 'paid').length}
                       </p>
-                      <p className="text-xs text-gray-500">From customer bookings</p>
+                      <p className="text-xs text-gray-500">Fully completed bookings</p>
                     </div>
                     <div className="p-3 bg-emerald-100 rounded-full">
-                      <DollarSign className="h-6 w-6 text-emerald-600" />
+                      <CheckCircle className="h-6 w-6 text-emerald-600" />
                     </div>
                   </div>
                 </CardContent>
               </Card>
 
+              {/* Total Revenue */}
+              <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-sm hover:shadow-md transition-all duration-200">
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-gray-600">Total Revenue</p>
+                      <p className="font-bold text-purple-700 text-2xl md:text-3xl">
+                        {filteredBookings
+                          .filter(b => b.status === 'confirmed' && b.paymentStatus === 'paid')
+                          .reduce((sum, b) => sum + Number(b.totalAmount), 0)
+                          .toLocaleString()}
+                      </p>
+                      <p className="text-xs text-gray-500">From confirmed & paid bookings</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Pending Bookings */}
               <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-sm hover:shadow-md transition-all duration-200">
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-sm font-medium text-gray-600">Pending</p>
                       <p className="text-3xl font-bold text-amber-700">
-                        {filteredBookings.filter(b => b.status === 'pending' || b.payment_status === 'pending').length}
+                        {filteredBookings.filter(b => b.status === 'pending' || b.paymentStatus === 'pending').length}
                       </p>
-                      <p className="text-xs text-gray-500">Awaiting customer status</p>
+                      <p className="text-xs text-gray-500">Awaiting confirmation or payment</p>
                     </div>
                     <div className="p-3 bg-amber-100 rounded-full">
                       <Clock className="h-6 w-6 text-amber-600" />
@@ -758,17 +798,19 @@ const getPaymentStatusColor = (status: string) => {
                 </CardContent>
               </Card>
 
+              {/* Cancelled Bookings */}
               <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-sm hover:shadow-md transition-all duration-200">
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm font-medium text-gray-600">Confirmed</p>
-                      <p className="text-3xl font-bold text-blue-700">
-                        {filteredBookings.filter(b => b.status === 'confirmed').length}
+                      <p className="text-sm font-medium text-gray-600">Cancelled</p>
+                      <p className="text-3xl font-bold text-red-600">
+                        {filteredBookings.filter(b => b.status === 'cancelled').length}
                       </p>
+                      <p className="text-xs text-gray-500">Bookings that were cancelled</p>
                     </div>
-                    <div className="p-3 bg-blue-100 rounded-full">
-                      <CheckCircle className="h-6 w-6 text-blue-600" />
+                    <div className="p-3 bg-red-100 rounded-full">
+                      <XCircle className="h-6 w-6 text-red-600" />
                     </div>
                   </div>
                 </CardContent>
@@ -839,13 +881,13 @@ const getPaymentStatusColor = (status: string) => {
                         <div className="flex items-center gap-4">
                           <Avatar className="h-14 w-14 bg-gradient-to-br from-blue-500 to-indigo-600 ring-4 ring-blue-100">
                             <AvatarFallback className="text-white font-bold text-lg">
-                              {getCustomerInitials(booking.customer_name)}
+                              {getCustomerInitials(booking.customerName)}
                             </AvatarFallback>
                           </Avatar>
                       <div className="flex-1">
                         <div className="flex items-center gap-3 mb-2">
                                                              <h3 className="text-xl font-bold text-gray-900">
-                                 {booking.customer_name || 'Unknown Customer'}
+                                 {booking.customerName || 'Unknown Customer'}
                                </h3>
                               <Badge className={`${getStatusColor(booking.status)} border px-3 py-1 ring-1`}>
                                 <div className="flex items-center gap-1">
@@ -853,24 +895,24 @@ const getPaymentStatusColor = (status: string) => {
                                   <span className="capitalize font-semibold">{booking.status}</span>
                                 </div>
                               </Badge>
-                              <Badge className={`${getPaymentStatusColor(booking.payment_status)} border px-3 py-1 ring-1`}>
+                              <Badge className={`${getPaymentStatusColor(booking.paymentStatus)} border px-3 py-1 ring-1`}>
                                 <div className="flex items-center gap-1">
                                   <CreditCard className="h-3 w-3" />
-                                  <span className="capitalize font-semibold">{booking.payment_status}</span>
+                                  <span className="capitalize font-semibold">{booking.paymentStatus}</span>
                                 </div>
                               </Badge>
                               {/* Customer Status Indicator */}
-                              {booking.status === 'confirmed' && booking.payment_status === 'paid' && (
+                              {booking.status === 'confirmed' && booking.paymentStatus === 'paid' && (
                                 <Badge className="bg-purple-50 text-purple-700 border-purple-200 ring-purple-100 border px-3 py-1 ring-1">
                                   <div className="flex items-center gap-1">
                                     <Users className="h-3 w-3" />
                                     <span className="capitalize font-semibold">
-                                      {booking.customer ? `Customer (${booking.customer.customer_type})` : 'Customer Record Created'}
+                                      {booking.customer ? `Customer (${booking.customer.customerType})` : 'Customer Record Created'}
                                     </span>
                                   </div>
                                 </Badge>
                               )}
-                              {(booking.status === 'pending' || booking.payment_status === 'pending') && (
+                              {(booking.status === 'pending' || booking.paymentStatus === 'pending') && (
                                 <Badge className="bg-amber-50 text-amber-700 border-amber-200 ring-amber-100 border px-3 py-1 ring-1">
                                   <div className="flex items-center gap-1">
                                     <Clock className="h-3 w-3" />
@@ -882,23 +924,23 @@ const getPaymentStatusColor = (status: string) => {
                                                          <div className="flex items-center gap-4 text-sm text-gray-600">
                                <span className="flex items-center gap-1">
                                  <Mail className="h-4 w-4" />
-                                 {booking.customer_email || 'No email'}
+                                 {booking.customerEmail || 'No email'}
                                </span>
-                               {booking.customer_phone && (
+                               {booking.customerPhone && (
                                  <span className="flex items-center gap-1">
                                    <Phone className="h-4 w-4" />
-                                   {booking.customer_phone}
+                                   {booking.customerPhone}
                                  </span>
                                )}
-                               {booking.customer_country && (
+                               {booking.customerCountry && (
                                  <span className="flex items-center gap-1">
                                    <Globe className="h-4 w-4" />
-                                   {booking.customer_country}
+                                   {booking.customerCountry}
                                  </span>
                                )}
                                <span className="flex items-center gap-1">
                                  <Hash className="h-4 w-4" />
-                                 #{booking.booking_reference || 'N/A'}
+                                 #{booking.bookingReference || 'N/A'}
                                </span>
                              </div>
                           </div>
@@ -917,7 +959,7 @@ const getPaymentStatusColor = (status: string) => {
                         </button>
                         <div className="flex items-center gap-3">
                                                      <div className="text-right">
-                             <p className="text-2xl font-bold text-green-600">${booking.total_amount || 0}</p>
+                             <p className="text-2xl font-bold text-green-600">${booking.totalAmount || 0}</p>
                              <p className="text-sm text-gray-500">Total Amount</p>
                            </div>
                         </div>
@@ -1016,12 +1058,12 @@ const getPaymentStatusColor = (status: string) => {
                                       </div>
                                       <div className="flex items-center gap-2">
                                         <span className="font-mono text-sm font-semibold text-gray-900">
-                                          #{booking.booking_reference}
+                                          #{booking.bookingReference}
                                         </span>
                                         <Button
                                           variant="ghost"
                                           size="sm"
-                                          onClick={() => copyToClipboard(booking.booking_reference)}
+                                          onClick={() => copyToClipboard(booking.bookingReference)}
                                           className="p-1 h-6 w-6"
                                         >
                                           <Copy className="h-3 w-3" />
@@ -1035,7 +1077,7 @@ const getPaymentStatusColor = (status: string) => {
                                         <span className="text-sm text-gray-600">Created</span>
                                       </div>
                                       <span className="text-sm font-medium text-gray-900">
-                                        {new Date(booking.created_at!).toLocaleDateString()}
+                                        {new Date(booking.createdAt!).toLocaleDateString()}
                                       </span>
                                     </div>
                                     
@@ -1045,7 +1087,7 @@ const getPaymentStatusColor = (status: string) => {
                                         <span className="text-sm text-emerald-600">Total Amount</span>
                                       </div>
                                       <span className="text-lg font-bold text-emerald-700">
-                                        ${booking.total_amount}
+                                        ${booking.totalAmount}
                                       </span>
                                     </div>
                                     
@@ -1055,18 +1097,18 @@ const getPaymentStatusColor = (status: string) => {
                                         <span className="text-sm text-gray-600">Contact Method</span>
                                       </div>
                                       <span className="text-sm font-medium text-gray-900 capitalize">
-                                        {booking.contact_method}
+                                        {booking.contactMethod}
                                       </span>
                                     </div>
                                     
-                                    {booking.preferred_contact_time && (
+                                    {booking.preferredContactTime && (
                                       <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                                         <div className="flex items-center gap-3">
                                           <Clock className="h-4 w-4 text-gray-500" />
                                           <span className="text-sm text-gray-600">Preferred Time</span>
                                         </div>
                                         <span className="text-sm font-medium text-gray-900">
-                                          {booking.preferred_contact_time}
+                                          {booking.preferredContactTime}
                                         </span>
                                       </div>
                                     )}
@@ -1114,36 +1156,16 @@ const getPaymentStatusColor = (status: string) => {
                                     </Dialog>
 
                                     {/* Show View Customer button only when confirmed and paid */}
-                                    {booking.status === 'confirmed' && booking.payment_status === 'paid' && (
+                                    {booking.status === 'confirmed' && booking.paymentStatus === 'paid' && (
                                       <Button 
                                         variant="outline" 
                                         className="w-full justify-start h-12 bg-purple-50 border-purple-200 text-purple-700 hover:bg-purple-100"
                                         onClick={() => window.open('/admin/customers', '_blank')}
                                       >
                                         <Users className="h-4 w-4 mr-3" />
-                                        {booking.customer ? `View Customer (${booking.customer.total_bookings} bookings)` : 'View Customer Record'}
+                                        {booking.customer ? `View Customer (${booking.customer.totalBookings} bookings)` : 'View Customer Record'}
                                       </Button>
                                     )}
-
-                                    <Button variant="outline" className="w-full justify-start h-12">
-                                      <Phone className="h-4 w-4 mr-3" />
-                                      Call Customer
-                                    </Button>
-
-                                    <Button variant="outline" className="w-full justify-start h-12">
-                                      <Mail className="h-4 w-4 mr-3" />
-                                      Send Email
-                                    </Button>
-
-                                    <Button variant="outline" className="w-full justify-start h-12">
-                                      <MessageCircle className="h-4 w-4 mr-3" />
-                                      WhatsApp
-                                    </Button>
-
-                                    <Button variant="outline" className="w-full justify-start h-12">
-                                      <Video className="h-4 w-4 mr-3" />
-                                      Video Call
-                                    </Button>
                                   </div>
                                 </CardContent>
                               </Card>
@@ -1151,7 +1173,7 @@ const getPaymentStatusColor = (status: string) => {
                           </div>
 
                           {/* Customer Information (if confirmed and paid) */}
-                          {booking.status === 'confirmed' && booking.payment_status === 'paid' && booking.customer && (
+                          {booking.status === 'confirmed' && booking.paymentStatus === 'paid' && booking.customer && (
                             <div className="mt-8 pt-6 border-t border-gray-200">
                               <div className="flex items-center gap-2 mb-4">
                                 <div className="p-2 bg-purple-100 rounded-lg">
@@ -1164,19 +1186,19 @@ const getPaymentStatusColor = (status: string) => {
                                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                                     <div>
                                       <p className="text-sm text-purple-600 font-medium">Customer Type</p>
-                                      <p className="text-purple-800 font-semibold capitalize">{booking.customer.customer_type}</p>
+                                      <p className="text-purple-800 font-semibold capitalize">{booking.customer.customerType}</p>
                                     </div>
                                     <div>
                                       <p className="text-sm text-purple-600 font-medium">Total Bookings</p>
-                                      <p className="text-purple-800 font-semibold">{booking.customer.total_bookings}</p>
+                                      <p className="text-purple-800 font-semibold">{booking.customer.totalBookings}</p>
                                     </div>
                                     <div>
                                       <p className="text-sm text-purple-600 font-medium">Total Spent</p>
-                                      <p className="text-purple-800 font-semibold">${booking.customer.total_spent.toLocaleString()}</p>
+                                      <p className="text-purple-800 font-semibold">${booking.customer.totalSpent.toLocaleString()}</p>
                                     </div>
                                     <div>
                                       <p className="text-sm text-purple-600 font-medium">Loyalty Points</p>
-                                      <p className="text-purple-800 font-semibold">{booking.customer.loyalty_points}</p>
+                                      <p className="text-purple-800 font-semibold">{booking.customer.loyaltyPoints}</p>
                                     </div>
                                   </div>
                                 </CardContent>
@@ -1185,7 +1207,7 @@ const getPaymentStatusColor = (status: string) => {
                           )}
 
                           {/* Special Requests */}
-                          {booking.special_requests && (
+                          {booking.specialRequests && (
                             <div className="mt-8 pt-6 border-t border-gray-200">
                               <div className="flex items-center gap-2 mb-4">
                                 <div className="p-2 bg-amber-100 rounded-lg">
@@ -1195,7 +1217,7 @@ const getPaymentStatusColor = (status: string) => {
                               </div>
                               <Card className="bg-amber-50 border border-amber-200">
                                 <CardContent className="p-6">
-                                  <p className="text-amber-800 leading-relaxed">{booking.special_requests}</p>
+                                  <p className="text-amber-800 leading-relaxed">{booking.specialRequests}</p>
                                 </CardContent>
                               </Card>
                             </div>
@@ -1244,7 +1266,7 @@ const getPaymentStatusColor = (status: string) => {
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <FileText className="h-5 w-5" />
-              Booking Details - {selectedBooking?.booking_reference}
+              Booking Details - {selectedBooking?.bookingReference}
             </DialogTitle>
           </DialogHeader>
           {selectedBooking && (
@@ -1262,29 +1284,29 @@ const getPaymentStatusColor = (status: string) => {
                     <div className="space-y-4">
                       <div>
                         <label className="text-sm font-medium text-gray-600">Full Name</label>
-                        <p className="text-gray-900 font-medium">{selectedBooking.customer_name}</p>
+                        <p className="text-gray-900 font-medium">{selectedBooking.customerName}</p>
                       </div>
                       <div>
                         <label className="text-sm font-medium text-gray-600">Email Address</label>
-                        <p className="text-gray-900">{selectedBooking.customer_email}</p>
+                        <p className="text-gray-900">{selectedBooking.customerEmail}</p>
                       </div>
                       <div>
                         <label className="text-sm font-medium text-gray-600">Phone Number</label>
-                        <p className="text-gray-900">{selectedBooking.customer_phone}</p>
+                        <p className="text-gray-900">{selectedBooking.customerPhone}</p>
                       </div>
                     </div>
                     <div className="space-y-4">
                       <div>
                         <label className="text-sm font-medium text-gray-600">Country</label>
-                        <p className="text-gray-900">{selectedBooking.customer_country || 'N/A'}</p>
+                        <p className="text-gray-900">{selectedBooking.customerCountry || 'N/A'}</p>
                       </div>
                       <div>
                         <label className="text-sm font-medium text-gray-600">Preferred Contact Method</label>
-                        <p className="text-gray-900 capitalize">{selectedBooking.contact_method}</p>
+                        <p className="text-gray-900 capitalize">{selectedBooking.contactMethod}</p>
                       </div>
                       <div>
                         <label className="text-sm font-medium text-gray-600">Preferred Contact Time</label>
-                        <p className="text-gray-900">{selectedBooking.preferred_contact_time || 'N/A'}</p>
+                        <p className="text-gray-900">{selectedBooking.preferredContactTime || 'N/A'}</p>
                       </div>
                     </div>
                   </div>
@@ -1358,7 +1380,7 @@ const getPaymentStatusColor = (status: string) => {
                     </div>
 
                     {/* Customer Record Status Indicator */}
-                    {selectedBooking.status === 'confirmed' && selectedBooking.payment_status === 'paid' && (
+                    {selectedBooking.status === 'confirmed' && selectedBooking.paymentStatus === 'paid' && (
                       <div className="p-4 bg-purple-50 border border-purple-200 rounded-lg">
                         <div className="flex items-center gap-2">
                           <Users className="h-5 w-5 text-purple-600" />
@@ -1372,7 +1394,7 @@ const getPaymentStatusColor = (status: string) => {
                       </div>
                     )}
                     
-                    {(selectedBooking.status === 'pending' || selectedBooking.payment_status === 'pending') && (
+                    {(selectedBooking.status === 'pending' || selectedBooking.paymentStatus === 'pending') && (
                       <div className="p-4 bg-amber-50 border border-amber-200 rounded-lg">
                         <div className="flex items-center gap-2">
                           <Clock className="h-5 w-5 text-amber-600" />
@@ -1411,8 +1433,8 @@ const getPaymentStatusColor = (status: string) => {
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">Payment Status</label>
                         <Select 
-                          value={selectedBooking.payment_status} 
-                          onValueChange={(value) => handlePaymentStatusUpdate(selectedBooking.id!, value as Booking['payment_status'])}
+                          value={selectedBooking.paymentStatus} 
+                          onValueChange={(value) => handlePaymentStatusUpdate(selectedBooking.id!, value as Booking['paymentStatus'])}
                           disabled={updatingStatus}
                         >
                           <SelectTrigger className="h-10">
@@ -1431,7 +1453,7 @@ const getPaymentStatusColor = (status: string) => {
                       </div>
 
                     {/* Customer Record Action */}
-                    {selectedBooking.status === 'confirmed' && selectedBooking.payment_status === 'paid' && (
+                    {selectedBooking.status === 'confirmed' && selectedBooking.paymentStatus === 'paid' && (
                       <div className="flex items-center justify-between p-4 bg-emerald-50 border border-emerald-200 rounded-lg">
                         <div className="flex items-center gap-2">
                           <CheckCircle className="h-5 w-5 text-emerald-600" />
