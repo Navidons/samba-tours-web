@@ -105,11 +105,11 @@ export default function BookingConfirmationPage() {
             if (retryData.success && retryData.bookings.length > 0) {
               setBooking(retryData.bookings[0])
               if (retryData.bookings[0].emailSent) {
-                setEmailSent(true)
-              }
-            } else {
-              toast({
-                title: "Booking Not Found",
+          setEmailSent(true)
+        }
+      } else {
+        toast({
+          title: "Booking Not Found",
                 description: "The booking reference could not be found. Please contact support.",
                 variant: "destructive"
               })
@@ -119,8 +119,8 @@ export default function BookingConfirmationPage() {
             toast({
               title: "Error",
               description: "Failed to load booking details. Please contact support.",
-              variant: "destructive"
-            })
+          variant: "destructive"
+        })
           } finally {
             setLoading(false)
           }

@@ -39,7 +39,7 @@ async function createUser() {
         profile: {
           include: {
             role: true
-          }
+          } 
         }
       }
     })

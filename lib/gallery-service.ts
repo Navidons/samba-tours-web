@@ -386,8 +386,12 @@ class GalleryService {
   // Track image view
   async trackImageView(imageId: number): Promise<void> {
     try {
-      await fetch(`/api/gallery/images/${imageId}/view`, {
-        method: 'POST'
+      const visitorId = this.getVisitorId()
+      await fetch(`/api/gallery/${imageId}/view`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${visitorId}`
+        }
       })
     } catch (error) {
       console.error('Failed to track image view:', error)
@@ -397,8 +401,12 @@ class GalleryService {
   // Track video view
   async trackVideoView(videoId: number): Promise<void> {
     try {
+      const visitorId = this.getVisitorId()
       await fetch(`/api/gallery/videos/${videoId}/view`, {
-        method: 'POST'
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${visitorId}`
+        }
       })
     } catch (error) {
       console.error('Failed to track video view:', error)
@@ -407,8 +415,12 @@ class GalleryService {
 
   // Like/unlike image
   async toggleImageLike(imageId: number): Promise<{ liked: boolean; likes: number }> {
-    const response = await fetch(`/api/gallery/images/${imageId}/like`, {
-      method: 'POST'
+    const visitorId = this.getVisitorId()
+    const response = await fetch(`/api/gallery/${imageId}/like`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${visitorId}`
+      }
     })
     
     if (!response.ok) {
@@ -420,8 +432,12 @@ class GalleryService {
 
   // Like/unlike video
   async toggleVideoLike(videoId: number): Promise<{ liked: boolean; likes: number }> {
+    const visitorId = this.getVisitorId()
     const response = await fetch(`/api/gallery/videos/${videoId}/like`, {
-      method: 'POST'
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${visitorId}`
+      }
     })
     
     if (!response.ok) {
@@ -429,6 +445,50 @@ class GalleryService {
     }
     
     return response.json()
+  }
+
+  // Get visitor ID
+  private getVisitorId(): string {
+    if (typeof window === 'undefined') {
+      return `visitor_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+    }
+
+    // Try to get from localStorage first
+    let visitorId = localStorage.getItem('visitor_id')
+    
+    if (!visitorId) {
+      // Try to get from cookies
+      visitorId = this.getCookie('visitor_id')
+    }
+    
+    if (!visitorId) {
+      // Generate new visitor ID
+      visitorId = `visitor_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+      
+      // Store in localStorage and cookies
+      localStorage.setItem('visitor_id', visitorId)
+      this.setCookie('visitor_id', visitorId, 365)
+    }
+    
+    return visitorId
+  }
+
+  // Cookie utilities
+  private setCookie(name: string, value: string, days: number): void {
+    const expires = new Date()
+    expires.setTime(expires.getTime() + (days * 24 * 60 * 60 * 1000))
+    document.cookie = `${name}=${value};expires=${expires.toUTCString()};path=/;SameSite=Lax`
+  }
+
+  private getCookie(name: string): string | null {
+    const nameEQ = name + "="
+    const ca = document.cookie.split(';')
+    for (let i = 0; i < ca.length; i++) {
+      let c = ca[i]
+      while (c.charAt(0) === ' ') c = c.substring(1, c.length)
+      if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length)
+    }
+    return null
   }
 
   // Get images for lightbox/carousel

@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Heart, Share2, Eye, MapPin, Camera } from "lucide-react"
 import GalleryLightbox from "./gallery-lightbox"
 import { useInView } from "react-intersection-observer"
+import { galleryService } from "@/lib/gallery-service"
 
 const galleryItems = [
   {
@@ -134,6 +135,7 @@ export default function GalleryGrid({ images = galleryItems, viewMode = "masonry
   const [likedImages, setLikedImages] = useState<Set<number>>(new Set())
   const [loadedImages, setLoadedImages] = useState<Set<number>>(new Set())
   const [visibleImages, setVisibleImages] = useState<number[]>([])
+  const [imageStats, setImageStats] = useState<Record<number, { likes: number; views: number }>>({})
   
   // Load images in batches of 8
   const BATCH_SIZE = 8
@@ -163,16 +165,46 @@ export default function GalleryGrid({ images = galleryItems, viewMode = "masonry
     setLoadedImages((prev) => new Set([...prev, id]))
   }
 
-  const toggleLike = (id: number) => {
+  const toggleLike = async (id: number) => {
+    try {
+      const result = await galleryService.toggleImageLike(id)
+      
+      // Update local state
     setLikedImages((prev) => {
       const newSet = new Set(prev)
-      if (newSet.has(id)) {
+        if (result.liked) {
+          newSet.add(id)
+        } else {
         newSet.delete(id)
-      } else {
-        newSet.add(id)
       }
       return newSet
     })
+      
+      // Update stats
+      setImageStats((prev) => ({
+        ...prev,
+        [id]: { ...prev[id], likes: result.likes }
+      }))
+    } catch (error) {
+      console.error('Error toggling like:', error)
+    }
+  }
+
+  const trackView = async (id: number) => {
+    try {
+      await galleryService.trackImageView(id)
+      
+      // Update stats locally
+      setImageStats((prev) => ({
+        ...prev,
+        [id]: { 
+          ...prev[id], 
+          views: (prev[id]?.views || 0) + 1 
+        }
+      }))
+    } catch (error) {
+      console.error('Error tracking view:', error)
+    }
   }
 
   const getGridItemClass = (aspectRatio: string) => {
@@ -206,7 +238,10 @@ export default function GalleryGrid({ images = galleryItems, viewMode = "masonry
         className={`gallery-image group overflow-hidden hover:shadow-xl transition-all duration-300 cursor-pointer border-emerald-100 hover:border-emerald-200 ${
           viewMode === "masonry" ? "break-inside-avoid mb-4" : ""
         }`}
-        onClick={() => setSelectedImage(index)}
+        onClick={() => {
+          setSelectedImage(index)
+          trackView(item.id)
+        }}
       >
         <div className="relative overflow-hidden">
           <div 
@@ -286,11 +321,11 @@ export default function GalleryGrid({ images = galleryItems, viewMode = "masonry
                 <div className="flex items-center space-x-3">
                   <div className="flex items-center space-x-1">
                     <Heart className="h-3 w-3" />
-                    <span>{item.likes}</span>
+                    <span>{imageStats[item.id]?.likes ?? item.likes}</span>
                   </div>
                   <div className="flex items-center space-x-1">
                     <Eye className="h-3 w-3" />
-                    <span>{item.views}</span>
+                    <span>{imageStats[item.id]?.views ?? item.views}</span>
                   </div>
                 </div>
               </div>
@@ -333,6 +368,7 @@ export default function GalleryGrid({ images = galleryItems, viewMode = "masonry
           onClose={() => setSelectedImage(null)}
           onNext={() => setSelectedImage((selectedImage + 1) % images.length)}
           onPrev={() => setSelectedImage(selectedImage === 0 ? images.length - 1 : selectedImage - 1)}
+          onIndexChange={(index) => setSelectedImage(index)}
         />
       )}
     </>

@@ -45,17 +45,17 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   ...generateSEOMetadata({
-    title: 'Uganda\'s Premier Safari & Adventure Travel Company',
-    description: 'Experience authentic Uganda with Samba Tours. Expert-guided gorilla trekking, wildlife safaris, cultural tours, and adventure travel. Book your dream African safari today!',
-    keywords: [
-      'Uganda tours', 'Uganda safari', 'gorilla trekking Uganda', 'wildlife safari',
-      'Bwindi gorilla trekking', 'Uganda travel', 'East Africa safari', 'adventure travel Uganda',
-      'Uganda tour packages', 'Murchison Falls', 'Queen Elizabeth Park', 'cultural tours Uganda',
-      'Uganda travel agency', 'eco tourism Uganda', 'mountain gorilla tours', 'Uganda vacation',
-      'African safari', 'primate tours', 'birding tours Uganda', 'Uganda honeymoon safari'
-    ],
-    images: ['/images/og-default.jpg'],
-    canonical: '/'
+  title: 'Uganda\'s Premier Safari & Adventure Travel Company',
+  description: 'Experience authentic Uganda with Samba Tours. Expert-guided gorilla trekking, wildlife safaris, cultural tours, and adventure travel. Book your dream African safari today!',
+  keywords: [
+    'Uganda tours', 'Uganda safari', 'gorilla trekking Uganda', 'wildlife safari',
+    'Bwindi gorilla trekking', 'Uganda travel', 'East Africa safari', 'adventure travel Uganda',
+    'Uganda tour packages', 'Murchison Falls', 'Queen Elizabeth Park', 'cultural tours Uganda',
+    'Uganda travel agency', 'eco tourism Uganda', 'mountain gorilla tours', 'Uganda vacation',
+    'African safari', 'primate tours', 'birding tours Uganda', 'Uganda honeymoon safari'
+  ],
+  images: ['/images/og-default.jpg'],
+  canonical: '/'
   }),
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || (process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : 'https://sambatours.co'))
 }

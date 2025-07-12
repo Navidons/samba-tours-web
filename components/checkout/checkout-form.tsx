@@ -153,7 +153,7 @@ export default function CheckoutForm() {
       // Use replace to prevent back button issues and add a small delay for better UX
       setTimeout(() => {
         // Clear cart after successful redirect
-        clearCart()
+      clearCart()
         router.replace(confirmationUrl)
       }, 1000)
 

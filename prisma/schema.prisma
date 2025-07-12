@@ -491,6 +491,8 @@ model GalleryImage {
   category     GalleryMediaCategory? @relation(fields: [categoryId], references: [id])
   gallery      Gallery?              @relation(fields: [galleryId], references: [id], onDelete: Cascade)
   location     GalleryMediaLocation? @relation(fields: [locationId], references: [id])
+  imageLikes   GalleryImageLike[]
+  imageViews   GalleryImageView[]
 
   @@index([galleryId])
   @@index([featured])
@@ -498,6 +500,33 @@ model GalleryImage {
   @@index([locationId])
   @@index([displayOrder])
   @@map("gallery_images")
+}
+
+model GalleryImageLike {
+  id         Int      @id @default(autoincrement())
+  imageId    Int      @map("image_id")
+  visitorId  String   @map("visitor_id") @db.VarChar(255)
+  createdAt  DateTime @default(now()) @map("created_at")
+  image      GalleryImage @relation(fields: [imageId], references: [id], onDelete: Cascade)
+
+  @@unique([imageId, visitorId])
+  @@index([imageId])
+  @@index([visitorId])
+  @@index([createdAt])
+  @@map("gallery_image_likes")
+}
+
+model GalleryImageView {
+  id        Int      @id @default(autoincrement())
+  imageId   Int      @map("image_id")
+  visitorId String   @map("visitor_id") @db.VarChar(255)
+  viewedAt  DateTime @default(now()) @map("viewed_at")
+  image     GalleryImage @relation(fields: [imageId], references: [id], onDelete: Cascade)
+
+  @@index([imageId])
+  @@index([visitorId])
+  @@index([viewedAt])
+  @@map("gallery_image_views")
 }
 
 model GalleryVideo {

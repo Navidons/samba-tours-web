@@ -70,20 +70,20 @@ export default function AchievementsSection() {
 
         {/* Visual Statistics */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-16">
-          {/* Statistics */}
+        {/* Statistics */}
           <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
-            {statistics.map((stat, index) => (
-              <div
-                key={index}
-                className="text-center p-6 bg-gradient-to-br from-emerald-50 to-green-50 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 border border-emerald-100"
-              >
-                <div className="text-3xl lg:text-4xl font-bold bg-gradient-to-r from-emerald-600 to-green-600 bg-clip-text text-transparent mb-2">
-                  {stat.number}
-                </div>
-                <div className="font-semibold text-gray-900 mb-1 text-sm lg:text-base">{stat.label}</div>
-                <div className="text-xs text-gray-600">{stat.description}</div>
+          {statistics.map((stat, index) => (
+            <div
+              key={index}
+              className="text-center p-6 bg-gradient-to-br from-emerald-50 to-green-50 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 border border-emerald-100"
+            >
+              <div className="text-3xl lg:text-4xl font-bold bg-gradient-to-r from-emerald-600 to-green-600 bg-clip-text text-transparent mb-2">
+                {stat.number}
               </div>
-            ))}
+              <div className="font-semibold text-gray-900 mb-1 text-sm lg:text-base">{stat.label}</div>
+              <div className="text-xs text-gray-600">{stat.description}</div>
+            </div>
+          ))}
           </div>
           
           {/* Achievement Images */}

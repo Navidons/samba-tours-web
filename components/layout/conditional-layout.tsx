@@ -28,7 +28,7 @@ export default function ConditionalLayout({ children }: { children: React.ReactN
     return (
       <div className="min-h-screen flex flex-col">
         <Suspense fallback={<div className="h-16 bg-white border-b border-gray-200" />}>
-          <Header />
+        <Header />
         </Suspense>
         <main className="flex-1">{children}</main>
         <Footer />
@@ -43,7 +43,7 @@ export default function ConditionalLayout({ children }: { children: React.ReactN
   return (
     <div className="min-h-screen flex flex-col">
       <Suspense fallback={<div className="h-16 bg-white border-b border-gray-200" />}>
-        <Header />
+      <Header />
       </Suspense>
       <main className="flex-1">{children}</main>
       <Footer />
