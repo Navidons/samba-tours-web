@@ -4,11 +4,11 @@ import AnalyticsClient from './AnalyticsClient'
 import React from "react"
 
 function AnalyticsSkeleton() {
-  return (
+    return (
     <div className="space-y-6">
       {/* Header skeleton */}
       <div className="flex justify-between items-center">
-        <div>
+                    <div>
           <div className="h-8 bg-gray-200 rounded w-64 animate-pulse mb-2" />
           <div className="h-4 bg-gray-200 rounded w-48 animate-pulse" />
         </div>
@@ -27,7 +27,7 @@ function AnalyticsSkeleton() {
           </div>
         ))}
       </div>
-
+      
       {/* Charts skeleton */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {Array.from({ length: 2 }).map((_, i) => (
@@ -269,14 +269,14 @@ export default async function Analytics() {
     const topToursWithDetails = await Promise.all(
       topTours.map(async (tour) => {
         try {
-          const tourDetails = await prisma.tour.findUnique({
-            where: { id: tour.tourId },
-            select: { title: true, price: true }
-          })
-          return {
-            name: tourDetails?.title || 'Unknown Tour',
-            bookings: tour._count.id,
-            revenue: Number(tour._sum.finalAmount || 0)
+        const tourDetails = await prisma.tour.findUnique({
+          where: { id: tour.tourId },
+          select: { title: true, price: true }
+        })
+        return {
+          name: tourDetails?.title || 'Unknown Tour',
+          bookings: tour._count.id,
+          revenue: Number(tour._sum.finalAmount || 0)
           }
         } catch (error) {
           return {
@@ -316,13 +316,13 @@ export default async function Analytics() {
         action: 'New inquiry',
         details: `${contact.name} - ${contact.subject || 'General inquiry'}`,
         time: new Date(contact.createdAt).toLocaleDateString('en-US', {
-          month: 'short',
-          day: 'numeric',
-          hour: '2-digit',
-          minute: '2-digit'
-        }),
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      }),
         type: 'contact'
-      }))
+    }))
     ].sort((a, b) => new Date(b.time).getTime() - new Date(a.time).getTime()).slice(0, 10)
 
     const stats = [
