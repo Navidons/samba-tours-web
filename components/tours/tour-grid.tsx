@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { useRouter } from "next/navigation"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -25,6 +26,7 @@ interface TourGridProps {
 }
 
 export default function TourGrid({ filters, sortBy }: TourGridProps) {
+  const router = useRouter()
   const [filteredTours, setFilteredTours] = useState<Tour[]>([])
   const [loading, setLoading] = useState(true)
 
@@ -201,7 +203,7 @@ export default function TourGrid({ filters, sortBy }: TourGridProps) {
               <Button
                 variant="outline"
                 className="border-emerald-200 text-emerald-700 hover:bg-emerald-50 bg-transparent"
-                onClick={() => window.location.reload()}
+                onClick={() => router.push('/tours')}
               >
                 Reset All Filters
               </Button>
@@ -298,7 +300,7 @@ export default function TourGrid({ filters, sortBy }: TourGridProps) {
                       </div>
                       <div className="flex items-center gap-2 text-gray-600">
                         <Users className="h-4 w-4 text-emerald-600" />
-                        <span className="text-sm">Max {tour.maxGroupSize} people</span>
+                        <span className="text-sm">Max {tour.groupSize} people</span>
                       </div>
                       <div className="flex items-center gap-2 text-gray-600">
                         <Calendar className="h-4 w-4 text-emerald-600" />
@@ -332,7 +334,13 @@ export default function TourGrid({ filters, sortBy }: TourGridProps) {
       </div>
 
       {/* Tour Comparison */}
-      {comparisonTours.length > 0 && <TourComparison />}
+      {comparisonTours.length > 0 && (
+        <TourComparison 
+          tours={comparisonTours}
+          onRemoveTour={removeFromComparison}
+          onClearAll={clearComparison}
+        />
+      )}
     </>
   )
 }

@@ -20,7 +20,7 @@ import {
 } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
-import type { Tour } from "@/lib/types"
+import type { Tour } from "@/lib/data"
 
 interface TourComparisonProps {
   tours: Tour[]

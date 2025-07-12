@@ -3,6 +3,7 @@
 import type React from "react"
 
 import { useState } from "react"
+import { usePathname } from "next/navigation"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -18,6 +19,7 @@ interface ReviewFormProps {
 }
 
 export function ReviewForm({ tourId, onSubmit, onClose }: ReviewFormProps) {
+  const pathname = usePathname()
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -48,7 +50,7 @@ export function ReviewForm({ tourId, onSubmit, onClose }: ReviewFormProps) {
 
     try {
       // Get the current tour slug from the URL
-      const pathSegments = window.location.pathname.split('/')
+      const pathSegments = pathname.split('/')
       const tourSlug = pathSegments[pathSegments.length - 1]
 
       const response = await fetch(`/api/tours/${tourSlug}`, {

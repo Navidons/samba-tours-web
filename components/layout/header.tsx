@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react"
 import Link from "next/link"
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
@@ -67,6 +67,8 @@ export default function Header() {
 
   // Only call usePathname after ensuring we're on the client
   const pathname = isClient ? usePathname() : ''
+  const router = useRouter()
+  const searchParams = useSearchParams()
 
   useEffect(() => {
     const handleScroll = () => {
@@ -174,7 +176,7 @@ export default function Header() {
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
     if (searchQuery.trim()) {
-      window.location.href = `/tours?search=${encodeURIComponent(searchQuery)}`
+      router.push(`/tours?search=${encodeURIComponent(searchQuery)}`)
       setIsSearchOpen(false)
       setSearchQuery("")
     }
@@ -278,8 +280,18 @@ export default function Header() {
           <div className="flex h-16 md:h-20 items-center justify-between">
             {/* Logo */}
             <Link href="/" className="flex items-center space-x-3 group">
-              <div className="w-10 h-10 md:w-12 md:h-12 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg">
-                <span className="text-white font-bold text-lg md:text-xl">ST</span>
+              <div className="w-12 h-14 md:w-16 md:h-16 flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg overflow-hidden">
+                <img 
+                  src="/logo/samba tours-01.png" 
+                  alt="Samba Tours Logo" 
+                  className="w-full h-full object-contain"
+                  onError={(e) => {
+                    const target = e.target as HTMLImageElement
+                    target.style.display = 'none'
+                    target.nextElementSibling?.classList.remove('hidden')
+                  }}
+                />
+                <span className="text-white font-bold text-lg md:text-xl hidden">ST</span>
               </div>
               <div className="hidden sm:block">
                 <h2 className="text-xl md:text-2xl font-bold text-gray-900 group-hover:text-emerald-600 transition-colors">
@@ -314,7 +326,7 @@ export default function Header() {
                     {tourCategories.length > 0 ? (
                       tourCategories.map((category) => {
                         const isActiveCategory = pathname.startsWith("/tours") && 
-                          new URLSearchParams(window.location.search).get('category') === category.slug
+                          new URLSearchParams(searchParams.toString()).get('category') === category.slug
                         return (
                           <DropdownMenuItem key={category.id} asChild>
                             <Link
@@ -512,7 +524,7 @@ export default function Header() {
                               {tourCategories.length > 0 ? (
                                 tourCategories.map((category) => {
                                   const isActiveCategory = pathname.startsWith("/tours") && 
-                                    new URLSearchParams(window.location.search).get('category') === category.slug
+                                    searchParams.get('category') === category.slug
                                   return (
                                     <SheetClose key={category.id} asChild>
                                       <Link

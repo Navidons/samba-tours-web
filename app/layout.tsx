@@ -38,24 +38,27 @@ export const viewport: Viewport = {
   maximumScale: 5,
   userScalable: true,
   themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#f97316' },
-    { media: '(prefers-color-scheme: dark)', color: '#ea580c' }
+    { media: '(prefers-color-scheme: light)', color: '#10b981' },
+    { media: '(prefers-color-scheme: dark)', color: '#059669' }
   ]
 }
 
-export const metadata: Metadata = generateSEOMetadata({
-  title: 'Uganda\'s Premier Safari & Adventure Travel Company',
-  description: 'Experience authentic Uganda with Samba Tours. Expert-guided gorilla trekking, wildlife safaris, cultural tours, and adventure travel. Book your dream African safari today!',
-  keywords: [
-    'Uganda tours', 'Uganda safari', 'gorilla trekking Uganda', 'wildlife safari',
-    'Bwindi gorilla trekking', 'Uganda travel', 'East Africa safari', 'adventure travel Uganda',
-    'Uganda tour packages', 'Murchison Falls', 'Queen Elizabeth Park', 'cultural tours Uganda',
-    'Uganda travel agency', 'eco tourism Uganda', 'mountain gorilla tours', 'Uganda vacation',
-    'African safari', 'primate tours', 'birding tours Uganda', 'Uganda honeymoon safari'
-  ],
-  images: ['/images/og-default.jpg'],
-  canonical: '/'
-})
+export const metadata: Metadata = {
+  ...generateSEOMetadata({
+    title: 'Uganda\'s Premier Safari & Adventure Travel Company',
+    description: 'Experience authentic Uganda with Samba Tours. Expert-guided gorilla trekking, wildlife safaris, cultural tours, and adventure travel. Book your dream African safari today!',
+    keywords: [
+      'Uganda tours', 'Uganda safari', 'gorilla trekking Uganda', 'wildlife safari',
+      'Bwindi gorilla trekking', 'Uganda travel', 'East Africa safari', 'adventure travel Uganda',
+      'Uganda tour packages', 'Murchison Falls', 'Queen Elizabeth Park', 'cultural tours Uganda',
+      'Uganda travel agency', 'eco tourism Uganda', 'mountain gorilla tours', 'Uganda vacation',
+      'African safari', 'primate tours', 'birding tours Uganda', 'Uganda honeymoon safari'
+    ],
+    images: ['/images/og-default.jpg'],
+    canonical: '/'
+  }),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || (process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : 'https://sambatours.co'))
+}
 
 export default function RootLayout({
   children,
@@ -73,9 +76,14 @@ export default function RootLayout({
         
         {/* Favicon and app icons */}
         <link rel="icon" href="/favicon.ico" sizes="any" />
-        <link rel="icon" href="/icon.svg" type="image/svg+xml" />
+        <link rel="icon" href="/favicon.png" type="image/png" sizes="32x32" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
         <link rel="manifest" href="/site.webmanifest" />
+        
+        {/* Domain alternates for SEO */}
+        <link rel="alternate" href="https://sambatours.co" hrefLang="en" />
+        <link rel="alternate" href="https://sambatours.org" hrefLang="en" />
+        <link rel="canonical" href="https://sambatours.co" />
         
         {/* Additional SEO tags */}
         <meta name="application-name" content={SEO_CONFIG.siteName} />
@@ -85,7 +93,7 @@ export default function RootLayout({
         <meta name="format-detection" content="telephone=no" />
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="msapplication-config" content="/browserconfig.xml" />
-        <meta name="msapplication-TileColor" content="#f97316" />
+        <meta name="msapplication-TileColor" content="#10b981" />
         <meta name="msapplication-tap-highlight" content="no" />
         
         {/* Additional Open Graph tags */}
@@ -102,9 +110,6 @@ export default function RootLayout({
         {/* DNS prefetch for performance */}
         <link rel="dns-prefetch" href="//www.google-analytics.com" />
         <link rel="dns-prefetch" href="//www.googletagmanager.com" />
-        
-        {/* Critical CSS hint */}
-        <link rel="preload" href="/fonts/inter-var.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
       </head>
       
       <body className={`${inter.variable} ${playfair.variable} font-sans antialiased`} style={{ margin: 0, padding: 0 }}>

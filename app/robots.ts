@@ -138,7 +138,10 @@ export default function robots(): MetadataRoute.Robots {
         disallow: '/'
       }
     ],
-    sitemap: `${SEO_CONFIG.siteUrl}/sitemap.xml`,
+    sitemap: [
+      `${SEO_CONFIG.siteUrl}/sitemap.xml`,
+      `${SEO_CONFIG.alternateUrl}/sitemap.xml`
+    ],
     host: SEO_CONFIG.siteUrl
   }
 } 

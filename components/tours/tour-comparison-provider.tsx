@@ -2,7 +2,7 @@
 
 import { createContext, useContext, type ReactNode } from "react"
 import { useTourComparison } from "@/hooks/use-tour-comparison"
-import type { Tour } from "@/lib/types"
+import type { Tour } from "@/lib/data"
 
 interface TourComparisonContextType {
   comparisonTours: Tour[]

@@ -181,8 +181,18 @@ export default function Footer() {
           {/* Company Info */}
           <div className="lg:col-span-1">
             <Link href="/" className="flex items-center space-x-3 mb-6 group">
-              <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg">
-                <span className="text-white font-bold text-xl">ST</span>
+              <div className="w-14 h-16 md:w-16 md:h-16 flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg overflow-hidden">
+                <img 
+                  src="/logo/samba tours-01.png" 
+                  alt="Samba Tours Logo" 
+                  className="w-full h-full object-contain"
+                  onError={(e) => {
+                    const target = e.target as HTMLImageElement
+                    target.style.display = 'none'
+                    target.nextElementSibling?.classList.remove('hidden')
+                  }}
+                />
+                <span className="text-white font-bold text-xl hidden">ST</span>
               </div>
               <div>
                 <h2 className="text-2xl font-bold group-hover:text-emerald-400 transition-colors">Samba Tours</h2>

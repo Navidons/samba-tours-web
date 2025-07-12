@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import type { Tour } from "@/lib/types"
+import type { Tour } from "@/lib/data"
 
 const MAX_COMPARISON_TOURS = 3
 

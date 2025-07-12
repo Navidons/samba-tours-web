@@ -3,14 +3,16 @@ import type { Metadata } from 'next'
 // SEO Constants
 export const SEO_CONFIG = {
   siteName: 'Samba Tours',
-  siteUrl: process.env.NEXT_PUBLIC_SITE_URL || 'https://sambatours.org',
+  siteUrl: process.env.NEXT_PUBLIC_SITE_URL || 'https://sambatours.co',
+  alternateUrl: 'https://sambatours.org',
   defaultTitle: 'Samba Tours - Uganda\'s Premier Safari & Adventure Travel Company',
   defaultDescription: 'Experience authentic Uganda with Samba Tours. Expert-guided gorilla trekking, wildlife safaris, cultural tours, and adventure travel. Book your dream African safari today!',
   defaultKeywords: [
     'Uganda tours', 'Uganda safari', 'gorilla trekking Uganda', 'wildlife safari',
     'Bwindi gorilla trekking', 'Uganda travel', 'East Africa safari', 'adventure travel Uganda',
     'Uganda tour packages', 'Murchison Falls', 'Queen Elizabeth Park', 'cultural tours Uganda',
-    'Uganda travel agency', 'eco tourism Uganda', 'mountain gorilla tours'
+    'Uganda travel agency', 'eco tourism Uganda', 'mountain gorilla tours', 'Uganda vacation',
+    'African safari', 'primate tours', 'birding tours Uganda', 'Uganda honeymoon safari'
   ],
   twitterHandle: '@sambatours',
   facebookPage: 'SambaToursUganda',
@@ -21,10 +23,10 @@ export const SEO_CONFIG = {
     legalName: 'Samba Tours and Travel Limited',
     foundingDate: '2010',
     description: 'Uganda\'s leading eco-tourism and safari company specializing in gorilla trekking, wildlife safaris, and cultural experiences.',
-    email: 'info@sambatours.org',
-    phone: '+256-700-000-000',
+    email: 'info@sambatours.co',
+    phone: '+256-700-123-456',
     address: {
-      streetAddress: 'Kampala Road',
+      streetAddress: 'Plot 123, Kampala Road',
       addressLocality: 'Kampala',
       addressRegion: 'Central Region',
       postalCode: '256',
@@ -53,7 +55,7 @@ export function generateSEOMetadata({
   description?: string
   keywords?: string[]
   images?: string[]
-  type?: 'website' | 'article' | 'product' | 'profile'
+  type?: 'website' | 'article' | 'profile'
   publishedTime?: string
   modifiedTime?: string
   authors?: string[]

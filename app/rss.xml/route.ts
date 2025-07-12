@@ -3,9 +3,9 @@ import { SEO_CONFIG } from '@/lib/seo'
 
 async function getBlogPosts() {
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://sambatours.org'
+    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || (process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : 'https://sambatours.org')
     const response = await fetch(`${baseUrl}/api/blog?limit=50`, {
-      cache: 'no-store'
+      next: { revalidate: 3600 } // Cache for 1 hour
     })
     
     if (!response.ok) {
