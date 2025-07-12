@@ -12,7 +12,7 @@ import LoadingSpinner from "@/components/ui/loading-spinner"
 import Breadcrumbs from "@/components/seo/breadcrumbs"
 import StructuredData from "@/components/seo/structured-data"
 import { generateSEOMetadata, generateTourSchema, generateFAQSchema } from "@/lib/seo"
-import { getTour, getTourReviews } from "@/lib/tours-service"
+import { getTour, getTourReviews, getBaseUrl } from "@/lib/tours-service"
 
 interface TourPageProps {
   params: {
@@ -22,15 +22,16 @@ interface TourPageProps {
 
 async function getRelatedTours(currentTour: any) {
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
     const categoryId = currentTour.category?.id
     
     if (!categoryId) {
       return []
     }
 
+    // Use absolute URL for server-side fetch
+    const baseUrl = getBaseUrl()
     const response = await fetch(`${baseUrl}/api/tours?category=${categoryId}&limit=3&exclude=${currentTour.id}`, {
-      next: { revalidate: 3600 } // 
+      next: { revalidate: 3600 }
     })
     
     if (!response.ok) {
@@ -45,6 +46,8 @@ async function getRelatedTours(currentTour: any) {
   }
 }
 
+export const dynamic = 'force-dynamic'
+
 export default async function TourPage({ params }: TourPageProps) {
   const tour = await getTour(params.slug)
 
@@ -53,7 +56,13 @@ export default async function TourPage({ params }: TourPageProps) {
   }
 
   const reviewsData = await getTourReviews(params.slug)
-  const relatedTours = await getRelatedTours(tour)
+  let relatedTours = []
+  try {
+    relatedTours = await getRelatedTours(tour)
+  } catch (error) {
+    console.error('Error fetching related tours:', error)
+    // Continue without related tours if they fail to load
+  }
 
   // Generate structured data
   const tourSchema = generateTourSchema(tour)

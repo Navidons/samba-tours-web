@@ -6,6 +6,8 @@ export const metadata = {
   description: "Sign in to the Samba Tours admin panel.",
 }
 
+export const dynamic = 'force-dynamic'
+
 export default async function AdminSignInPage() {
   await redirectIfAuthenticated()
   return <AdminSignIn />

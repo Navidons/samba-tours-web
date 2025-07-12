@@ -6,6 +6,8 @@ export const metadata: Metadata = {
   description: "Complete your booking and receive confirmation",
 }
 
+export const dynamic = 'force-dynamic'
+
 export default function CheckoutPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 to-red-50">

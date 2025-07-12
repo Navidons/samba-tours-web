@@ -1,7 +1,7 @@
 "use client"
 
 import type React from "react"
-import { useEffect, useState } from "react"
+import { useEffect, useState, Suspense } from "react"
 import { usePathname } from "next/navigation"
 import Header from "@/components/layout/header"
 import Footer from "@/components/layout/footer"
@@ -27,7 +27,9 @@ export default function ConditionalLayout({ children }: { children: React.ReactN
   if (!isClient) {
     return (
       <div className="min-h-screen flex flex-col">
-        <Header />
+        <Suspense fallback={<div className="h-16 bg-white border-b border-gray-200" />}>
+          <Header />
+        </Suspense>
         <main className="flex-1">{children}</main>
         <Footer />
       </div>
@@ -40,7 +42,9 @@ export default function ConditionalLayout({ children }: { children: React.ReactN
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Header />
+      <Suspense fallback={<div className="h-16 bg-white border-b border-gray-200" />}>
+        <Header />
+      </Suspense>
       <main className="flex-1">{children}</main>
       <Footer />
     </div>

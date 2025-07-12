@@ -62,7 +62,7 @@ export const config = {
   app: {
     name: 'Samba Tours',
     description: 'Discover the beauty of Uganda with Samba Tours',
-    url: env.NEXT_PUBLIC_APP_URL || 'https://sambatours.org',
+    url: env.NEXT_PUBLIC_APP_URL || (env.NODE_ENV === 'development' ? 'http://localhost:3000' : 'https://sambatours.org'),
     environment: env.NODE_ENV,
   },
   
@@ -80,7 +80,7 @@ export const config = {
       windowMs: env.RATE_LIMIT_WINDOW,
     },
     cors: {
-      origin: env.NEXT_PUBLIC_APP_URL || 'https://sambatours.org',
+      origin: env.NEXT_PUBLIC_APP_URL || (env.NODE_ENV === 'development' ? 'http://localhost:3000' : 'https://sambatours.org'),
       credentials: true,
     },
   },

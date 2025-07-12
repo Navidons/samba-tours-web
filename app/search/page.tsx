@@ -14,6 +14,8 @@ interface SearchPageProps {
   searchParams: { q?: string; category?: string; location?: string }
 }
 
+export const dynamic = 'force-dynamic'
+
 export default function SearchPage({ searchParams }: SearchPageProps) {
   return (
     <>

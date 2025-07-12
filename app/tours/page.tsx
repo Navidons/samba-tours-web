@@ -8,6 +8,8 @@ export const metadata: Metadata = {
   description: "Explore handpicked Uganda safari tours, from gorilla trekking to wildlife adventures. Plan your perfect journey with our expert guides and custom packages.",
 }
 
+export const dynamic = 'force-dynamic'
+
 export default async function ToursPage() {
   // Fetch initial data server-side
   const initialData = await getTours({ page: 1, limit: 12, sortBy: "popular" })

@@ -23,7 +23,7 @@ const slugify = (text: string) =>
 export async function generateMetadata({ params }: { params: { slug: string } }) {
   try {
     // Fetch blog post from API for metadata
-    const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/blog/${params.slug}`, {
+    const response = await fetch(`/api/blog/${params.slug}`, {
       cache: 'no-store'
     })
     
@@ -82,10 +82,12 @@ export async function generateStaticParams() {
   return []
 }
 
+export const dynamic = 'force-dynamic'
+
 export default async function BlogPostPage({ params }: { params: { slug: string } }) {
   try {
     // Fetch blog post from API
-    const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/blog/${params.slug}`, {
+    const response = await fetch(`/api/blog/${params.slug}`, {
       cache: 'no-store'
     })
     

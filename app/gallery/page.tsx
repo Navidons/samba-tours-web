@@ -27,6 +27,8 @@ interface GalleryPageProps {
   }
 }
 
+export const dynamic = 'force-dynamic'
+
 export default function GalleryPage({ searchParams }: GalleryPageProps) {
   return (
     <>

@@ -6,6 +6,8 @@ export const metadata: Metadata = {
   description: "Review and manage your selected Uganda safari experiences. Customize your tour package and proceed to secure booking with our easy checkout process.",
 }
 
+export const dynamic = 'force-dynamic'
+
 export default function CartPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 to-red-50">

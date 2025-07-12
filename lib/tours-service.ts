@@ -2,11 +2,19 @@ import { cache } from 'react'
 import { headers } from 'next/headers'
 
 // Helper to get base URL for API calls
-function getBaseUrl() {
+export function getBaseUrl() {
   // Get host from headers when running on server
   const headersList = headers()
   const host = headersList.get('host') || 'localhost:3000'
-  const protocol = process?.env?.NODE_ENV === 'development' ? 'http' : 'https'
+  
+  // Always use HTTP for development, HTTPS for production
+  const protocol = process.env.NODE_ENV === 'development' ? 'http' : 'https'
+  
+  // For localhost, always use HTTP
+  if (host.includes('localhost') || host.includes('127.0.0.1')) {
+    return `http://${host}`
+  }
+  
   return `${protocol}://${host}`
 }
 
