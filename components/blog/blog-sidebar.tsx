@@ -235,28 +235,6 @@ export default function BlogSidebar({ searchQuery, onSearchChange }: BlogSidebar
           )}
         </CardContent>
       </Card>
-
-      {/* Newsletter */}
-      <Card className="bg-gradient-to-br from-emerald-50 to-green-50 border-emerald-200">
-        <CardHeader>
-          <CardTitle className="flex items-center space-x-2 text-emerald-900 font-playfair text-xl">
-            <Mail className="h-5 w-5" />
-            <span>Stay Updated</span>
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-emerald-800 mb-4">Get the latest stories and tips delivered to your inbox.</p>
-          <form className="space-y-3">
-            <Input placeholder="Your email address" className="bg-white" />
-            <Button
-              type="submit"
-              className="w-full bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700"
-            >
-              Subscribe Now
-            </Button>
-          </form>
-        </CardContent>
-      </Card>
     </aside>
   )
 }

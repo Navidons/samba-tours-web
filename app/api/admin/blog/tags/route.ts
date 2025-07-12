@@ -39,6 +39,21 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
     
+    // Check if tag already exists (case-insensitive handled by DB collation)
+    const existingTag = await prisma.blogTag.findFirst({
+      where: {
+        name: body.name
+      }
+    })
+
+    if (existingTag) {
+      return NextResponse.json({ 
+        success: true, 
+        tag: existingTag,
+        message: "Tag already exists"
+      })
+    }
+    
     // Generate slug from name
     const slug = body.name
       .toLowerCase()

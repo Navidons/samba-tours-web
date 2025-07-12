@@ -14,6 +14,7 @@ import { Separator } from "@/components/ui/separator"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { toast } from "@/hooks/use-toast"
 import { Loader2, Save, Eye, Calendar, Plus, Upload, X } from "lucide-react"
+import RichTextEditor from "@/components/ui/rich-text-editor"
 
 interface BlogCategory {
   id: number
@@ -58,6 +59,7 @@ export default function BlogPostForm({ postId, slug }: BlogPostFormProps) {
   const [showAuthorModal, setShowAuthorModal] = useState(false)
   const [creatingCategory, setCreatingCategory] = useState(false)
   const [creatingAuthor, setCreatingAuthor] = useState(false)
+  const [creatingTag, setCreatingTag] = useState(false)
   const [thumbnailFile, setThumbnailFile] = useState<File | null>(null)
   const [thumbnailPreview, setThumbnailPreview] = useState<string | null>(null)
 
@@ -315,6 +317,7 @@ export default function BlogPostForm({ postId, slug }: BlogPostFormProps) {
     if (!newTagName.trim()) return
 
     try {
+      setCreatingTag(true)
       const response = await fetch("/api/admin/blog/tags", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -323,12 +326,31 @@ export default function BlogPostForm({ postId, slug }: BlogPostFormProps) {
 
       if (response.ok) {
         const data = await response.json()
-        setTags(prev => [...prev, data.tag])
-        setSelectedTags(prev => [...prev, data.tag.id])
+        
+        // Check if tag already exists in our local state
+        const tagExists = tags.some(tag => tag.id === data.tag.id)
+        
+        if (!tagExists) {
+          setTags(prev => [...prev, data.tag])
+        }
+        
+        // Add to selected tags if not already selected
+        if (!selectedTags.includes(data.tag.id)) {
+          setSelectedTags(prev => [...prev, data.tag.id])
+        }
+        
         setNewTagName("")
+        
         toast({
-          title: "Success",
-          description: "Tag created successfully"
+          title: data.message ? "Info" : "Success",
+          description: data.message || "Tag created successfully"
+        })
+      } else {
+        const errorData = await response.json()
+        toast({
+          title: "Error",
+          description: errorData.error || "Failed to create tag",
+          variant: "destructive"
         })
       }
     } catch (error) {
@@ -338,6 +360,8 @@ export default function BlogPostForm({ postId, slug }: BlogPostFormProps) {
         description: "Failed to create tag",
         variant: "destructive"
       })
+    } finally {
+      setCreatingTag(false)
     }
   }
 
@@ -550,13 +574,10 @@ export default function BlogPostForm({ postId, slug }: BlogPostFormProps) {
 
               <div>
                 <Label htmlFor="content">Content *</Label>
-                <Textarea
-                  id="content"
+                <RichTextEditor
                   value={formData.content}
-                  onChange={(e) => setFormData(prev => ({ ...prev, content: e.target.value }))}
+                  onChange={(value) => setFormData(prev => ({ ...prev, content: value }))}
                   placeholder="Write your blog post content here..."
-                  rows={15}
-                  required
                 />
               </div>
             </CardContent>
@@ -814,25 +835,35 @@ export default function BlogPostForm({ postId, slug }: BlogPostFormProps) {
               </div>
               
               <div className="flex gap-2">
-                <Input
-                  placeholder="Add new tag..."
-                  value={newTagName}
-                  onChange={(e) => setNewTagName(e.target.value)}
-                  onKeyPress={(e) => {
-                    if (e.key === 'Enter') {
-                      e.preventDefault()
-                      handleCreateTag()
-                    }
-                  }}
-                />
+                <div className="flex-1">
+                  <Input
+                    placeholder="Add new tag..."
+                    value={newTagName}
+                    onChange={(e) => setNewTagName(e.target.value)}
+                    onKeyPress={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault()
+                        handleCreateTag()
+                      }
+                    }}
+                    className={tags.some(tag => tag.name.toLowerCase() === newTagName.toLowerCase()) ? 'border-orange-300 bg-orange-50' : ''}
+                  />
+                  {tags.some(tag => tag.name.toLowerCase() === newTagName.toLowerCase()) && (
+                    <p className="text-xs text-orange-600 mt-1">Tag already exists</p>
+                  )}
+                </div>
                 <Button
                   type="button"
                   variant="outline"
                   size="sm"
                   onClick={handleCreateTag}
-                  disabled={!newTagName.trim()}
+                  disabled={!newTagName.trim() || creatingTag}
                 >
-                  <Plus className="h-4 w-4" />
+                  {creatingTag ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <Plus className="h-4 w-4" />
+                  )}
                 </Button>
               </div>
             </CardContent>
