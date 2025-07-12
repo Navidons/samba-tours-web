@@ -437,6 +437,12 @@ export default function ToursManagement() {
                 <RefreshCw className={`h-4 w-4 mr-2 ${refreshing ? 'animate-spin' : ''}`} />
                 Refresh
               </Button>
+              <Button asChild variant="outline">
+                <Link href="/admin/tours/categories">
+                  <Tag className="h-4 w-4 mr-2" />
+                  Manage Categories
+                </Link>
+              </Button>
               <Button asChild className="bg-forest-600 hover:bg-forest-700">
                 <Link href="/admin/tours/new">
                   <Plus className="h-4 w-4 mr-2" />

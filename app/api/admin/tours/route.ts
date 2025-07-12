@@ -205,7 +205,7 @@ export async function GET(request: NextRequest) {
       rating: Number(tour.rating),
       reviewCount: tour.reviewCount,
       viewCount: tour.viewCount,
-      bookingCount: tour.bookingCount,
+      bookingCount: tour._count.bookings,
       bestTime: tour.bestTime,
       physicalRequirements: tour.physicalRequirements,
       whatToBring: tour.whatToBring,
