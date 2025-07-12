@@ -100,8 +100,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const Sidebar = ({ mobile = false }: { mobile?: boolean }) => (
     <div className="flex flex-col h-full">
       {/* Logo - Fixed */}
-      <div className="flex-shrink-0 flex items-center justify-center px-6 py-6 border-b border-white/10">
-        <img src="/logo/samba tours-01.png" alt="Samba Tours Logo" className="h-12 w-auto" />
+      <div className="flex-shrink-0 flex items-center px-6 py-6 border-b border-white/10">
+        <img src="/logo/samba tours-01.png" alt="Samba Tours Logo" className="h-12 w-auto mr-3" />
+        <span className="text-xl font-bold text-white tracking-wide">SambaTours</span>
       </div>
 
       {/* Navigation Container - Scrollable */}
