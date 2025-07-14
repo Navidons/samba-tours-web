@@ -40,15 +40,7 @@ const notifications = [
     time: "3 hours ago",
     read: true,
   },
-  {
-    id: 4,
-    title: "System backup completed",
-    message: "Daily system backup completed successfully",
-    type: "system",
-    priority: "low",
-    time: "6 hours ago",
-    read: true,
-  },
+
 ]
 
 const campaigns = [

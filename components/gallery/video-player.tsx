@@ -107,7 +107,7 @@ export default function VideoPlayer({
     if (video.thumbnail && video.thumbnail.data && video.thumbnail.type) {
       return `data:${video.thumbnail.type};base64,${video.thumbnail.data}`
     }
-    return '/placeholder.svg'
+    return ''
   }
 
   const formatDuration = (duration: string | number | null): string => {

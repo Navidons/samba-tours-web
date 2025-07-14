@@ -8,7 +8,7 @@ import { MockAuthProvider } from "@/components/auth/mock-auth-provider"
 import { UserAuthProvider } from "@/components/auth/user-auth-provider"
 import { CartProvider } from "@/hooks/use-cart"
 import ConditionalLayout from "@/components/layout/conditional-layout"
-import VisitorTracker from "@/components/tracking/visitor-tracker"
+
 import StructuredData from "@/components/seo/structured-data"
 import { generateSEOMetadata, generateOrganizationSchema, SEO_CONFIG } from "@/lib/seo"
 import dynamic from "next/dynamic"
@@ -120,7 +120,7 @@ export default function RootLayout({
             <UserAuthProvider>
               <CartProvider>
                 <ConditionalLayout>{children}</ConditionalLayout>
-                <VisitorTracker />
+        
                 <SEOMonitor />
                 <Toaster />
               </CartProvider>

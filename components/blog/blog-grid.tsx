@@ -78,17 +78,19 @@ export default function BlogGrid({ posts }: BlogGridProps) {
         {posts.slice(0, visiblePosts).map((post) => (
           <div key={post.id} className="bg-white rounded-lg shadow-md overflow-hidden group flex flex-col">
             <Link href={`/blog/${post.slug}`} className="block">
-              <Image
-                src={post.thumbnail || "/placeholder.svg?height=250&width=400&text=Blog+Post"}
-                alt={post.title}
-                width={400}
-                height={250}
-                className="w-full h-56 object-cover group-hover:scale-105 transition-transform duration-300"
-                onError={(e) => {
-                  console.log('Image failed to load for post:', post.title, 'thumbnail:', post.thumbnail)
-                  e.currentTarget.src = "/placeholder.svg?height=250&width=400&text=Blog+Post"
-                }}
-              />
+              {post.thumbnail ? (
+                <Image
+                  src={post.thumbnail}
+                  alt={post.title}
+                  width={400}
+                  height={250}
+                  className="w-full h-56 object-cover group-hover:scale-105 transition-transform duration-300"
+                />
+              ) : (
+                <div className="w-full h-56 flex items-center justify-center bg-gradient-to-br from-emerald-100 to-green-50 text-emerald-700 text-xl font-semibold">
+                  {post.title}
+                </div>
+              )}
             </Link>
             <div className="p-6 flex flex-col flex-grow">
               <div className="mb-4">

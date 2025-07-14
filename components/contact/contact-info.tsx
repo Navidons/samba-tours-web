@@ -6,13 +6,13 @@ const contactMethods = [
   {
     icon: Phone,
     title: "Phone",
-    details: ["+256 700 123 456", "+256 414 123 456"],
+    details: ["+256 703 267 150", "+256 771 023 297"],
     description: "Available 24/7 for emergencies",
   },
   {
     icon: Mail,
     title: "Email",
-    details: ["info@sambatours.com", "bookings@sambatours.com"],
+    details: ["sambatours256@gmail.com"],
     description: "We respond within 2 hours",
   },
   {
@@ -94,13 +94,7 @@ export default function ContactInfo() {
         </CardContent>
       </Card>
 
-      <Card className="bg-gradient-to-r from-emerald-50 to-green-50 border-emerald-200">
-        <CardContent className="p-6">
-          <h4 className="font-bold text-gray-900 mb-2">Emergency Contact</h4>
-          <p className="text-gray-600 mb-2">24/7 emergency support for travelers</p>
-          <p className="font-semibold text-emerald-600">+256 700 999 888</p>
-        </CardContent>
-      </Card>
+
     </div>
   )
 }

@@ -86,8 +86,8 @@ export default function WhyChooseUs() {
               {/* Background Image */}
               <div className="absolute inset-0 rounded-2xl overflow-hidden opacity-10">
                 <Image
-                  src="/tours-attractions/tourists.jpg"
-                  alt="Happy tourists"
+                  src="/photos/queen-elizabeth-national-park-uganda.jpg"
+                  alt="Queen Elizabeth National Park"
                   fill
                   className="object-cover"
                 />

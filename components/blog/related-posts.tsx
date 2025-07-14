@@ -108,12 +108,18 @@ export default function RelatedPosts({ currentPost }: RelatedPostsProps) {
                 className="group hover:shadow-xl transition-all duration-300 overflow-hidden rounded-lg"
               >
                 <div className="relative h-48 overflow-hidden">
-                  <Image
-                    src={post.thumbnail || "/placeholder.svg"}
-                    alt={post.title}
-                    fill
-                    className="object-cover group-hover:scale-105 transition-transform duration-300"
-                  />
+                  {post.thumbnail ? (
+                    <Image
+                      src={post.thumbnail}
+                      alt={post.title}
+                      fill
+                      className="object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
+                  ) : (
+                    <div className="absolute inset-0 w-full h-full flex items-center justify-center bg-gradient-to-br from-emerald-100 to-green-50 text-emerald-700 text-lg font-semibold">
+                      {post.title}
+                    </div>
+                  )}
                   <div className="absolute top-4 left-4">
                     <Badge className="bg-emerald-600 text-white border-none">
                       {post.category?.name || "Uncategorized"}

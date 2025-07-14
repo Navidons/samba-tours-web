@@ -517,7 +517,7 @@ function ComposeEmailModal({ open, onOpenChange, recipients, defaultSubject = ''
                   {/* Font Color */}
                   <input
                     type="color"
-                    className="w-8 h-8 border rounded cursor-pointer"
+                    className="w-8 h-8 border rounded-full cursor-pointer"
                     onChange={(e) => document.execCommand('foreColor', false, e.target.value)}
                     title="Font Color"
                   />

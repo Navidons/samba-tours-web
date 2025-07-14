@@ -218,7 +218,7 @@ export default function TourGrid({ filters, sortBy }: TourGridProps) {
               <Card key={tour.id} className="group hover:shadow-xl transition-all duration-300 overflow-hidden border border-emerald-100">
                 <div className="relative">
                   <Image
-                    src={tour.images[0] || "/placeholder.svg"}
+                    src={tour.images[0]}
                     alt={tour.title}
                     width={400}
                     height={250}

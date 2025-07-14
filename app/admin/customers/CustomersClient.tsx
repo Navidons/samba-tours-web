@@ -483,7 +483,7 @@ export default function CustomersClient() {
                   <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
                     <div className="flex items-center gap-4">
                       <Avatar className="h-12 w-12">
-                        <AvatarImage src="/placeholder.svg" alt={customer.name} />
+                        <AvatarImage src="" alt={customer.name} />
                         <AvatarFallback>
                           {customer.name
                             .split(" ")

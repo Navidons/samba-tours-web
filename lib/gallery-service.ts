@@ -362,7 +362,7 @@ class GalleryService {
   // Convert image data to URL for display
   getImageUrl(image: GalleryImage): string {
     if (!image.imageData || !image.imageType) {
-      return '/placeholder.svg'
+      return ''
     }
     return `data:${image.imageType};base64,${image.imageData}`
   }
@@ -370,7 +370,7 @@ class GalleryService {
   // Get thumbnail URL for gallery
   getThumbnailUrl(gallery: Gallery): string {
     if (!gallery.thumbnail || !gallery.thumbnail.data || !gallery.thumbnail.type) {
-      return '/placeholder.svg'
+      return ''
     }
     return `data:${gallery.thumbnail.type};base64,${gallery.thumbnail.data}`
   }
@@ -378,7 +378,7 @@ class GalleryService {
   // Get video thumbnail URL
   getVideoThumbnailUrl(video: GalleryVideo): string {
     if (!video.thumbnail || !video.thumbnail.data || !video.thumbnail.type) {
-      return '/placeholder.svg'
+      return ''
     }
     return `data:${video.thumbnail.type};base64,${video.thumbnail.data}`
   }

@@ -58,7 +58,16 @@ export default function BlogAuthorHeader({ author }: BlogAuthorHeaderProps) {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
           <div className="lg:col-span-1">
             <div className="relative w-48 h-48 mx-auto lg:mx-0 rounded-full overflow-hidden mb-6">
-              <Image src={author.image || "/placeholder.svg"} alt={author.name} fill className="object-cover" />
+              {author.image ? (
+                <Image src={author.image} alt={author.name} fill className="object-cover" />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center bg-emerald-200 text-emerald-800 text-6xl font-bold">
+                  {author.name
+                    .split(' ')
+                    .map((n: string) => n[0])
+                    .join('')}
+                </div>
+              )}
             </div>
 
             {/* Social Links */}

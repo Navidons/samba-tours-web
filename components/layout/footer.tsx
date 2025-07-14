@@ -4,7 +4,7 @@ import { useState } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Facebook, Twitter, Instagram, Youtube, Mail, Phone, MapPin, Clock, Award, Shield, Heart, CheckCircle, AlertCircle, Globe, Star, Users, Calendar } from "lucide-react"
+import { Facebook, Twitter, Instagram, Youtube, Mail, Phone, MapPin, Clock, Award, Shield, Heart, CheckCircle, AlertCircle, Globe, Star, Users, Calendar, Car, Camera, Map, Hotel } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 
 const quickLinks = [
@@ -22,6 +22,19 @@ const tourCategories = [
   { name: "Cultural Tours", href: "/tours?category=cultural", icon: "🏺" },
   { name: "Bird Watching", href: "/tours?category=bird-watching", icon: "🦅" },
   { name: "Adventure Tours", href: "/tours?category=adventure", icon: "🎯" },
+]
+
+const services = [
+  { name: "Safari Tours", href: "/tours?category=wildlife-safari", icon: Camera, description: "Wildlife safaris in Uganda's national parks" },
+  { name: "Gorilla Trekking", href: "/tours?category=gorilla-trekking", icon: Users, description: "Mountain gorilla encounters in Bwindi" },
+  { name: "Hotel Booking", href: "/contact", icon: Hotel, description: "Reserve accommodations across Uganda" },
+  { name: "Visa Processes", href: "/contact", icon: Map, description: "Assistance with visa applications" },
+  { name: "Airport Pickups", href: "/contact", icon: Car, description: "Reliable airport transfer services" },
+  { name: "Visitors Transportation", href: "/contact", icon: Car, description: "Comprehensive transport solutions" },
+  { name: "Travel Insurance", href: "/contact", icon: Shield, description: "Comprehensive travel protection" },
+  { name: "Currency Exchange", href: "/contact", icon: Globe, description: "Convenient currency services" },
+  { name: "Customer Tours", href: "/contact", icon: Map, description: "Tailored experiences for your needs" },
+  { name: "Photography Tours", href: "/tours?category=photography", icon: Camera, description: "Professional photography expeditions" },
 ]
 
 const socialLinks = [
@@ -112,37 +125,37 @@ export default function Footer() {
 
       {/* Newsletter Section */}
       <div className="relative border-b border-white/10">
-        <div className="max-w-7xl mx-auto px-4 py-16">
+        <div className="max-w-7xl mx-auto px-4 py-12">
           <div className="max-w-4xl mx-auto text-center">
-            <div className="inline-flex items-center bg-gradient-to-r from-green-500/20 to-emerald-500/20 text-green-300 px-6 py-3 rounded-full text-sm font-bold mb-6 border border-green-500/30 backdrop-blur-sm">
+            <div className="inline-flex items-center bg-gradient-to-r from-green-500/20 to-emerald-500/20 text-green-300 px-4 py-2 rounded-full text-sm font-bold mb-4 border border-green-500/30 backdrop-blur-sm">
               <Mail className="h-4 w-4 mr-2" />
               Stay Updated with Safari Deals
             </div>
-            <h3 className="text-3xl md:text-4xl font-bold mb-4 bg-gradient-to-r from-green-400 to-emerald-400 bg-clip-text text-transparent">
+            <h3 className="text-2xl md:text-3xl font-bold mb-3 bg-gradient-to-r from-green-400 to-emerald-400 bg-clip-text text-transparent">
               Get Exclusive Safari Deals & Travel Tips
             </h3>
-            <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto leading-relaxed">
+            <p className="text-lg text-gray-300 mb-6 max-w-2xl mx-auto leading-relaxed">
               Join over <span className="text-green-400 font-semibold">10,000+</span> adventure seekers who receive our monthly newsletter with special offers, travel guides,
               and insider tips for unforgettable Uganda experiences.
             </p>
             
             {/* Stats */}
-            <div className="grid grid-cols-3 gap-6 mb-8 max-w-md mx-auto">
+            <div className="grid grid-cols-3 gap-4 mb-6 max-w-md mx-auto">
               <div className="text-center">
-                <div className="text-2xl font-bold text-green-400">500+</div>
-                <div className="text-sm text-gray-400">Happy Travelers</div>
+                <div className="text-xl font-bold text-green-400">500+</div>
+                <div className="text-xs text-gray-400">Happy Travelers</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-green-400">50+</div>
-                <div className="text-sm text-gray-400">Tour Packages</div>
+                <div className="text-xl font-bold text-green-400">50+</div>
+                <div className="text-xs text-gray-400">Tour Packages</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-green-400">4.9★</div>
-                <div className="text-sm text-gray-400">Average Rating</div>
+                <div className="text-xl font-bold text-green-400">4.9★</div>
+                <div className="text-xs text-gray-400">Average Rating</div>
               </div>
             </div>
 
-            <form onSubmit={handleNewsletterSubmit} className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
+            <form onSubmit={handleNewsletterSubmit} className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
               <div className="flex-1 relative">
                 <Input
                   type="email"
@@ -165,23 +178,23 @@ export default function Footer() {
               <Button 
                 type="submit"
                 disabled={isSubmitting}
-                className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 font-semibold px-8 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 shadow-lg hover:shadow-xl"
+                className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 font-semibold px-6 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 shadow-lg hover:shadow-xl"
               >
                 {isSubmitting ? "Subscribing..." : "Subscribe"}
               </Button>
             </form>
-            <p className="text-sm text-gray-400 mt-4">No spam, unsubscribe anytime. We respect your privacy.</p>
+            <p className="text-xs text-gray-400 mt-3">No spam, unsubscribe anytime. We respect your privacy.</p>
           </div>
         </div>
       </div>
 
       {/* Main Footer Content */}
-      <div className="relative max-w-7xl mx-auto px-4 py-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
+      <div className="relative max-w-7xl mx-auto px-4 py-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 lg:gap-8">
           {/* Company Info */}
           <div className="lg:col-span-1">
-            <Link href="/" className="flex items-center space-x-3 mb-6 group">
-              <div className="w-14 h-16 md:w-16 md:h-16 flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg overflow-hidden">
+            <Link href="/" className="flex items-center space-x-3 mb-4 group">
+              <div className="w-12 h-14 md:w-14 md:h-16 flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg overflow-hidden">
                 <img 
                   src="/logo/samba tours-01.png" 
                   alt="Samba Tours Logo" 
@@ -195,34 +208,34 @@ export default function Footer() {
                 <span className="text-white font-bold text-xl hidden">ST</span>
               </div>
               <div>
-                <h2 className="text-2xl font-bold group-hover:text-emerald-400 transition-colors">Samba Tours</h2>
-                <p className="text-sm text-gray-400">Uganda Safari Adventures</p>
+                <h2 className="text-xl font-bold group-hover:text-emerald-400 transition-colors">Samba Tours</h2>
+                <p className="text-xs text-gray-400">Uganda Safari Adventures</p>
               </div>
             </Link>
 
-            <p className="text-gray-300 mb-6 leading-relaxed">
+            <p className="text-gray-300 mb-4 leading-relaxed text-sm">
               Your trusted partner for authentic Uganda safari experiences. We create unforgettable adventures that
               connect you with Uganda's incredible wildlife and rich culture.
             </p>
 
             {/* Trust Indicators */}
-            <div className="space-y-3 mb-6">
-              <div className="flex items-center space-x-3 text-sm group">
-                <Award className="h-5 w-5 text-emerald-500 group-hover:scale-110 transition-transform" />
+            <div className="space-y-2 mb-4">
+              <div className="flex items-center space-x-2 text-xs group">
+                <Award className="h-4 w-4 text-emerald-500 group-hover:scale-110 transition-transform" />
                 <span className="group-hover:text-emerald-400 transition-colors">Licensed Tour Operator</span>
               </div>
-              <div className="flex items-center space-x-3 text-sm group">
-                <Shield className="h-5 w-5 text-emerald-500 group-hover:scale-110 transition-transform" />
+              <div className="flex items-center space-x-2 text-xs group">
+                <Shield className="h-4 w-4 text-emerald-500 group-hover:scale-110 transition-transform" />
                 <span className="group-hover:text-emerald-400 transition-colors">Fully Insured & Bonded</span>
               </div>
-              <div className="flex items-center space-x-3 text-sm group">
-                <Heart className="h-5 w-5 text-emerald-500 group-hover:scale-110 transition-transform" />
+              <div className="flex items-center space-x-2 text-xs group">
+                <Heart className="h-4 w-4 text-emerald-500 group-hover:scale-110 transition-transform" />
                 <span className="group-hover:text-emerald-400 transition-colors">98% Customer Satisfaction</span>
               </div>
             </div>
 
             {/* Social Links */}
-            <div className="flex space-x-3">
+            <div className="flex space-x-2">
               {socialLinks.map((social) => {
                 const Icon = social.icon
                 return (
@@ -234,7 +247,7 @@ export default function Footer() {
                     asChild
                   >
                     <Link href={social.href} aria-label={social.name}>
-                      <Icon className="h-5 w-5" />
+                      <Icon className="h-4 w-4" />
                     </Link>
                   </Button>
                 )
@@ -244,15 +257,15 @@ export default function Footer() {
 
           {/* Quick Links */}
           <div>
-            <h3 className="text-lg font-bold mb-6 text-green-400">Quick Links</h3>
-            <ul className="space-y-3">
+            <h3 className="text-base font-bold mb-4 text-green-400">Quick Links</h3>
+            <ul className="space-y-2">
               {quickLinks.map((link) => (
                 <li key={link.name}>
                   <Link
                     href={link.href}
-                    className="text-gray-300 hover:text-white transition-all duration-200 flex items-center group"
+                    className="text-gray-300 hover:text-white transition-all duration-200 flex items-center group text-sm"
                   >
-                    <span className="mr-2 text-lg">{link.icon}</span>
+                    <span className="mr-2 text-sm">{link.icon}</span>
                     <span className="group-hover:translate-x-1 transition-transform duration-200">{link.name}</span>
                   </Link>
                 </li>
@@ -260,17 +273,47 @@ export default function Footer() {
             </ul>
           </div>
 
+          {/* Services Offered */}
+          <div>
+            <h3 className="text-base font-bold mb-4 text-green-400">Services Offered</h3>
+            <ul className="space-y-2">
+              {services.map((service) => {
+                const Icon = service.icon
+                return (
+                  <li key={service.name}>
+                    <Link
+                      href={service.href}
+                      className="text-gray-300 hover:text-white transition-all duration-200 flex items-center group text-sm"
+                    >
+                      <Icon className="h-4 w-4 text-green-500 mr-2 flex-shrink-0 group-hover:scale-110 transition-transform" />
+                      <span className="group-hover:translate-x-1 transition-transform duration-200">{service.name}</span>
+                    </Link>
+                  </li>
+                )
+              })}
+              <li>
+                <Link
+                  href="/services"
+                  className="text-gray-300 hover:text-white transition-all duration-200 flex items-center group text-sm"
+                >
+                  <Map className="h-4 w-4 text-green-500 mr-2 flex-shrink-0 group-hover:scale-110 transition-transform" />
+                  <span className="group-hover:translate-x-1 transition-transform duration-200">View All Services</span>
+                </Link>
+              </li>
+            </ul>
+          </div>
+
           {/* Tour Categories */}
           <div>
-            <h3 className="text-lg font-bold mb-6 text-green-400">Popular Tours</h3>
-            <ul className="space-y-3">
+            <h3 className="text-base font-bold mb-4 text-green-400">Popular Tours</h3>
+            <ul className="space-y-2">
               {tourCategories.map((category) => (
                 <li key={category.name}>
                   <Link
                     href={category.href}
-                    className="text-gray-300 hover:text-white transition-all duration-200 flex items-center group"
+                    className="text-gray-300 hover:text-white transition-all duration-200 flex items-center group text-sm"
                   >
-                    <span className="mr-2 text-lg">{category.icon}</span>
+                    <span className="mr-2 text-sm">{category.icon}</span>
                     <span className="group-hover:translate-x-1 transition-transform duration-200">{category.name}</span>
                   </Link>
                 </li>
@@ -280,34 +323,34 @@ export default function Footer() {
 
           {/* Contact & Support */}
           <div>
-            <h3 className="text-lg font-bold mb-6 text-green-400">Contact & Support</h3>
+            <h3 className="text-base font-bold mb-4 text-green-400">Contact & Support</h3>
 
             {/* Contact Info */}
-            <div className="space-y-4 mb-6">
-              <div className="flex items-start space-x-3 group">
-                <MapPin className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0 group-hover:scale-110 transition-transform" />
-                <div>
+            <div className="space-y-3 mb-4">
+              <div className="flex items-start space-x-2 group">
+                <MapPin className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0 group-hover:scale-110 transition-transform" />
+                <div className="text-sm">
                   <p className="text-gray-300 group-hover:text-white transition-colors">Plot 123, Kampala Road</p>
                   <p className="text-gray-300 group-hover:text-white transition-colors">Kampala, Uganda</p>
                 </div>
               </div>
 
-              <div className="flex items-center space-x-3 group">
-                <Phone className="h-5 w-5 text-green-500 flex-shrink-0 group-hover:scale-110 transition-transform" />
-                <div>
-                  <p className="text-gray-300 group-hover:text-white transition-colors">+256 700 123 456</p>
-                  <p className="text-gray-300 group-hover:text-white transition-colors">+256 800 987 654</p>
+              <div className="flex items-center space-x-2 group">
+                <Phone className="h-4 w-4 text-green-500 flex-shrink-0 group-hover:scale-110 transition-transform" />
+                <div className="text-sm">
+                  <p className="text-gray-300 group-hover:text-white transition-colors">+256 703 267 150</p>
+                  <p className="text-gray-300 group-hover:text-white transition-colors">+256 771 023 297</p>
                 </div>
               </div>
 
-              <div className="flex items-center space-x-3 group">
-                <Mail className="h-5 w-5 text-green-500 flex-shrink-0 group-hover:scale-110 transition-transform" />
-                <p className="text-gray-300 group-hover:text-white transition-colors">info@sambatours.com</p>
+              <div className="flex items-center space-x-2 group">
+                <Mail className="h-4 w-4 text-green-500 flex-shrink-0 group-hover:scale-110 transition-transform" />
+                <p className="text-gray-300 group-hover:text-white transition-colors text-sm">sambatours256@gmail.com</p>
               </div>
 
-              <div className="flex items-center space-x-3 group">
-                <Clock className="h-5 w-5 text-green-500 flex-shrink-0 group-hover:scale-110 transition-transform" />
-                <div>
+              <div className="flex items-center space-x-2 group">
+                <Clock className="h-4 w-4 text-green-500 flex-shrink-0 group-hover:scale-110 transition-transform" />
+                <div className="text-sm">
                   <p className="text-gray-300 group-hover:text-white transition-colors">Mon - Fri: 8AM - 6PM</p>
                   <p className="text-gray-300 group-hover:text-white transition-colors">Sat - Sun: 9AM - 5PM</p>
                 </div>
@@ -319,11 +362,11 @@ export default function Footer() {
 
       {/* Bottom Bar */}
       <div className="relative border-t border-white/10">
-        <div className="max-w-7xl mx-auto px-4 py-6">
-          <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
-            <div className="flex flex-col md:flex-row items-center space-y-2 md:space-y-0 md:space-x-6 text-sm text-gray-400">
+        <div className="max-w-7xl mx-auto px-4 py-4">
+          <div className="flex flex-col md:flex-row justify-between items-center space-y-2 md:space-y-0">
+            <div className="flex flex-col md:flex-row items-center space-y-1 md:space-y-0 md:space-x-4 text-xs text-gray-400">
               <p>&copy; {new Date().getFullYear()} Samba Tours Uganda. All rights reserved.</p>
-              <div className="flex items-center space-x-4">
+              <div className="flex items-center space-x-3">
                 <Link href="/terms" className="hover:text-green-400 transition-colors">
                   Terms of Service
                 </Link>
@@ -338,9 +381,9 @@ export default function Footer() {
               </div>
             </div>
 
-            <div className="flex items-center space-x-4 text-sm text-gray-400">
+            <div className="flex items-center space-x-2 text-xs text-gray-400">
               <span>Made with</span>
-              <Heart className="h-4 w-4 text-emerald-500 animate-pulse" />
+              <Heart className="h-3 w-3 text-emerald-500 animate-pulse" />
               <span>in Uganda</span>
             </div>
           </div>

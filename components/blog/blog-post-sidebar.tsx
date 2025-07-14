@@ -34,6 +34,7 @@ interface BlogPost {
     name: string
     email: string | null
     bio: string | null
+    image?: string | null
   } | null
   tags: Array<{
     id: number
@@ -122,12 +123,19 @@ export default function BlogPostSidebar({ post }: BlogPostSidebarProps) {
           {post.author ? (
             <div className="flex items-start space-x-4">
               <div className="relative w-16 h-16 rounded-full overflow-hidden flex-shrink-0">
-                <Image
-                  src="/placeholder.svg"
-                  alt={post.author.name}
-                  fill
-                  className="object-cover"
-                />
+                {post.author.image ? (
+                  <Image
+                    src={post.author.image}
+                    alt={post.author.name}
+                    fill
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center bg-emerald-200 text-emerald-800 text-2xl font-bold rounded-full">
+                    {post.author.name
+                      ? post.author.name.split(' ').map((n: string) => n[0]).join('')
+                      : 'Author'}
+                  </div>
+                )}
               </div>
               <div>
                 <h4 className="font-semibold text-gray-900">{post.author.name}</h4>

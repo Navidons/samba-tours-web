@@ -49,12 +49,18 @@ export default function CartContent() {
             <CardContent className="p-6">
               <div className="flex flex-col md:flex-row gap-4">
                 <div className="relative w-full md:w-48 h-32 rounded-lg overflow-hidden">
-                  <Image 
-                    src={item.image || "/placeholder.svg"} 
-                    alt={item.title} 
-                    fill 
-                    className="object-cover" 
-                  />
+                  {item.image ? (
+                    <Image 
+                      src={item.image} 
+                      alt={item.title} 
+                      fill 
+                      className="object-cover" 
+                    />
+                  ) : (
+                    <div className="absolute inset-0 w-full h-full flex items-center justify-center bg-gradient-to-br from-emerald-100 to-green-50 text-emerald-700 text-base font-semibold">
+                      {item.title}
+                    </div>
+                  )}
                   <Badge className="absolute top-2 left-2 bg-emerald-500">{item.category}</Badge>
                 </div>
 

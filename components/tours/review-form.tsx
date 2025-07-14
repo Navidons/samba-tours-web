@@ -249,7 +249,7 @@ export function ReviewForm({ tourId, onSubmit, onClose }: ReviewFormProps) {
                 {images.map((image, index) => (
                   <div key={index} className="relative">
                     <img
-                      src={image || "/placeholder.svg"}
+                      src={image}
                       alt={`Upload ${index + 1}`}
                       className="w-20 h-20 object-cover rounded-lg"
                     />

@@ -147,7 +147,7 @@ export default function AnalyticsClient({ period, analyticsData }: AnalyticsClie
         totalRevenue={analyticsData.customerStats.totalRevenue}
         totalBookings={analyticsData.stats[1]?.value.replace(/,/g, '') || '0'}
         totalCustomers={analyticsData.customerStats.totalCustomers}
-        totalVisitors={analyticsData.stats[3]?.value.replace(/,/g, '') || '0'}
+
         topToursWithDetails={analyticsData.topToursWithDetails}
         revenueByMonth={analyticsData.revenueByMonth}
         bookingsByMonth={analyticsData.bookingsByMonth}

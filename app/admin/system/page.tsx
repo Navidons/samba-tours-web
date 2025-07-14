@@ -55,12 +55,7 @@ const systemStats = [
 ]
 
 const systemLogs = [
-  {
-    timestamp: "2024-06-21 14:30:25",
-    level: "INFO",
-    message: "Daily backup completed successfully",
-    component: "Backup Service",
-  },
+
   {
     timestamp: "2024-06-21 14:15:12",
     level: "WARNING",
@@ -112,12 +107,7 @@ const services = [
     uptime: "99.7%",
     lastRestart: "2024-06-12 14:20:00",
   },
-  {
-    name: "Backup Service",
-    status: "running",
-    uptime: "100%",
-    lastRestart: "2024-06-01 00:00:00",
-  },
+
 ]
 
 const getStatusColor = (status: string) => {

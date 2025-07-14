@@ -138,7 +138,7 @@ export default function BlogAuthorPage({ params }: { params: { author: string } 
   const transformedAuthor = {
     name: author.name,
     role: "Travel Writer",
-    image: author.avatar || "/placeholder.svg?height=200&width=200",
+            image: author.avatar || "",
     bio: author.bio || "Experienced travel writer with deep knowledge of Uganda's wildlife and culture.",
     expertise: ["Wildlife Safari", "Gorilla Trekking", "Photography", "Birdwatching"],
     experience: "5+ years",

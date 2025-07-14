@@ -146,13 +146,19 @@ export default function BlogSidebar({ searchQuery, onSearchChange }: BlogSidebar
             popularPosts.map((post) => (
               <Link key={post.id} href={`/blog/${post.slug}`} className="block group">
                 <div className="flex items-start space-x-4">
-                  <Image
-                    src={post.thumbnail || "/placeholder.svg"}
-                    alt={post.title}
-                    width={80}
-                    height={80}
-                    className="w-20 h-20 object-cover rounded-lg flex-shrink-0"
-                  />
+                  {post.thumbnail ? (
+                    <Image
+                      src={post.thumbnail}
+                      alt={post.title}
+                      width={80}
+                      height={80}
+                      className="w-20 h-20 object-cover rounded-lg flex-shrink-0"
+                    />
+                  ) : (
+                    <div className="w-20 h-20 flex items-center justify-center bg-gradient-to-br from-emerald-100 to-green-50 text-emerald-700 text-base font-semibold rounded-lg flex-shrink-0">
+                      {post.title}
+                    </div>
+                  )}
                   <div className="flex-1 min-w-0">
                     <h4 className="font-medium text-gray-900 group-hover:text-emerald-600 transition-colors line-clamp-2 mb-2">
                       {post.title}

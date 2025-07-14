@@ -69,8 +69,8 @@ export default function CompanyStory() {
                 </div>
                 <div className="relative h-32 rounded-xl overflow-hidden shadow-lg">
                   <Image
-                    src="/tours-attractions/tourists.jpg"
-                    alt="Happy tourists enjoying their safari experience"
+                    src="/photos/queen-elizabeth-national-park-uganda.jpg"
+                    alt="Queen Elizabeth National Park - One of our premier destinations"
                     fill
                     className="object-cover hover:scale-105 transition-transform duration-300"
                   />
@@ -79,16 +79,16 @@ export default function CompanyStory() {
               <div className="space-y-4 pt-8">
                 <div className="relative h-32 rounded-xl overflow-hidden shadow-lg">
                   <Image
-                    src="/photos/queen-elizabeth-national-park-uganda.jpg"
-                    alt="Queen Elizabeth National Park - One of our premier destinations"
+                    src="/photos/fort-portal-crater-hero.jpg"
+                    alt="Fort Portal crater lakes - Natural beauty we showcase"
                     fill
                     className="object-cover hover:scale-105 transition-transform duration-300"
                   />
                 </div>
                 <div className="relative h-48 rounded-xl overflow-hidden shadow-lg">
                   <Image
-                    src="/photos/fort-portal-crater-hero.jpg"
-                    alt="Fort Portal crater lakes - Natural beauty we showcase"
+                    src="/photos/lake-victoria-hero.jpg"
+                    alt="Lake Victoria - Uganda's largest lake"
                     fill
                     className="object-cover hover:scale-105 transition-transform duration-300"
                   />

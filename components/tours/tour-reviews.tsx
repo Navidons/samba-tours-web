@@ -168,7 +168,7 @@ export default function TourReviews({
                 <div className="flex items-start space-x-4">
                   <div className="relative w-12 h-12 rounded-full overflow-hidden flex-shrink-0">
                     <Image
-                      src={review.userImage || "/placeholder.svg"}
+                      src={review.userImage}
                       alt={review.userName}
                       fill
                       className="object-cover"
@@ -201,7 +201,7 @@ export default function TourReviews({
                         {review.images.map((image, index) => (
                           <div key={index} className="relative w-16 h-16 rounded-lg overflow-hidden">
                             <Image
-                              src={image || "/placeholder.svg"}
+                              src={image}
                               alt={`Review image ${index + 1}`}
                               fill
                               className="object-cover"

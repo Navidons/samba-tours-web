@@ -109,16 +109,25 @@ export default function FeaturedPosts() {
           >
             <div className={`${index === 0 ? "md:flex" : ""}`}>
               <div className={`relative ${index === 0 ? "md:w-1/2" : ""}`}>
-                <Image
-                  src={post.thumbnail || "/placeholder.svg"}
-                  alt={post.title}
-                  width={600}
-                  height={400}
-                  className={`w-full object-cover group-hover:scale-105 transition-transform duration-300 ${
-                    index === 0 ? "h-80 md:h-full" : "h-64"
-                  }`}
-                  priority={index === 0}
-                />
+                {post.thumbnail ? (
+                  <Image
+                    src={post.thumbnail}
+                    alt={post.title}
+                    width={600}
+                    height={400}
+                    className={`w-full object-cover group-hover:scale-105 transition-transform duration-300 ${
+                      index === 0 ? "h-80 md:h-full" : "h-64"
+                    }`}
+                  />
+                ) : (
+                  <div
+                    className={`w-full flex items-center justify-center bg-gradient-to-br from-emerald-100 to-green-50 text-emerald-700 text-xl font-semibold group-hover:scale-105 transition-transform duration-300 ${
+                      index === 0 ? "h-80 md:h-full" : "h-64"
+                    }`}
+                  >
+                    {post.title}
+                  </div>
+                )}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
                 <Badge className="absolute top-4 left-4 bg-emerald-600 text-white border-0">
                   {post.category?.name || "Uncategorized"}

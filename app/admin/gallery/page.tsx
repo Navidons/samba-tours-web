@@ -794,7 +794,7 @@ export default function AdminGalleryPage() {
     } else if (media.type === 'video' && media.thumbnail) {
       return `data:${media.thumbnail.type};base64,${media.thumbnail.data}`
     }
-    return '/placeholder.svg'
+    return ''
   }
 
   const handleApiError = (data: any, statusCode: number) => {
@@ -994,7 +994,7 @@ export default function AdminGalleryPage() {
 
   const getThumbnailUrl = (gallery: Gallery): string => {
     if (!gallery.thumbnail || !gallery.thumbnail.data || !gallery.thumbnail.type) {
-      return '/placeholder.svg'
+      return ''
     }
     return `data:${gallery.thumbnail.type};base64,${gallery.thumbnail.data}`
   }

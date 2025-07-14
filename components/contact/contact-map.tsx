@@ -123,7 +123,7 @@ export default function ContactMap() {
             <CardContent>
               {/* Interactive Map Placeholder */}
               <div className="aspect-video bg-gradient-to-br from-emerald-100 to-gray-100 rounded-lg mb-6 flex items-center justify-center relative overflow-hidden">
-                <div className="absolute inset-0 bg-[url('/placeholder.svg?height=400&width=600')] bg-cover bg-center opacity-20" />
+                {/* Removed placeholder background image */}
                 <div className="relative z-10 text-center">
                   <MapPin className="h-12 w-12 text-emerald-600 mx-auto mb-2" />
                   <p className="text-gray-700 font-medium">Interactive Map</p>

@@ -80,7 +80,7 @@ export async function GET(request: NextRequest, { params }: { params: { slug: st
       id: review.id.toString(),
       userId: review.userId?.toString() || 'anonymous',
       userName: review.reviewerName || review.user?.profile?.fullName || 'Anonymous',
-      userImage: review.userImage ? `data:image/jpeg;base64,${Buffer.from(review.userImage).toString('base64')}` : "/placeholder.svg?height=50&width=50",
+              userImage: review.userImage ? `data:image/jpeg;base64,${Buffer.from(review.userImage).toString('base64')}` : "",
       rating: review.rating,
       title: review.title || '',
       comment: review.comment,

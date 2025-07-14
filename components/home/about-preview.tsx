@@ -30,29 +30,7 @@ const achievements = [
   },
 ]
 
-const teamMembers = [
-  {
-    name: "David Mukasa",
-    role: "Founder & CEO",
-    image: "/photos/chimpanzee-bwindi-forest-impenetrable-park.jpg",
-    experience: "20+ years",
-    specialty: "Gorilla Trekking Expert",
-  },
-  {
-    name: "Sarah Namukasa",
-    role: "Operations Manager",
-    image: "/photos/queen-elizabeth-national-park-ug-kasese-hero.jpg",
-    experience: "15+ years",
-    specialty: "Cultural Tours Specialist",
-  },
-  {
-    name: "James Okello",
-    role: "Senior Safari Guide",
-    image: "/photos/uganda-monkeys.jpg",
-    experience: "12+ years",
-    specialty: "Wildlife Photography",
-  },
-]
+
 
 export default function AboutPreview() {
   return (
@@ -158,37 +136,7 @@ export default function AboutPreview() {
               ))}
             </div>
 
-            {/* Team Preview */}
-            <Card className="bg-gradient-to-br from-green-600 to-emerald-800 text-white border-0 shadow-2xl overflow-hidden">
-              <CardContent className="p-8">
-                <h3 className="text-2xl font-bold mb-6 text-center">Meet Our Expert Team</h3>
-                <div className="grid grid-cols-3 gap-4">
-                  {teamMembers.map((member, index) => (
-                    <div key={index} className="text-center group">
-                      <div className="w-20 h-20 rounded-full overflow-hidden mx-auto mb-3 border-3 border-white/30 group-hover:border-white transition-colors duration-300">
-                        <img
-                          src={member.image || "/placeholder.svg"}
-                          alt={member.name}
-                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                        />
-                      </div>
-                      <h4 className="font-bold text-sm mb-1">{member.name}</h4>
-                      <p className="text-emerald-200 text-xs mb-1">{member.role}</p>
-                      <p className="text-emerald-300 text-xs">{member.experience}</p>
-                    </div>
-                  ))}
-                </div>
-                <div className="text-center mt-6">
-                  <Button
-                    variant="outline"
-                    className="border-2 border-white text-white hover:bg-white hover:text-emerald-900 font-bold rounded-full bg-transparent"
-                    asChild
-                  >
-                    <Link href="/about#team">Meet Full Team</Link>
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
+
           </div>
         </div>
       </div>

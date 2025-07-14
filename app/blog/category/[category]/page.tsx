@@ -80,7 +80,7 @@ export default function BlogCategoryPage({ params }: { params: { category: strin
         setCategory({
           ...foundCategory,
           description: foundCategory.description || `Posts in ${foundCategory.name} category`,
-          image: "/placeholder.svg?height=400&width=1200"
+          image: ""
         })
 
         // Fetch posts by category

@@ -121,7 +121,7 @@ export default function CheckoutForm() {
 
       // Prepare confirmation data
       const confirmationData = {
-        bookingReference: result.booking?.bookingReference || bookingReference,
+        bookingReference: result.booking?.bookingReference || bookingData.bookingReference,
         customerName: customerInfo.name,
         customerEmail: customerInfo.email,
         totalAmount: total,
@@ -312,12 +312,18 @@ export default function CheckoutForm() {
               {items.map((item) => (
                 <div key={item.id} className="flex gap-3">
                   <div className="relative w-16 h-12 rounded overflow-hidden flex-shrink-0">
-                    <Image
-                      src={item.image || "/placeholder.svg"}
-                      alt={item.title}
-                      fill
-                      className="object-cover"
-                    />
+                    {item.image ? (
+                      <Image
+                        src={item.image}
+                        alt={item.title}
+                        fill
+                        className="object-cover"
+                      />
+                    ) : (
+                      <div className="absolute inset-0 w-full h-full flex items-center justify-center bg-gradient-to-br from-emerald-100 to-green-50 text-emerald-700 text-base font-semibold">
+                        {item.title}
+                      </div>
+                    )}
                   </div>
                   <div className="flex-1 min-w-0">
                     <h4 className="font-medium text-sm truncate">{item.title}</h4>

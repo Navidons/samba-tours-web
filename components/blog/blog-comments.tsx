@@ -374,10 +374,10 @@ export default function BlogComments({ postId }: BlogCommentsProps) {
               <div key={comment.id} className="border-b border-gray-200 pb-6 last:border-b-0">
                 <div className="flex items-start space-x-4">
                   <div className="relative w-10 h-10 rounded-full overflow-hidden flex-shrink-0">
-                    <Image
-                        src={comment.user?.avatar || "/placeholder.svg?height=100&width=100"}
-                        alt={comment.authorName}
-                      fill
+                                          <Image
+                         src={comment.user?.avatar || ''}
+                          alt={comment.authorName}
+                        fill
                       className="object-cover"
                     />
                   </div>
@@ -492,7 +492,7 @@ export default function BlogComments({ postId }: BlogCommentsProps) {
                           <div key={reply.id} className="flex items-start space-x-3">
                             <div className="relative w-8 h-8 rounded-full overflow-hidden flex-shrink-0">
                               <Image
-                                  src={reply.user?.avatar || "/placeholder.svg?height=100&width=100"}
+                                  src={reply.user?.avatar || ''}
                                   alt={reply.authorName}
                                 fill
                                 className="object-cover"

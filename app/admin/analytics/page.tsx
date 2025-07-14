@@ -76,8 +76,6 @@ export default async function Analytics() {
       previousBookings,
       totalCustomers,
       previousCustomers,
-      totalVisitors,
-      previousVisitors,
       topTours,
       recentBookings,
       recentReviews,
@@ -137,19 +135,7 @@ export default async function Analytics() {
         }
       }).catch(() => 0),
 
-      // Current period visitors
-      prisma.visitor.count({
-        where: {
-          firstVisitAt: { gte: startDate }
-        }
-      }).catch(() => 0),
 
-      // Previous period visitors
-      prisma.visitor.count({
-        where: {
-          firstVisitAt: { gte: previousStartDate, lt: startDate }
-        }
-      }).catch(() => 0),
 
       // Top performing tours
       prisma.booking.groupBy({
@@ -263,7 +249,6 @@ export default async function Analytics() {
 
     const bookingsChange = calculateChange(totalBookings, previousBookings)
     const customersChange = calculateChange(totalCustomers, previousCustomers)
-    const visitorsChange = calculateChange(totalVisitors, previousVisitors)
 
     // Get tour details for top tours
     const topToursWithDetails = await Promise.all(
@@ -344,12 +329,7 @@ export default async function Analytics() {
         change: `${customersChange >= 0 ? '+' : ''}${customersChange.toFixed(1)}%`,
         changeType: customersChange >= 0 ? "positive" as const : "negative" as const,
       },
-      {
-        title: "Website Visitors",
-        value: totalVisitors.toLocaleString(),
-        change: `${visitorsChange >= 0 ? '+' : ''}${visitorsChange.toFixed(1)}%`,
-        changeType: visitorsChange >= 0 ? "positive" as const : "negative" as const,
-      },
+
     ]
 
     // Convert Decimal objects to plain numbers for client components

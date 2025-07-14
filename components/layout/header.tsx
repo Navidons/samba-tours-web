@@ -9,37 +9,89 @@ import { Input } from "@/components/ui/input"
 import { Sheet, SheetContent, SheetTrigger, SheetClose } from "@/components/ui/sheet"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger, DropdownMenuItem } from "@/components/ui/dropdown-menu"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
-import { Search, Menu, ShoppingCart, Phone, Mail, ChevronDown, X, Star, Calendar, ChevronLeft, ChevronRight } from "lucide-react"
+import { Search, Menu, ShoppingCart, Phone, Mail, ChevronDown, X, Star, Calendar, Car, Plane, Hotel, Camera, Map, Users, Shield, Globe, ArrowRight } from "lucide-react"
 import { useCart } from "@/hooks/use-cart"
 
 interface TourStats {
   totalTours: number
-  featuredTours: number
-  categories: number
 }
 
-interface TourCategory {
-  id: number
-  name: string
-  slug: string
-  description: string
-  displayOrder: number
-  isActive: boolean
-}
 
-interface FeaturedTour {
-  id: number
-  title: string
-  slug: string
-  shortDescription: string
-  price: number
-  duration: string
-  featuredImage: {
-    data: string // This can be either base64 string or full data URL
-    name: string | null
-    type: string | null
-  } | null
-}
+
+
+
+const services = [
+  {
+    name: "Safari Tours",
+    description: "Wildlife safaris in Uganda's national parks",
+    icon: Camera,
+    href: "/services",
+    features: ["Big Five Game Drives", "Professional Guides", "Luxury Lodges"]
+  },
+  {
+    name: "Gorilla Trekking",
+    description: "Mountain gorilla encounters in Bwindi",
+    icon: Users,
+    href: "/services",
+    features: ["Permit Included", "Expert Trackers", "Conservation Focus"]
+  },
+  {
+    name: "Hotel Booking",
+    description: "Reserve accommodations across Uganda",
+    icon: Hotel,
+    href: "/services",
+    features: ["Luxury Lodges", "Eco-Friendly", "Prime Locations"]
+  },
+  {
+    name: "Visa Processes",
+    description: "Assistance with visa applications",
+    icon: Map,
+    href: "/services",
+    features: ["Application Support", "Documentation Help", "Fast Processing"]
+  },
+  {
+    name: "Airport Pickups",
+    description: "Reliable airport transfer services",
+    icon: Car,
+    href: "/services",
+    features: ["Meet & Greet", "Flight Monitoring", "Comfortable Vehicles"]
+  },
+  {
+    name: "Visitors Transportation",
+    description: "Comprehensive transport solutions",
+    icon: Car,
+    href: "/services",
+    features: ["Safari Vehicles", "Private Chauffeurs", "Group Transport"]
+  },
+  {
+    name: "Travel Insurance",
+    description: "Comprehensive travel protection",
+    icon: Shield,
+    href: "/services",
+    features: ["Medical Coverage", "Trip Cancellation", "24/7 Support"]
+  },
+  {
+    name: "Currency Exchange",
+    description: "Convenient currency services",
+    icon: Globe,
+    href: "/services",
+    features: ["Competitive Rates", "Multiple Currencies", "Secure Transactions"]
+  },
+  {
+    name: "Customer Tours",
+    description: "Tailored experiences for your needs",
+    icon: Map,
+    href: "/services",
+    features: ["Personalized Itineraries", "Flexible Scheduling", "Private Groups"]
+  },
+  {
+    name: "Photography Tours",
+    description: "Professional photography expeditions",
+    icon: Camera,
+    href: "/services",
+    features: ["Expert Photographers", "Specialized Equipment", "Prime Locations"]
+  }
+]
 
 export default function Header() {
   const [isScrolled, setIsScrolled] = useState(false)
@@ -50,15 +102,9 @@ export default function Header() {
   const { getItemCount } = useCart()
   const cartItems = getItemCount()
   const [tourStats, setTourStats] = useState<TourStats>({
-    totalTours: 0,
-    featuredTours: 0,
-    categories: 0
+    totalTours: 0
   })
-  const [tourCategories, setTourCategories] = useState<TourCategory[]>([])
   const [currentTourTitle, setCurrentTourTitle] = useState<string>("")
-  const [featuredTours, setFeaturedTours] = useState<FeaturedTour[]>([])
-  const [currentFeaturedTour, setCurrentFeaturedTour] = useState<FeaturedTour | null>(null)
-  const [currentTourIndex, setCurrentTourIndex] = useState(0)
   
   // Ensure component only runs on client side
   useEffect(() => {
@@ -78,17 +124,13 @@ export default function Header() {
     return () => window.removeEventListener("scroll", handleScroll)
   }, [])
 
-  // Fetch tour statistics, categories, and featured tours
+  // Fetch tour statistics
   useEffect(() => {
     if (!isClient) return
 
     const fetchTourData = async () => {
       try {
-        const [toursResponse, categoriesResponse, featuredToursResponse] = await Promise.all([
-          fetch('/api/tours?limit=1'),
-          fetch('/api/tours/categories'),
-          fetch('/api/tours?limit=4') // Fetch any tours, not just featured
-        ])
+        const toursResponse = await fetch('/api/tours?limit=1')
         
         if (toursResponse.ok) {
           const toursData = await toursResponse.json()
@@ -98,33 +140,6 @@ export default function Header() {
               totalTours: toursData.pagination.total
             }))
           }
-        }
-        
-        if (categoriesResponse.ok) {
-          const categoriesData = await categoriesResponse.json()
-          if (categoriesData.success) {
-            setTourCategories(categoriesData.categories)
-            setTourStats(prev => ({
-              ...prev,
-              categories: categoriesData.categories.length
-            }))
-          }
-        }
-
-        if (featuredToursResponse.ok) {
-          const featuredData = await featuredToursResponse.json()
-          console.log('Tours response:', featuredData)
-          if (featuredData.success && featuredData.tours.length > 0) {
-            console.log('Tours data:', featuredData.tours)
-            console.log('First tour featured image:', featuredData.tours[0]?.featuredImage)
-            setFeaturedTours(featuredData.tours)
-            setCurrentFeaturedTour(featuredData.tours[0])
-            setCurrentTourIndex(0)
-          } else {
-            console.log('No tours found or API error')
-          }
-        } else {
-          console.log('Tours API response not ok:', featuredToursResponse.status)
         }
       } catch (error) {
         console.error('Error fetching tour data:', error)
@@ -162,39 +177,12 @@ export default function Header() {
     fetchCurrentTour()
   }, [pathname, isClient])
 
-  // Auto-rotate featured tours
-  useEffect(() => {
-    if (featuredTours.length > 1) {
-      const interval = setInterval(() => {
-        nextFeaturedTour()
-      }, 5000) // Change every 5 seconds
-
-      return () => clearInterval(interval)
-    }
-  }, [featuredTours, currentTourIndex])
-
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
     if (searchQuery.trim()) {
       router.push(`/tours?search=${encodeURIComponent(searchQuery)}`)
       setIsSearchOpen(false)
       setSearchQuery("")
-    }
-  }
-
-  const nextFeaturedTour = () => {
-    if (featuredTours.length > 1) {
-      const nextIndex = (currentTourIndex + 1) % featuredTours.length
-      setCurrentTourIndex(nextIndex)
-      setCurrentFeaturedTour(featuredTours[nextIndex])
-    }
-  }
-
-  const prevFeaturedTour = () => {
-    if (featuredTours.length > 1) {
-      const prevIndex = currentTourIndex === 0 ? featuredTours.length - 1 : currentTourIndex - 1
-      setCurrentTourIndex(prevIndex)
-      setCurrentFeaturedTour(featuredTours[prevIndex])
     }
   }
 
@@ -239,16 +227,16 @@ export default function Header() {
       <div className="bg-gradient-to-r from-green-600 to-emerald-600 text-white py-2 px-4 hidden md:block">
         <div className="container mx-auto max-w-7xl flex justify-between items-center text-sm">
           <div className="flex items-center space-x-6">
-            <a href="tel:+256700123456" className="flex items-center space-x-2 hover:text-emerald-200 transition-colors">
+            <a href="tel:+256703267150" className="flex items-center space-x-2 hover:text-emerald-200 transition-colors">
               <Phone className="h-4 w-4" />
-              <span>+256 700 123 456</span>
+              <span>+256 703 267 150</span>
             </a>
             <a
-              href="mailto:info@sambatours.com"
+              href="mailto:sambatours256@gmail.com"
               className="flex items-center space-x-2 hover:text-emerald-200 transition-colors"
             >
               <Mail className="h-4 w-4" />
-              <span>info@sambatours.com</span>
+              <span>sambatours256@gmail.com</span>
             </a>
           </div>
           <div className="flex items-center space-x-4">
@@ -280,11 +268,11 @@ export default function Header() {
           <div className="flex h-16 md:h-20 items-center justify-between">
             {/* Logo */}
             <Link href="/" className="flex items-center space-x-3 group">
-              <div className="w-12 h-14 md:w-16 md:h-16 flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg overflow-hidden">
+              <div className="w-12 h-14 md:w-16 md:h-16 flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg overflow-hidden rounded-full">
                 <img 
                   src="/logo/samba tours-01.png" 
                   alt="Samba Tours Logo" 
-                  className="w-full h-full object-contain"
+                  className="w-full h-full object-contain rounded-full"
                   onError={(e) => {
                     const target = e.target as HTMLImageElement
                     target.style.display = 'none'
@@ -306,132 +294,8 @@ export default function Header() {
             {/* Desktop Navigation */}
             <nav className="hidden lg:flex items-center space-x-8">
               <NavLink href="/">Home</NavLink>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    className={`flex items-center space-x-1 font-medium transition-colors hover:text-green-600 hover:bg-green-50 ${
-                      pathname.startsWith("/tours") ? "text-green-600 bg-green-50" : "text-gray-700"
-                    }`}
-                  >
-                    <span>Tours</span>
-                    <ChevronDown className="h-4 w-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="start" className="w-[500px] p-4 grid grid-cols-2 gap-4">
-                  <div>
-                    <h4 className="font-semibold text-gray-900 px-3 mb-2">
-                      Tour Categories ({tourStats.categories})
-                    </h4>
-                    {tourCategories.length > 0 ? (
-                      tourCategories.map((category) => {
-                        const isActiveCategory = pathname.startsWith("/tours") && 
-                          new URLSearchParams(searchParams.toString()).get('category') === category.slug
-                        return (
-                          <DropdownMenuItem key={category.id} asChild>
-                            <Link
-                              href={`/tours?category=${category.slug}`}
-                              className={`flex items-center space-x-3 rounded-md p-3 leading-none no-underline outline-none transition-colors group ${
-                                isActiveCategory 
-                                  ? "bg-green-100 text-green-700 border-l-4 border-green-500" 
-                                  : "hover:bg-green-50 hover:text-green-600"
-                              }`}
-                            >
-                              <span className="text-2xl">🌍</span>
-                              <div>
-                                <div className="flex items-center">
-                                  <span className="text-sm font-medium">{category.name}</span>
-                                  {isActiveCategory && (
-                                    <Badge className="ml-2 bg-green-500 text-white text-xs">Active</Badge>
-                                  )}
-                                </div>
-                                <p className="text-xs text-gray-500 mt-1">{category.description || 'Explore amazing tours'}</p>
-                              </div>
-                            </Link>
-                          </DropdownMenuItem>
-                        )
-                      })
-                    ) : (
-                      <div className="px-3 py-2 text-sm text-gray-500">Loading categories...</div>
-                    )}
-                  </div>
-                  <div className="space-y-3">
-                    <h4 className="font-semibold text-gray-900 px-3">
-                      Featured Tours
-                    </h4>
-                    <div className="grid grid-cols-2 gap-2">
-                      {featuredTours.length > 0 ? (
-                        featuredTours.slice(0, 4).map((tour, index) => (
-                          <Link
-                            key={tour.id}
-                            href={`/tours/${tour.slug}`}
-                            className="group relative aspect-square rounded-lg overflow-hidden border border-gray-200 hover:border-emerald-300 transition-all duration-200 hover:shadow-md"
-                          >
-                            {tour.featuredImage?.data ? (
-                              <img
-                                src={tour.featuredImage.data.startsWith('data:') 
-                                  ? tour.featuredImage.data 
-                                  : `data:${tour.featuredImage.type || 'image/jpeg'};base64,${tour.featuredImage.data}`
-                                }
-                                alt={tour.title}
-                                className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
-                                onError={(e) => {
-                                  console.error('Image failed to load for tour:', tour.title)
-                                  const target = e.target as HTMLImageElement
-                                  target.style.display = 'none'
-                                  target.nextElementSibling?.classList.remove('hidden')
-                                }}
-                              />
-                            ) : null}
-                            <div className={`w-full h-full bg-gradient-to-br from-green-100 to-emerald-100 flex items-center justify-center ${tour.featuredImage?.data ? 'hidden' : ''}`}>
-                              <span className="text-2xl">🌍</span>
-                            </div>
-                            <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-colors duration-200"></div>
-                            <div className="absolute bottom-1 left-1 right-1">
-                              <p className="text-white text-xs font-semibold truncate">
-                                {tour.title}
-                              </p>
-                              <div className="flex items-center justify-between text-xs text-white/90">
-                                <span>${tour.price}</span>
-                                <span>{tour.duration}</span>
-                              </div>
-                            </div>
-                          </Link>
-                        ))
-                      ) : (
-                        // Fallback when no featured tours
-                        Array.from({ length: 4 }).map((_, index) => (
-                          <div
-                            key={index}
-                            className="group relative aspect-square rounded-lg overflow-hidden border border-gray-200 bg-gradient-to-br from-green-100 to-emerald-100 flex items-center justify-center"
-                          >
-                            <span className="text-2xl">🌍</span>
-                            <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-colors duration-200"></div>
-                            <div className="absolute bottom-1 left-1 right-1">
-                              <p className="text-white text-xs font-semibold truncate">
-                                Tour {index + 1}
-                              </p>
-                              <div className="flex items-center justify-between text-xs text-white/90">
-                                <span>Coming Soon</span>
-                                <span>3 Days</span>
-                              </div>
-                            </div>
-                          </div>
-                        ))
-                      )}
-                    </div>
-                    <Button 
-                      asChild 
-                      size="sm" 
-                      className="w-full bg-green-500 hover:bg-green-600"
-                    >
-                      <Link href="/tours">
-                        View All Tours
-                      </Link>
-                    </Button>
-                  </div>
-                </DropdownMenuContent>
-              </DropdownMenu>
+              <TourNavLink href="/tours">Tours</TourNavLink>
+              <NavLink href="/services">Services</NavLink>
               <NavLink href="/about">About</NavLink>
               <NavLink href="/gallery">Gallery</NavLink>
               <NavLink href="/blog">Blog</NavLink>
@@ -444,7 +308,7 @@ export default function Header() {
                 variant="ghost"
                 size="icon"
                 onClick={() => setIsSearchOpen(!isSearchOpen)}
-                className="text-gray-600 hover:text-green-600 hover:bg-green-50"
+                className="text-gray-600 hover:text-green-600 hover:bg-green-50 hidden lg:flex"
               >
                 <Search className="h-5 w-5" />
               </Button>
@@ -482,71 +346,31 @@ export default function Header() {
                   </Button>
                 </SheetTrigger>
                 <SheetContent side="right" className="w-[320px] p-0 flex flex-col bg-white animate-slide-in-from-right">
-                  <div className="p-4 border-b flex justify-between items-center">
+                  <div className="p-4 border-b">
                     <h2 className="text-lg font-bold text-gray-800">Menu</h2>
-                    <SheetClose asChild>
-                      <Button variant="ghost" size="icon">
-                        <X className="h-5 w-5" />
-                      </Button>
-                    </SheetClose>
                   </div>
 
                   <div className="flex-1 overflow-y-auto p-4">
                     <nav className="flex flex-col space-y-2">
                       <MobileNavLink href="/">Home</MobileNavLink>
+                      <MobileNavLink href="/tours">Tours</MobileNavLink>
 
                       <Accordion type="single" collapsible className="w-full">
-                        <AccordionItem value="tours" className="border-b-0">
-                          <AccordionTrigger
-                            className={`flex justify-between items-center w-full py-3 px-4 rounded-lg font-medium transition-colors hover:bg-gray-100 ${
-                              pathname.startsWith("/tours") ? "text-green-600 bg-green-50" : "text-gray-700"
-                            }`}
-                          >
-                            Tours
-                            {pathname.startsWith("/tours") && (
-                              <Badge className="ml-2 bg-green-500 text-white text-xs">Active</Badge>
-                            )}
+                        <AccordionItem value="services" className="border-b-0">
+                          <AccordionTrigger className="flex justify-between items-center w-full py-3 px-4 rounded-lg font-medium transition-colors hover:bg-gray-100 text-gray-700">
+                            Services
                           </AccordionTrigger>
                           <AccordionContent className="pt-2 pl-4">
                             <div className="flex flex-col space-y-1">
                               <SheetClose asChild>
                                 <Link
-                                  href="/tours"
-                                  className={`block py-2 px-4 rounded-md transition-colors ${
-                                    pathname === "/tours" 
-                                      ? "text-green-600 bg-green-50 font-medium" 
-                                      : "text-gray-600 hover:text-green-600 hover:bg-gray-100"
-                                  }`}
+                                  href="/services"
+                                  className="flex items-center space-x-3 py-2 px-4 rounded-md transition-colors text-green-600 hover:text-green-700 hover:bg-green-50 font-medium"
                                 >
-                                  All Tours
+                                  <ArrowRight className="h-4 w-4" />
+                                  <span>View All Services</span>
                                 </Link>
                               </SheetClose>
-                              {tourCategories.length > 0 ? (
-                                tourCategories.map((category) => {
-                                  const isActiveCategory = pathname.startsWith("/tours") && 
-                                    searchParams.get('category') === category.slug
-                                  return (
-                                    <SheetClose key={category.id} asChild>
-                                      <Link
-                                        href={`/tours?category=${category.slug}`}
-                                        className={`flex items-center space-x-3 py-2 px-4 rounded-md transition-colors ${
-                                          isActiveCategory 
-                                            ? "text-green-600 bg-green-50 font-medium" 
-                                            : "text-gray-600 hover:text-green-600 hover:bg-gray-100"
-                                        }`}
-                                      >
-                                        <span className="text-lg">🌍</span>
-                                        <span>{category.name}</span>
-                                        {isActiveCategory && (
-                                          <Badge className="ml-auto bg-green-500 text-white text-xs">Active</Badge>
-                                        )}
-                                      </Link>
-                                    </SheetClose>
-                                  )
-                                })
-                              ) : (
-                                <div className="py-2 px-4 text-gray-500 text-sm">Loading categories...</div>
-                              )}
                             </div>
                           </AccordionContent>
                         </AccordionItem>
@@ -581,7 +405,7 @@ export default function Header() {
 
           {/* Desktop Search Bar */}
           {isSearchOpen && (
-            <div className="absolute top-full left-0 w-full border-t bg-white py-4 shadow-lg animate-fade-in">
+            <div className="absolute top-full left-0 w-full border-t bg-white py-4 shadow-lg animate-fade-in z-50">
               <div className="container mx-auto max-w-2xl px-4">
                 <form onSubmit={handleSearch} className="flex space-x-2">
                   <Input

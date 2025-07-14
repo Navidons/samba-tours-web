@@ -77,7 +77,7 @@ export default function TourComparison({ tours, onRemoveTour, onClearAll }: Tour
 
               <div className="relative">
                 <Image
-                  src={tour.images[0] || "/placeholder.svg"}
+                  src={tour.images[0]}
                   alt={tour.title}
                   width={300}
                   height={200}

@@ -10,75 +10,92 @@ import { Play, Star, Users, ArrowRight, Award, Shield, Heart } from "lucide-reac
 const heroContent = [
   {
     id: 1,
-    title: "Experience the Magic of Uganda",
-    subtitle: "Where Every Journey Becomes a Lifetime Memory",
+    title: "Majestic Elephants of Uganda",
+    subtitle: "Witness Giants in Their Natural Habitat",
     description:
-      "Discover pristine wilderness, encounter majestic mountain gorillas, and immerse yourself in authentic African culture with Uganda's most trusted safari experts.",
-    videoUrl: "/videos/hero-section-vid-0.mp4",
-    posterUrl: "",
-    badge: "🏆 Award Winning",
+      "Experience the awe of seeing Uganda's elephants roam freely across lush savannahs and forests. Join us for unforgettable safari moments with these gentle giants.",
+    posterUrl: "/home-hero-photos/elephant.jpg",
+    badge: "🐘 Elephant Encounters",
     stats: { rating: 4.9, reviews: 2847, bookings: "5K+" },
-    cta: "Start Your Adventure",
-    secondaryCta: "Watch Our Story",
+    cta: "See Elephants",
+    secondaryCta: "Learn More",
   },
   {
     id: 2,
-    title: "Meet Mountain Gorillas Face to Face",
-    subtitle: "The Ultimate Wildlife Encounter Awaits",
+    title: "Graceful Giraffes on the Plains",
+    subtitle: "Spot Africa's Tallest Wonders",
     description:
-      "Join the exclusive few who have experienced the profound connection with mountain gorillas in their natural habitat. Limited permits available.",
-    videoUrl: "/videos/hero-section-vid-1.mp4",
-    posterUrl: "",
-    badge: "🦍 Exclusive Access",
+      "Marvel at the elegance of giraffes as they stride across Uganda's open plains. Perfect for wildlife photography and family adventures.",
+    posterUrl: "/home-hero-photos/giraffes.jpg",
+    badge: "🦒 Giraffe Safaris",
     stats: { rating: 4.8, reviews: 1892, bookings: "2.8K+" },
-    cta: "Book Gorilla Trek",
-    secondaryCta: "See Availability",
-  },
-  {
-    id: 3,
-    title: "Discover the Source of the Nile",
-    subtitle: "Where Adventure Meets History",
-    description:
-      "Experience the thrill of white water rafting, explore ancient kingdoms, and witness the mighty Nile River as it begins its journey to the Mediterranean.",
-    videoUrl: "/videos/river_nile.mp4",
-    posterUrl: "",
-    badge: "🌊 Adventure Awaits",
-    stats: { rating: 4.7, reviews: 2156, bookings: "3.2K+" },
-    cta: "Explore Nile Tours",
-    secondaryCta: "Watch Adventure",
-  },
-  {
-    id: 4,
-    title: "Coastal Wonders of Uganda",
-    subtitle: "Where Land Meets Water",
-    description:
-      "From pristine beaches to vibrant coastal communities, discover the hidden gems where Uganda's diverse landscapes meet the water's edge.",
-    videoUrl: "/videos/on-the-coast.mp4",
-    posterUrl: "",
-    badge: "🏖️ Coastal Paradise",
-    stats: { rating: 4.6, reviews: 1432, bookings: "1.8K+" },
-    cta: "Discover Coast",
+    cta: "Giraffe Tours",
     secondaryCta: "See More",
   },
   {
-    id: 5,
-    title: "Wildlife Safari Spectacular",
-    subtitle: "Nature's Greatest Show",
+    id: 3,
+    title: "Wildlife Encounters: Zebras & More",
+    subtitle: "Striking Stripes in Scenic Landscapes",
     description:
-      "Witness the incredible diversity of African wildlife in their natural habitat, from the Big Five to rare bird species in Uganda's pristine national parks.",
-    videoUrl: "/videos/hero-section-vid-2.mp4",
-    posterUrl: "",
-    badge: "🦁 Wildlife Wonder",
-    stats: { rating: 4.9, reviews: 3241, bookings: "4.1K+" },
+      "Get up close with herds of zebras and other iconic wildlife. Uganda's national parks offer a vibrant tapestry of animal life.",
+    posterUrl: "/home-hero-photos/zebras.jpg",
+    badge: "🦓 Zebra Adventures",
+    stats: { rating: 4.7, reviews: 2156, bookings: "3.2K+" },
+    cta: "Zebra Safaris",
+    secondaryCta: "Explore Now",
+  },
+  {
+    id: 4,
+    title: "Safari with Giraffes & Friends",
+    subtitle: "Discover Uganda's Diverse Wildlife",
+    description:
+      "Join a classic safari and witness giraffes, antelopes, and more in their natural environment. Perfect for explorers and nature lovers.",
+    posterUrl: "/home-hero-photos/giraffe.jpg",
+    badge: "🌿 Classic Safari",
+    stats: { rating: 4.6, reviews: 1432, bookings: "1.8K+" },
     cta: "Book Safari",
-    secondaryCta: "Watch Wildlife",
+    secondaryCta: "See Wildlife",
+  },
+  {
+    id: 5,
+    title: "Adventures with Fellow Travelers",
+    subtitle: "Create Memories with New Friends",
+    description:
+      "Travel with like-minded adventurers and experience the best of Uganda together. Group tours, cultural exchanges, and unforgettable moments await.",
+    posterUrl: "/home-hero-photos/tourists.jpg",
+    badge: "👫 Group Adventures",
+    stats: { rating: 4.9, reviews: 3241, bookings: "4.1K+" },
+    cta: "Join a Group Tour",
+    secondaryCta: "Meet Travelers",
+  },
+  {
+    id: 6,
+    title: "Women Exploring Uganda",
+    subtitle: "Empowering Journeys for Every Explorer",
+    description:
+      "Celebrate the spirit of adventure with women-led tours and safe, inspiring travel experiences across Uganda's breathtaking landscapes.",
+    posterUrl: "/home-hero-photos/woman tourist.jpg",
+    badge: "🌸 Women in Travel",
+    stats: { rating: 4.8, reviews: 1780, bookings: "2.2K+" },
+    cta: "Women’s Tours",
+    secondaryCta: "Learn More",
+  },
+  {
+    id: 7,
+    title: "Animal Kingdom Awaits",
+    subtitle: "Discover Uganda’s Rich Biodiversity",
+    description:
+      "From lions to rare birds, Uganda is a haven for animal lovers. Explore the wild and capture the beauty of Africa’s animal kingdom.",
+    posterUrl: "/home-hero-photos/animals.jpg",
+    badge: "🦁 Wildlife Wonders",
+    stats: { rating: 4.9, reviews: 2999, bookings: "3.9K+" },
+    cta: "See All Wildlife",
+    secondaryCta: "Start Exploring",
   },
 ]
 
 export default function HeroSection() {
   const [currentSlide, setCurrentSlide] = useState(0)
-  const [isVideoLoaded, setIsVideoLoaded] = useState(false)
-  const [showVideo, setShowVideo] = useState(true) // Auto-show videos by default
   const [isTransitioning, setIsTransitioning] = useState(false)
 
   useEffect(() => {
@@ -87,54 +104,25 @@ export default function HeroSection() {
       setTimeout(() => {
         setCurrentSlide((prev) => (prev + 1) % heroContent.length)
         setIsTransitioning(false)
-      }, 500) // 500ms fade transition
-    }, 15000) // Increased from 8 seconds to 15 seconds
+      }, 500)
+    }, 15000)
     return () => clearInterval(interval)
   }, [])
 
   const current = heroContent[currentSlide]
 
   return (
-    <section className="relative h-screen flex items-center justify-center overflow-hidden bg-black">
-      {/* Video/Image Background */}
+    <section className="relative h-screen flex items-center justify-center overflow-hidden">
+      {/* Image Background */}
       <div className="absolute inset-0 z-0">
-        {showVideo ? (
-          <video
-            key={current.videoUrl}
-            autoPlay
-            muted
-            loop
-            playsInline
-            className={`w-full h-full object-cover transition-opacity duration-500 ${
-              isTransitioning ? 'opacity-0' : 'opacity-100'
-            }`}
-            onLoadedData={() => setIsVideoLoaded(true)}
-            onError={() => setShowVideo(false)}
-            poster={current.posterUrl}
-          >
-            <source src={current.videoUrl} type="video/mp4" />
-            {/* Fallback to image if video fails */}
-            <Image
-              src={current.posterUrl || "/placeholder.svg"}
-              alt={current.title}
-              fill
-              priority
-              className="object-cover"
-            />
-          </video>
-        ) : (
-          <Image
-            key={current.posterUrl}
-            src={current.posterUrl || "/placeholder.svg"}
-            alt={current.title}
-            fill
-            priority
-            className={`object-cover transition-opacity duration-500 ${
-              isTransitioning ? 'opacity-0' : 'opacity-100'
-            }`}
-          />
-        )}
-
+        <Image
+          key={current.posterUrl}
+          src={current.posterUrl}
+          alt={current.title}
+          fill
+          priority
+          className={`object-cover transition-opacity duration-500 ${isTransitioning ? 'opacity-0' : 'opacity-100'}`}
+        />
         {/* Gradient Overlays */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
       </div>
@@ -151,14 +139,14 @@ export default function HeroSection() {
           </div>
 
           {/* Main Heading */}
-          <h1 className="text-5xl md:text-7xl font-bold mb-4 leading-tight text-shadow-lg">
-            <span className="block font-playfair bg-gradient-to-r from-white via-emerald-100 to-green-200 bg-clip-text text-transparent">
+          <h1 className="text-5xl md:text-7xl font-bold mb-4 leading-tight">
+            <span className="block font-playfair text-white">
               {current.title}
             </span>
           </h1>
 
           {/* Subtitle */}
-          <h2 className="text-2xl md:text-3xl text-emerald-200 font-light mb-8 tracking-wide text-shadow">
+          <h2 className="text-2xl md:text-3xl text-emerald-200 font-light mb-8 tracking-wide">
             {current.subtitle}
           </h2>
 
@@ -169,17 +157,17 @@ export default function HeroSection() {
 
           {/* Trust Indicators */}
           <div className="flex flex-wrap justify-center items-center gap-x-6 gap-y-4 mb-10">
-            <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-4 py-2 border border-white/20">
+            <div className="flex items-center gap-2 bg-black/40 rounded-full px-4 py-2">
               <Star className="w-5 h-5 text-yellow-400 fill-current" />
               <span className="font-semibold text-md">{current.stats.rating}</span>
               <span className="text-gray-300 text-sm">({current.stats.reviews} reviews)</span>
             </div>
-            <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-4 py-2 border border-white/20">
+            <div className="flex items-center gap-2 bg-black/40 rounded-full px-4 py-2">
               <Users className="w-5 h-5 text-emerald-400" />
               <span className="font-semibold text-md">{current.stats.bookings}</span>
               <span className="text-gray-300 text-sm">happy travelers</span>
             </div>
-            <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-4 py-2 border border-white/20">
+            <div className="flex items-center gap-2 bg-black/40 rounded-full px-4 py-2">
               <Shield className="w-5 h-5 text-green-400" />
               <span className="font-semibold">100%</span>
               <span className="text-gray-300 text-sm">satisfaction</span>
@@ -198,16 +186,6 @@ export default function HeroSection() {
                 {current.cta}
                 <ArrowRight className="ml-2 w-5 h-5" />
               </Link>
-            </Button>
-
-            <Button
-              size="lg"
-              variant="outline"
-              className="border-2 border-white text-white hover:bg-white hover:text-black px-8 py-6 text-lg font-bold backdrop-blur-sm bg-white/10 transition-all duration-300 rounded-full w-full sm:w-auto"
-              onClick={() => setShowVideo(!showVideo)}
-            >
-              <Play className="mr-2 w-5 h-5" />
-              {showVideo ? "Pause Video" : "Play Video"}
             </Button>
           </div>
 

@@ -379,7 +379,7 @@ export default function GalleryLightbox({
             }}
           >
             <Image
-              src={currentImage.src || "/placeholder.svg"}
+              src={currentImage.src}
               alt={currentImage.alt}
               width={1200}
               height={800}
@@ -492,7 +492,7 @@ export default function GalleryLightbox({
             onClick={() => handleThumbnailClick(index)}
           >
             <Image 
-              src={image.src || "/placeholder.svg"} 
+              src={image.src} 
               alt={image.alt} 
               fill 
               className="object-cover" 

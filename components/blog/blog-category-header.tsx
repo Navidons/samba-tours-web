@@ -30,7 +30,13 @@ export default function BlogCategoryHeader({ category }: BlogCategoryHeaderProps
 
       {/* Hero Image */}
       <div className="relative h-[50vh] overflow-hidden">
-        <Image src={category.image || "/placeholder.svg"} alt={category.name} fill className="object-cover" priority />
+        {category.image ? (
+          <Image src={category.image} alt={category.name} fill className="object-cover" priority />
+        ) : (
+          <div className="absolute inset-0 w-full h-full bg-gradient-to-br from-emerald-200 to-green-100 flex items-center justify-center">
+            <span className="text-4xl font-bold text-emerald-700 opacity-60">{category.name}</span>
+          </div>
+        )}
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/20" />
       </div>
 

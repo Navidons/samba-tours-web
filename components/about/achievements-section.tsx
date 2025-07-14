@@ -1,4 +1,3 @@
-import Image from "next/image"
 import { Card, CardContent } from "@/components/ui/card"
 import { Trophy, Star, Users, Globe, Award, Heart } from "lucide-react"
 
@@ -68,10 +67,8 @@ export default function AchievementsSection() {
           </p>
         </div>
 
-        {/* Visual Statistics */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-16">
         {/* Statistics */}
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6 mb-16">
           {statistics.map((stat, index) => (
             <div
               key={index}
@@ -84,47 +81,6 @@ export default function AchievementsSection() {
               <div className="text-xs text-gray-600">{stat.description}</div>
             </div>
           ))}
-          </div>
-          
-          {/* Achievement Images */}
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-4">
-              <div className="relative h-32 rounded-xl overflow-hidden shadow-lg">
-                <Image
-                  src="/tours-attractions/tourists (1).jpg"
-                  alt="Happy tourists on safari"
-                  fill
-                  className="object-cover hover:scale-105 transition-transform duration-300"
-                />
-              </div>
-              <div className="relative h-48 rounded-xl overflow-hidden shadow-lg">
-                <Image
-                  src="/photos/queen-elizabeth-national-park-uganda.jpg"
-                  alt="Queen Elizabeth National Park"
-                  fill
-                  className="object-cover hover:scale-105 transition-transform duration-300"
-                />
-              </div>
-            </div>
-            <div className="space-y-4 pt-8">
-              <div className="relative h-48 rounded-xl overflow-hidden shadow-lg">
-                <Image
-                  src="/tours-attractions/elephant 2.jpg"
-                  alt="Elephant in Uganda"
-                  fill
-                  className="object-cover hover:scale-105 transition-transform duration-300"
-                />
-              </div>
-              <div className="relative h-32 rounded-xl overflow-hidden shadow-lg">
-                <Image
-                  src="/photos/lake-victoria-hero.jpg"
-                  alt="Lake Victoria"
-                  fill
-                  className="object-cover hover:scale-105 transition-transform duration-300"
-                />
-              </div>
-            </div>
-          </div>
         </div>
 
         {/* Awards */}

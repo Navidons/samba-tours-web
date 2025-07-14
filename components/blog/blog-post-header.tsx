@@ -101,7 +101,13 @@ export default function BlogPostHeader({ post }: BlogPostHeaderProps) {
   return (
     <header className="relative bg-gray-800 text-white py-20 md:py-32">
       <div className="absolute inset-0">
-        <Image src={post.thumbnail || "/placeholder.svg"} alt={post.title} fill className="object-cover" priority />
+        {post.thumbnail ? (
+          <Image src={post.thumbnail} alt={post.title} fill className="object-cover" priority />
+        ) : (
+          <div className="absolute inset-0 w-full h-full bg-gradient-to-br from-emerald-200 to-green-100 flex items-center justify-center">
+            <span className="text-4xl font-bold text-emerald-700 opacity-60">{post.title}</span>
+          </div>
+        )}
         <div className="absolute inset-0 bg-gradient-to-t from-gray-900/90 via-gray-900/50 to-transparent" />
       </div>
 

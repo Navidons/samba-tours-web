@@ -10,127 +10,12 @@ import GalleryLightbox from "./gallery-lightbox"
 import { useInView } from "react-intersection-observer"
 import { galleryService } from "@/lib/gallery-service"
 
-const galleryItems = [
-  {
-    id: 1,
-    src: "/placeholder.svg?height=600&width=800",
-    alt: "Mountain gorilla family in Bwindi Forest",
-    category: "gorillas",
-    location: "Bwindi Forest",
-    title: "Mountain Gorilla Family",
-    description: "A peaceful moment with a gorilla family during our morning trek",
-    photographer: "James Okello",
-    date: "2024-03-15",
-    likes: 234,
-    views: 1250,
-    aspectRatio: "4:3",
-  },
-  {
-    id: 2,
-    src: "/placeholder.svg?height=800&width=600",
-    alt: "Murchison Falls waterfall",
-    category: "landscapes",
-    location: "Murchison Falls",
-    title: "The Power of Murchison Falls",
-    description: "The mighty Nile River cascading through the narrow gorge",
-    photographer: "Sarah Namukasa",
-    date: "2024-03-10",
-    likes: 189,
-    views: 980,
-    aspectRatio: "3:4",
-  },
-  {
-    id: 3,
-    src: "/placeholder.svg?height=600&width=900",
-    alt: "Tree-climbing lions in Queen Elizabeth National Park",
-    category: "wildlife",
-    location: "Queen Elizabeth NP",
-    title: "Tree-Climbing Lions",
-    description: "Rare behavior captured - lions resting in fig trees",
-    photographer: "Robert Tumusiime",
-    date: "2024-03-08",
-    likes: 312,
-    views: 1580,
-    aspectRatio: "3:2",
-  },
-  {
-    id: 4,
-    src: "/placeholder.svg?height=700&width=700",
-    alt: "Traditional Ugandan dancers",
-    category: "cultural",
-    location: "Multiple Regions",
-    title: "Cultural Heritage Dance",
-    description: "Traditional dancers showcasing Uganda's rich cultural heritage",
-    photographer: "Mary Atuhaire",
-    date: "2024-03-05",
-    likes: 156,
-    views: 720,
-    aspectRatio: "1:1",
-  },
-  {
-    id: 5,
-    src: "/placeholder.svg?height=500&width=800",
-    alt: "Shoebill stork in Mabamba wetlands",
-    category: "birds",
-    location: "Mabamba Wetlands",
-    title: "Majestic Shoebill Stork",
-    description: "The prehistoric-looking shoebill in its natural habitat",
-    photographer: "Grace Nakato",
-    date: "2024-03-01",
-    likes: 98,
-    views: 450,
-    aspectRatio: "8:5",
-  },
-  {
-    id: 6,
-    src: "/placeholder.svg?height=800&width=600",
-    alt: "White water rafting on the Nile",
-    category: "adventure",
-    location: "Jinja",
-    title: "Nile River Rapids",
-    description: "Adrenaline-pumping white water rafting adventure",
-    photographer: "David Mukasa",
-    date: "2024-02-28",
-    likes: 267,
-    views: 1100,
-    aspectRatio: "3:4",
-  },
-  {
-    id: 7,
-    src: "/placeholder.svg?height=600&width=1000",
-    alt: "Sunset over Lake Mburo",
-    category: "landscapes",
-    location: "Lake Mburo",
-    title: "Golden Hour at Lake Mburo",
-    description: "Breathtaking sunset reflecting on the calm waters",
-    photographer: "James Okello",
-    date: "2024-02-25",
-    likes: 445,
-    views: 2100,
-    aspectRatio: "5:3",
-  },
-  {
-    id: 8,
-    src: "/placeholder.svg?height=700&width=800",
-    alt: "Chimpanzees in Kibale Forest",
-    category: "wildlife",
-    location: "Kibale Forest",
-    title: "Chimpanzee Family",
-    description: "Playful chimpanzees swinging through the forest canopy",
-    photographer: "Sarah Namukasa",
-    date: "2024-02-20",
-    likes: 178,
-    views: 890,
-    aspectRatio: "8:7",
-  },
-]
-
 interface GalleryGridProps {
-  images?: typeof galleryItems
+  images?: any[]
   viewMode?: "grid" | "masonry"
 }
 
-export default function GalleryGrid({ images = galleryItems, viewMode = "masonry" }: GalleryGridProps) {
+export default function GalleryGrid({ images = [], viewMode = "masonry" }: GalleryGridProps) {
   const [selectedImage, setSelectedImage] = useState<number | null>(null)
   const [likedImages, setLikedImages] = useState<Set<number>>(new Set())
   const [loadedImages, setLoadedImages] = useState<Set<number>>(new Set())
@@ -228,7 +113,7 @@ export default function GalleryGrid({ images = galleryItems, viewMode = "masonry
     }
   }
 
-  const renderImageCard = (item: typeof galleryItems[0], index: number) => {
+  const renderImageCard = (item: any, index: number) => {
     // Skip rendering if image is not in visible batch
     if (!visibleImages.includes(item.id)) return null
 
@@ -249,7 +134,7 @@ export default function GalleryGrid({ images = galleryItems, viewMode = "masonry
             style={{ backgroundColor: '#f3f4f6' }} // Placeholder color
           >
             <Image
-              src={item.src || "/placeholder.svg"}
+              src={item.src}
               alt={item.alt}
               fill
               sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"

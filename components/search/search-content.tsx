@@ -192,7 +192,7 @@ export default function SearchContent({ searchParams }: SearchContentProps) {
               <Card key={tour.id} className="overflow-hidden hover:shadow-lg transition-shadow">
                 <div className="relative">
                   <Image
-                    src={tour.image || "/placeholder.svg"}
+                    src={tour.image}
                     alt={tour.title}
                     width={300}
                     height={200}

@@ -43,8 +43,6 @@ async function DashboardData() {
         yesterdayBookings,
         todayCustomers,
         yesterdayCustomers,
-        todayVisitors,
-        yesterdayVisitors,
         pendingBookings,
         recentBookings,
         recentActivity,
@@ -100,19 +98,7 @@ async function DashboardData() {
           }
         }),
 
-        // Today's visitors
-        prisma.visitor.count({
-          where: {
-            firstVisitAt: { gte: today }
-          }
-        }),
 
-        // Yesterday's visitors
-        prisma.visitor.count({
-          where: {
-            firstVisitAt: { gte: yesterday, lt: today }
-          }
-        }),
 
         // Pending bookings
         prisma.booking.count({
@@ -199,7 +185,6 @@ async function DashboardData() {
 
       const bookingsChange = calculateChange(todayBookings, yesterdayBookings)
       const customersChange = calculateChange(todayCustomers, yesterdayCustomers)
-      const visitorsChange = calculateChange(todayVisitors, yesterdayVisitors)
 
       // Get tour details for top tours
       const topToursWithDetails = await Promise.all(
@@ -256,14 +241,7 @@ async function DashboardData() {
           icon: Users,
           color: "bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200"
         },
-        {
-          title: "Website Visitors",
-          value: todayVisitors.toString(),
-          change: `${visitorsChange >= 0 ? '+' : ''}${visitorsChange.toFixed(1)}%`,
-          changeType: visitorsChange >= 0 ? "positive" as const : "negative" as const,
-          icon: Eye,
-          color: "bg-gradient-to-br from-orange-50 to-orange-100 border-orange-200"
-        },
+
       ]
 
       return {

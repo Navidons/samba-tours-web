@@ -47,15 +47,25 @@ export default function AdminSignIn() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-orange-50 to-red-50 p-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-emerald-50 to-green-50 p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <div className="flex justify-center mb-4">
-            <div className="w-16 h-16 bg-gradient-to-br from-orange-500 to-red-600 rounded-2xl flex items-center justify-center">
-              <Mountain className="h-8 w-8 text-white" />
+            <div className="w-16 h-16 flex items-center justify-center rounded-full shadow-lg overflow-hidden">
+              <img 
+                src="/logo/samba tours-01.png" 
+                alt="Samba Tours Logo" 
+                className="w-full h-full object-contain"
+                onError={(e) => {
+                  const target = e.target as HTMLImageElement
+                  target.style.display = 'none'
+                  target.nextElementSibling?.classList.remove('hidden')
+                }}
+              />
+              <span className="text-white font-bold text-xl hidden">ST</span>
             </div>
           </div>
-          <CardTitle className="text-2xl font-bold bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent">
+          <CardTitle className="text-2xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
             Admin Sign In
           </CardTitle>
           <CardDescription>Access the Samba Tours admin panel</CardDescription>
@@ -71,7 +81,7 @@ export default function AdminSignIn() {
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="Enter your email"
                 required
-                className="focus:ring-orange-500 focus:border-orange-500"
+                className="focus:ring-green-500 focus:border-green-500"
               />
             </div>
             <div className="space-y-2">
@@ -84,7 +94,7 @@ export default function AdminSignIn() {
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Enter your password"
                   required
-                  className="focus:ring-orange-500 focus:border-orange-500 pr-10"
+                  className="focus:ring-green-500 focus:border-green-500 pr-10"
                 />
                 <Button
                   type="button"
@@ -110,7 +120,7 @@ export default function AdminSignIn() {
 
             <Button
               type="submit"
-              className="w-full bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700"
+              className="w-full bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700"
               disabled={isLoading}
             >
               {isLoading ? "Signing in..." : "Sign In"}

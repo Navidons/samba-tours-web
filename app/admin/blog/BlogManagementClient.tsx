@@ -318,7 +318,7 @@ export default function BlogManagementClient() {
                 <div className="flex flex-col lg:flex-row gap-4">
                   <div className="w-full lg:w-32 h-20 lg:h-24">
                     <img
-                      src={post.thumbnail || "/placeholder.svg"}
+                      src={post.thumbnail}
                       alt={post.title}
                       className="w-full h-full object-cover rounded-lg"
                     />

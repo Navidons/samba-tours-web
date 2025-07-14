@@ -7,7 +7,6 @@ interface AnalyticsChartsProps {
   totalRevenue: number;
   totalBookings: string | number;
   totalCustomers: number;
-  totalVisitors: string | number;
   topToursWithDetails: Array<{
     name: string;
     bookings: number;
@@ -27,7 +26,6 @@ export default function AnalyticsCharts({
   totalRevenue,
   totalBookings,
   totalCustomers,
-  totalVisitors,
   topToursWithDetails,
   revenueByMonth,
   bookingsByMonth
