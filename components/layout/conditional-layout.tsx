@@ -21,7 +21,16 @@ export default function ConditionalLayout({ children }: { children: React.ReactN
   const noLayoutRoutes = ["/admin", "/signin", "/signup"]
 
   // Check if current route should exclude layout
-  const shouldExcludeLayout = isClient && noLayoutRoutes.some((route) => pathname === route || pathname.startsWith(`${route}/`))
+  const shouldExcludeLayout = isClient && noLayoutRoutes.some((route) => 
+    pathname === route || pathname.startsWith(`${route}/`)
+  )
+
+
+
+  // For admin routes, always exclude layout immediately
+  if (pathname.startsWith('/admin')) {
+    return <>{children}</>
+  }
 
   // During SSR or before hydration, render with layout to prevent flicker
   if (!isClient) {

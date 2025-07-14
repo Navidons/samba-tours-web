@@ -1,192 +1,19 @@
 "use client"
 
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, useMemo, useCallback, memo } from "react"
 import Link from "next/link"
-import { usePathname, useRouter, useSearchParams } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { Sheet, SheetContent, SheetTrigger, SheetClose } from "@/components/ui/sheet"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger, DropdownMenuItem } from "@/components/ui/dropdown-menu"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
-import { Search, Menu, ShoppingCart, Phone, Mail, ChevronDown, X, Star, Calendar, Car, Plane, Hotel, Camera, Map, Users, Shield, Globe, ArrowRight } from "lucide-react"
+import { Search, Menu, ShoppingCart, Phone, Mail, X, Star, Calendar, ArrowRight } from "lucide-react"
 import { useCart } from "@/hooks/use-cart"
+import { useTourTitle } from "@/hooks/use-tour-title"
 
-interface TourStats {
-  totalTours: number
-}
-
-
-
-
-
-const services = [
-  {
-    name: "Safari Tours",
-    description: "Wildlife safaris in Uganda's national parks",
-    icon: Camera,
-    href: "/services",
-    features: ["Big Five Game Drives", "Professional Guides", "Luxury Lodges"]
-  },
-  {
-    name: "Gorilla Trekking",
-    description: "Mountain gorilla encounters in Bwindi",
-    icon: Users,
-    href: "/services",
-    features: ["Permit Included", "Expert Trackers", "Conservation Focus"]
-  },
-  {
-    name: "Hotel Booking",
-    description: "Reserve accommodations across Uganda",
-    icon: Hotel,
-    href: "/services",
-    features: ["Luxury Lodges", "Eco-Friendly", "Prime Locations"]
-  },
-  {
-    name: "Visa Processes",
-    description: "Assistance with visa applications",
-    icon: Map,
-    href: "/services",
-    features: ["Application Support", "Documentation Help", "Fast Processing"]
-  },
-  {
-    name: "Airport Pickups",
-    description: "Reliable airport transfer services",
-    icon: Car,
-    href: "/services",
-    features: ["Meet & Greet", "Flight Monitoring", "Comfortable Vehicles"]
-  },
-  {
-    name: "Visitors Transportation",
-    description: "Comprehensive transport solutions",
-    icon: Car,
-    href: "/services",
-    features: ["Safari Vehicles", "Private Chauffeurs", "Group Transport"]
-  },
-  {
-    name: "Travel Insurance",
-    description: "Comprehensive travel protection",
-    icon: Shield,
-    href: "/services",
-    features: ["Medical Coverage", "Trip Cancellation", "24/7 Support"]
-  },
-  {
-    name: "Currency Exchange",
-    description: "Convenient currency services",
-    icon: Globe,
-    href: "/services",
-    features: ["Competitive Rates", "Multiple Currencies", "Secure Transactions"]
-  },
-  {
-    name: "Customer Tours",
-    description: "Tailored experiences for your needs",
-    icon: Map,
-    href: "/services",
-    features: ["Personalized Itineraries", "Flexible Scheduling", "Private Groups"]
-  },
-  {
-    name: "Photography Tours",
-    description: "Professional photography expeditions",
-    icon: Camera,
-    href: "/services",
-    features: ["Expert Photographers", "Specialized Equipment", "Prime Locations"]
-  }
-]
-
-export default function Header() {
-  const [isScrolled, setIsScrolled] = useState(false)
-  const [isSearchOpen, setIsSearchOpen] = useState(false)
-  const [searchQuery, setSearchQuery] = useState("")
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
-  const [isClient, setIsClient] = useState(false)
-  const { getItemCount } = useCart()
-  const cartItems = getItemCount()
-  const [tourStats, setTourStats] = useState<TourStats>({
-    totalTours: 0
-  })
-  const [currentTourTitle, setCurrentTourTitle] = useState<string>("")
-  
-  // Ensure component only runs on client side
-  useEffect(() => {
-    setIsClient(true)
-  }, [])
-
-  // Only call usePathname after ensuring we're on the client
-  const pathname = isClient ? usePathname() : ''
-  const router = useRouter()
-  const searchParams = useSearchParams()
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 10)
-    }
-    window.addEventListener("scroll", handleScroll)
-    return () => window.removeEventListener("scroll", handleScroll)
-  }, [])
-
-  // Fetch tour statistics
-  useEffect(() => {
-    if (!isClient) return
-
-    const fetchTourData = async () => {
-      try {
-        const toursResponse = await fetch('/api/tours?limit=1')
-        
-        if (toursResponse.ok) {
-          const toursData = await toursResponse.json()
-          if (toursData.success) {
-            setTourStats(prev => ({
-              ...prev,
-              totalTours: toursData.pagination.total
-            }))
-          }
-        }
-      } catch (error) {
-        console.error('Error fetching tour data:', error)
-      }
-    }
-
-    fetchTourData()
-  }, [isClient])
-
-  // Fetch current tour title if on tour detail page
-  useEffect(() => {
-    if (!isClient) return
-
-    const fetchCurrentTour = async () => {
-      if (pathname.startsWith('/tours/') && pathname !== '/tours') {
-        const tourSlug = pathname.split('/').pop()
-        if (tourSlug) {
-          try {
-            const response = await fetch(`/api/tours/${tourSlug}`)
-            if (response.ok) {
-              const data = await response.json()
-              if (data.success && data.tour) {
-                setCurrentTourTitle(data.tour.title)
-              }
-            }
-          } catch (error) {
-            console.error('Error fetching tour details:', error)
-          }
-        }
-      } else {
-        setCurrentTourTitle("")
-      }
-    }
-
-    fetchCurrentTour()
-  }, [pathname, isClient])
-
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (searchQuery.trim()) {
-      router.push(`/tours?search=${encodeURIComponent(searchQuery)}`)
-      setIsSearchOpen(false)
-      setSearchQuery("")
-    }
-  }
-
-  const NavLink = ({ href, children }: { href: string; children: React.ReactNode }) => (
+// Memoized navigation link components
+const NavLink = memo(({ href, children, pathname }: { href: string; children: React.ReactNode; pathname: string }) => (
     <Link
       href={href}
       className={`font-medium transition-colors hover:text-emerald-600 ${
@@ -195,9 +22,10 @@ export default function Header() {
     >
       {children}
     </Link>
-  )
+))
+NavLink.displayName = 'NavLink'
 
-  const TourNavLink = ({ href, children }: { href: string; children: React.ReactNode }) => (
+const TourNavLink = memo(({ href, children, pathname }: { href: string; children: React.ReactNode; pathname: string }) => (
     <Link
       href={href}
       className={`font-medium transition-colors hover:text-emerald-600 ${
@@ -206,9 +34,10 @@ export default function Header() {
     >
       {children}
     </Link>
-  )
+))
+TourNavLink.displayName = 'TourNavLink'
 
-  const MobileNavLink = ({ href, children }: { href: string; children: React.ReactNode }) => (
+const MobileNavLink = memo(({ href, children, pathname }: { href: string; children: React.ReactNode; pathname: string }) => (
     <SheetClose asChild>
       <Link
         href={href}
@@ -219,11 +48,40 @@ export default function Header() {
         {children}
       </Link>
     </SheetClose>
-  )
+))
+MobileNavLink.displayName = 'MobileNavLink'
 
-  return (
-    <>
-      {/* Top Bar */}
+// Memoized logo component
+const Logo = memo(({ currentTourTitle }: { currentTourTitle: string }) => (
+  <Link href="/" className="flex items-center space-x-3 group">
+    <div className="w-12 h-14 md:w-16 md:h-16 flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg overflow-hidden rounded-full">
+      <img 
+        src="/logo/samba tours-01.png" 
+        alt="Samba Tours Logo" 
+        className="w-full h-full object-contain rounded-full"
+        loading="eager"
+        onError={(e) => {
+          const target = e.target as HTMLImageElement
+          target.style.display = 'none'
+          target.nextElementSibling?.classList.remove('hidden')
+        }}
+      />
+      <span className="text-white font-bold text-lg md:text-xl hidden">ST</span>
+    </div>
+    <div className="hidden sm:block">
+      <h2 className="text-xl md:text-2xl font-bold text-gray-900 group-hover:text-emerald-600 transition-colors">
+        Samba Tours
+      </h2>
+      <p className="text-xs text-gray-600 -mt-1">
+        {currentTourTitle ? `Viewing: ${currentTourTitle}` : "Uganda's Premier Safari Company"}
+      </p>
+    </div>
+  </Link>
+))
+Logo.displayName = 'Logo'
+
+// Memoized top bar component
+const TopBar = memo(({ pathname }: { pathname: string }) => (
       <div className="bg-gradient-to-r from-green-600 to-emerald-600 text-white py-2 px-4 hidden md:block">
         <div className="container mx-auto max-w-7xl flex justify-between items-center text-sm">
           <div className="flex items-center space-x-6">
@@ -255,6 +113,119 @@ export default function Header() {
           </div>
         </div>
       </div>
+))
+TopBar.displayName = 'TopBar'
+
+// Memoized search bar component
+const SearchBar = memo(({ 
+  isSearchOpen, 
+  searchQuery, 
+  setSearchQuery, 
+  handleSearch, 
+  setIsSearchOpen 
+}: {
+  isSearchOpen: boolean
+  searchQuery: string
+  setSearchQuery: (query: string) => void
+  handleSearch: (e: React.FormEvent) => void
+  setIsSearchOpen: (open: boolean) => void
+}) => {
+  if (!isSearchOpen) return null
+  
+  return (
+    <div className="absolute top-full left-0 w-full border-t bg-white py-4 shadow-lg animate-fade-in z-50">
+      <div className="container mx-auto max-w-2xl px-4">
+        <form onSubmit={handleSearch} className="flex space-x-2">
+          <Input
+            placeholder="Search tours, destinations, activities..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="flex-1 border-green-300 focus:border-green-500 focus:ring-green-500"
+            autoFocus
+          />
+          <Button type="submit" className="bg-green-500 hover:bg-green-600">
+            <Search className="h-4 w-4 mr-2" /> Search
+          </Button>
+          <Button type="button" variant="outline" onClick={() => setIsSearchOpen(false)}>
+            <X className="h-4 w-4" />
+          </Button>
+        </form>
+      </div>
+    </div>
+  )
+})
+SearchBar.displayName = 'SearchBar'
+
+export default function Header() {
+  const [isScrolled, setIsScrolled] = useState(false)
+  const [isSearchOpen, setIsSearchOpen] = useState(false)
+  const [searchQuery, setSearchQuery] = useState("")
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const [isClient, setIsClient] = useState(false)
+  
+  const { getItemCount } = useCart()
+  const pathname = usePathname()
+  const router = useRouter()
+  const currentTourTitle = useTourTitle()
+
+  // Memoize cart items count to prevent unnecessary re-renders
+  const cartItems = useMemo(() => getItemCount(), [getItemCount])
+
+  // Memoize scroll handler
+  const handleScroll = useCallback(() => {
+    setIsScrolled(window.scrollY > 10)
+  }, [])
+
+  // Memoize search handler
+  const handleSearch = useCallback((e: React.FormEvent) => {
+    e.preventDefault()
+    if (searchQuery.trim()) {
+      router.push(`/tours?search=${encodeURIComponent(searchQuery)}`)
+      setIsSearchOpen(false)
+      setSearchQuery("")
+    }
+  }, [searchQuery, router])
+
+  // Ensure component only runs on client side
+  useEffect(() => {
+    setIsClient(true)
+  }, [])
+
+  // Optimized scroll listener with throttling
+  useEffect(() => {
+    if (!isClient) return
+
+    let ticking = false
+    const handleScrollThrottled = () => {
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          handleScroll()
+          ticking = false
+        })
+        ticking = true
+      }
+    }
+
+    window.addEventListener("scroll", handleScrollThrottled, { passive: true })
+    return () => window.removeEventListener("scroll", handleScrollThrottled)
+  }, [isClient, handleScroll])
+
+
+
+  // Memoize navigation items to prevent re-creation
+  const navItems = useMemo(() => [
+    { href: "/", label: "Home" },
+    { href: "/tours", label: "Tours", isTour: true },
+    { href: "/services", label: "Services" },
+    { href: "/about", label: "About" },
+    { href: "/gallery", label: "Gallery" },
+    { href: "/blog", label: "Blog" },
+    { href: "/contact", label: "Contact" }
+  ], [])
+
+  return (
+    <>
+      <TopBar pathname={pathname} />
 
       {/* Main Header */}
       <header
@@ -267,39 +238,21 @@ export default function Header() {
         <div className="container mx-auto max-w-7xl px-4">
           <div className="flex h-16 md:h-20 items-center justify-between">
             {/* Logo */}
-            <Link href="/" className="flex items-center space-x-3 group">
-              <div className="w-12 h-14 md:w-16 md:h-16 flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg overflow-hidden rounded-full">
-                <img 
-                  src="/logo/samba tours-01.png" 
-                  alt="Samba Tours Logo" 
-                  className="w-full h-full object-contain rounded-full"
-                  onError={(e) => {
-                    const target = e.target as HTMLImageElement
-                    target.style.display = 'none'
-                    target.nextElementSibling?.classList.remove('hidden')
-                  }}
-                />
-                <span className="text-white font-bold text-lg md:text-xl hidden">ST</span>
-              </div>
-              <div className="hidden sm:block">
-                <h2 className="text-xl md:text-2xl font-bold text-gray-900 group-hover:text-emerald-600 transition-colors">
-                  Samba Tours
-                </h2>
-                <p className="text-xs text-gray-600 -mt-1">
-                  {currentTourTitle ? `Viewing: ${currentTourTitle}` : "Uganda's Premier Safari Company"}
-                </p>
-              </div>
-            </Link>
+            <Logo currentTourTitle={currentTourTitle} />
 
             {/* Desktop Navigation */}
             <nav className="hidden lg:flex items-center space-x-8">
-              <NavLink href="/">Home</NavLink>
-              <TourNavLink href="/tours">Tours</TourNavLink>
-              <NavLink href="/services">Services</NavLink>
-              <NavLink href="/about">About</NavLink>
-              <NavLink href="/gallery">Gallery</NavLink>
-              <NavLink href="/blog">Blog</NavLink>
-              <NavLink href="/contact">Contact</NavLink>
+              {navItems.map((item) => 
+                item.isTour ? (
+                  <TourNavLink key={item.href} href={item.href} pathname={pathname}>
+                    {item.label}
+                  </TourNavLink>
+                ) : (
+                  <NavLink key={item.href} href={item.href} pathname={pathname}>
+                    {item.label}
+                  </NavLink>
+                )
+              )}
             </nav>
 
             {/* Right Side Actions */}
@@ -352,8 +305,11 @@ export default function Header() {
 
                   <div className="flex-1 overflow-y-auto p-4">
                     <nav className="flex flex-col space-y-2">
-                      <MobileNavLink href="/">Home</MobileNavLink>
-                      <MobileNavLink href="/tours">Tours</MobileNavLink>
+                      {navItems.map((item) => (
+                        <MobileNavLink key={item.href} href={item.href} pathname={pathname}>
+                          {item.label}
+                        </MobileNavLink>
+                      ))}
 
                       <Accordion type="single" collapsible className="w-full">
                         <AccordionItem value="services" className="border-b-0">
@@ -375,11 +331,6 @@ export default function Header() {
                           </AccordionContent>
                         </AccordionItem>
                       </Accordion>
-
-                      <MobileNavLink href="/about">About</MobileNavLink>
-                      <MobileNavLink href="/gallery">Gallery</MobileNavLink>
-                      <MobileNavLink href="/blog">Blog</MobileNavLink>
-                      <MobileNavLink href="/contact">Contact</MobileNavLink>
                     </nav>
                   </div>
 
@@ -404,27 +355,13 @@ export default function Header() {
           </div>
 
           {/* Desktop Search Bar */}
-          {isSearchOpen && (
-            <div className="absolute top-full left-0 w-full border-t bg-white py-4 shadow-lg animate-fade-in z-50">
-              <div className="container mx-auto max-w-2xl px-4">
-                <form onSubmit={handleSearch} className="flex space-x-2">
-                  <Input
-                    placeholder="Search tours, destinations, activities..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="flex-1 border-green-300 focus:border-green-500 focus:ring-green-500"
-                    autoFocus
-                  />
-                  <Button type="submit" className="bg-green-500 hover:bg-green-600">
-                    <Search className="h-4 w-4 mr-2" /> Search
-                  </Button>
-                  <Button type="button" variant="outline" onClick={() => setIsSearchOpen(false)}>
-                    <X className="h-4 w-4" />
-                  </Button>
-                </form>
-              </div>
-            </div>
-          )}
+          <SearchBar 
+            isSearchOpen={isSearchOpen}
+            searchQuery={searchQuery}
+            setSearchQuery={setSearchQuery}
+            handleSearch={handleSearch}
+            setIsSearchOpen={setIsSearchOpen}
+          />
         </div>
       </header>
     </>

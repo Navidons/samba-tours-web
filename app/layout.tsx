@@ -11,12 +11,6 @@ import ConditionalLayout from "@/components/layout/conditional-layout"
 
 import StructuredData from "@/components/seo/structured-data"
 import { generateSEOMetadata, generateOrganizationSchema, SEO_CONFIG } from "@/lib/seo"
-import dynamic from "next/dynamic"
-
-// Dynamically import SEO Monitor to prevent SSR issues
-const SEOMonitor = dynamic(() => import("@/components/seo/seo-monitor"), {
-  ssr: false
-})
 
 const inter = Inter({
   subsets: ["latin"],
@@ -120,8 +114,6 @@ export default function RootLayout({
             <UserAuthProvider>
               <CartProvider>
                 <ConditionalLayout>{children}</ConditionalLayout>
-        
-                <SEOMonitor />
                 <Toaster />
               </CartProvider>
             </UserAuthProvider>
