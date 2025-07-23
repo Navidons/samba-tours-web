@@ -1,0 +1,1092 @@
+generator client {
+  provider = "prisma-client-js"
+  seed     = "tsx prisma/seed.ts"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model UserRole {
+  id          Int       @id @default(autoincrement())
+  roleName    String    @unique @map("role_name") @db.VarChar(255)
+  description String?   @db.VarChar(255)
+  permissions Json?
+  createdAt   DateTime  @default(now()) @map("created_at")
+  profiles    Profile[]
+
+  @@map("user_roles")
+}
+
+model User {
+  id                     Int              @id @default(autoincrement())
+  email                  String           @unique @db.VarChar(255)
+  passwordHash           String?          @map("password_hash") @db.VarChar(255)
+  emailConfirmed         Boolean          @default(false) @map("email_confirmed")
+  emailVerificationToken String?          @map("email_verification_token") @db.VarChar(255)
+  passwordResetToken     String?          @map("password_reset_token") @db.VarChar(255)
+  passwordResetExpires   DateTime?        @map("password_reset_expires")
+  lastSignInAt           DateTime?        @map("last_sign_in_at")
+  failedLoginAttempts    Int              @default(0) @map("failed_login_attempts")
+  accountLockedUntil     DateTime?        @map("account_locked_until")
+  createdAt              DateTime         @default(now()) @map("created_at")
+  updatedAt              DateTime         @updatedAt @map("updated_at")
+  blogComments           BlogComment[]
+  bookings               Booking[]
+  contactInquiries       ContactInquiry[]
+  emailCampaigns         EmailCampaign[]
+  sentEmails             EmailSent[]
+  notifications          Notification[]
+  profile                Profile?
+  tourReviews            TourReview[]
+  tours                  Tour[]
+  wishlistItems          WishlistItem[]
+
+  @@index([email])
+  @@index([emailVerificationToken])
+  @@index([passwordResetToken])
+  @@map("users")
+}
+
+model Profile {
+  id           Int        @id
+  fullName     String?    @map("full_name") @db.VarChar(255)
+  firstName    String?    @map("first_name") @db.VarChar(100)
+  lastName     String?    @map("last_name") @db.VarChar(100)
+  phone        String?    @db.VarChar(50)
+  avatarData   Bytes?     @map("avatar_data")
+  avatarName   String?    @map("avatar_name") @db.VarChar(255)
+  avatarType   String?    @map("avatar_type") @db.VarChar(50)
+  avatarSize   Int?       @map("avatar_size")
+  dateOfBirth  DateTime?  @map("date_of_birth") @db.Date
+  gender       Gender?
+  nationality  String?    @db.VarChar(100)
+  country      String?    @db.VarChar(100)
+  city         String?    @db.VarChar(100)
+  address      String?    @db.Text
+  preferences  Json?
+  roleId       Int?       @default(1) @map("role_id")
+  isActive     Boolean    @default(true) @map("is_active")
+  lastActivity DateTime?  @map("last_activity")
+  createdAt    DateTime   @default(now()) @map("created_at")
+  updatedAt    DateTime   @updatedAt @map("updated_at")
+  user         User       @relation(fields: [id], references: [id], onDelete: Cascade)
+  role         UserRole?  @relation(fields: [roleId], references: [id])
+
+  @@index([roleId])
+  @@index([isActive])
+  @@index([country])
+  @@map("profiles")
+}
+
+model TourCategory {
+  id           Int      @id @default(autoincrement())
+  name         String   @unique @db.VarChar(255)
+  slug         String   @unique @db.VarChar(255)
+  description  String?  @db.Text
+  imageData    Bytes?   @map("image_data")
+  imageName    String?  @map("image_name") @db.VarChar(255)
+  imageType    String?  @map("image_type") @db.VarChar(50)
+  imageSize    Int?     @map("image_size")
+  displayOrder Int      @default(0) @map("display_order")
+  isActive     Boolean  @default(true) @map("is_active")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+  tours        Tour[]
+
+  @@index([slug])
+  @@index([isActive])
+  @@index([displayOrder])
+  @@map("tour_categories")
+}
+
+model Tour {
+  id                     Int                       @id @default(autoincrement())
+  title                  String                    @db.VarChar(255)
+  slug                   String                    @unique @db.VarChar(255)
+  description            String                    @db.Text
+  shortDescription       String                    @map("short_description") @db.VarChar(500)
+  categoryId             Int?                      @map("category_id")
+  duration               String                    @db.VarChar(100)
+  groupSize              String                    @map("group_size") @db.VarChar(100)
+  maxGroupSize           Int                       @default(12) @map("max_group_size")
+  price                  Decimal                   @db.Decimal(10, 2)
+  originalPrice          Decimal?                  @map("original_price") @db.Decimal(10, 2)
+  difficulty             Difficulty                @default(Moderate)
+  locationCountry        String                    @default("Uganda") @map("location_country") @db.VarChar(255)
+  locationRegion         String?                   @map("location_region") @db.VarChar(255)
+  locationCoordinatesLat Decimal?                  @map("location_coordinates_lat") @db.Decimal(10, 8)
+  locationCoordinatesLng Decimal?                  @map("location_coordinates_lng") @db.Decimal(11, 8)
+  featuredImageData      Bytes?                    @map("featured_image_data")
+  featuredImageName      String?                   @map("featured_image_name") @db.VarChar(255)
+  featuredImageType      String?                   @map("featured_image_type") @db.VarChar(50)
+  featuredImageSize      Int?                      @map("featured_image_size")
+  status                 TourStatus                @default(active)
+  featured               Boolean                   @default(false)
+  popular                Boolean                   @default(false)
+  isNew                  Boolean                   @default(false) @map("is_new")
+  rating                 Decimal                   @default(0.00) @db.Decimal(3, 2)
+  reviewCount            Int                       @default(0) @map("review_count")
+  viewCount              Int                       @default(0) @map("view_count")
+  bookingCount           Int                       @default(0) @map("booking_count")
+  bestTime               Json?                     @map("best_time")
+  physicalRequirements   String?                   @map("physical_requirements") @db.Text
+  whatToBring            Json?                     @map("what_to_bring")
+  createdBy              Int?                      @map("created_by")
+  createdAt              DateTime                  @default(now()) @map("created_at")
+  updatedAt              DateTime                  @updatedAt @map("updated_at")
+  bookings               Booking[]
+  bestTimes              TourBestTime[]
+  exclusions             TourExclusion[]
+  highlights             TourHighlight[]
+  images                 TourImage[]
+  inclusions             TourInclusion[]
+  itineraries            TourItinerary[]
+  physicalReqs           TourPhysicalRequirement[]
+  reviews                TourReview[]
+  category               TourCategory?             @relation(fields: [categoryId], references: [id])
+  creator                User?                     @relation(fields: [createdBy], references: [id])
+  wishlistItems          WishlistItem[]
+
+  @@index([slug])
+  @@index([status])
+  @@index([featured])
+  @@index([popular])
+  @@index([categoryId])
+  @@index([price])
+  @@index([rating])
+  @@index([createdAt])
+  @@index([createdBy], map: "tours_created_by_fkey")
+  @@map("tours")
+}
+
+model TourImage {
+  id           Int      @id @default(autoincrement())
+  tourId       Int      @map("tour_id")
+  imageData    Bytes    @map("image_data")
+  imageName    String?  @map("image_name") @db.VarChar(255)
+  imageType    String?  @map("image_type") @db.VarChar(50)
+  imageSize    Int?     @map("image_size")
+  altText      String?  @map("alt_text") @db.VarChar(255)
+  title        String?  @db.VarChar(255)
+  description  String?  @db.Text
+  isFeatured   Boolean  @default(false) @map("is_featured")
+  displayOrder Int      @default(0) @map("display_order")
+  createdAt    DateTime @default(now()) @map("created_at")
+  tour         Tour     @relation(fields: [tourId], references: [id], onDelete: Cascade)
+
+  @@index([tourId])
+  @@index([isFeatured])
+  @@index([displayOrder])
+  @@map("tour_images")
+}
+
+model TourHighlight {
+  id           Int     @id @default(autoincrement())
+  tourId       Int     @map("tour_id")
+  highlight    String  @db.VarChar(500)
+  icon         String? @db.VarChar(100)
+  displayOrder Int     @default(0) @map("display_order")
+  tour         Tour    @relation(fields: [tourId], references: [id], onDelete: Cascade)
+
+  @@index([tourId])
+  @@index([displayOrder])
+  @@map("tour_highlights")
+}
+
+model TourInclusion {
+  id           Int    @id @default(autoincrement())
+  tourId       Int    @map("tour_id")
+  item         String @db.VarChar(500)
+  category     String @default("general") @db.VarChar(100)
+  displayOrder Int    @default(0) @map("display_order")
+  tour         Tour   @relation(fields: [tourId], references: [id], onDelete: Cascade)
+
+  @@index([tourId])
+  @@index([displayOrder])
+  @@map("tour_inclusions")
+}
+
+model TourExclusion {
+  id           Int    @id @default(autoincrement())
+  tourId       Int    @map("tour_id")
+  item         String @db.VarChar(500)
+  displayOrder Int    @default(0) @map("display_order")
+  tour         Tour   @relation(fields: [tourId], references: [id], onDelete: Cascade)
+
+  @@index([tourId])
+  @@index([displayOrder])
+  @@map("tour_exclusions")
+}
+
+model TourItinerary {
+  id            Int     @id @default(autoincrement())
+  tourId        Int     @map("tour_id")
+  day           Int
+  title         String  @db.VarChar(255)
+  description   String  @db.Text
+  location      String? @db.VarChar(255)
+  activities    Json?
+  accommodation String? @db.VarChar(255)
+  meals         Json?
+  displayOrder  Int     @default(0) @map("display_order")
+  tour          Tour    @relation(fields: [tourId], references: [id], onDelete: Cascade)
+
+  @@unique([tourId, day])
+  @@index([tourId])
+  @@index([day])
+  @@map("tour_itineraries")
+}
+
+model TourBestTime {
+  id           Int     @id @default(autoincrement())
+  tourId       Int     @map("tour_id")
+  bestTimeItem String  @map("best_time_item") @db.VarChar(255)
+  description  String? @db.Text
+  displayOrder Int     @default(0) @map("display_order")
+  tour         Tour    @relation(fields: [tourId], references: [id], onDelete: Cascade)
+
+  @@index([tourId])
+  @@index([displayOrder])
+  @@map("tour_best_times")
+}
+
+model TourPhysicalRequirement {
+  id           Int    @id @default(autoincrement())
+  tourId       Int    @map("tour_id")
+  requirement  String @db.VarChar(500)
+  category     String @default("general") @db.VarChar(100)
+  displayOrder Int    @default(0) @map("display_order")
+  tour         Tour   @relation(fields: [tourId], references: [id], onDelete: Cascade)
+
+  @@index([tourId])
+  @@index([displayOrder])
+  @@map("tour_physical_requirements")
+}
+
+model BlogCategory {
+  id           Int        @id @default(autoincrement())
+  name         String     @unique @db.VarChar(255)
+  slug         String     @unique @db.VarChar(255)
+  description  String?    @db.Text
+  imageData    Bytes?     @map("image_data")
+  imageName    String?    @map("image_name") @db.VarChar(255)
+  imageType    String?    @map("image_type") @db.VarChar(50)
+  imageSize    Int?       @map("image_size")
+  displayOrder Int        @default(0) @map("display_order")
+  isActive     Boolean    @default(true) @map("is_active")
+  createdAt    DateTime   @default(now()) @map("created_at")
+  updatedAt    DateTime   @updatedAt @map("updated_at")
+  posts        BlogPost[]
+
+  @@index([slug])
+  @@index([isActive])
+  @@map("blog_categories")
+}
+
+model BlogAuthor {
+  id          Int        @id @default(autoincrement())
+  name        String     @db.VarChar(255)
+  email       String?    @db.VarChar(255)
+  bio         String?    @db.Text
+  avatarData  Bytes?     @map("avatar_data")
+  avatarName  String?    @map("avatar_name") @db.VarChar(255)
+  avatarType  String?    @map("avatar_type") @db.VarChar(50)
+  avatarSize  Int?       @map("avatar_size")
+  isActive    Boolean    @default(true) @map("is_active")
+  createdAt   DateTime   @default(now()) @map("created_at")
+  updatedAt   DateTime   @updatedAt @map("updated_at")
+  posts       BlogPost[]
+
+  @@index([name])
+  @@index([email])
+  @@index([isActive])
+  @@map("blog_authors")
+}
+
+model BlogTag {
+  id          Int                  @id @default(autoincrement())
+  name        String               @unique @db.VarChar(255)
+  slug        String               @unique @db.VarChar(255)
+  description String?              @db.Text
+  color       String               @default("#3B82F6") @db.VarChar(7)
+  createdAt   DateTime             @default(now()) @map("created_at")
+  posts       BlogPostTagMapping[]
+
+  @@index([slug])
+  @@map("blog_tags")
+}
+
+model BlogPost {
+  id              Int                  @id @default(autoincrement())
+  title           String               @db.VarChar(255)
+  slug            String               @unique @db.VarChar(255)
+  excerpt         String               @db.Text
+  content         String               @db.LongText
+  contentHtml     String?              @map("content_html") @db.LongText
+  categoryId      Int?                 @map("category_id")
+  authorId        Int?                 @map("author_id")
+  status          BlogPostStatus       @default(draft)
+  publishDate     DateTime?            @map("publish_date")
+  readTimeMinutes Int?                 @map("read_time_minutes")
+  viewCount       Int                  @default(0) @map("view_count")
+  likeCount       Int                  @default(0) @map("like_count")
+  commentCount    Int                  @default(0) @map("comment_count")
+  featured        Boolean              @default(false)
+  thumbnailData   Bytes?               @map("thumbnail_data")
+  thumbnailName   String?              @map("thumbnail_name") @db.VarChar(255)
+  thumbnailType   String?              @map("thumbnail_type") @db.VarChar(50)
+  thumbnailSize   Int?                 @map("thumbnail_size")
+  metaTitle       String?              @map("meta_title") @db.VarChar(255)
+  metaDescription String?              @map("meta_description") @db.Text
+  seoKeywords     Json?                @map("seo_keywords")
+  createdAt       DateTime             @default(now()) @map("created_at")
+  updatedAt       DateTime             @updatedAt @map("updated_at")
+  comments        BlogComment[]
+  tags            BlogPostTagMapping[]
+  author          BlogAuthor?          @relation(fields: [authorId], references: [id])
+  category        BlogCategory?        @relation(fields: [categoryId], references: [id])
+
+  @@index([slug])
+  @@index([status])
+  @@index([featured])
+  @@index([categoryId])
+  @@index([publishDate])
+  @@index([authorId])
+  @@map("blog_posts")
+}
+
+model BlogPostTagMapping {
+  postId Int      @map("post_id")
+  tagId  Int      @map("tag_id")
+  post   BlogPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  tag    BlogTag  @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([postId, tagId])
+  @@index([postId])
+  @@index([tagId])
+  @@map("blog_post_tag_mappings")
+}
+
+model BlogComment {
+  id              Int           @id @default(autoincrement())
+  postId          Int           @map("post_id")
+  userId          Int?          @map("user_id")
+  authorName      String        @map("author_name") @db.VarChar(255)
+  authorEmail     String?       @map("author_email") @db.VarChar(255)
+  content         String        @db.Text
+  parentCommentId Int?          @map("parent_comment_id")
+  status          CommentStatus @default(pending)
+  likes           Int           @default(0)
+  createdAt       DateTime      @default(now()) @map("created_at")
+  updatedAt       DateTime      @updatedAt @map("updated_at")
+  parentComment   BlogComment?  @relation("CommentReplies", fields: [parentCommentId], references: [id], onDelete: Cascade)
+  replies         BlogComment[] @relation("CommentReplies")
+  post            BlogPost      @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user            User?         @relation(fields: [userId], references: [id])
+  reports         CommentReport[]
+
+  @@index([postId])
+  @@index([status])
+  @@index([createdAt])
+  @@index([parentCommentId])
+  @@index([userId], map: "blog_comments_user_id_fkey")
+  @@map("blog_comments")
+}
+
+model CommentReport {
+  id          Int      @id @default(autoincrement())
+  commentId   Int      @map("comment_id")
+  reporterName String  @map("reporter_name") @db.VarChar(255)
+  reporterEmail String? @map("reporter_email") @db.VarChar(255)
+  reason      String   @db.Text
+  status      ReportStatus @default(pending)
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+  comment     BlogComment @relation(fields: [commentId], references: [id], onDelete: Cascade)
+
+  @@index([commentId])
+  @@index([status])
+  @@index([createdAt])
+  @@map("comment_reports")
+}
+
+model GalleryMediaCategory {
+  id          Int            @id @default(autoincrement())
+  name        String         @unique @db.VarChar(255)
+  slug        String         @unique @db.VarChar(255)
+  description String?        @db.Text
+  color       String         @default("#10B981") @db.VarChar(7)
+  createdAt   DateTime       @default(now()) @map("created_at")
+  updatedAt   DateTime       @updatedAt @map("updated_at")
+  images      GalleryImage[]
+  videos      GalleryVideo[]
+
+  @@index([slug])
+  @@map("gallery_media_categories")
+}
+
+model GalleryMediaLocation {
+  id             Int            @id @default(autoincrement())
+  name           String         @unique @db.VarChar(255)
+  slug           String         @unique @db.VarChar(255)
+  description    String?        @db.Text
+  country        String?        @db.VarChar(100)
+  region         String?        @db.VarChar(100)
+  coordinatesLat Decimal?       @map("coordinates_lat") @db.Decimal(10, 8)
+  coordinatesLng Decimal?       @map("coordinates_lng") @db.Decimal(11, 8)
+  createdAt      DateTime       @default(now()) @map("created_at")
+  updatedAt      DateTime       @updatedAt @map("updated_at")
+  images         GalleryImage[]
+  videos         GalleryVideo[]
+
+  @@index([slug])
+  @@index([country])
+  @@map("gallery_media_locations")
+}
+
+model Gallery {
+  id            Int            @id @default(autoincrement())
+  name          String         @db.VarChar(255)
+  slug          String         @unique @db.VarChar(255)
+  description   String?        @db.Text
+  featured      Boolean        @default(false)
+  thumbnailData Bytes?         @map("thumbnail_data")
+  thumbnailName String?        @map("thumbnail_name") @db.VarChar(255)
+  thumbnailType String?        @map("thumbnail_type") @db.VarChar(50)
+  thumbnailSize Int?           @map("thumbnail_size")
+  imageCount    Int            @default(0) @map("image_count")
+  videoCount    Int            @default(0) @map("video_count")
+  createdAt     DateTime       @default(now()) @map("created_at")
+  updatedAt     DateTime       @updatedAt @map("updated_at")
+  images        GalleryImage[]
+  videos        GalleryVideo[]
+
+  @@index([slug])
+  @@index([featured])
+  @@map("galleries")
+}
+
+model GalleryImage {
+  id           Int                   @id @default(autoincrement())
+  galleryId    Int?                  @map("gallery_id")
+  imageData    Bytes                 @map("image_data")
+  imageName    String?               @map("image_name") @db.VarChar(255)
+  imageType    String?               @map("image_type") @db.VarChar(50)
+  imageSize    Int?                  @map("image_size")
+  alt          String?               @db.VarChar(255)
+  title        String?               @db.VarChar(255)
+  description  String?               @db.Text
+  photographer String?               @db.VarChar(255)
+  date         DateTime?             @db.Date
+  featured     Boolean               @default(false)
+  categoryId   Int?                  @map("category_id")
+  locationId   Int?                  @map("location_id")
+  likes        Int                   @default(0)
+  views        Int                   @default(0)
+  displayOrder Int                   @default(0) @map("display_order")
+  createdAt    DateTime              @default(now()) @map("created_at")
+  updatedAt    DateTime              @updatedAt @map("updated_at")
+  category     GalleryMediaCategory? @relation(fields: [categoryId], references: [id])
+  gallery      Gallery?              @relation(fields: [galleryId], references: [id], onDelete: Cascade)
+  location     GalleryMediaLocation? @relation(fields: [locationId], references: [id])
+  imageLikes   GalleryImageLike[]
+  imageViews   GalleryImageView[]
+
+  @@index([galleryId])
+  @@index([featured])
+  @@index([categoryId])
+  @@index([locationId])
+  @@index([displayOrder])
+  @@map("gallery_images")
+}
+
+model GalleryImageLike {
+  id         Int      @id @default(autoincrement())
+  imageId    Int      @map("image_id")
+  visitorId  String   @map("visitor_id") @db.VarChar(255)
+  createdAt  DateTime @default(now()) @map("created_at")
+  image      GalleryImage @relation(fields: [imageId], references: [id], onDelete: Cascade)
+
+  @@unique([imageId, visitorId])
+  @@index([imageId])
+  @@index([visitorId])
+  @@index([createdAt])
+  @@map("gallery_image_likes")
+}
+
+model GalleryImageView {
+  id        Int      @id @default(autoincrement())
+  imageId   Int      @map("image_id")
+  visitorId String   @map("visitor_id") @db.VarChar(255)
+  viewedAt  DateTime @default(now()) @map("viewed_at")
+  image     GalleryImage @relation(fields: [imageId], references: [id], onDelete: Cascade)
+
+  @@index([imageId])
+  @@index([visitorId])
+  @@index([viewedAt])
+  @@map("gallery_image_views")
+}
+
+model GalleryVideo {
+  id            Int                   @id @default(autoincrement())
+  galleryId     Int?                  @map("gallery_id")
+  videoData     Bytes                 @map("video_data")
+  videoName     String?               @map("video_name") @db.VarChar(255)
+  videoType     String?               @map("video_type") @db.VarChar(50)
+  videoSize     Int?                  @map("video_size")
+  thumbnailData Bytes?                @map("thumbnail_data")
+  thumbnailName String?               @map("thumbnail_name") @db.VarChar(255)
+  thumbnailType String?               @map("thumbnail_type") @db.VarChar(50)
+  thumbnailSize Int?                  @map("thumbnail_size")
+  title         String?               @db.VarChar(255)
+  description   String?               @db.Text
+  duration      Int?
+  featured      Boolean               @default(false)
+  categoryId    Int?                  @map("category_id")
+  locationId    Int?                  @map("location_id")
+  photographer  String?               @db.VarChar(255)
+  likes         Int                   @default(0)
+  views         Int                   @default(0)
+  displayOrder  Int                   @default(0) @map("display_order")
+  createdAt     DateTime              @default(now()) @map("created_at")
+  category      GalleryMediaCategory? @relation(fields: [categoryId], references: [id])
+  gallery       Gallery?              @relation(fields: [galleryId], references: [id], onDelete: Cascade)
+  location      GalleryMediaLocation? @relation(fields: [locationId], references: [id])
+
+  @@index([galleryId])
+  @@index([featured])
+  @@index([categoryId])
+  @@index([locationId])
+  @@index([displayOrder])
+  @@map("gallery_videos")
+}
+
+model Customer {
+  id                     Int            @id @default(autoincrement())
+  name                   String         @db.VarChar(255)
+  email                  String         @unique @db.VarChar(255)
+  phone                  String?        @db.VarChar(50)
+  country                String?        @db.VarChar(100)
+  city                   String?        @db.VarChar(100)
+  address                String?        @db.Text
+  totalBookings          Int            @default(0) @map("total_bookings")
+  totalSpent             Decimal        @default(0.00) @map("total_spent") @db.Decimal(12, 2)
+  firstBookingDate       DateTime?      @map("first_booking_date")
+  lastBookingDate        DateTime?      @map("last_booking_date")
+  status                 CustomerStatus @default(active)
+  customerType           CustomerType   @default(new) @map("customer_type")
+  loyaltyPoints          Int            @default(0) @map("loyalty_points")
+  preferredContactMethod ContactMethod  @default(email) @map("preferred_contact_method")
+  preferredContactTime   String?        @map("preferred_contact_time") @db.VarChar(100)
+  notes                  String?        @db.Text
+  joinDate               DateTime       @default(now()) @map("join_date")
+  updatedAt              DateTime       @updatedAt @map("updated_at")
+  bookings               Booking[]
+  notifications          Notification[]
+
+  @@index([email])
+  @@index([status])
+  @@index([customerType])
+  @@index([country])
+  @@map("customers")
+}
+
+model Booking {
+  id                   Int                    @id @default(autoincrement())
+  bookingReference     String                 @unique @map("booking_reference") @db.VarChar(50)
+  tourId               Int                    @map("tour_id")
+  userId               Int?                   @map("user_id")
+  customerId           Int?                   @map("customer_id")
+  customerName         String                 @map("customer_name") @db.VarChar(255)
+  customerEmail        String                 @map("customer_email") @db.VarChar(255)
+  customerPhone        String?                @map("customer_phone") @db.VarChar(50)
+  customerCountry      String?                @map("customer_country") @db.VarChar(100)
+  startDate            DateTime               @map("start_date") @db.Date
+  endDate              DateTime               @map("end_date") @db.Date
+  guestCount           Int                    @map("guest_count")
+  totalAmount          Decimal                @map("total_amount") @db.Decimal(12, 2)
+  discountAmount       Decimal                @default(0.00) @map("discount_amount") @db.Decimal(10, 2)
+  finalAmount          Decimal                @map("final_amount") @db.Decimal(12, 2)
+  specialRequests      String?                @map("special_requests") @db.Text
+  status               BookingStatus          @default(pending)
+  paymentStatus        PaymentStatus          @default(pending) @map("payment_status")
+  cancellationReason   String?                @map("cancellation_reason") @db.Text
+  staffNotes           String?                @map("staff_notes") @db.Text
+  contactMethod        ContactMethod          @default(email) @map("contact_method")
+  preferredContactTime String?                @map("preferred_contact_time") @db.VarChar(100)
+  emailSent            Boolean                @default(false) @map("email_sent")
+  emailSentAt          DateTime?              @map("email_sent_at")
+  createdAt            DateTime               @default(now()) @map("created_at")
+  updatedAt            DateTime               @updatedAt @map("updated_at")
+  communications       BookingCommunication[]
+  guests               BookingGuest[]
+  customer             Customer?              @relation(fields: [customerId], references: [id])
+  tour                 Tour                   @relation(fields: [tourId], references: [id], onDelete: Cascade)
+  user                 User?                  @relation(fields: [userId], references: [id])
+  payments             Payment[]
+  reviews              TourReview[]
+
+  @@index([bookingReference])
+  @@index([status])
+  @@index([paymentStatus])
+  @@index([customerEmail])
+  @@index([tourId])
+  @@index([userId])
+  @@index([customerId])
+  @@index([startDate, endDate])
+  @@index([createdAt])
+  @@map("bookings")
+}
+
+model BookingGuest {
+  id                  Int      @id @default(autoincrement())
+  bookingId           Int      @map("booking_id")
+  guestName           String   @map("guest_name") @db.VarChar(255)
+  guestAge            Int?     @map("guest_age")
+  dietaryRestrictions String?  @map("dietary_restrictions") @db.Text
+  medicalConditions   String?  @map("medical_conditions") @db.Text
+  passportNumber      String?  @map("passport_number") @db.VarChar(50)
+  nationality         String?  @db.VarChar(100)
+  emergencyContact    String?  @map("emergency_contact") @db.VarChar(255)
+  createdAt           DateTime @default(now()) @map("created_at")
+  booking             Booking  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+
+  @@index([bookingId])
+  @@map("booking_guests")
+}
+
+model BookingCommunication {
+  id                Int               @id @default(autoincrement())
+  bookingId         Int               @map("booking_id")
+  communicationType CommunicationType @map("communication_type")
+  communicationDate DateTime          @default(now()) @map("communication_date")
+  staffMember       String?           @map("staff_member") @db.VarChar(255)
+  subject           String?           @map("subject") @db.VarChar(255)
+  message           String?           @db.Text
+  outcome           String?           @map("outcome") @db.VarChar(255)
+  nextFollowUpDate  DateTime?         @map("next_follow_up_date") @db.Date
+  createdAt         DateTime          @default(now()) @map("created_at")
+  booking           Booking           @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+
+  @@index([bookingId])
+  @@index([communicationDate])
+  @@index([communicationType])
+  @@map("booking_communications")
+}
+
+model TourReview {
+  id             Int          @id @default(autoincrement())
+  tourId         Int          @map("tour_id")
+  userId         Int?         @map("user_id")
+  bookingId      Int?         @map("booking_id")
+  reviewerName   String       @map("reviewer_name") @db.VarChar(255)
+  reviewerEmail  String?      @map("reviewer_email") @db.VarChar(255)
+  userImage      Bytes?       @map("user_image") @db.LongBlob
+  rating         Int          @db.TinyInt
+  title          String?      @db.VarChar(255)
+  comment        String       @db.Text
+  tourDate       DateTime?    @map("tour_date") @db.Date
+  wouldRecommend Boolean?     @map("would_recommend")
+  isVerified     Boolean      @default(false) @map("is_verified")
+  isFeatured     Boolean      @default(false) @map("is_featured")
+  helpfulCount   Int          @default(0) @map("helpful_count")
+  status         ReviewStatus @default(pending)
+  createdAt      DateTime     @default(now()) @map("created_at")
+  updatedAt      DateTime     @updatedAt @map("updated_at")
+  booking        Booking?     @relation(fields: [bookingId], references: [id])
+  tour           Tour         @relation(fields: [tourId], references: [id], onDelete: Cascade)
+  user           User?        @relation(fields: [userId], references: [id])
+
+  @@index([tourId])
+  @@index([userId])
+  @@index([rating])
+  @@index([status])
+  @@index([isVerified])
+  @@index([isFeatured])
+  @@index([createdAt])
+  @@index([bookingId], map: "tour_reviews_booking_id_fkey")
+  @@map("tour_reviews")
+}
+
+model Payment {
+  id               Int           @id @default(autoincrement())
+  bookingId        Int           @map("booking_id")
+  paymentReference String        @unique @map("payment_reference") @db.VarChar(100)
+  amount           Decimal       @db.Decimal(10, 2)
+  currency         String        @default("USD") @db.VarChar(3)
+  paymentMethod    String        @map("payment_method") @db.VarChar(100)
+  paymentProvider  String?       @map("payment_provider") @db.VarChar(100)
+  transactionId    String?       @map("transaction_id") @db.VarChar(255)
+  status           PaymentStatus
+  gatewayResponse  Json?         @map("gateway_response")
+  paymentDate      DateTime      @default(now()) @map("payment_date")
+  refundDate       DateTime?     @map("refund_date")
+  refundAmount     Decimal?      @map("refund_amount") @db.Decimal(10, 2)
+  refundReason     String?       @map("refund_reason") @db.Text
+  createdAt        DateTime      @default(now()) @map("created_at")
+  updatedAt        DateTime      @updatedAt @map("updated_at")
+  booking          Booking       @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+
+  @@index([bookingId])
+  @@index([paymentReference])
+  @@index([status])
+  @@index([paymentMethod])
+  @@index([paymentDate])
+  @@map("payments")
+}
+
+model WishlistItem {
+  userId  Int      @map("user_id")
+  tourId  Int      @map("tour_id")
+  addedAt DateTime @default(now()) @map("added_at")
+  tour    Tour     @relation(fields: [tourId], references: [id], onDelete: Cascade)
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([userId, tourId])
+  @@index([userId])
+  @@index([tourId])
+  @@index([addedAt])
+  @@map("wishlist_items")
+}
+
+model ContactInquiry {
+  id           Int           @id @default(autoincrement())
+  name         String        @db.VarChar(255)
+  email        String        @db.VarChar(255)
+  phone        String?       @db.VarChar(50)
+  subject      String?       @db.VarChar(255)
+  message      String        @db.Text
+  tourInterest String?       @map("tour_interest") @db.VarChar(255)
+  priority     Priority      @default(Normal)
+  status       InquiryStatus @default(new)
+  assignedTo   Int?          @map("assigned_to")
+  repliedAt    DateTime?     @map("replied_at")
+  createdAt    DateTime      @default(now()) @map("created_at")
+  updatedAt    DateTime      @updatedAt @map("updated_at")
+  assignedUser User?         @relation(fields: [assignedTo], references: [id])
+
+  @@index([status])
+  @@index([priority])
+  @@index([createdAt])
+  @@index([email])
+  @@index([assignedTo], map: "contact_inquiries_assigned_to_fkey")
+  @@map("contact_inquiries")
+}
+
+model NewsletterSubscriber {
+  id             Int       @id @default(autoincrement())
+  email          String    @unique @db.VarChar(255)
+  name           String?   @db.VarChar(255)
+  interests      Json?
+  isActive       Boolean   @default(true) @map("is_active")
+  source         String?   @db.VarChar(100)
+  metadata       Json?
+  subscribedAt   DateTime  @default(now()) @map("subscribed_at")
+  unsubscribedAt DateTime? @map("unsubscribed_at")
+
+  @@index([email])
+  @@index([isActive])
+  @@map("newsletter_subscribers")
+}
+
+model Visitor {
+  id               Int      @id @default(autoincrement())
+  uniqueIdentifier String   @unique @map("unique_identifier") @db.VarChar(255)
+  ipAddress        String?  @map("ip_address") @db.VarChar(45)
+  userAgent        String?  @map("user_agent") @db.Text
+  deviceType       String?  @map("device_type") @db.VarChar(50)
+  browser          String?  @db.VarChar(100)
+  operatingSystem  String?  @map("operating_system") @db.VarChar(100)
+  country          String?  @db.VarChar(100)
+  city             String?  @db.VarChar(100)
+  latitude         Decimal? @db.Decimal(10, 8)
+  longitude        Decimal? @db.Decimal(11, 8)
+  timezone         String?  @db.VarChar(50)
+  language         String?  @db.VarChar(10)
+  referrer         String?  @db.Text
+  pageVisited      String?  @map("page_visited") @db.VarChar(500)
+  isMobile         Boolean  @default(false) @map("is_mobile")
+  firstVisitAt     DateTime @default(now()) @map("first_visit_at")
+  lastVisitAt      DateTime @updatedAt @map("last_visit_at")
+  totalVisits      Int      @default(1) @map("total_visits")
+
+  @@index([uniqueIdentifier])
+  @@index([country])
+  @@index([firstVisitAt])
+  @@index([ipAddress])
+  @@map("visitors")
+}
+
+model Notification {
+  id          Int                  @id @default(autoincrement())
+  userId      Int?                 @map("user_id")
+  customerId  Int?                 @map("customer_id")
+  type        NotificationType
+  title       String               @db.VarChar(255)
+  message     String               @db.Text
+  data        Json?
+  priority    NotificationPriority @default(normal)
+  status      NotificationStatus   @default(unread)
+  readAt      DateTime?            @map("read_at")
+  sentVia     NotificationChannel  @default(in_app) @map("sent_via")
+  sentAt      DateTime?            @map("sent_at")
+  deliveredAt DateTime?            @map("delivered_at")
+  createdAt   DateTime             @default(now()) @map("created_at")
+  updatedAt   DateTime             @updatedAt @map("updated_at")
+  customer    Customer?            @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  user        User?                @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([customerId])
+  @@index([type])
+  @@index([status])
+  @@index([priority])
+  @@index([createdAt])
+  @@index([userId, status])
+  @@map("notifications")
+}
+
+model EmailTemplate {
+  id          Int             @id @default(autoincrement())
+  name        String          @unique @db.VarChar(255)
+  slug        String          @unique @db.VarChar(255)
+  description String?         @db.Text
+  subject     String          @db.VarChar(255)
+  htmlContent String          @map("html_content") @db.LongText
+  textContent String?         @map("text_content") @db.Text
+  variables   Json?
+  isActive    Boolean         @default(true) @map("is_active")
+  isSystem    Boolean         @default(false) @map("is_system")
+  createdBy   Int?            @map("created_by")
+  createdAt   DateTime        @default(now()) @map("created_at")
+  updatedAt   DateTime        @updatedAt @map("updated_at")
+  creator     EmailCampaign[]
+  sentEmails  EmailSent[]
+
+  @@index([slug])
+  @@index([isActive])
+  @@index([isSystem])
+  @@map("email_templates")
+}
+
+model EmailCampaign {
+  id              Int                 @id @default(autoincrement())
+  name            String              @db.VarChar(255)
+  description     String?             @db.Text
+  templateId      Int                 @map("template_id")
+  subject         String              @db.VarChar(255)
+  customData      Json?               @map("custom_data")
+  status          EmailCampaignStatus @default(draft)
+  scheduledAt     DateTime?           @map("scheduled_at")
+  sentAt          DateTime?           @map("sent_at")
+  totalRecipients Int                 @default(0) @map("total_recipients")
+  sentCount       Int                 @default(0) @map("sent_count")
+  failedCount     Int                 @default(0) @map("failed_count")
+  openCount       Int                 @default(0) @map("open_count")
+  clickCount      Int                 @default(0) @map("click_count")
+  createdBy       Int?                @map("created_by")
+  createdAt       DateTime            @default(now()) @map("created_at")
+  updatedAt       DateTime            @updatedAt @map("updated_at")
+  creator         User?               @relation(fields: [createdBy], references: [id])
+  template        EmailTemplate       @relation(fields: [templateId], references: [id])
+  sentEmails      EmailSent[]
+
+  @@index([templateId])
+  @@index([status])
+  @@index([scheduledAt])
+  @@index([createdAt])
+  @@index([createdBy], map: "email_campaigns_created_by_fkey")
+  @@map("email_campaigns")
+}
+
+model EmailSent {
+  id             Int            @id @default(autoincrement())
+  campaignId     Int?           @map("campaign_id")
+  templateId     Int            @map("template_id")
+  recipientEmail String         @map("recipient_email") @db.VarChar(255)
+  recipientName  String?        @map("recipient_name") @db.VarChar(255)
+  subject        String         @db.VarChar(255)
+  htmlContent    String         @map("html_content") @db.LongText
+  textContent    String?        @map("text_content") @db.Text
+  customData     Json?          @map("custom_data")
+  messageId      String?        @map("message_id") @db.VarChar(255)
+  status         EmailStatus    @default(sent)
+  sentAt         DateTime       @default(now()) @map("sent_at")
+  deliveredAt    DateTime?      @map("delivered_at")
+  openedAt       DateTime?      @map("opened_at")
+  clickedAt      DateTime?      @map("clicked_at")
+  bouncedAt      DateTime?      @map("bounced_at")
+  bounceReason   String?        @map("bounce_reason") @db.Text
+  errorMessage   String?        @map("error_message") @db.Text
+  ipAddress      String?        @map("ip_address") @db.VarChar(45)
+  userAgent      String?        @map("user_agent") @db.Text
+  createdBy      Int?           @map("created_by")
+  campaign       EmailCampaign? @relation(fields: [campaignId], references: [id])
+  creator        User?          @relation(fields: [createdBy], references: [id])
+  template       EmailTemplate  @relation(fields: [templateId], references: [id])
+
+  @@index([campaignId])
+  @@index([templateId])
+  @@index([recipientEmail])
+  @@index([status])
+  @@index([sentAt])
+  @@index([messageId])
+  @@index([createdBy], map: "emails_sent_created_by_fkey")
+  @@map("emails_sent")
+}
+
+enum Gender {
+  male
+  female
+  other
+  prefer_not_to_say
+}
+
+enum Difficulty {
+  Easy
+  Moderate
+  Challenging
+  Extreme
+}
+
+enum TourStatus {
+  active
+  draft
+  inactive
+  archived
+}
+
+enum BlogPostStatus {
+  draft
+  published
+  archived
+}
+
+enum CommentStatus {
+  pending
+  approved
+  spam
+}
+
+enum ReportStatus {
+  pending
+  reviewed
+  resolved
+  dismissed
+}
+
+enum CustomerStatus {
+  active
+  inactive
+  blocked
+}
+
+enum CustomerType {
+  regular
+  vip
+  repeat
+  new
+}
+
+enum ContactMethod {
+  email
+  phone
+  whatsapp
+}
+
+enum BookingStatus {
+  pending
+  confirmed
+  completed
+  cancelled
+  refunded
+}
+
+enum PaymentStatus {
+  pending
+  paid
+  partially_paid
+  refunded
+}
+
+enum CommunicationType {
+  email
+  phone
+  whatsapp
+  in_person
+  sms
+}
+
+enum ReviewStatus {
+  pending
+  approved
+  rejected
+}
+
+enum Priority {
+  Low
+  Normal
+  High
+  Urgent
+}
+
+enum InquiryStatus {
+  new
+  read
+  replied
+  archived
+}
+
+enum NotificationType {
+  booking_confirmation
+  booking_reminder
+  payment_received
+  payment_failed
+  tour_update
+  system_alert
+  marketing
+  review_request
+}
+
+enum NotificationPriority {
+  low
+  normal
+  high
+  urgent
+}
+
+enum NotificationStatus {
+  unread
+  read
+  archived
+}
+
+enum NotificationChannel {
+  email
+  sms
+  push
+  in_app
+}
+
+enum EmailCampaignStatus {
+  draft
+  scheduled
+  sending
+  sent
+  paused
+  cancelled
+  failed
+}
+
+enum EmailStatus {
+  pending
+  sent
+  delivered
+  opened
+  clicked
+  bounced
+  failed
+  spam
+}

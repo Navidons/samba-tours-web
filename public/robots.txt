@@ -1,0 +1,51 @@
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /signin
+Disallow: /cart/
+Disallow: /checkout/
+Disallow: /booking-confirmation/
+Disallow: /api/admin/
+Disallow: /api/test-*
+Disallow: /api/upload/
+Disallow: /api/email/
+Disallow: /api/track-visitor
+Disallow: /_next/
+Disallow: /search?*
+Disallow: *?*utm_*
+Disallow: *?*ref=*
+Disallow: *?*fbclid=*
+Disallow: *?*gclid=*
+Disallow: *.json
+Disallow: *.xml
+Disallow: /tmp/
+Disallow: /temp/
+
+# Block malicious bots
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: MJ12bot
+Disallow: /
+
+User-agent: DotBot
+Disallow: /
+
+User-agent: SemrushBot
+Disallow: /
+
+User-agent: MegaIndex.ru
+Disallow: /
+
+User-agent: BLEXBot
+Disallow: /
+
+User-agent: PetalBot
+Disallow: /
+
+# Sitemaps
+Sitemap: https://sambatours.co/sitemap.xml
+Sitemap: https://sambatours.co/sitemap.xml
+
+# Host
+Host: https://sambatours.co 
