@@ -26,6 +26,7 @@ import {
 } from "lucide-react"
 import Image from "next/image"
 import { cn } from "@/lib/utils"
+import { getEmbedUrl } from "@/lib/utils/video-utils"
 
 interface VideoPlayerProps {
   video: {
@@ -54,6 +55,8 @@ interface VideoPlayerProps {
       type: string | null
     } | null
     videoUrl: string
+    videoProvider?: string
+    videoId?: string
     featured: boolean
   }
   mode?: "inline" | "modal" | "hover-preview" | "thumbnail-only"
@@ -437,15 +440,24 @@ export default function VideoPlayer({
         <Dialog open={showModal} onOpenChange={setShowModal}>
           <DialogContent className="w-[95vw] max-w-4xl max-h-[95vh] p-0 bg-black border-0 rounded-lg overflow-hidden flex flex-col">
             <div className="relative group/video">
-              <video
-                ref={videoRef}
-                src={video.videoUrl}
-                className="w-full aspect-video"
-                controls={false}
-                autoPlay={autoPlay}
-                muted={isMuted}
-                playsInline
-              />
+              {video.videoProvider === 'youtube' || video.videoProvider === 'vimeo' ? (
+                <iframe
+                  src={getEmbedUrl(video.videoUrl) || video.videoUrl}
+                  className="w-full aspect-video"
+                  allowFullScreen
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                />
+              ) : (
+                <video
+                  ref={videoRef}
+                  src={video.videoUrl}
+                  className="w-full aspect-video"
+                  controls={false}
+                  autoPlay={autoPlay}
+                  muted={isMuted}
+                  playsInline
+                />
+              )}
               
               {/* Custom video controls */}
               <div className={cn(
@@ -659,16 +671,25 @@ export default function VideoPlayer({
   if (mode === "inline") {
     return (
       <div className={cn("relative", getSizeClasses(), className)}>
-        <video
-          ref={videoRef}
-          src={video.videoUrl}
-          className="w-full h-full rounded-xl shadow-lg"
-          poster={getThumbnailUrl()}
-          controls={showControls}
-          autoPlay={autoPlay}
-          muted={isMuted}
-          onClick={handlePlay}
-        />
+        {video.videoProvider === 'youtube' || video.videoProvider === 'vimeo' ? (
+          <iframe
+            src={getEmbedUrl(video.videoUrl) || video.videoUrl}
+            className="w-full h-full rounded-xl shadow-lg"
+            allowFullScreen
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          />
+        ) : (
+          <video
+            ref={videoRef}
+            src={video.videoUrl}
+            className="w-full h-full rounded-xl shadow-lg"
+            poster={getThumbnailUrl()}
+            controls={showControls}
+            autoPlay={autoPlay}
+            muted={isMuted}
+            onClick={handlePlay}
+          />
+        )}
         
         {!showControls && (
           <div className="absolute inset-0 flex items-center justify-center">
@@ -712,17 +733,29 @@ export default function VideoPlayer({
         />
 
         {/* Video for hover preview */}
-        <video
-          ref={videoRef}
-          src={video.videoUrl}
-          className={cn(
-            "absolute inset-0 w-full h-full object-cover transition-all duration-500",
-            isHovering ? 'opacity-100 scale-100' : 'opacity-0 scale-110'
-          )}
-          muted
-          loop
-          preload="metadata"
-        />
+        {video.videoProvider === 'youtube' || video.videoProvider === 'vimeo' ? (
+          <iframe
+            src={getEmbedUrl(video.videoUrl) || video.videoUrl}
+            className={cn(
+              "absolute inset-0 w-full h-full transition-all duration-500",
+              isHovering ? 'opacity-100 scale-100' : 'opacity-0 scale-110'
+            )}
+            allowFullScreen
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          />
+        ) : (
+          <video
+            ref={videoRef}
+            src={video.videoUrl}
+            className={cn(
+              "absolute inset-0 w-full h-full object-cover transition-all duration-500",
+              isHovering ? 'opacity-100 scale-100' : 'opacity-0 scale-110'
+            )}
+            muted
+            loop
+            preload="metadata"
+          />
+        )}
 
         {/* Gradient overlay */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
@@ -796,14 +829,23 @@ export default function VideoPlayer({
         <Dialog open={showModal} onOpenChange={setShowModal}>
           <DialogContent className="w-[95vw] max-w-4xl max-h-[95vh] p-0 bg-black border-0 rounded-lg overflow-hidden flex flex-col">
             <div className="relative group/video">
-              <video
-                src={video.videoUrl}
-                className="w-full aspect-video"
-                controls
-                autoPlay
-                muted={false}
-                playsInline
-              />
+              {video.videoProvider === 'youtube' || video.videoProvider === 'vimeo' ? (
+                <iframe
+                  src={getEmbedUrl(video.videoUrl) || video.videoUrl}
+                  className="w-full aspect-video"
+                  allowFullScreen
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                />
+              ) : (
+                <video
+                  src={video.videoUrl}
+                  className="w-full aspect-video"
+                  controls
+                  autoPlay
+                  muted={false}
+                  playsInline
+                />
+              )}
               <Button
                 variant="ghost"
                 size="sm"

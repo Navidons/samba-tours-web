@@ -530,10 +530,9 @@ model GalleryImageView {
 model GalleryVideo {
   id            Int                   @id @default(autoincrement())
   galleryId     Int?                  @map("gallery_id")
-  videoData     Bytes                 @map("video_data")
-  videoName     String?               @map("video_name") @db.VarChar(255)
-  videoType     String?               @map("video_type") @db.VarChar(50)
-  videoSize     Int?                  @map("video_size")
+  videoUrl      String                @map("video_url") @db.VarChar(500)
+  videoProvider String?               @map("video_provider") @db.VarChar(50) // youtube, vimeo, etc.
+  videoId       String?               @map("video_id") @db.VarChar(100) // YouTube video ID, etc.
   thumbnailData Bytes?                @map("thumbnail_data")
   thumbnailName String?               @map("thumbnail_name") @db.VarChar(255)
   thumbnailType String?               @map("thumbnail_type") @db.VarChar(50)
@@ -558,6 +557,7 @@ model GalleryVideo {
   @@index([categoryId])
   @@index([locationId])
   @@index([displayOrder])
+  @@index([videoProvider])
   @@map("gallery_videos")
 }
 

@@ -1,0 +1,11 @@
+# On your VPS, install MySQL:
+sudo apt update
+sudo apt install mysql-server
+
+# Create database and user:
+sudo mysql
+CREATE DATABASE samba_tours_db;
+CREATE USER 'samba_user'@'localhost' IDENTIFIED BY 'your_password';
+GRANT ALL PRIVILEGES ON samba_tours_db.* TO 'samba_user'@'localhost';
+FLUSH PRIVILEGES;
+EXIT;

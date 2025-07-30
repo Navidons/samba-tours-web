@@ -168,7 +168,8 @@ export default function AdminGalleryPage() {
   })
   const [videoUploadData, setVideoUploadData] = useState({
     galleryId: null as number | null,
-    videoFile: null as File | null,
+    videoUrl: "",
+    videoProvider: "youtube" as "youtube" | "vimeo" | "other",
     thumbnailFile: null as File | null,
     title: "",
     description: "",
@@ -666,20 +667,21 @@ export default function AdminGalleryPage() {
   }
 
   const handleVideoUpload = async () => {
-    if (!videoUploadData.galleryId || !videoUploadData.videoFile) return
+    if (!videoUploadData.galleryId || !videoUploadData.videoUrl) return
 
     try {
       setUploadProgress({
         isUploading: true,
         progress: 0,
-        currentFile: videoUploadData.videoFile.name,
+        currentFile: "Video Link",
         totalFiles: 1,
         completedFiles: 0
       })
 
       const formData = new FormData()
       formData.append('galleryId', videoUploadData.galleryId.toString())
-      formData.append('video', videoUploadData.videoFile)
+      formData.append('videoUrl', videoUploadData.videoUrl)
+      formData.append('videoProvider', videoUploadData.videoProvider)
       
       if (videoUploadData.thumbnailFile) {
         formData.append('thumbnail', videoUploadData.thumbnailFile)
@@ -691,7 +693,7 @@ export default function AdminGalleryPage() {
       if (videoUploadData.photographer) formData.append('photographer', videoUploadData.photographer)
       formData.append('featured', videoUploadData.featured.toString())
 
-      const data = await uploadWithProgress('/api/admin/gallery/videos', formData, videoUploadData.videoFile.name)
+      const data = await uploadWithProgress('/api/admin/gallery/videos', formData, "Video Link")
 
       setUploadProgress(prev => ({
         ...prev,
@@ -701,13 +703,14 @@ export default function AdminGalleryPage() {
 
       toast({
         title: "Success",
-        description: "Video uploaded successfully",
+        description: "Video added successfully",
       })
 
       setShowVideoUploadDialog(false)
       setVideoUploadData({
         galleryId: null,
-        videoFile: null,
+        videoUrl: "",
+        videoProvider: "youtube",
         thumbnailFile: null,
         title: "",
         description: "",
@@ -718,10 +721,10 @@ export default function AdminGalleryPage() {
       loadMedia()
       loadGalleries()
     } catch (err) {
-      console.error('Error uploading video:', err)
+      console.error('Error adding video:', err)
       toast({
         title: "Error",
-        description: err instanceof Error ? err.message : "Failed to upload video",
+        description: err instanceof Error ? err.message : "Failed to add video",
         variant: "destructive",
       })
     } finally {
@@ -1422,7 +1425,7 @@ export default function AdminGalleryPage() {
                 </Button>
                 <Button onClick={() => setShowVideoUploadDialog(true)} className="bg-purple-600 hover:bg-purple-700">
                   <Video className="w-4 h-4 mr-2" />
-                  Upload Video
+                  Add Video
                 </Button>
               </div>
             </div>
@@ -2364,7 +2367,7 @@ export default function AdminGalleryPage() {
       >
         <DialogContent className="sm:max-w-[500px] max-h-[80vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Upload Video</DialogTitle>
+            <DialogTitle>Add Video Link</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
             <div className="space-y-2">
@@ -2386,16 +2389,37 @@ export default function AdminGalleryPage() {
             </div>
             
             <div className="space-y-2">
-              <Label htmlFor="video-file">Video File</Label>
-              <Input
-                id="video-file"
-                type="file"
-                accept="video/*"
+              <Label htmlFor="video-provider">Video Provider</Label>
+              <select
+                id="video-provider"
+                value={videoUploadData.videoProvider}
                 onChange={(e) => setVideoUploadData(prev => ({ 
                   ...prev, 
-                  videoFile: e.target.files?.[0] || null 
+                  videoProvider: e.target.value as "youtube" | "vimeo" | "other"
+                }))}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md"
+              >
+                <option value="youtube">YouTube</option>
+                <option value="vimeo">Vimeo</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="video-url">Video URL</Label>
+              <Input
+                id="video-url"
+                type="url"
+                placeholder="https://www.youtube.com/watch?v=..."
+                value={videoUploadData.videoUrl}
+                onChange={(e) => setVideoUploadData(prev => ({ 
+                  ...prev, 
+                  videoUrl: e.target.value 
                 }))}
               />
+              <p className="text-xs text-gray-500">
+                Paste the full URL from YouTube, Vimeo, or other video platforms
+              </p>
             </div>
 
             <div className="space-y-2">
@@ -2496,17 +2520,17 @@ export default function AdminGalleryPage() {
             <Button 
               onClick={handleVideoUpload}
               className="w-full bg-purple-600 hover:bg-purple-700"
-              disabled={!videoUploadData.galleryId || !videoUploadData.videoFile || uploadProgress.isUploading}
+              disabled={!videoUploadData.galleryId || !videoUploadData.videoUrl || uploadProgress.isUploading}
             >
               {uploadProgress.isUploading ? (
                 <>
                   <LoadingSpinner className="w-4 h-4 mr-2" />
-                  Uploading...
+                  Adding...
                 </>
               ) : (
                 <>
-                  <Upload className="w-4 h-4 mr-2" />
-                  Upload Video
+                  <Video className="w-4 h-4 mr-2" />
+                  Add Video
                 </>
               )}
             </Button>

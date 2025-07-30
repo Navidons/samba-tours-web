@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { PrismaClientInitializationError, PrismaClientKnownRequestError } from "@prisma/client/runtime/library"
+import { extractVideoInfo } from "@/lib/utils/video-utils"
 
 // GET /api/admin/gallery/videos - Get all videos
 export async function GET(request: NextRequest) {
@@ -25,7 +26,7 @@ export async function GET(request: NextRequest) {
       whereClause.OR = [
         { title: { contains: search, mode: 'insensitive' } },
         { description: { contains: search, mode: 'insensitive' } },
-        { videoName: { contains: search, mode: 'insensitive' } },
+        { videoUrl: { contains: search, mode: 'insensitive' } },
         { photographer: { contains: search, mode: 'insensitive' } }
       ]
     }
@@ -78,11 +79,10 @@ export async function GET(request: NextRequest) {
       title: video.title,
       description: video.description,
       duration: video.duration,
-      videoName: video.videoName,
-      videoType: video.videoType,
-      videoSize: video.videoSize,
+      videoUrl: video.videoUrl,
+      videoProvider: video.videoProvider,
+      videoId: video.videoId,
       photographer: video.photographer,
-      date: video.date,
       featured: video.featured,
       category: video.category,
       location: video.location,
@@ -95,8 +95,7 @@ export async function GET(request: NextRequest) {
         data: video.thumbnailData.toString('base64'),
         name: video.thumbnailName,
         type: video.thumbnailType
-      } : null,
-      videoUrl: `/api/admin/gallery/videos/${video.id}/stream`
+      } : null
     }))
 
     return NextResponse.json({
@@ -147,13 +146,14 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// POST /api/admin/gallery/videos - Upload single video
+// POST /api/admin/gallery/videos - Add video link
 export async function POST(request: NextRequest) {
   try {
     const formData = await request.formData()
     
     const galleryId = parseInt(formData.get('galleryId') as string)
-    const videoFile = formData.get('video') as File
+    const videoUrl = formData.get('videoUrl') as string
+    const videoProvider = formData.get('videoProvider') as string
     const thumbnailFile = formData.get('thumbnail') as File | null
     
     if (!galleryId) {
@@ -163,9 +163,9 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    if (!videoFile) {
+    if (!videoUrl) {
       return NextResponse.json(
-        { error: 'Video file is required', success: false },
+        { error: 'Video URL is required', success: false },
         { status: 400 }
       )
     }
@@ -210,8 +210,11 @@ export async function POST(request: NextRequest) {
       return null
     }
 
+    // Extract video information
+    const videoInfo = extractVideoInfo(videoUrl)
+    
     // Get metadata
-    const title = formData.get('title') as string || videoFile.name.replace(/\.[^/.]+$/, "").replace(/[-_]/g, " ")
+    const title = formData.get('title') as string || `Video from ${videoInfo.provider}`
     const description = formData.get('description') as string || null
     const durationRaw = formData.get('duration') as string || null
     const duration = parseDurationToSeconds(durationRaw)
@@ -219,9 +222,6 @@ export async function POST(request: NextRequest) {
     const locationId = formData.get('locationId') ? parseInt(formData.get('locationId') as string) : null
     const photographer = formData.get('photographer') as string || null
     const featured = formData.get('featured') === 'true'
-
-    // Process video
-    const videoBuffer = Buffer.from(await videoFile.arrayBuffer())
 
     // Process thumbnail if provided
     let thumbnailData = null
@@ -252,10 +252,9 @@ export async function POST(request: NextRequest) {
         gallery: {
           connect: { id: galleryId }
         },
-        videoData: videoBuffer,
-        videoName: videoFile.name,
-        videoType: videoFile.type,
-        videoSize: videoFile.size,
+        videoUrl,
+        videoProvider: videoInfo.provider,
+        videoId: videoInfo.videoId,
         title,
         description,
         duration,
@@ -311,9 +310,9 @@ export async function POST(request: NextRequest) {
       title: video.title,
       description: video.description,
       duration: video.duration,
-      videoName: video.videoName,
-      videoType: video.videoType,
-      videoSize: video.videoSize,
+      videoUrl: video.videoUrl,
+      videoProvider: video.videoProvider,
+      videoId: video.videoId,
       photographer: video.photographer,
       featured: video.featured,
       category: video.category,
@@ -327,12 +326,11 @@ export async function POST(request: NextRequest) {
         data: Buffer.from(thumbnailData).toString('base64'),
         name: thumbnailName,
         type: thumbnailType
-      } : null,
-      videoUrl: `/api/admin/gallery/videos/${video.id}/stream`
+      } : null
     }
 
     return NextResponse.json({
-      message: 'Video uploaded successfully',
+      message: 'Video added successfully',
       video: transformedVideo,
       success: true
     })
