@@ -9,9 +9,7 @@ import TourReviews from "@/components/tours/tour-reviews"
 import TourBooking from "@/components/tours/tour-booking"
 import RelatedTours from "@/components/tours/related-tours"
 import LoadingSpinner from "@/components/ui/loading-spinner"
-import Breadcrumbs from "@/components/seo/breadcrumbs"
-import StructuredData from "@/components/seo/structured-data"
-import { generateSEOMetadata, generateTourSchema, generateFAQSchema } from "@/lib/seo"
+
 import { getTour, getTourReviews, getBaseUrl } from "@/lib/tours-service"
 
 interface TourPageProps {
@@ -64,33 +62,9 @@ export default async function TourPage({ params }: TourPageProps) {
     // Continue without related tours if they fail to load
   }
 
-  // Generate structured data
-  const tourSchema = generateTourSchema(tour)
-  const breadcrumbItems = [
-    { name: 'Tours', url: '/tours' },
-    ...(tour.category ? [{ name: tour.category.name, url: `/tours/category/${tour.category.slug}` }] : []),
-    { name: tour.title, url: `/tours/${tour.slug}`, current: true }
-  ]
-
-  // Generate FAQ schema if tour has FAQ data
-  const faqSchema = tour.faqs && tour.faqs.length > 0 
-    ? generateFAQSchema(tour.faqs.map((faq: any) => ({
-        question: faq.question,
-        answer: faq.answer
-      })))
-    : null
-
-  const schemas = [tourSchema, faqSchema].filter(Boolean)
-
   return (
     <>
-      <StructuredData data={schemas} />
-      
       <main className="min-h-screen bg-gradient-to-br from-white via-emerald-50/30 to-green-50/30">
-        {/* Breadcrumbs */}
-        <div className="container-max pt-6">
-          <Breadcrumbs items={breadcrumbItems} />
-        </div>
 
         {/* Hero Section */}
         <TourHero tour={tour} />
@@ -136,46 +110,18 @@ export async function generateMetadata({ params }: TourPageProps) {
   const tour = await getTour(params.slug)
 
   if (!tour) {
-    return generateSEOMetadata({
+    return {
       title: "Tour Not Found",
-      description: "The requested tour could not be found.",
-      noIndex: true
-    })
+      description: "The requested tour could not be found."
+    }
   }
 
-  const title = tour.metaTitle || `${tour.title} - Uganda Safari Tour`
-  const description = tour.metaDescription || tour.shortDescription || 
+  const title = `${tour.title} - Uganda Safari Tour`
+  const description = tour.shortDescription || 
     `Experience ${tour.title} with Samba Tours. ${tour.duration}-day adventure through Uganda's stunning landscapes. Starting from $${tour.price}.`
-  
-  const keywords = [
-    tour.title.toLowerCase(),
-    `${tour.title.toLowerCase()} Uganda`,
-    `${tour.title.toLowerCase()} safari`,
-    `${tour.title.toLowerCase()} tour`,
-    ...(tour.category ? [tour.category.name.toLowerCase()] : []),
-    ...(tour.seoKeywords || []),
-    'Uganda safari',
-    'Uganda tour',
-    'East Africa adventure'
-  ]
 
-  const images = tour.images && tour.images.length > 0 
-    ? tour.images.slice(0, 4).map((img: any) => 
-        typeof img === 'string' 
-          ? (img.startsWith('http') ? img : `/images/tours/${img}`)
-          : (img.data?.startsWith('http') ? img.data : `/images/tours/${img.data || ''}`)
-      )
-    : []
-
-  return generateSEOMetadata({
+  return {
     title,
-    description,
-    keywords,
-    images,
-    type: 'website',
-    canonical: `/tours/${tour.slug}`,
-    alternates: {
-      'application/ld+json': `/api/tours/${tour.slug}/schema`
-    }
-  })
+    description
+  }
 }

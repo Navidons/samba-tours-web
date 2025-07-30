@@ -1,10 +1,3 @@
-import type { Metadata } from "next"
-
-export const metadata: Metadata = {
-  title: "Terms of Service - Samba Tours & Travel",
-  description: "Terms and conditions for booking tours with Samba Tours & Travel",
-}
-
 export default function TermsPage() {
   return (
     <main className="min-h-screen bg-cream-50">

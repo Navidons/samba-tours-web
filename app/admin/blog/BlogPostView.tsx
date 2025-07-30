@@ -26,9 +26,7 @@ interface BlogPost {
   thumbnailName: string | null
   thumbnailType: string | null
   thumbnailSize: number | null
-  metaTitle: string | null
-  metaDescription: string | null
-  seoKeywords: string[]
+
   category: {
     id: number
     name: string
@@ -238,40 +236,7 @@ export default function BlogPostView({ slug }: BlogPostViewProps) {
             </CardContent>
           </Card>
 
-          {/* SEO & Metadata */}
-          {(post.metaTitle || post.metaDescription || post.seoKeywords?.length > 0) && (
-            <Card>
-              <CardHeader>
-                <CardTitle>SEO & Metadata</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {post.metaTitle && (
-                  <div>
-                    <p className="text-sm font-medium text-earth-600 mb-1">Meta Title</p>
-                    <p className="text-earth-700">{post.metaTitle}</p>
-                  </div>
-                )}
-                {post.metaDescription && (
-                  <div>
-                    <p className="text-sm font-medium text-earth-600 mb-1">Meta Description</p>
-                    <p className="text-earth-700">{post.metaDescription}</p>
-                  </div>
-                )}
-                {post.seoKeywords && post.seoKeywords.length > 0 && (
-                  <div>
-                    <p className="text-sm font-medium text-earth-600 mb-2">SEO Keywords</p>
-                    <div className="flex flex-wrap gap-2">
-                      {post.seoKeywords.map((keyword, index) => (
-                        <Badge key={index} variant="outline" className="text-forest-600 border-forest-200">
-                          {keyword}
-                        </Badge>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          )}
+
 
           {/* Thumbnail Details */}
           {post.thumbnail && (

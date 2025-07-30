@@ -45,26 +45,8 @@ export async function generateMetadata({ params }: { params: { slug: string } })
     }
 
     return {
-      title: post.metaTitle || post.title,
-      description: post.metaDescription || post.excerpt,
-      keywords: post.seoKeywords,
-              openGraph: {
-          title: post.metaTitle || post.title,
-          description: post.metaDescription || post.excerpt,
-          type: 'article',
-          publishedTime: post.publishDate || post.createdAt,
-          modifiedTime: post.updatedAt,
-          authors: post.author ? [post.author.name] : [],
-          tags: post.tags.map((t: any) => t.tag.name),
-        },
-      twitter: {
-        card: 'summary_large_image',
-        title: post.metaTitle || post.title,
-        description: post.metaDescription || post.excerpt,
-      },
-      alternates: {
-        canonical: `/blog/${post.slug}`,
-      },
+      title: post.title,
+      description: post.excerpt
     }
   } catch (error) {
     console.error('Error generating metadata:', error)

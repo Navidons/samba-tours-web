@@ -5,7 +5,6 @@ import FeaturedTours from "@/components/home/featured-tours"
 import AttractionsShowcase from "@/components/home/attractions-showcase"
 import AboutPreview from "@/components/home/about-preview"
 import LoadingSpinner from "@/components/ui/loading-spinner"
-import StructuredData from "@/components/seo/structured-data"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { 
@@ -13,7 +12,6 @@ import {
   Palmtree, Camera, Map, Users, Tent,
   Compass, TreePine, Fish, Plane, Utensils, Drum, Leaf
 } from "lucide-react"
-import { generateSEOMetadata, generateOrganizationSchema, generateFAQSchema, SEO_CONFIG } from "@/lib/seo"
 
 // Wildlife highlights
 const wildlifeHighlights = [
@@ -182,53 +180,14 @@ const ugandaRegions = [
   }
 ]
 
-export const metadata: Metadata = generateSEOMetadata({
+export const metadata: Metadata = {
   title: "Uganda Safari & Adventure Tours | Pearl of Africa",
-  description: "Experience the Pearl of Africa with expert-guided gorilla trekking, wildlife safaris, and cultural tours. Discover Uganda's natural wonders and warm hospitality.",
-  keywords: [
-    'Pearl of Africa', 'Uganda tours', 'Uganda safari', 'gorilla trekking Uganda',
-    'Bwindi gorilla trekking', 'Uganda travel', 'East Africa safari', 'adventure travel Uganda',
-    'Uganda tour packages', 'Murchison Falls', 'Queen Elizabeth Park', 'cultural tours Uganda',
-    'Uganda travel agency', 'eco tourism Uganda', 'mountain gorilla tours', 'Uganda vacation',
-    'African safari', 'primate tours', 'birding tours Uganda', 'Uganda honeymoon safari',
-    'best Uganda tour operator', 'Uganda safari packages', 'Uganda wildlife tours'
-  ],
-  images: ['/images/og-homepage.webp', '/images/gorilla-trekking-hero.jpg'],
-  canonical: '/',
-  alternates: {
-    types: '/rss.xml'
-  }
-})
+  description: "Experience the Pearl of Africa with expert-guided gorilla trekking, wildlife safaris, and cultural tours. Discover Uganda's natural wonders and warm hospitality."
+}
 
 export default function HomePage() {
-  const organizationSchema = generateOrganizationSchema()
-  const faqSchema = generateFAQSchema(homepageFAQs)
-  
-  const websiteSchema = {
-    "@context": "https://schema.org",
-    "@type": "WebSite",
-    "name": SEO_CONFIG.siteName,
-    "url": SEO_CONFIG.siteUrl,
-    "description": SEO_CONFIG.defaultDescription,
-    "publisher": {
-      "@type": "Organization",
-      "name": SEO_CONFIG.organization.name
-    },
-    "potentialAction": {
-      "@type": "SearchAction",
-      "target": {
-        "@type": "EntryPoint",
-        "urlTemplate": `${SEO_CONFIG.siteUrl}/search?q={search_term_string}`
-      },
-      "query-input": "required name=search_term_string"
-    }
-  }
-
-  const schemas = [organizationSchema, websiteSchema, faqSchema]
-
   return (
     <>
-      <StructuredData data={schemas} />
       
       <main className="min-h-screen bg-gradient-to-b from-white via-emerald-50/30 to-white">
         {/* Above the fold content */}

@@ -71,9 +71,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
       thumbnailName: post.thumbnailName,
       thumbnailType: post.thumbnailType,
       thumbnailSize: post.thumbnailSize,
-      metaTitle: post.metaTitle,
-      metaDescription: post.metaDescription,
-      seoKeywords: post.seoKeywords,
+
       category: post.category ? {
         id: post.category.id,
         name: post.category.name,
@@ -130,9 +128,7 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
         featured: body.featured,
         categoryId: body.categoryId ? parseInt(body.categoryId) : null,
         authorId: body.authorId ? parseInt(body.authorId) : null,
-        metaTitle: body.metaTitle,
-        metaDescription: body.metaDescription,
-        seoKeywords: body.seoKeywords
+
       },
       include: {
         category: {

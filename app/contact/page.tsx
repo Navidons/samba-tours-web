@@ -1,12 +1,6 @@
-import type { Metadata } from "next"
 import ContactForm from "@/components/contact/contact-form"
 import ContactInfo from "@/components/contact/contact-info"
 import ContactHero from "@/components/contact/contact-hero"
-
-export const metadata: Metadata = {
-  title: "Contact Us - Samba Tours & Travel",
-  description: "Connect with Uganda's premier safari experts. Our experienced team is ready to help plan your perfect adventure, from gorilla trekking to wildlife safaris.",
-}
 
 export default function ContactPage() {
   return (

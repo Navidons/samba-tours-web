@@ -23,9 +23,7 @@ export interface BlogPostWithRelations {
   thumbnailName: string | null
   thumbnailType: string | null
   thumbnailSize: number | null
-  metaTitle: string | null
-  metaDescription: string | null
-  seoKeywords: any
+
   createdAt: Date
   updatedAt: Date
   category: {
@@ -101,9 +99,7 @@ export const getBlogPostBySlug = cache(async (slug: string): Promise<BlogPostWit
         thumbnailName: true,
         thumbnailType: true,
         thumbnailSize: true,
-        metaTitle: true,
-        metaDescription: true,
-        seoKeywords: true,
+
         createdAt: true,
         updatedAt: true,
         category: {
@@ -260,9 +256,7 @@ export const getBlogPosts = cache(async (params: BlogPostListParams = {}): Promi
           thumbnailName: true,
           thumbnailType: true,
           thumbnailSize: true,
-          metaTitle: true,
-          metaDescription: true,
-          seoKeywords: true,
+
           createdAt: true,
           updatedAt: true,
           category: {
@@ -390,9 +384,7 @@ export const getFeaturedBlogPosts = cache(async (limit: number = 3): Promise<Blo
         thumbnailName: true,
         thumbnailType: true,
         thumbnailSize: true,
-        metaTitle: true,
-        metaDescription: true,
-        seoKeywords: true,
+
         createdAt: true,
         updatedAt: true,
         category: {
@@ -498,9 +490,7 @@ export const getRelatedBlogPosts = cache(async (
         thumbnailName: true,
         thumbnailType: true,
         thumbnailSize: true,
-        metaTitle: true,
-        metaDescription: true,
-        seoKeywords: true,
+
         createdAt: true,
         updatedAt: true,
         category: {
@@ -719,9 +709,7 @@ export const getBlogPostsByAuthor = cache(async (authorId: number, params: BlogP
           thumbnailName: true,
           thumbnailType: true,
           thumbnailSize: true,
-          metaTitle: true,
-          metaDescription: true,
-          seoKeywords: true,
+
           createdAt: true,
           updatedAt: true,
           category: {
@@ -871,9 +859,7 @@ export const getBlogPostsByCategory = cache(async (categorySlug: string, params:
           thumbnailName: true,
           thumbnailType: true,
           thumbnailSize: true,
-          metaTitle: true,
-          metaDescription: true,
-          seoKeywords: true,
+
           createdAt: true,
           updatedAt: true,
           category: {
@@ -1027,9 +1013,7 @@ export const getBlogPostsByTag = cache(async (tagSlug: string, params: BlogPostL
           thumbnailName: true,
           thumbnailType: true,
           thumbnailSize: true,
-          metaTitle: true,
-          metaDescription: true,
-          seoKeywords: true,
+
           createdAt: true,
           updatedAt: true,
           category: {

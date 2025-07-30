@@ -1,10 +1,3 @@
-import type { Metadata } from "next"
-
-export const metadata: Metadata = {
-  title: "Privacy Policy - Samba Tours & Travel",
-  description: "Privacy policy and data protection information for Samba Tours & Travel",
-}
-
 export default function PrivacyPage() {
   return (
     <main className="min-h-screen bg-cream-50">

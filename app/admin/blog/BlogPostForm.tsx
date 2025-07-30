@@ -75,9 +75,7 @@ export default function BlogPostForm({ postId, slug }: BlogPostFormProps) {
     featured: false,
     categoryId: "",
     authorId: "",
-    metaTitle: "",
-    metaDescription: "",
-    seoKeywords: [] as string[]
+
   })
 
   useEffect(() => {
@@ -147,9 +145,7 @@ export default function BlogPostForm({ postId, slug }: BlogPostFormProps) {
           featured: post.featured,
           categoryId: post.category?.id?.toString() || "",
           authorId: post.author?.id?.toString() || "",
-          metaTitle: post.metaTitle || "",
-          metaDescription: post.metaDescription || "",
-          seoKeywords: post.seoKeywords || []
+
         })
         
         setSelectedTags(post.tags.map((tag: any) => tag.id))
@@ -191,9 +187,8 @@ export default function BlogPostForm({ postId, slug }: BlogPostFormProps) {
           featured: post.featured,
           categoryId: post.category?.id?.toString() || "",
           authorId: post.author?.id?.toString() || "",
-          metaTitle: post.metaTitle || "",
-          metaDescription: post.metaDescription || "",
-          seoKeywords: post.seoKeywords || []
+
+
         })
         
         setSelectedTags(post.tags.map((tag: any) => tag.id))
@@ -264,9 +259,7 @@ export default function BlogPostForm({ postId, slug }: BlogPostFormProps) {
       formDataToSend.append('featured', formData.featured.toString())
       formDataToSend.append('categoryId', formData.categoryId || '')
       formDataToSend.append('authorId', formData.authorId || '')
-      formDataToSend.append('metaTitle', formData.metaTitle)
-      formDataToSend.append('metaDescription', formData.metaDescription)
-      formDataToSend.append('seoKeywords', JSON.stringify(formData.seoKeywords))
+      
       
       // Add tags
       selectedTags.forEach(tagId => {
@@ -583,34 +576,7 @@ export default function BlogPostForm({ postId, slug }: BlogPostFormProps) {
             </CardContent>
           </Card>
 
-          {/* SEO */}
-          <Card>
-            <CardHeader>
-              <CardTitle>SEO Settings</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                <Label htmlFor="metaTitle">Meta Title</Label>
-                <Input
-                  id="metaTitle"
-                  value={formData.metaTitle}
-                  onChange={(e) => setFormData(prev => ({ ...prev, metaTitle: e.target.value }))}
-                  placeholder="SEO title for search engines"
-                />
-              </div>
 
-              <div>
-                <Label htmlFor="metaDescription">Meta Description</Label>
-                <Textarea
-                  id="metaDescription"
-                  value={formData.metaDescription}
-                  onChange={(e) => setFormData(prev => ({ ...prev, metaDescription: e.target.value }))}
-                  placeholder="SEO description for search engines"
-                  rows={3}
-                />
-              </div>
-            </CardContent>
-          </Card>
         </div>
 
         {/* Sidebar */}

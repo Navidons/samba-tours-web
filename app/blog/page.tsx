@@ -1,22 +1,11 @@
 import { Suspense } from "react"
-import { generateSEOMetadata } from "@/lib/seo"
 import type { Metadata } from "next"
 import LoadingSpinner from "@/components/ui/loading-spinner"
 import BlogClient from "./BlogClient"
 
 export const metadata: Metadata = {
-  ...generateSEOMetadata({
-    title: "Travel Blog - Uganda Safari Stories & Tips",
-    description: "Expert guides, wildlife encounters, and travel tips from Uganda's top safari company. Discover the best of African adventure travel.",
-    keywords: [
-      'Uganda travel blog', 'safari stories', 'wildlife encounters',
-      'travel tips Uganda', 'gorilla trekking guide', 'African safari blog',
-      'Uganda travel guide', 'safari planning tips', 'Uganda wildlife blog'
-    ],
-    images: ['/photos/rwenzori-mountain-hero.jpg'],
-    canonical: '/blog',
-    type: 'article'
-  })
+  title: "Travel Blog - Uganda Safari Stories & Tips",
+  description: "Expert guides, wildlife encounters, and travel tips from Uganda's top safari company. Discover the best of African adventure travel."
 }
 
 export default function BlogPage() {

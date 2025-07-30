@@ -1,12 +1,6 @@
-import type { Metadata } from "next"
 import ToursClient from "./ToursClient"
 import TourHero from "@/components/tours/tour-hero"
 import { getTours, getCategories } from "@/lib/tours-service"
-
-export const metadata: Metadata = {
-  title: "Uganda Safari Tours & Experiences | Samba Tours",
-  description: "Explore handpicked Uganda safari tours, from gorilla trekking to wildlife adventures. Plan your perfect journey with our expert guides and custom packages.",
-}
 
 export const dynamic = 'force-dynamic'
 

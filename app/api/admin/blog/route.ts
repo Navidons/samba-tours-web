@@ -173,9 +173,7 @@ export async function POST(request: NextRequest) {
     const featured = formData.get('featured') === 'true'
     const categoryId = formData.get('categoryId') as string
     const authorId = formData.get('authorId') as string
-    const metaTitle = formData.get('metaTitle') as string
-    const metaDescription = formData.get('metaDescription') as string
-    const seoKeywords = formData.get('seoKeywords') as string
+
     const tagIds = formData.getAll('tagIds').map(id => parseInt(id as string))
     const thumbnail = formData.get('thumbnail') as File | null
 
@@ -192,9 +190,7 @@ export async function POST(request: NextRequest) {
       featured: featured || false,
       categoryId: categoryId ? parseInt(categoryId) : null,
       authorId: authorId ? parseInt(authorId) : null,
-      metaTitle,
-      metaDescription,
-      seoKeywords: seoKeywords ? JSON.parse(seoKeywords) : null
+
     }
 
     // Handle thumbnail upload

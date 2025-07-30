@@ -29,9 +29,7 @@ export async function GET(
         thumbnailName: true,
         thumbnailType: true,
         thumbnailSize: true,
-        metaTitle: true,
-        metaDescription: true,
-        seoKeywords: true,
+
         createdAt: true,
         updatedAt: true,
         category: {

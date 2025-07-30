@@ -1,5 +1,4 @@
 import { NextResponse } from 'next/server'
-import { SEO_CONFIG } from '@/lib/seo'
 
 async function getBlogPosts() {
   try {
@@ -24,6 +23,9 @@ async function getBlogPosts() {
 export async function GET() {
   const posts = await getBlogPosts()
   
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || (process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : 'https://sambatours.co')
+  const siteName = 'Samba Tours'
+  
   const rssXml = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" 
      xmlns:content="http://purl.org/rss/1.0/modules/content/"
@@ -33,14 +35,14 @@ export async function GET() {
      xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"
      xmlns:slash="http://purl.org/rss/1.0/modules/slash/">
   <channel>
-    <title><![CDATA[${SEO_CONFIG.siteName} Blog]]></title>
-    <description><![CDATA[Latest travel tips, safari guides, and Uganda adventure stories from ${SEO_CONFIG.siteName}]]></description>
-    <link>${SEO_CONFIG.siteUrl}/blog</link>
-    <atom:link href="${SEO_CONFIG.siteUrl}/rss.xml" rel="self" type="application/rss+xml" />
+    <title><![CDATA[${siteName} Blog]]></title>
+    <description><![CDATA[Latest travel tips, safari guides, and Uganda adventure stories from ${siteName}]]></description>
+    <link>${siteUrl}/blog</link>
+    <atom:link href="${siteUrl}/rss.xml" rel="self" type="application/rss+xml" />
     <language>en-US</language>
-    <copyright><![CDATA[© ${new Date().getFullYear()} ${SEO_CONFIG.organization.name}]]></copyright>
-    <managingEditor><![CDATA[${SEO_CONFIG.organization.email} (${SEO_CONFIG.organization.name})]]></managingEditor>
-    <webMaster><![CDATA[${SEO_CONFIG.organization.email} (${SEO_CONFIG.organization.name})]]></webMaster>
+    <copyright><![CDATA[© ${new Date().getFullYear()} ${siteName}]]></copyright>
+    <managingEditor><![CDATA[info@sambatours.co (${siteName})]]></managingEditor>
+    <webMaster><![CDATA[info@sambatours.co (${siteName})]]></webMaster>
     <lastBuildDate>${new Date().toUTCString()}</lastBuildDate>
     <category><![CDATA[Travel]]></category>
     <category><![CDATA[Safari]]></category>
@@ -49,9 +51,9 @@ export async function GET() {
     <generator>Next.js</generator>
     <ttl>60</ttl>
     <image>
-      <url>${SEO_CONFIG.siteUrl}/images/logo.png</url>
-      <title><![CDATA[${SEO_CONFIG.siteName} Blog]]></title>
-      <link>${SEO_CONFIG.siteUrl}/blog</link>
+      <url>${siteUrl}/images/logo.png</url>
+      <title><![CDATA[${siteName} Blog]]></title>
+      <link>${siteUrl}/blog</link>
       <description><![CDATA[Latest travel tips, safari guides, and Uganda adventure stories]]></description>
       <width>144</width>
       <height>144</height>
@@ -59,15 +61,15 @@ export async function GET() {
     ${posts.map((post: any) => `
     <item>
       <title><![CDATA[${post.title}]]></title>
-      <description><![CDATA[${post.excerpt || post.metaDescription || ''}]]></description>
+      <description><![CDATA[${post.excerpt || ''}]]></description>
       <content:encoded><![CDATA[${post.content || post.excerpt || ''}]]></content:encoded>
-      <link>${SEO_CONFIG.siteUrl}/blog/${post.slug}</link>
-      <guid isPermaLink="true">${SEO_CONFIG.siteUrl}/blog/${post.slug}</guid>
+      <link>${siteUrl}/blog/${post.slug}</link>
+      <guid isPermaLink="true">${siteUrl}/blog/${post.slug}</guid>
       <pubDate>${new Date(post.publishDate || post.createdAt).toUTCString()}</pubDate>
       ${post.author?.name ? `<dc:creator><![CDATA[${post.author.name}]]></dc:creator>` : ''}
       ${post.category?.name ? `<category><![CDATA[${post.category.name}]]></category>` : ''}
       ${post.tags?.map((tag: any) => `<category><![CDATA[${tag.tag?.name || tag.name}]]></category>`).join('') || ''}
-      ${post.featuredImage ? `<enclosure url="${post.featuredImage.startsWith('http') ? post.featuredImage : SEO_CONFIG.siteUrl + post.featuredImage}" type="image/jpeg" />` : ''}
+      ${post.featuredImage ? `<enclosure url="${post.featuredImage.startsWith('http') ? post.featuredImage : siteUrl + post.featuredImage}" type="image/jpeg" />` : ''}
     </item>`).join('')}
   </channel>
 </rss>`

@@ -1,21 +1,12 @@
 import { Suspense } from "react"
-import { generateSEOMetadata } from "@/lib/seo"
 import type { Metadata } from "next"
 import GalleryClient from "./GalleryClient"
 import LoadingSpinner from "@/components/ui/loading-spinner"
 
-export const metadata: Metadata = generateSEOMetadata({
+export const metadata: Metadata = {
   title: "Safari Gallery - Wildlife & Adventure Photos",
-  description: "Discover Uganda's beauty through our curated collection of wildlife encounters, landscapes, and cultural moments captured during safari adventures.",
-  keywords: [
-    'Uganda safari photos', 'Uganda wildlife photography', 'safari gallery',
-    'Uganda travel photos', 'African safari images', 'Uganda tour gallery',
-    'wildlife photography Uganda', 'safari videos Uganda', 'Uganda landscapes'
-  ],
-  images: ['/photos/african-nile.jpg', '/photos/chimpanzee-bwindi-forest-impenetrable-park.jpg'],
-  canonical: '/gallery',
-  type: 'website'
-})
+  description: "Discover Uganda's beauty through our curated collection of wildlife encounters, landscapes, and cultural moments captured during safari adventures."
+}
 
 interface GalleryPageProps {
   searchParams: {

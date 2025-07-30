@@ -1,4 +1,3 @@
-import type { Metadata } from "next"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -35,11 +34,6 @@ import {
   Palette,
   Compass
 } from "lucide-react"
-
-export const metadata: Metadata = {
-  title: "Our Services - Samba Tours Uganda | Comprehensive Travel Solutions",
-  description: "Discover our complete range of travel services including safari tours, gorilla trekking, hotel booking, visa assistance, transportation, travel insurance, and more.",
-}
 
 const services = [
   {

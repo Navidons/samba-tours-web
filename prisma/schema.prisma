@@ -338,9 +338,7 @@ model BlogPost {
   thumbnailName   String?              @map("thumbnail_name") @db.VarChar(255)
   thumbnailType   String?              @map("thumbnail_type") @db.VarChar(50)
   thumbnailSize   Int?                 @map("thumbnail_size")
-  metaTitle       String?              @map("meta_title") @db.VarChar(255)
-  metaDescription String?              @map("meta_description") @db.Text
-  seoKeywords     Json?                @map("seo_keywords")
+
   createdAt       DateTime             @default(now()) @map("created_at")
   updatedAt       DateTime             @updatedAt @map("updated_at")
   comments        BlogComment[]

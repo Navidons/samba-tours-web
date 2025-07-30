@@ -1,10 +1,4 @@
-import type { Metadata } from "next"
 import CartContent from "@/components/cart/cart-content"
-
-export const metadata: Metadata = {
-  title: "Shopping Cart - Samba Tours & Travel",
-  description: "Review and manage your selected Uganda safari experiences. Customize your tour package and proceed to secure booking with our easy checkout process.",
-}
 
 export const dynamic = 'force-dynamic'
 

@@ -1,10 +1,4 @@
-import type { Metadata } from "next"
 import CheckoutForm from "@/components/checkout/checkout-form"
-
-export const metadata: Metadata = {
-  title: "Checkout - Samba Tours & Travel",
-  description: "Complete your booking and receive confirmation",
-}
 
 export const dynamic = 'force-dynamic'
 
