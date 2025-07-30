@@ -1,12 +1,11 @@
 "use client"
 
 import * as React from "react"
-import { format, addDays, isBefore, isAfter, startOfDay, differenceInDays } from "date-fns"
-import { CalendarIcon, Info, AlertCircle, CheckCircle } from "lucide-react"
+import { format, addDays, isBefore, startOfDay } from "date-fns"
+import { CalendarIcon, CheckCircle } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
 
@@ -15,14 +14,11 @@ interface EnhancedDatePickerProps {
   onDateSelect: (date: Date | undefined) => void
   label?: string
   placeholder?: string
-  minBookingDays?: number
-  maxBookingDays?: number
   disabled?: boolean
   className?: string
   showDateRange?: boolean
   duration?: string
   required?: boolean
-  showBookingNotice?: boolean
   customDisabledDates?: (date: Date) => boolean
 }
 
@@ -31,30 +27,24 @@ export function EnhancedDatePicker({
   onDateSelect,
   label = "Select Date",
   placeholder = "Pick a date",
-  minBookingDays = 7,
-  maxBookingDays = 365,
   disabled = false,
   className,
   showDateRange = false,
   duration,
   required = false,
-  showBookingNotice = true,
   customDisabledDates
 }: EnhancedDatePickerProps) {
   const [isOpen, setIsOpen] = React.useState(false)
   
   const today = startOfDay(new Date())
-  const minBookingDate = addDays(today, minBookingDays)
-  const maxBookingDate = addDays(today, maxBookingDays)
 
-  // Disable dates function
+  // Disable dates function - only disable past dates and custom disabled dates
   const disabledDates = (date: Date) => {
     const startOfDate = startOfDay(date)
-    const isBeforeMin = isBefore(startOfDate, minBookingDate)
-    const isAfterMax = isAfter(startOfDate, maxBookingDate)
+    const isPastDate = isBefore(startOfDate, today)
     const isCustomDisabled = customDisabledDates ? customDisabledDates(date) : false
     
-    return isBeforeMin || isAfterMax || isCustomDisabled
+    return isPastDate || isCustomDisabled
   }
 
   // Handle date selection
@@ -71,17 +61,10 @@ export function EnhancedDatePicker({
     return addDays(selectedDate, durationDays - 1)
   }
 
-  // Calculate days until selected date
-  const getDaysUntilDate = () => {
-    if (!selectedDate) return null
-    return differenceInDays(selectedDate, today)
-  }
-
   const endDate = getEndDate()
-  const daysUntilDate = getDaysUntilDate()
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-3">
       {label && (
         <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
           {label} {required && <span className="text-red-500">*</span>}
@@ -94,54 +77,56 @@ export function EnhancedDatePicker({
             variant="outline"
             disabled={disabled}
             className={cn(
-              "w-full justify-start text-left font-normal",
+              "w-full justify-start text-left font-normal h-12",
               !selectedDate && "text-muted-foreground",
-              selectedDate && "border-green-500 bg-green-50",
+              selectedDate && "border-emerald-500 bg-emerald-50",
               className
             )}
           >
             <CalendarIcon className="mr-2 h-4 w-4" />
-            {selectedDate ? format(selectedDate, "PPP") : placeholder}
+            {selectedDate ? format(selectedDate, "EEEE, MMMM dd, yyyy") : placeholder}
             {selectedDate && (
-              <CheckCircle className="ml-auto h-4 w-4 text-green-500" />
+              <CheckCircle className="ml-auto h-4 w-4 text-emerald-500" />
             )}
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-auto p-0" align="start">
+          <div className="p-3 border-b bg-gray-50">
+            <h4 className="font-medium text-sm text-gray-900">Select your preferred start date</h4>
+            <p className="text-xs text-gray-600 mt-1">Choose any available date for your tour</p>
+          </div>
           <Calendar
             mode="single"
             selected={selectedDate}
             onSelect={handleDateSelect}
             disabled={disabledDates}
             initialFocus
-            fromMonth={minBookingDate}
-            toMonth={maxBookingDate}
+            fromMonth={today}
+            toMonth={addDays(today, 365)}
             captionLayout="dropdown-buttons"
             showOutsideDays={false}
+            className="p-3"
           />
-          <div className="p-3 border-t bg-gray-50">
-            <div className="flex items-center gap-2 text-xs text-gray-600">
-              <Info className="h-3 w-3" />
-              <span>Minimum {minBookingDays} days advance booking required</span>
-            </div>
-            {selectedDate && daysUntilDate !== null && (
-              <div className="mt-2 flex items-center gap-2">
-                <Badge variant={daysUntilDate >= minBookingDays ? "default" : "destructive"}>
-                  {daysUntilDate} days until tour
-                </Badge>
+          {selectedDate && (
+            <div className="p-3 border-t bg-emerald-50">
+              <div className="flex items-center gap-2">
+                <CheckCircle className="h-4 w-4 text-emerald-500" />
+                <span className="text-sm font-medium text-emerald-700">
+                  Selected: {format(selectedDate, "MMM dd, yyyy")}
+                </span>
               </div>
-            )}
-          </div>
+            </div>
+          )}
         </PopoverContent>
       </Popover>
       
       {/* Date range display */}
       {showDateRange && selectedDate && endDate && (
-        <div className="text-sm text-gray-600 bg-blue-50 p-3 rounded-lg">
+        <div className="text-sm text-gray-600 bg-blue-50 p-3 rounded-lg border border-blue-200">
           <div className="flex items-center gap-2">
-            <CalendarIcon className="h-4 w-4" />
-            <span>
-              <strong>Tour Period:</strong> {format(selectedDate, "MMM dd")} - {format(endDate, "MMM dd, yyyy")}
+            <CalendarIcon className="h-4 w-4 text-blue-500" />
+            <span className="font-medium">
+              Tour Period: {format(selectedDate, "MMM dd")} - {format(endDate, "MMM dd, yyyy")}
             </span>
           </div>
           {duration && (
@@ -152,24 +137,34 @@ export function EnhancedDatePicker({
         </div>
       )}
 
-      {/* Booking notice alert */}
-      {showBookingNotice && (
-        <Alert>
-          <AlertCircle className="h-4 w-4" />
-          <AlertDescription>
-            Please book at least <strong>{minBookingDays} days</strong> in advance to ensure availability and proper arrangements.
-          </AlertDescription>
-        </Alert>
-      )}
-
-      {/* Validation message */}
-      {selectedDate && daysUntilDate !== null && daysUntilDate < minBookingDays && (
-        <Alert variant="destructive">
-          <AlertCircle className="h-4 w-4" />
-          <AlertDescription>
-            This date is less than {minBookingDays} days away. Please select a later date.
-          </AlertDescription>
-        </Alert>
+      {/* Quick date suggestions */}
+      {!selectedDate && (
+        <div className="flex flex-wrap gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => onDateSelect(addDays(today, 1))}
+            className="text-xs h-8"
+          >
+            Tomorrow
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => onDateSelect(addDays(today, 7))}
+            className="text-xs h-8"
+          >
+            Next Week
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => onDateSelect(addDays(today, 30))}
+            className="text-xs h-8"
+          >
+            Next Month
+          </Button>
+        </div>
       )}
     </div>
   )

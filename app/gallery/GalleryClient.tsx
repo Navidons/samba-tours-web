@@ -12,6 +12,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 import { AlertCircle, Database, RefreshCw } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { galleryService, type GalleryImage, type GalleryCategory, type GalleryLocation, DatabaseConnectionError, GalleryServiceError } from "@/lib/gallery-service"
+import { useScrollManagement } from "@/hooks/use-scroll-management"
 
 interface GalleryClientProps {
   searchParams: {
@@ -41,6 +42,12 @@ export default function GalleryClient({ searchParams, hideMainHeading }: Gallery
   })
   const [viewMode, setViewMode] = useState<"grid" | "masonry">("masonry")
 
+  // Scroll management hook
+  const { startLoading, endLoading } = useScrollManagement({
+    preserveScroll: true,
+    preventAutoScroll: true
+  })
+
   // Get search params
   const category = searchParams.category
   const location = searchParams.location
@@ -63,6 +70,7 @@ export default function GalleryClient({ searchParams, hideMainHeading }: Gallery
 
   const loadGalleryData = async () => {
     try {
+      startLoading() // Signal data loading start
       setLoading(true)
       setError(null)
 
@@ -102,6 +110,7 @@ export default function GalleryClient({ searchParams, hideMainHeading }: Gallery
       }
     } finally {
       setLoading(false)
+      endLoading() // Signal data loading end
     }
   }
 
@@ -145,42 +154,9 @@ export default function GalleryClient({ searchParams, hideMainHeading }: Gallery
     featured: image.featured
   }))
 
-  // Show loading state
-  if (loading && images.length === 0) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-green-50 flex items-center justify-center">
-        <div className="text-center">
-          <LoadingSpinner />
-          <p className="mt-4 text-gray-600">Loading gallery images...</p>
-        </div>
-      </div>
-    )
-  }
-
-  // Show connection error state
-  if (error?.type === 'CONNECTION_ERROR') {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-green-50 flex items-center justify-center">
-        <div className="text-center max-w-md mx-auto p-8">
-          <div className="w-16 h-16 mx-auto mb-4 bg-red-100 rounded-full flex items-center justify-center">
-            <Database className="w-8 h-8 text-red-600" />
-          </div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">Database Connection Error</h2>
-          <p className="text-gray-600 mb-6">{error.message}</p>
-          <Button onClick={handleRetry} className="bg-emerald-600 hover:bg-emerald-700">
-            <RefreshCw className="w-4 h-4 mr-2" />
-            Try Again
-          </Button>
-          <p className="text-sm text-gray-500 mt-4">
-            If this problem persists, please contact support.
-          </p>
-        </div>
-      </div>
-    )
-  }
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-green-50">
+      {/* Always show hero section first */}
       <GalleryHero hideHeading={hideMainHeading} />
 
       <section className="py-16">
@@ -198,14 +174,23 @@ export default function GalleryClient({ searchParams, hideMainHeading }: Gallery
             </p>
           </div>
 
-          {/* Show stats if we have data */}
-          {(images.length > 0 || categories.length > 0) && (
-            <GalleryStats 
-              totalImages={pagination.total}
-              totalVideos={totalVideos}
-              categories={categories}
-              locations={locations}
-            />
+          {/* Show connection error state */}
+          {error?.type === 'CONNECTION_ERROR' && (
+            <Alert className="mb-8 border-red-200 bg-red-50">
+              <Database className="h-4 w-4 text-red-600" />
+              <AlertDescription className="text-red-800">
+                {error.message}
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={handleRetry}
+                  className="ml-4 text-red-600 hover:text-red-700 hover:bg-red-100"
+                >
+                  <RefreshCw className="w-3 h-3 mr-1" />
+                  Try Again
+                </Button>
+              </AlertDescription>
+            </Alert>
           )}
 
           {/* Show other types of errors */}
@@ -225,6 +210,16 @@ export default function GalleryClient({ searchParams, hideMainHeading }: Gallery
                 </Button>
               </AlertDescription>
             </Alert>
+          )}
+
+          {/* Show stats if we have data */}
+          {(images.length > 0 || categories.length > 0) && (
+            <GalleryStats 
+              totalImages={pagination.total}
+              totalVideos={totalVideos}
+              categories={categories}
+              locations={locations}
+            />
           )}
 
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 mt-12">

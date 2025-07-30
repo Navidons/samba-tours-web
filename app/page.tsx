@@ -1,10 +1,11 @@
 import { Suspense } from "react"
 import { Metadata } from "next"
+import Image from "next/image"
 import HeroSection from "@/components/home/hero-section"
-import FeaturedTours from "@/components/home/featured-tours"
 import AttractionsShowcase from "@/components/home/attractions-showcase"
 import AboutPreview from "@/components/home/about-preview"
 import LoadingSpinner from "@/components/ui/loading-spinner"
+import ScrollGuard from "@/components/ui/scroll-guard"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { 
@@ -31,6 +32,13 @@ const wildlifeHighlights = [
     image: "/photos/uganda-wildlife.jpg"
   }
 ]
+
+// Image loading optimization settings
+const imageOptimization = {
+  quality: 85,
+  placeholder: 'blur',
+  blurDataURL: 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=='
+}
 
 // Homepage FAQ data for structured data
 const homepageFAQs = [
@@ -187,8 +195,7 @@ export const metadata: Metadata = {
 
 export default function HomePage() {
   return (
-    <>
-      
+    <ScrollGuard>
       <main className="min-h-screen bg-gradient-to-b from-white via-emerald-50/30 to-white">
         {/* Above the fold content */}
         <header role="banner" className="relative">
@@ -251,12 +258,18 @@ export default function HomePage() {
                   key={index} 
                   className="relative group overflow-hidden rounded-xl"
                 >
-                  <div className="aspect-w-16 aspect-h-9 relative">
-                    <img
-                      src={wildlife.image}
-                      alt={wildlife.title}
-                      className="object-cover w-full h-full group-hover:scale-110 transition-transform duration-500"
-                    />
+                                      <div className="aspect-w-16 aspect-h-9 relative">
+                      <Image
+                        src={wildlife.image}
+                        alt={wildlife.title}
+                        fill
+                        className="object-cover w-full h-full group-hover:scale-110 transition-transform duration-500"
+                        priority
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                        quality={imageOptimization.quality}
+                        placeholder="blur"
+                        blurDataURL={imageOptimization.blurDataURL}
+                      />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
                   </div>
                   <div className="absolute bottom-0 left-0 right-0 p-6">
@@ -297,10 +310,40 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* Featured tours section */}
-        <section aria-labelledby="featured-tours-heading" className="bg-gradient-to-b from-emerald-50/50 to-transparent py-20">
-          <h2 id="featured-tours-heading" className="sr-only">Featured Tours</h2>
-          <FeaturedTours />
+        {/* Call to Action - Explore Tours */}
+        <section className="bg-gradient-to-b from-emerald-50/50 to-transparent py-20">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center">
+              <Badge className="bg-emerald-100 text-emerald-800 mb-4">Discover Tours</Badge>
+              <h2 className="text-4xl font-bold text-gray-900 mb-4">
+                Ready for Your Adventure?
+              </h2>
+              <p className="text-lg text-gray-600 max-w-3xl mx-auto mb-8">
+                Explore our curated collection of unforgettable safari experiences, from gorilla trekking to wildlife safaris across Uganda's most stunning landscapes.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <Button 
+                  size="lg"
+                  className="bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700 text-white font-semibold px-8 py-3"
+                  asChild
+                >
+                  <a href="/tours">
+                    Browse All Tours
+                  </a>
+                </Button>
+                <Button 
+                  variant="outline"
+                  size="lg"
+                  className="border-emerald-200 text-emerald-600 hover:bg-emerald-50 hover:border-emerald-300 font-semibold px-8 py-3"
+                  asChild
+                >
+                  <a href="/contact">
+                    Get in Touch
+                  </a>
+                </Button>
+              </div>
+            </div>
+          </div>
         </section>
 
         {/* About company preview */}
@@ -334,10 +377,16 @@ export default function HomePage() {
                 >
                   {/* Main Hero Image */}
                   <div className="aspect-w-16 aspect-h-9 relative">
-                    <img
+                    <Image
                       src={region.image}
                       alt={region.name}
+                      fill
                       className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500"
+                      priority
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                      quality={imageOptimization.quality}
+                      placeholder="blur"
+                      blurDataURL={imageOptimization.blurDataURL}
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-emerald-900/90 via-emerald-900/50 to-transparent group-hover:via-emerald-900/60 transition-all duration-300" />
                     <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
@@ -371,10 +420,15 @@ export default function HomePage() {
                     {/* Additional Images Grid */}
                     <div className="grid grid-cols-2 gap-3">
                       <div className="relative overflow-hidden rounded-lg">
-                        <img
+                        <Image
                           src={region.wildlifeImage}
                           alt={`Wildlife in ${region.name}`}
+                          fill
                           className="object-cover w-full h-20 group-hover:scale-110 transition-transform duration-300"
+                          sizes="(max-width: 768px) 50vw, 25vw"
+                          quality={imageOptimization.quality}
+                          placeholder="blur"
+                          blurDataURL={imageOptimization.blurDataURL}
                         />
                         <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors duration-300" />
                         <div className="absolute bottom-1 left-1">
@@ -382,10 +436,15 @@ export default function HomePage() {
                         </div>
                       </div>
                       <div className="relative overflow-hidden rounded-lg">
-                        <img
+                        <Image
                           src={region.landscapeImage}
                           alt={`Landscape in ${region.name}`}
+                          fill
                           className="object-cover w-full h-20 group-hover:scale-110 transition-transform duration-300"
+                          sizes="(max-width: 768px) 50vw, 25vw"
+                          quality={imageOptimization.quality}
+                          placeholder="blur"
+                          blurDataURL={imageOptimization.blurDataURL}
                         />
                         <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors duration-300" />
                         <div className="absolute bottom-1 left-1">
@@ -415,10 +474,15 @@ export default function HomePage() {
             
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
               <div className="relative group overflow-hidden rounded-xl">
-                <img
+                <Image
                   src="/home-hero-photos/elephant.jpg"
                   alt="African elephant in Uganda"
+                  fill
                   className="object-cover w-full h-48 group-hover:scale-110 transition-transform duration-500"
+                  sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                  quality={imageOptimization.quality}
+                  placeholder="blur"
+                  blurDataURL={imageOptimization.blurDataURL}
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 <div className="absolute bottom-0 left-0 right-0 p-4 text-white transform translate-y-full group-hover:translate-y-0 transition-transform duration-300">
@@ -428,10 +492,15 @@ export default function HomePage() {
               </div>
               
               <div className="relative group overflow-hidden rounded-xl">
-                <img
+                <Image
                   src="/home-hero-photos/giraffe.jpg"
                   alt="Giraffe in Uganda"
+                  fill
                   className="object-cover w-full h-48 group-hover:scale-110 transition-transform duration-500"
+                  sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                  quality={imageOptimization.quality}
+                  placeholder="blur"
+                  blurDataURL={imageOptimization.blurDataURL}
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 <div className="absolute bottom-0 left-0 right-0 p-4 text-white transform translate-y-full group-hover:translate-y-0 transition-transform duration-300">
@@ -441,10 +510,15 @@ export default function HomePage() {
               </div>
               
               <div className="relative group overflow-hidden rounded-xl">
-                <img
+                <Image
                   src="/home-hero-photos/giraffes.jpg"
                   alt="Giraffes in Uganda"
+                  fill
                   className="object-cover w-full h-48 group-hover:scale-110 transition-transform duration-500"
+                  sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                  quality={imageOptimization.quality}
+                  placeholder="blur"
+                  blurDataURL={imageOptimization.blurDataURL}
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 <div className="absolute bottom-0 left-0 right-0 p-4 text-white transform translate-y-full group-hover:translate-y-0 transition-transform duration-300">
@@ -454,10 +528,15 @@ export default function HomePage() {
               </div>
               
               <div className="relative group overflow-hidden rounded-xl">
-                <img
+                <Image
                   src="/home-hero-photos/zebras.jpg"
                   alt="Zebras in Uganda"
+                  fill
                   className="object-cover w-full h-48 group-hover:scale-110 transition-transform duration-500"
+                  sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                  quality={imageOptimization.quality}
+                  placeholder="blur"
+                  blurDataURL={imageOptimization.blurDataURL}
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 <div className="absolute bottom-0 left-0 right-0 p-4 text-white transform translate-y-full group-hover:translate-y-0 transition-transform duration-300">
@@ -467,10 +546,15 @@ export default function HomePage() {
               </div>
               
               <div className="relative group overflow-hidden rounded-xl">
-                <img
+                <Image
                   src="/home-hero-photos/tourists.jpg"
                   alt="Tourists on safari in Uganda"
+                  fill
                   className="object-cover w-full h-48 group-hover:scale-110 transition-transform duration-500"
+                  sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                  quality={imageOptimization.quality}
+                  placeholder="blur"
+                  blurDataURL={imageOptimization.blurDataURL}
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 <div className="absolute bottom-0 left-0 right-0 p-4 text-white transform translate-y-full group-hover:translate-y-0 transition-transform duration-300">
@@ -480,10 +564,15 @@ export default function HomePage() {
               </div>
               
               <div className="relative group overflow-hidden rounded-xl">
-                <img
+                <Image
                   src="/home-hero-photos/woman tourist.jpg"
                   alt="Female tourist in Uganda"
+                  fill
                   className="object-cover w-full h-48 group-hover:scale-110 transition-transform duration-500"
+                  sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                  quality={imageOptimization.quality}
+                  placeholder="blur"
+                  blurDataURL={imageOptimization.blurDataURL}
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 <div className="absolute bottom-0 left-0 right-0 p-4 text-white transform translate-y-full group-hover:translate-y-0 transition-transform duration-300">
@@ -493,10 +582,15 @@ export default function HomePage() {
               </div>
               
               <div className="relative group overflow-hidden rounded-xl">
-                <img
+                <Image
                   src="/tours-attractions/lion cubs.jpg"
                   alt="Lion cubs in Uganda"
+                  fill
                   className="object-cover w-full h-48 group-hover:scale-110 transition-transform duration-500"
+                  sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                  quality={imageOptimization.quality}
+                  placeholder="blur"
+                  blurDataURL={imageOptimization.blurDataURL}
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 <div className="absolute bottom-0 left-0 right-0 p-4 text-white transform translate-y-full group-hover:translate-y-0 transition-transform duration-300">
@@ -506,10 +600,15 @@ export default function HomePage() {
               </div>
               
               <div className="relative group overflow-hidden rounded-xl">
-                <img
+                <Image
                   src="/tours-attractions/boat cruise.jpg"
                   alt="Boat cruise in Uganda"
+                  fill
                   className="object-cover w-full h-48 group-hover:scale-110 transition-transform duration-500"
+                  sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                  quality={imageOptimization.quality}
+                  placeholder="blur"
+                  blurDataURL={imageOptimization.blurDataURL}
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 <div className="absolute bottom-0 left-0 right-0 p-4 text-white transform translate-y-full group-hover:translate-y-0 transition-transform duration-300">
@@ -521,6 +620,6 @@ export default function HomePage() {
           </div>
         </section>
       </main>
-    </>
+    </ScrollGuard>
   )
 }

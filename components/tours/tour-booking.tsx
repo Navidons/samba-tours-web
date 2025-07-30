@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Badge } from "@/components/ui/badge"
-import { Star, Heart, Share2, ShoppingCart } from "lucide-react"
+import { Star, Heart, Share2, ShoppingCart, ArrowUp } from "lucide-react"
 import { useCart } from "@/hooks/use-cart"
 import { toast } from "sonner"
 import { EnhancedDatePicker } from "@/components/ui/enhanced-date-picker"
@@ -45,6 +45,7 @@ export default function TourBooking({ tour }: TourBookingProps) {
   const [startDate, setStartDate] = useState<Date>()
   const [guests, setGuests] = useState("2")
   const [isAddingToCart, setIsAddingToCart] = useState(false)
+  const [showMobileBooking, setShowMobileBooking] = useState(false)
   
   const router = useRouter()
   
@@ -105,7 +106,7 @@ export default function TourBooking({ tour }: TourBookingProps) {
   if (!isClient) {
     return (
       <div className="space-y-6">
-        <Card className="sticky top-8">
+        <Card className="lg:sticky lg:top-8">
           <CardContent className="p-6">
             <div className="animate-pulse">
               <div className="h-8 bg-gray-200 rounded mb-4"></div>
@@ -120,125 +121,251 @@ export default function TourBooking({ tour }: TourBookingProps) {
   }
 
   return (
-    <div className="space-y-6">
-      {/* Price Card */}
-      <Card className="sticky top-8 border-emerald-100">
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <div>
-              <div className="flex items-center space-x-2">
-                <span className="text-3xl font-bold text-emerald-600">${tour.price.toLocaleString()}</span>
-                {tour.originalPrice && (
-                  <span className="text-lg text-gray-400 line-through">${tour.originalPrice.toLocaleString()}</span>
-                )}
+    <>
+      <div className="space-y-6">
+        {/* Price Card - Desktop */}
+        <Card className="hidden lg:block lg:sticky lg:top-8 border-emerald-100">
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <div>
+                <div className="flex items-center space-x-2">
+                  <span className="text-3xl font-bold text-emerald-600">${tour.price.toLocaleString()}</span>
+                  {tour.originalPrice && (
+                    <span className="text-lg text-gray-400 line-through">${tour.originalPrice.toLocaleString()}</span>
+                  )}
+                </div>
+                <p className="text-sm text-gray-600">per person</p>
               </div>
-              <p className="text-sm text-gray-600">per person</p>
+              <div className="flex items-center space-x-1">
+                <Star className="h-4 w-4 text-yellow-500 fill-current" />
+                <span className="font-semibold">{tour.rating}</span>
+                <span className="text-sm text-gray-500">({tour.reviewCount})</span>
+              </div>
             </div>
-            <div className="flex items-center space-x-1">
-              <Star className="h-4 w-4 text-yellow-500 fill-current" />
-              <span className="font-semibold">{tour.rating}</span>
-              <span className="text-sm text-gray-500">({tour.reviewCount})</span>
+            {savings > 0 && <Badge className="bg-emerald-100 text-emerald-800 w-fit">Save ${savings.toLocaleString()} total</Badge>}
+          </CardHeader>
+
+          <CardContent className="space-y-6">
+            {/* Enhanced Date Selection */}
+            <EnhancedDatePicker
+              selectedDate={startDate}
+              onDateSelect={setStartDate}
+              label="Preferred Start Date"
+              placeholder="Select your tour start date"
+              showDateRange={true}
+              duration={tour.duration}
+              required={true}
+            />
+
+            {/* Guests Selection */}
+            <div className="space-y-2">
+              <Label htmlFor="guests">Number of Guests *</Label>
+              <Select value={guests} onValueChange={setGuests}>
+                <SelectTrigger className="border-emerald-200 focus:ring-emerald-500">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {Array.from({ length: Math.min(tour.maxGroupSize, 12) }, (_, i) => (
+                    <SelectItem key={i + 1} value={(i + 1).toString()}>
+                      {i + 1} {i + 1 === 1 ? "Guest" : "Guests"}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <p className="text-xs text-gray-500">
+                Maximum group size: {tour.maxGroupSize} guests
+              </p>
             </div>
-          </div>
-          {savings > 0 && <Badge className="bg-emerald-100 text-emerald-800 w-fit">Save ${savings.toLocaleString()} total</Badge>}
-        </CardHeader>
 
-        <CardContent className="space-y-6">
-          {/* Enhanced Date Selection */}
-          <EnhancedDatePicker
-            selectedDate={startDate}
-            onDateSelect={setStartDate}
-            label="Preferred Start Date"
-            placeholder="Select your tour start date"
-            minBookingDays={7}
-            maxBookingDays={365}
-            showDateRange={true}
-            duration={tour.duration}
-            required={true}
-          />
+            {/* Price Breakdown */}
+            <div className="space-y-2 p-4 bg-emerald-50/50 rounded-lg border border-emerald-100">
+              <div className="flex justify-between text-sm">
+                <span>
+                  ${tour.price.toLocaleString()} × {guests} guests
+                </span>
+                <span>${totalPrice.toLocaleString()}</span>
+              </div>
+              {savings > 0 && (
+                <div className="flex justify-between text-sm text-emerald-600">
+                  <span>Discount</span>
+                  <span>-${savings.toLocaleString()}</span>
+                </div>
+              )}
+              <div className="border-t border-emerald-100 pt-2 flex justify-between font-semibold">
+                <span>Total</span>
+                <span>${(totalPrice - savings).toLocaleString()}</span>
+              </div>
+            </div>
 
-          {/* Guests Selection */}
-          <div className="space-y-2">
-            <Label htmlFor="guests">Number of Guests *</Label>
-            <Select value={guests} onValueChange={setGuests}>
-              <SelectTrigger className="border-emerald-200 focus:ring-emerald-500">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {Array.from({ length: Math.min(tour.maxGroupSize, 12) }, (_, i) => (
-                  <SelectItem key={i + 1} value={(i + 1).toString()}>
-                    {i + 1} {i + 1 === 1 ? "Guest" : "Guests"}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <p className="text-xs text-gray-500">
-              Maximum group size: {tour.maxGroupSize} guests
+            {/* Add to Cart Button */}
+            <Button
+              onClick={handleAddToCart}
+              disabled={!startDate || isAddingToCart}
+              className="w-full bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700 text-white shadow-lg hover:shadow-xl transition-all duration-300"
+              size="lg"
+            >
+              {isAddingToCart ? (
+                "Adding to Cart..."
+              ) : (
+                <>
+                  <ShoppingCart className="mr-2 h-4 w-4" />
+                  Add to Cart
+                </>
+              )}
+            </Button>
+
+            <p className="text-xs text-center text-gray-500">
+              Add this tour to your cart and checkout when ready
             </p>
-          </div>
 
-          {/* Price Breakdown */}
-          <div className="space-y-2 p-4 bg-emerald-50/50 rounded-lg border border-emerald-100">
-            <div className="flex justify-between text-sm">
-              <span>
-                ${tour.price.toLocaleString()} × {guests} guests
-              </span>
-              <span>${totalPrice.toLocaleString()}</span>
+            {/* Quick Actions */}
+            <div className="flex gap-2">
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="flex-1 border-emerald-200 hover:bg-emerald-50 hover:text-emerald-700 transition-colors duration-300"
+              >
+                <Heart className="mr-2 h-4 w-4" />
+                Wishlist
+              </Button>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="flex-1 border-emerald-200 hover:bg-emerald-50 hover:text-emerald-700 transition-colors duration-300"
+              >
+                <Share2 className="mr-2 h-4 w-4" />
+                Share
+              </Button>
             </div>
-            {savings > 0 && (
-              <div className="flex justify-between text-sm text-emerald-600">
-                <span>Discount</span>
-                <span>-${savings.toLocaleString()}</span>
+          </CardContent>
+        </Card>
+
+        {/* Mobile Quick Booking Card */}
+        <Card className="lg:hidden border-emerald-100 bg-gradient-to-r from-emerald-50 to-green-50">
+          <CardHeader className="pb-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <div className="flex items-center space-x-2">
+                  <span className="text-2xl font-bold text-emerald-600">${tour.price.toLocaleString()}</span>
+                  {tour.originalPrice && (
+                    <span className="text-base text-gray-400 line-through">${tour.originalPrice.toLocaleString()}</span>
+                  )}
+                </div>
+                <p className="text-sm text-gray-600">per person</p>
+              </div>
+              <div className="flex items-center space-x-1">
+                <Star className="h-4 w-4 text-yellow-500 fill-current" />
+                <span className="font-semibold text-sm">{tour.rating}</span>
+                <span className="text-xs text-gray-500">({tour.reviewCount})</span>
+              </div>
+            </div>
+            {savings > 0 && <Badge className="bg-emerald-100 text-emerald-800 w-fit text-xs">Save ${savings.toLocaleString()}</Badge>}
+          </CardHeader>
+
+          <CardContent className="space-y-4">
+            <Button
+              onClick={() => setShowMobileBooking(!showMobileBooking)}
+              className="w-full bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700 text-white"
+              size="lg"
+            >
+              {showMobileBooking ? 'Hide Booking Details' : 'Book This Tour'}
+            </Button>
+
+            {showMobileBooking && (
+              <div className="space-y-4 pt-4 border-t border-emerald-200">
+                {/* Enhanced Date Selection */}
+                <EnhancedDatePicker
+                  selectedDate={startDate}
+                  onDateSelect={setStartDate}
+                  label="Preferred Start Date"
+                  placeholder="Select your tour start date"
+                  showDateRange={true}
+                  duration={tour.duration}
+                  required={true}
+                />
+
+                {/* Guests Selection */}
+                <div className="space-y-2">
+                  <Label htmlFor="guests">Number of Guests *</Label>
+                  <Select value={guests} onValueChange={setGuests}>
+                    <SelectTrigger className="border-emerald-200 focus:ring-emerald-500">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {Array.from({ length: Math.min(tour.maxGroupSize, 12) }, (_, i) => (
+                        <SelectItem key={i + 1} value={(i + 1).toString()}>
+                          {i + 1} {i + 1 === 1 ? "Guest" : "Guests"}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <p className="text-xs text-gray-500">
+                    Maximum group size: {tour.maxGroupSize} guests
+                  </p>
+                </div>
+
+                {/* Price Breakdown */}
+                <div className="space-y-2 p-3 bg-white rounded-lg border border-emerald-100">
+                  <div className="flex justify-between text-sm">
+                    <span>
+                      ${tour.price.toLocaleString()} × {guests} guests
+                    </span>
+                    <span>${totalPrice.toLocaleString()}</span>
+                  </div>
+                  {savings > 0 && (
+                    <div className="flex justify-between text-sm text-emerald-600">
+                      <span>Discount</span>
+                      <span>-${savings.toLocaleString()}</span>
+                    </div>
+                  )}
+                  <div className="border-t border-emerald-100 pt-2 flex justify-between font-semibold">
+                    <span>Total</span>
+                    <span>${(totalPrice - savings).toLocaleString()}</span>
+                  </div>
+                </div>
+
+                {/* Add to Cart Button */}
+                <Button
+                  onClick={handleAddToCart}
+                  disabled={!startDate || isAddingToCart}
+                  className="w-full bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700 text-white shadow-lg"
+                  size="lg"
+                >
+                  {isAddingToCart ? (
+                    "Adding to Cart..."
+                  ) : (
+                    <>
+                      <ShoppingCart className="mr-2 h-4 w-4" />
+                      Add to Cart - ${(totalPrice - savings).toLocaleString()}
+                    </>
+                  )}
+                </Button>
               </div>
             )}
-            <div className="border-t border-emerald-100 pt-2 flex justify-between font-semibold">
-              <span>Total</span>
-              <span>${(totalPrice - savings).toLocaleString()}</span>
-            </div>
-          </div>
+          </CardContent>
+        </Card>
+      </div>
 
-          {/* Add to Cart Button */}
-          <Button
-            onClick={handleAddToCart}
-            disabled={!startDate || isAddingToCart}
-            className="w-full bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700 text-white shadow-lg hover:shadow-xl transition-all duration-300"
-            size="lg"
-          >
-            {isAddingToCart ? (
-              "Adding to Cart..."
-            ) : (
-              <>
-                <ShoppingCart className="mr-2 h-4 w-4" />
-                Add to Cart
-              </>
-            )}
-          </Button>
-
-          <p className="text-xs text-center text-gray-500">
-            Add this tour to your cart and checkout when ready
-          </p>
-
-          {/* Quick Actions */}
-          <div className="flex gap-2">
-            <Button 
-              variant="outline" 
-              size="sm" 
-              className="flex-1 border-emerald-200 hover:bg-emerald-50 hover:text-emerald-700 transition-colors duration-300"
-            >
-              <Heart className="mr-2 h-4 w-4" />
-              Wishlist
-            </Button>
-            <Button 
-              variant="outline" 
-              size="sm" 
-              className="flex-1 border-emerald-200 hover:bg-emerald-50 hover:text-emerald-700 transition-colors duration-300"
-            >
-              <Share2 className="mr-2 h-4 w-4" />
-              Share
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
+      {/* Mobile Floating Action Button */}
+      <div className="lg:hidden fixed bottom-4 left-4 right-4 z-50">
+        <Button
+          onClick={() => setShowMobileBooking(!showMobileBooking)}
+          className="w-full bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700 text-white shadow-lg"
+          size="lg"
+        >
+          {showMobileBooking ? (
+            <>
+              <ArrowUp className="mr-2 h-4 w-4" />
+              Hide Details
+            </>
+          ) : (
+            <>
+              <ShoppingCart className="mr-2 h-4 w-4" />
+              Book Now - ${tour.price.toLocaleString()}
+            </>
+          )}
+        </Button>
+      </div>
+    </>
   )
 }

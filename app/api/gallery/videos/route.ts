@@ -44,7 +44,7 @@ export async function GET(request: NextRequest) {
       whereClause.OR = [
         { title: { contains: search, mode: 'insensitive' } },
         { description: { contains: search, mode: 'insensitive' } },
-        { videoName: { contains: search, mode: 'insensitive' } },
+        { videoUrl: { contains: search, mode: 'insensitive' } },
         { photographer: { contains: search, mode: 'insensitive' } }
       ]
     }
@@ -145,11 +145,11 @@ export async function GET(request: NextRequest) {
         title: video.title,
         description: video.description,
         duration: video.duration,
-        videoName: video.videoName,
-        videoType: video.videoType,
-        videoSize: video.videoSize,
+        videoName: video.videoUrl, // Use videoUrl as videoName for compatibility
+        videoType: video.videoProvider || 'external', // Use videoProvider as videoType
+        videoSize: video.thumbnailSize,
         photographer: video.photographer,
-        date: video.date,
+        date: video.createdAt, // Use createdAt as date
         featured: video.featured,
         category: video.category,
         location: video.location,
@@ -159,7 +159,9 @@ export async function GET(request: NextRequest) {
         createdAt: video.createdAt,
         updatedAt: video.updatedAt,
         thumbnail: thumbnailObj,
-        videoUrl: `/api/gallery/videos/${video.id}/stream`
+        videoUrl: video.videoUrl, // Use the actual videoUrl field
+        videoProvider: video.videoProvider,
+        videoId: video.videoId
       }
     })
 

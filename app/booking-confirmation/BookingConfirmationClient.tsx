@@ -188,19 +188,35 @@ Check out Samba Tours for incredible Uganda safari experiences!`
       <div className="max-w-4xl mx-auto space-y-8">
         {/* Success Header */}
         <div className="text-center space-y-6">
-          <div className="flex items-center justify-center space-x-3">
-            <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center">
-              <CheckCircle className="w-8 h-8 text-emerald-600" />
+          <div className="relative">
+            {/* Background decoration */}
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="w-32 h-32 bg-emerald-100 rounded-full opacity-50 animate-pulse"></div>
             </div>
-            <div>
-              <h1 className="text-4xl font-bold text-gray-900">Booking Confirmed!</h1>
-              <p className="text-lg text-gray-600">Thank you for choosing Samba Tours</p>
+            
+            <div className="relative flex items-center justify-center space-x-4">
+              <div className="w-20 h-20 bg-emerald-500 rounded-full flex items-center justify-center shadow-lg">
+                <CheckCircle className="w-10 h-10 text-white" />
+              </div>
+              <div className="text-left">
+                <h1 className="text-4xl font-bold text-gray-900">Booking Confirmed!</h1>
+                <p className="text-lg text-gray-600">Thank you for choosing Samba Tours</p>
+              </div>
             </div>
           </div>
           
-          <Badge variant="outline" className="text-lg px-6 py-3">
-            Reference: {bookingData.bookingReference}
-          </Badge>
+          <div className="flex items-center justify-center space-x-2">
+            <Badge variant="outline" className="text-lg px-6 py-3 border-emerald-200 bg-emerald-50">
+              <span className="text-emerald-700 font-semibold">Reference:</span> {bookingData.bookingReference}
+            </Badge>
+          </div>
+          
+          {/* Success message */}
+          <div className="max-w-2xl mx-auto p-4 bg-emerald-50 rounded-lg border border-emerald-200">
+            <p className="text-emerald-800 font-medium">
+              🎉 Your adventure awaits! We're excited to show you the beauty of Uganda.
+            </p>
+          </div>
         </div>
 
         {/* Booking Summary */}
@@ -238,37 +254,65 @@ Check out Samba Tours for incredible Uganda safari experiences!`
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="flex items-start space-x-4">
-              <div className="relative w-24 h-24 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0">
+            <div className="flex items-start space-x-6">
+              <div className="relative w-32 h-24 rounded-xl overflow-hidden bg-gradient-to-br from-emerald-100 to-green-100 flex-shrink-0 shadow-md">
                 <Image
-                  src="/photos/fort-portal-crater-hero.jpg"
+                  src="/images/uganda-safari-success.jpg"
                   alt={bookingData.tourTitle}
                   fill
                   className="object-cover"
+                  priority
+                  onError={(e) => {
+                    // Fallback to a different image if the first one fails
+                    const target = e.target as HTMLImageElement
+                    if (target.src.includes('uganda-safari-success.jpg')) {
+                      target.src = '/images/booking-success.jpg'
+                    } else {
+                      // If both fail, hide the image and show a placeholder
+                      target.style.display = 'none'
+                      const parent = target.parentElement
+                      if (parent) {
+                        parent.innerHTML = `
+                          <div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-emerald-500 to-green-600">
+                            <div class="text-center text-white">
+                              <div class="text-2xl mb-1">🎉</div>
+                              <div class="text-xs font-medium">Booking Confirmed</div>
+                            </div>
+                          </div>
+                        `
+                      }
+                    }
+                  }}
                 />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
+                <div className="absolute bottom-2 left-2 right-2">
+                  <Badge className="bg-emerald-600 text-white text-xs px-2 py-1">
+                    Confirmed
+                  </Badge>
+                </div>
               </div>
               <div className="flex-1">
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">{bookingData.tourTitle}</h3>
+                <h3 className="text-xl font-semibold text-gray-900 mb-3">{bookingData.tourTitle}</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-600">
                   <div className="flex items-center space-x-2">
-                    <Calendar className="w-4 h-4" />
+                    <Calendar className="w-4 h-4 text-emerald-600" />
                     <span>{formatDate(bookingData.tourDate)}</span>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <Users className="w-4 h-4" />
+                    <Users className="w-4 h-4 text-emerald-600" />
                     <span>{bookingData.numberOfGuests} {bookingData.numberOfGuests === 1 ? 'Guest' : 'Guests'}</span>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <DollarSign className="w-4 h-4" />
+                    <DollarSign className="w-4 h-4 text-emerald-600" />
                     <span>{formatCurrency(bookingData.tourPrice)} per person</span>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <Clock className="w-4 h-4" />
+                    <Clock className="w-4 h-4 text-emerald-600" />
                     <span>Full Day Tour</span>
                   </div>
                 </div>
                 {bookingData.specialRequests && (
-                  <div className="mt-4 p-3 bg-amber-50 rounded-lg">
+                  <div className="mt-4 p-3 bg-amber-50 rounded-lg border border-amber-200">
                     <h4 className="font-medium text-amber-800 mb-1">Special Requests:</h4>
                     <p className="text-sm text-amber-700">{bookingData.specialRequests}</p>
                   </div>

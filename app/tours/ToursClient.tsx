@@ -14,6 +14,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
 import Image from "next/image"
+import { useScrollManagement } from "@/hooks/use-scroll-management"
 
 interface Tour {
   id: number
@@ -97,6 +98,12 @@ export default function ToursClient({
   const [currentPage, setCurrentPage] = useState(1)
   const [totalPages, setTotalPages] = useState(initialTotalPages)
   
+  // Scroll management hook
+  const { startLoading, endLoading } = useScrollManagement({
+    preserveScroll: true,
+    preventAutoScroll: true
+  })
+  
   const [filters, setFilters] = useState({
     search: "",
     categories: [] as string[],
@@ -128,6 +135,7 @@ export default function ToursClient({
   }, [currentPage, filters, sortBy])
 
   const loadTours = async () => {
+    startLoading() // Signal data loading start
     setLoading(true)
     try {
       const params = new URLSearchParams({
@@ -168,6 +176,7 @@ export default function ToursClient({
       setTours([])
     } finally {
       setLoading(false)
+      endLoading() // Signal data loading end
     }
   }
 

@@ -41,7 +41,7 @@ const socialLinks = [
   { name: "Facebook", href: "#", icon: Facebook, color: "hover:text-blue-500" },
   { name: "Twitter", href: "#", icon: Twitter, color: "hover:text-sky-500" },
   { name: "Instagram", href: "#", icon: Instagram, color: "hover:text-pink-500" },
-  { name: "YouTube", href: "#", icon: Youtube, color: "hover:text-emerald-500" },
+  { name: "YouTube", href: "#", icon: Youtube, color: "hover:text-green-600" },
 ]
 
 export default function Footer() {
@@ -127,63 +127,62 @@ export default function Footer() {
       <div className="relative border-b border-white/10">
         <div className="max-w-7xl mx-auto px-4 py-12">
           <div className="max-w-4xl mx-auto text-center">
-            <div className="inline-flex items-center bg-gradient-to-r from-green-500/20 to-emerald-500/20 text-green-300 px-4 py-2 rounded-full text-sm font-bold mb-4 border border-green-500/30 backdrop-blur-sm">
-              <Mail className="h-4 w-4 mr-2" />
-              Stay Updated with Safari Deals
-            </div>
-            <h3 className="text-2xl md:text-3xl font-bold mb-3 bg-gradient-to-r from-green-400 to-emerald-400 bg-clip-text text-transparent">
-              Get Exclusive Safari Deals & Travel Tips
-            </h3>
-            <p className="text-lg text-gray-300 mb-6 max-w-2xl mx-auto leading-relaxed">
-              Join over <span className="text-green-400 font-semibold">10,000+</span> adventure seekers who receive our monthly newsletter with special offers, travel guides,
-              and insider tips for unforgettable Uganda experiences.
-            </p>
-            
-            {/* Stats */}
-            <div className="grid grid-cols-3 gap-4 mb-6 max-w-md mx-auto">
-              <div className="text-center">
-                <div className="text-xl font-bold text-green-400">500+</div>
-                <div className="text-xs text-gray-400">Happy Travelers</div>
+            <div className="text-center mb-8">
+              <div className="inline-flex items-center bg-gradient-to-r from-green-600/20 to-green-700/20 text-green-600 px-4 py-2 rounded-full text-sm font-bold mb-4 border border-green-600/30 backdrop-blur-sm">
+                🌿 Wildlife & Nature Tours
               </div>
-              <div className="text-center">
-                <div className="text-xl font-bold text-green-400">50+</div>
-                <div className="text-xs text-gray-400">Tour Packages</div>
+              <h3 className="text-2xl md:text-3xl font-bold mb-3 bg-gradient-to-r from-green-600 to-green-700 bg-clip-text text-transparent">
+                Stay Connected with Nature
+              </h3>
+              <p className="text-gray-300 mb-6 max-w-2xl mx-auto">
+                Join over <span className="text-green-400 font-semibold">10,000+</span> adventure seekers who receive our monthly newsletter with special offers, travel guides,
+                and exclusive wildlife photography tips.
+              </p>
+              
+              <div className="flex justify-center items-center space-x-8 mb-6">
+                <div className="text-center">
+                  <div className="text-xl font-bold text-green-400">500+</div>
+                  <div className="text-sm text-gray-400">Happy Travelers</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-xl font-bold text-green-400">50+</div>
+                  <div className="text-sm text-gray-400">Tour Destinations</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-xl font-bold text-green-400">4.9★</div>
+                  <div className="text-sm text-gray-400">Customer Rating</div>
+                </div>
               </div>
-              <div className="text-center">
-                <div className="text-xl font-bold text-green-400">4.9★</div>
-                <div className="text-xs text-gray-400">Average Rating</div>
-              </div>
-            </div>
 
-            <form onSubmit={handleNewsletterSubmit} className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
-              <div className="flex-1 relative">
-                <Input
-                  type="email"
-                  placeholder="Enter your email address"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className={`bg-white/10 border-white/20 text-white placeholder:text-gray-400 focus:bg-white/20 focus:border-green-500 pr-10 transition-all duration-300 ${
-                    subscriptionStatus === "success" ? "border-green-500" : 
-                    subscriptionStatus === "error" ? "border-red-500" : ""
-                  }`}
+              <form onSubmit={handleNewsletterSubmit} className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
+                <div className="relative flex-1">
+                  <Input
+                    type="email"
+                    placeholder="Enter your email address"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className={`w-full bg-white/10 border-white/20 text-white placeholder:text-gray-400 focus:bg-white/20 focus:border-green-600 pr-10 transition-all duration-300 ${
+                      subscriptionStatus === "success" ? "border-green-600" :
+                      subscriptionStatus === "error" ? "border-red-500" : ""
+                    }`}
+                  />
+                  {subscriptionStatus === "success" && (
+                    <CheckCircle className="absolute right-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-green-600" />
+                  )}
+                  {subscriptionStatus === "error" && (
+                    <AlertCircle className="absolute right-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-red-500" />
+                  )}
+                </div>
+                <Button
+                  type="submit"
                   disabled={isSubmitting}
-                />
-                {subscriptionStatus === "success" && (
-                  <CheckCircle className="absolute right-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-green-500" />
-                )}
-                {subscriptionStatus === "error" && (
-                  <AlertCircle className="absolute right-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-emerald-500" />
-                )}
-              </div>
-              <Button 
-                type="submit"
-                disabled={isSubmitting}
-                className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 font-semibold px-6 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 shadow-lg hover:shadow-xl"
-              >
-                {isSubmitting ? "Subscribing..." : "Subscribe"}
-              </Button>
-            </form>
-            <p className="text-xs text-gray-400 mt-3">No spam, unsubscribe anytime. We respect your privacy.</p>
+                  className="bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 font-semibold px-6 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 shadow-lg hover:shadow-xl"
+                >
+                  {isSubmitting ? "Subscribing..." : "Subscribe"}
+                </Button>
+              </form>
+              <p className="text-xs text-gray-400 mt-3">No spam, unsubscribe anytime. We respect your privacy.</p>
+            </div>
           </div>
         </div>
       </div>
@@ -208,7 +207,7 @@ export default function Footer() {
                 <span className="text-white font-bold text-xl hidden">ST</span>
               </div>
               <div>
-                <h2 className="text-xl font-bold group-hover:text-emerald-400 transition-colors">Samba Tours</h2>
+                <h2 className="text-xl font-bold group-hover:text-green-600 transition-colors">Samba Tours</h2>
                 <p className="text-xs text-gray-400">Uganda Safari Adventures</p>
               </div>
             </Link>
@@ -221,16 +220,16 @@ export default function Footer() {
             {/* Trust Indicators */}
             <div className="space-y-2 mb-4">
               <div className="flex items-center space-x-2 text-xs group">
-                <Award className="h-4 w-4 text-emerald-500 group-hover:scale-110 transition-transform" />
-                <span className="group-hover:text-emerald-400 transition-colors">Licensed Tour Operator</span>
+                <Award className="h-4 w-4 text-green-600 group-hover:scale-110 transition-transform" />
+                <span className="group-hover:text-green-400 transition-colors">Licensed Tour Operator</span>
               </div>
               <div className="flex items-center space-x-2 text-xs group">
-                <Shield className="h-4 w-4 text-emerald-500 group-hover:scale-110 transition-transform" />
-                <span className="group-hover:text-emerald-400 transition-colors">Fully Insured & Bonded</span>
+                <Shield className="h-4 w-4 text-green-600 group-hover:scale-110 transition-transform" />
+                <span className="group-hover:text-green-400 transition-colors">Fully Insured & Bonded</span>
               </div>
               <div className="flex items-center space-x-2 text-xs group">
-                <Heart className="h-4 w-4 text-emerald-500 group-hover:scale-110 transition-transform" />
-                <span className="group-hover:text-emerald-400 transition-colors">98% Customer Satisfaction</span>
+                <Heart className="h-4 w-4 text-green-600 group-hover:scale-110 transition-transform" />
+                <span className="group-hover:text-green-400 transition-colors">98% Customer Satisfaction</span>
               </div>
             </div>
 
@@ -255,104 +254,90 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* Quick Links */}
-          <div>
-            <h3 className="text-base font-bold mb-4 text-green-400">Quick Links</h3>
-            <ul className="space-y-2">
+          <div className="space-y-4">
+            <h3 className="text-base font-bold mb-4 text-green-500">Quick Links</h3>
+            <div className="space-y-2">
               {quickLinks.map((link) => (
-                <li key={link.name}>
-                  <Link
-                    href={link.href}
-                    className="text-gray-300 hover:text-white transition-all duration-200 flex items-center group text-sm"
-                  >
-                    <span className="mr-2 text-sm">{link.icon}</span>
-                    <span className="group-hover:translate-x-1 transition-transform duration-200">{link.name}</span>
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Services Offered */}
-          <div>
-            <h3 className="text-base font-bold mb-4 text-green-400">Services Offered</h3>
-            <ul className="space-y-2">
-              {services.map((service) => {
-                const Icon = service.icon
-                return (
-                  <li key={service.name}>
-                    <Link
-                      href={service.href}
-                      className="text-gray-300 hover:text-white transition-all duration-200 flex items-center group text-sm"
-                    >
-                      <Icon className="h-4 w-4 text-green-500 mr-2 flex-shrink-0 group-hover:scale-110 transition-transform" />
-                      <span className="group-hover:translate-x-1 transition-transform duration-200">{service.name}</span>
-                    </Link>
-                  </li>
-                )
-              })}
-              <li>
                 <Link
-                  href="/services"
-                  className="text-gray-300 hover:text-white transition-all duration-200 flex items-center group text-sm"
+                  key={link.name}
+                  href={link.href}
+                  className="flex items-center space-x-2 text-gray-300 hover:text-green-400 transition-colors group"
                 >
-                  <Map className="h-4 w-4 text-green-500 mr-2 flex-shrink-0 group-hover:scale-110 transition-transform" />
-                  <span className="group-hover:translate-x-1 transition-transform duration-200">View All Services</span>
+                  <span className="text-lg">{link.icon}</span>
+                  <span>{link.name}</span>
                 </Link>
-              </li>
-            </ul>
-          </div>
-
-          {/* Tour Categories */}
-          <div>
-            <h3 className="text-base font-bold mb-4 text-green-400">Popular Tours</h3>
-            <ul className="space-y-2">
-              {tourCategories.map((category) => (
-                <li key={category.name}>
-                  <Link
-                    href={category.href}
-                    className="text-gray-300 hover:text-white transition-all duration-200 flex items-center group text-sm"
-                  >
-                    <span className="mr-2 text-sm">{category.icon}</span>
-                    <span className="group-hover:translate-x-1 transition-transform duration-200">{category.name}</span>
-                  </Link>
-                </li>
               ))}
-            </ul>
+            </div>
           </div>
 
-          {/* Contact & Support */}
-          <div>
-            <h3 className="text-base font-bold mb-4 text-green-400">Contact & Support</h3>
+          <div className="space-y-4">
+            <h3 className="text-base font-bold mb-4 text-green-500">Services Offered</h3>
+            <div className="space-y-2">
+              {services.map((service) => (
+                <Link
+                  key={service.name}
+                  href={service.href}
+                  className="flex items-start space-x-2 text-gray-300 hover:text-green-400 transition-colors group"
+                >
+                  <service.icon className="h-4 w-4 text-green-600 mr-2 flex-shrink-0 group-hover:scale-110 transition-transform" />
+                  <div>
+                    <div className="font-medium">{service.name}</div>
+                    <div className="text-xs text-gray-400">{service.description}</div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
 
-            {/* Contact Info */}
-            <div className="space-y-3 mb-4">
-              <div className="flex items-start space-x-2 group">
-                <MapPin className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0 group-hover:scale-110 transition-transform" />
-                <div className="text-sm">
-                  <p className="text-gray-300 group-hover:text-white transition-colors">Plot 123, Kampala Road</p>
-                  <p className="text-gray-300 group-hover:text-white transition-colors">Kampala, Uganda</p>
+          <div className="space-y-4">
+            <div className="flex items-center space-x-2 mb-4">
+              <Map className="h-4 w-4 text-green-600 mr-2 flex-shrink-0 group-hover:scale-110 transition-transform" />
+              <h3 className="text-base font-bold text-green-500">Popular Tours</h3>
+            </div>
+            <div className="space-y-2">
+              {tourCategories.map((tour) => (
+                <Link
+                  key={tour.name}
+                  href={tour.href}
+                  className="flex items-center space-x-2 text-gray-300 hover:text-green-400 transition-colors group"
+                >
+                  <span className="text-lg">{tour.icon}</span>
+                  <span>{tour.name}</span>
+                </Link>
+              ))}
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            <h3 className="text-base font-bold mb-4 text-green-500">Contact & Support</h3>
+            <div className="space-y-3">
+              <div className="flex items-start space-x-3">
+                <MapPin className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0 group-hover:scale-110 transition-transform" />
+                <div className="text-gray-300">
+                  <div className="font-medium">Kampala, Uganda</div>
+                  <div className="text-sm text-gray-400">East Africa's Wildlife Capital</div>
                 </div>
               </div>
-
-              <div className="flex items-center space-x-2 group">
-                <Phone className="h-4 w-4 text-green-500 flex-shrink-0 group-hover:scale-110 transition-transform" />
-                <div className="text-sm">
-                  <p className="text-gray-300 group-hover:text-white transition-colors">+256 703 267 150</p>
-                  <p className="text-gray-300 group-hover:text-white transition-colors">+256 771 023 297</p>
-                </div>
+              
+              <div className="flex items-center space-x-3">
+                <Phone className="h-4 w-4 text-green-600 flex-shrink-0 group-hover:scale-110 transition-transform" />
+                <a href="tel:+256703267150" className="text-gray-300 hover:text-green-400 transition-colors">
+                  +256 703 267 150
+                </a>
               </div>
-
-              <div className="flex items-center space-x-2 group">
-                <Mail className="h-4 w-4 text-green-500 flex-shrink-0 group-hover:scale-110 transition-transform" />
-                <p className="text-gray-300 group-hover:text-white transition-colors text-sm">sambatours256@gmail.com</p>
+              
+              <div className="flex items-center space-x-3">
+                <Mail className="h-4 w-4 text-green-600 flex-shrink-0 group-hover:scale-110 transition-transform" />
+                <a href="mailto:sambatours256@gmail.com" className="text-gray-300 hover:text-green-400 transition-colors">
+                  sambatours256@gmail.com
+                </a>
               </div>
-
-              <div className="flex items-center space-x-2 group">
-                <Clock className="h-4 w-4 text-green-500 flex-shrink-0 group-hover:scale-110 transition-transform" />
-                <div className="text-sm">
-                  <p className="text-gray-300 group-hover:text-white transition-colors">Mon - Fri: 8AM - 6PM</p>
-                  <p className="text-gray-300 group-hover:text-white transition-colors">Sat - Sun: 9AM - 5PM</p>
+              
+              <div className="flex items-center space-x-3">
+                <Clock className="h-4 w-4 text-green-600 flex-shrink-0 group-hover:scale-110 transition-transform" />
+                <div className="text-gray-300">
+                  <div>24/7 Support Available</div>
+                  <div className="text-sm text-gray-400">Emergency Contact</div>
                 </div>
               </div>
             </div>
@@ -364,26 +349,21 @@ export default function Footer() {
       <div className="relative border-t border-white/10">
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-2 md:space-y-0">
-            <div className="flex flex-col md:flex-row items-center space-y-1 md:space-y-0 md:space-x-4 text-xs text-gray-400">
-              <p>&copy; {new Date().getFullYear()} Samba Tours Uganda. All rights reserved.</p>
-              <div className="flex items-center space-x-3">
-                <Link href="/terms" className="hover:text-green-400 transition-colors">
-                  Terms of Service
-                </Link>
-                <span>•</span>
-                <Link href="/privacy" className="hover:text-green-400 transition-colors">
-                  Privacy Policy
-                </Link>
-                <span>•</span>
-                <Link href="/cookies" className="hover:text-green-400 transition-colors">
-                  Cookie Policy
-                </Link>
-              </div>
+            <div className="flex flex-wrap justify-center gap-6 text-sm text-gray-400">
+              <Link href="/terms" className="hover:text-green-400 transition-colors">
+                Terms of Service
+              </Link>
+              <Link href="/privacy" className="hover:text-green-400 transition-colors">
+                Privacy Policy
+              </Link>
+              <Link href="/cookies" className="hover:text-green-400 transition-colors">
+                Cookie Policy
+              </Link>
             </div>
-
-            <div className="flex items-center space-x-2 text-xs text-gray-400">
+            
+            <div className="flex items-center justify-center space-x-2 text-xs text-gray-400">
               <span>Made with</span>
-              <Heart className="h-3 w-3 text-emerald-500 animate-pulse" />
+              <Heart className="h-3 w-3 text-green-500 animate-pulse" />
               <span>in Uganda</span>
             </div>
           </div>

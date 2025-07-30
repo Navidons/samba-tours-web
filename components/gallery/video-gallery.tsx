@@ -53,6 +53,8 @@ interface VideoData {
     type: string | null
   } | null
   videoUrl: string
+  videoProvider?: string
+  videoId?: string
   featured: boolean
 }
 
@@ -80,15 +82,19 @@ export default function VideoGallery() {
       setError(null)
 
       const params = new URLSearchParams({
-        featured: 'true', // Show only featured videos in this section
-        limit: '4', // Limit to 4 videos for the gallery preview
+        // Remove featured filter to show all videos initially
+        limit: '8', // Show more videos for testing
         page: '1'
       })
 
+      console.log('Fetching videos from:', `/api/gallery/videos?${params}`)
       const response = await fetch(`/api/gallery/videos?${params}`)
       const data = await response.json()
 
+      console.log('Video API response:', data)
+
       if (!response.ok) {
+        console.error('Video API error:', data)
         if (data.type === 'CONNECTION_ERROR') {
           setError({
             message: 'Unable to connect to the database. Please try again later.',
@@ -103,8 +109,19 @@ export default function VideoGallery() {
         return
       }
 
+      if (!data.videos || !Array.isArray(data.videos)) {
+        console.error('Invalid video data structure:', data)
+        setError({
+          message: 'Invalid video data received from server.',
+          type: 'DATA_ERROR'
+        })
+        return
+      }
+
       setVideos(data.videos || [])
-      setPagination(data.pagination || { total: 0, page: 1, pageSize: 4, totalPages: 1 })
+      setPagination(data.pagination || { total: 0, page: 1, pageSize: 8, totalPages: 1 })
+      
+      console.log('Videos loaded successfully:', data.videos.length)
     } catch (err) {
       console.error('Error loading videos:', err)
       setError({
@@ -154,48 +171,10 @@ export default function VideoGallery() {
     }
   }
 
-  // Show connection error state
-  if (error?.type === 'CONNECTION_ERROR') {
-    return (
-      <section className="py-24 bg-gradient-to-br from-emerald-50 via-white to-green-50">
-        <div className="container-max px-4">
-          <div className="text-center">
-            <div className="mb-8">
-              <h2 className="text-4xl md:text-5xl font-playfair font-bold text-gray-900 mb-6">
-                Video
-                <span className="block text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 to-green-600">
-                  Gallery
-                </span>
-              </h2>
-              <div className="w-24 h-1 bg-gradient-to-r from-emerald-500 to-green-500 mx-auto rounded-full"></div>
-            </div>
-            
-            <div className="max-w-md mx-auto">
-              <div className="bg-white rounded-2xl shadow-xl p-8 border border-emerald-100">
-                <div className="w-16 h-16 mx-auto mb-6 bg-red-100 rounded-full flex items-center justify-center">
-                  <AlertCircle className="w-8 h-8 text-red-600" />
-                </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-4">Connection Error</h3>
-                <p className="text-gray-600 mb-6">{error.message}</p>
-                <Button 
-                  onClick={handleRetry} 
-                  className="bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700 text-white px-6 py-3 rounded-xl"
-                >
-                  <RefreshCw className="w-4 h-4 mr-2" />
-                  Try Again
-                </Button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-    )
-  }
-
   return (
     <section className="py-24 bg-gradient-to-br from-emerald-50 via-white to-green-50">
       <div className="container-max px-4">
-        {/* Header Section */}
+        {/* Header Section - Always show first */}
         <div className="text-center mb-16">
           <div className="mb-8">
             <h2 className="text-4xl md:text-5xl font-playfair font-bold text-gray-900 mb-6">
@@ -212,28 +191,49 @@ export default function VideoGallery() {
             adventures with our travelers.
           </p>
           
-          {/* Stats */}
-          <div className="flex justify-center items-center space-x-8 mt-8">
-            <div className="text-center">
-              <div className="text-2xl font-bold text-gray-900">{pagination.total}</div>
-              <div className="text-sm text-gray-600">Videos</div>
-            </div>
-            <div className="w-px h-8 bg-emerald-200"></div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-gray-900">
-                {videos.reduce((sum, video) => sum + video.views, 0).toLocaleString()}
+          {/* Stats - Show if we have data */}
+          {videos.length > 0 && (
+            <div className="flex justify-center items-center space-x-8 mt-8">
+              <div className="text-center">
+                <div className="text-2xl font-bold text-gray-900">{pagination.total}</div>
+                <div className="text-sm text-gray-600">Videos</div>
               </div>
-              <div className="text-sm text-gray-600">Total Views</div>
-            </div>
-            <div className="w-px h-8 bg-emerald-200"></div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-gray-900">
-                {videos.filter(v => v.featured).length}
+              <div className="w-px h-8 bg-emerald-200"></div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-gray-900">
+                  {videos.reduce((sum, video) => sum + video.views, 0).toLocaleString()}
+                </div>
+                <div className="text-sm text-gray-600">Total Views</div>
               </div>
-              <div className="text-sm text-gray-600">Featured</div>
+              <div className="w-px h-8 bg-emerald-200"></div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-gray-900">
+                  {videos.filter(v => v.featured).length}
+                </div>
+                <div className="text-sm text-gray-600">Featured</div>
+              </div>
             </div>
-          </div>
+          )}
         </div>
+
+        {/* Show connection error as alert instead of full page */}
+        {error?.type === 'CONNECTION_ERROR' && (
+          <Alert className="mb-8 border-red-200 bg-red-50">
+            <AlertCircle className="h-4 w-4 text-red-600" />
+            <AlertDescription className="text-red-800">
+              {error.message}
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={handleRetry}
+                className="ml-4 text-red-600 hover:text-red-700 hover:bg-red-100"
+              >
+                <RefreshCw className="w-3 h-3 mr-1" />
+                Try Again
+              </Button>
+            </AlertDescription>
+          </Alert>
+        )}
 
         {/* Mode Description */}
         <div className="text-center mb-8 max-w-2xl mx-auto">
@@ -396,15 +396,20 @@ export default function VideoGallery() {
               </div>
               <h3 className="text-xl font-bold text-gray-900 mb-3">No videos available</h3>
               <p className="text-gray-600 mb-6">
-                No featured videos are currently available in the gallery.
+                No videos are currently available in the gallery. Videos can be added through the admin panel.
               </p>
-              <Button 
-                variant="outline"
-                className="border-emerald-200 hover:bg-emerald-50 text-gray-700 rounded-xl"
-              >
-                <RefreshCw className="w-4 h-4 mr-2" />
-                Refresh
-              </Button>
+              <div className="space-y-3">
+                <Button 
+                  onClick={handleRetry}
+                  className="bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700 text-white rounded-xl"
+                >
+                  <RefreshCw className="w-4 h-4 mr-2" />
+                  Refresh
+                </Button>
+                <p className="text-xs text-gray-500">
+                  Check the browser console for debugging information.
+                </p>
+              </div>
             </div>
           </div>
         ) : (

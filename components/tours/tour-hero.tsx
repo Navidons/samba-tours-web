@@ -1,3 +1,5 @@
+"use client"
+
 import Image from "next/image"
 import Link from "next/link"
 import { ChevronLeft, Star, MapPin, Clock } from "lucide-react"
@@ -30,6 +32,11 @@ interface Tour {
     isFeatured: boolean
     displayOrder: number
   }> | null
+  featuredImage?: {
+    data: string
+    name: string
+    type: string
+  } | null
 }
 
 type TourHeroProps = {
@@ -41,17 +48,21 @@ export default function TourHero({ tour, isListingPage = false }: TourHeroProps)
   const averageRating = tour.rating || 0
   const reviewCount = tour.reviewCount || 0
 
-  // Get the featured or first image
-  const heroImage = tour.images?.find(img => img.isFeatured) || tour.images?.[0]
+  // Get the featured or first image with improved fallback logic
+  const heroImage = tour.featuredImage || 
+                   tour.images?.find(img => img.isFeatured) || 
+                   tour.images?.[0]
 
-  // Determine if the image data is a path or base64
+  // Determine if the image data is a valid data URL or base64
   const imageSource = heroImage?.data ? (
-    heroImage.data.startsWith('/') ? heroImage.data : heroImage.data
+    heroImage.data.startsWith('data:') ? heroImage.data : 
+    heroImage.data.startsWith('/') ? heroImage.data : 
+    `data:${heroImage.type || 'image/jpeg'};base64,${heroImage.data}`
   ) : ''
 
   return (
     <section className="relative text-white min-h-[60vh]">
-      <div className="absolute inset-0 bg-black/60">
+      <div className="absolute inset-0 bg-black/40">
         {imageSource ? (
           <Image
             src={imageSource}
@@ -63,9 +74,9 @@ export default function TourHero({ tour, isListingPage = false }: TourHeroProps)
             quality={90}
           />
         ) : (
-          <div className="w-full h-full bg-gradient-to-br from-emerald-900 to-green-900 opacity-90" />
+          <div className="w-full h-full bg-gradient-to-br from-emerald-900 to-green-900" />
         )}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
       </div>
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-16">
         {!isListingPage && (

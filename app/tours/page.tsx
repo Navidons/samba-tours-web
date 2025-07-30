@@ -1,6 +1,7 @@
 import ToursClient from "./ToursClient"
 import TourHero from "@/components/tours/tour-hero"
 import { getTours, getCategories } from "@/lib/tours-service"
+import ScrollGuard from "@/components/ui/scroll-guard"
 
 export const dynamic = 'force-dynamic'
 
@@ -37,14 +38,16 @@ export default async function ToursPage() {
   }
 
   return (
-    <div className="bg-gradient-to-br from-gray-50 via-emerald-50 to-green-50 min-h-screen">
-      <TourHero tour={heroTour} isListingPage={true} />
-      <ToursClient 
-        initialTours={initialData.tours} 
-        initialTotalTours={initialData.pagination.total}
-        initialTotalPages={initialData.pagination.totalPages}
-        initialCategories={categories}
-      />
-    </div>
+    <ScrollGuard>
+      <div className="bg-gradient-to-br from-gray-50 via-emerald-50 to-green-50 min-h-screen">
+        <TourHero tour={heroTour} isListingPage={true} />
+        <ToursClient 
+          initialTours={initialData.tours} 
+          initialTotalTours={initialData.pagination.total}
+          initialTotalPages={initialData.pagination.totalPages}
+          initialCategories={categories}
+        />
+      </div>
+    </ScrollGuard>
   )
 }

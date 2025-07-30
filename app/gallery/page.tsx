@@ -2,6 +2,7 @@ import { Suspense } from "react"
 import type { Metadata } from "next"
 import GalleryClient from "./GalleryClient"
 import LoadingSpinner from "@/components/ui/loading-spinner"
+import ScrollGuard from "@/components/ui/scroll-guard"
 
 export const metadata: Metadata = {
   title: "Safari Gallery - Wildlife & Adventure Photos",
@@ -22,7 +23,7 @@ export const dynamic = 'force-dynamic'
 
 export default function GalleryPage({ searchParams }: GalleryPageProps) {
   return (
-    <>
+    <ScrollGuard>
       <h1 className="sr-only">Uganda Safari Gallery - Wildlife & Adventure Photos</h1>
       <Suspense fallback={
         <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-green-50 flex items-center justify-center">
@@ -34,6 +35,6 @@ export default function GalleryPage({ searchParams }: GalleryPageProps) {
       }>
         <GalleryClient searchParams={searchParams} hideMainHeading={true} />
       </Suspense>
-    </>
+    </ScrollGuard>
   )
 }

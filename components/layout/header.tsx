@@ -16,8 +16,8 @@ import { useTourTitle } from "@/hooks/use-tour-title"
 const NavLink = memo(({ href, children, pathname }: { href: string; children: React.ReactNode; pathname: string }) => (
     <Link
       href={href}
-      className={`font-medium transition-colors hover:text-emerald-600 ${
-        pathname === href ? "text-emerald-600" : "text-gray-700"
+      className={`font-medium transition-colors hover:text-green-700 ${
+        pathname === href ? "text-green-700" : "text-gray-700"
       }`}
     >
       {children}
@@ -28,8 +28,8 @@ NavLink.displayName = 'NavLink'
 const TourNavLink = memo(({ href, children, pathname }: { href: string; children: React.ReactNode; pathname: string }) => (
     <Link
       href={href}
-      className={`font-medium transition-colors hover:text-emerald-600 ${
-        pathname.startsWith("/tours") ? "text-emerald-600" : "text-gray-700"
+      className={`font-medium transition-colors hover:text-green-700 ${
+        pathname.startsWith("/tours") ? "text-green-700" : "text-gray-700"
       }`}
     >
       {children}
@@ -42,7 +42,7 @@ const MobileNavLink = memo(({ href, children, pathname }: { href: string; childr
       <Link
         href={href}
         className={`block py-3 px-4 rounded-lg font-medium transition-colors ${
-          pathname === href ? "bg-emerald-50 text-emerald-600" : "text-gray-700 hover:bg-gray-100"
+          pathname === href ? "bg-green-50 text-green-700" : "text-gray-700 hover:bg-gray-100"
         }`}
       >
         {children}
@@ -69,7 +69,7 @@ const Logo = memo(({ currentTourTitle }: { currentTourTitle: string }) => (
       <span className="text-white font-bold text-lg md:text-xl hidden">ST</span>
     </div>
     <div className="hidden sm:block">
-      <h2 className="text-xl md:text-2xl font-bold text-gray-900 group-hover:text-emerald-600 transition-colors">
+      <h2 className="text-xl md:text-2xl font-bold text-gray-900 group-hover:text-green-700 transition-colors">
         Samba Tours
       </h2>
       <p className="text-xs text-gray-600 -mt-1">
@@ -82,16 +82,16 @@ Logo.displayName = 'Logo'
 
 // Memoized top bar component
 const TopBar = memo(({ pathname }: { pathname: string }) => (
-      <div className="bg-gradient-to-r from-green-600 to-emerald-600 text-white py-2 px-4 hidden md:block">
+      <div className="bg-gradient-to-r from-green-800 to-green-700 text-white py-2 px-4 hidden md:block">
         <div className="container mx-auto max-w-7xl flex justify-between items-center text-sm">
           <div className="flex items-center space-x-6">
-            <a href="tel:+256703267150" className="flex items-center space-x-2 hover:text-emerald-200 transition-colors">
+            <a href="tel:+256703267150" className="flex items-center space-x-2 hover:text-green-200 transition-colors">
               <Phone className="h-4 w-4" />
               <span>+256 703 267 150</span>
             </a>
             <a
               href="mailto:sambatours256@gmail.com"
-              className="flex items-center space-x-2 hover:text-emerald-200 transition-colors"
+              className="flex items-center space-x-2 hover:text-green-200 transition-colors"
             >
               <Mail className="h-4 w-4" />
               <span>sambatours256@gmail.com</span>
@@ -99,16 +99,14 @@ const TopBar = memo(({ pathname }: { pathname: string }) => (
           </div>
           <div className="flex items-center space-x-4">
             {pathname.startsWith("/tours") && (
-              <div className="flex items-center space-x-1 bg-green-400/20 px-2 py-1 rounded-full border border-green-400/50">
-                <Calendar className="h-3 w-3 text-green-400" />
-                <span className="font-bold text-xs">
-                  {pathname === "/tours" ? "Exploring Tours" : "Tour Details"}
-                </span>
+              <div className="flex items-center space-x-1 bg-green-600/20 px-2 py-1 rounded-full border border-green-600/50">
+                <Calendar className="h-3 w-3 text-green-600" />
+                <span className="text-xs font-medium">24/7 Support</span>
               </div>
             )}
-            <div className="flex items-center space-x-1 bg-green-400/20 px-2 py-1 rounded-full border border-green-400/50">
-              <Star className="h-3 w-3 text-green-400 fill-current" />
-              <span className="font-bold text-xs">4.9/5 Customer Rating</span>
+            <div className="flex items-center space-x-1 bg-green-600/20 px-2 py-1 rounded-full border border-green-600/50">
+              <Star className="h-3 w-3 text-green-600 fill-current" />
+              <span className="text-xs font-medium">5-Star Rated</span>
             </div>
           </div>
         </div>
@@ -117,40 +115,34 @@ const TopBar = memo(({ pathname }: { pathname: string }) => (
 TopBar.displayName = 'TopBar'
 
 // Memoized search bar component
-const SearchBar = memo(({ 
-  isSearchOpen, 
-  searchQuery, 
-  setSearchQuery, 
-  handleSearch, 
-  setIsSearchOpen 
-}: {
-  isSearchOpen: boolean
-  searchQuery: string
-  setSearchQuery: (query: string) => void
-  handleSearch: (e: React.FormEvent) => void
-  setIsSearchOpen: (open: boolean) => void
-}) => {
-  if (!isSearchOpen) return null
-  
+const SearchBar = memo(function SearchBar({
+  isSearchOpen,
+  searchQuery,
+  setSearchQuery,
+  handleSearch,
+  setIsSearchOpen
+}) {
   return (
-    <div className="absolute top-full left-0 w-full border-t bg-white py-4 shadow-lg animate-fade-in z-50">
-      <div className="container mx-auto max-w-2xl px-4">
-        <form onSubmit={handleSearch} className="flex space-x-2">
-          <Input
-            placeholder="Search tours, destinations, activities..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="flex-1 border-green-300 focus:border-green-500 focus:ring-green-500"
-            autoFocus
-          />
-          <Button type="submit" className="bg-green-500 hover:bg-green-600">
-            <Search className="h-4 w-4 mr-2" /> Search
-          </Button>
-          <Button type="button" variant="outline" onClick={() => setIsSearchOpen(false)}>
-            <X className="h-4 w-4" />
-          </Button>
-        </form>
-      </div>
+    <div className="relative w-full max-w-lg mx-auto">
+      <form className="flex items-center bg-white/90 border border-green-200 rounded-full shadow-md px-2 py-1 focus-within:ring-2 focus-within:ring-green-500 transition-all duration-200" onSubmit={handleSearch}>
+        <span className="pl-2 text-green-500">
+          <Search className="h-5 w-5" />
+        </span>
+        <input
+          type="text"
+          placeholder="Search tours, destinations..."
+          className="flex-1 bg-transparent border-none outline-none px-3 py-2 text-gray-900 placeholder:text-gray-400 text-base"
+          value={searchQuery}
+          onChange={e => setSearchQuery(e.target.value)}
+          aria-label="Search tours and destinations"
+        />
+        <button
+          type="submit"
+          className="ml-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-full px-4 py-2 font-semibold shadow-sm transition-all duration-200"
+        >
+          Search
+        </button>
+      </form>
     </div>
   )
 })
@@ -259,41 +251,37 @@ export default function Header() {
             <div className="flex items-center space-x-1 md:space-x-2">
               <Button
                 variant="ghost"
-                size="icon"
+                className="text-gray-600 hover:text-green-700 hover:bg-green-50 hidden lg:flex"
                 onClick={() => setIsSearchOpen(!isSearchOpen)}
-                className="text-gray-600 hover:text-green-600 hover:bg-green-50 hidden lg:flex"
               >
                 <Search className="h-5 w-5" />
               </Button>
+              
               <Button
                 variant="ghost"
-                size="icon"
-                asChild
-                className="text-gray-600 hover:text-green-600 hover:bg-green-50 relative"
+                className="text-gray-600 hover:text-green-700 hover:bg-green-50 relative"
+                onClick={() => router.push('/cart')}
               >
-                <Link href="/cart">
-                  <ShoppingCart className="h-5 w-5" />
-                  {cartItems > 0 && (
-                    <Badge className="absolute -top-1 -right-1 h-5 w-5 justify-center p-0 animate-pulse">
-                      {cartItems}
-                    </Badge>
-                  )}
-                </Link>
+                <ShoppingCart className="h-5 w-5" />
+                {cartItems.length > 0 && (
+                  <Badge className="absolute -top-2 -right-2 h-5 w-5 rounded-full bg-green-600 text-white text-xs flex items-center justify-center">
+                    {cartItems.length}
+                  </Badge>
+                )}
               </Button>
+              
               <Button
-                className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-semibold px-4 py-2 rounded-full shadow-lg hidden lg:flex transition-all duration-300 hover:shadow-xl"
-                asChild
+                className="bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-semibold px-4 py-2 rounded-full shadow-lg hidden lg:flex transition-all duration-300 hover:shadow-xl"
+                onClick={() => router.push('/contact')}
               >
-                <Link href="/contact">
-                  <Calendar className="h-4 w-4 mr-2" />
-                  Book Now
-                </Link>
+                Book Now
+                <ArrowRight className="h-4 w-4 ml-2" />
               </Button>
 
               {/* Mobile Menu Trigger */}
               <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
                 <SheetTrigger asChild>
-                  <Button variant="ghost" size="icon" className="lg:hidden hover:bg-emerald-50">
+                  <Button variant="ghost" size="icon" className="lg:hidden hover:bg-green-50">
                     <Menu className="h-6 w-6" />
                     <span className="sr-only">Open menu</span>
                   </Button>
@@ -355,13 +343,48 @@ export default function Header() {
           </div>
 
           {/* Desktop Search Bar */}
-          <SearchBar 
-            isSearchOpen={isSearchOpen}
-            searchQuery={searchQuery}
-            setSearchQuery={setSearchQuery}
-            handleSearch={handleSearch}
-            setIsSearchOpen={setIsSearchOpen}
-          />
+          <div className="hidden lg:flex flex-1 justify-center items-center">
+            <SearchBar
+              isSearchOpen={isSearchOpen}
+              searchQuery={searchQuery}
+              setSearchQuery={setSearchQuery}
+              handleSearch={handleSearch}
+              setIsSearchOpen={setIsSearchOpen}
+            />
+          </div>
+          {/* Mobile Search Icon/Button */}
+          <div className="flex lg:hidden flex-1 justify-end items-center">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="text-green-600 hover:bg-green-50"
+              onClick={() => setIsSearchOpen(true)}
+              aria-label="Open search"
+            >
+              <Search className="h-6 w-6" />
+            </Button>
+            {/* Mobile Search Modal/Drawer */}
+            {isSearchOpen && (
+              <div className="fixed inset-0 z-50 bg-black/40 flex items-start justify-center pt-24 px-4" onClick={() => setIsSearchOpen(false)}>
+                <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md mx-auto p-6 relative" onClick={e => e.stopPropagation()}>
+                  <button
+                    className="absolute top-3 right-3 text-gray-400 hover:text-green-600"
+                    onClick={() => setIsSearchOpen(false)}
+                    aria-label="Close search"
+                  >
+                    <X className="h-6 w-6" />
+                  </button>
+                  <SearchBar
+                    isSearchOpen={isSearchOpen}
+                    searchQuery={searchQuery}
+                    setSearchQuery={setSearchQuery}
+                    handleSearch={handleSearch}
+                    setIsSearchOpen={setIsSearchOpen}
+                  />
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </header>
     </>
