@@ -122,6 +122,12 @@ export default function VideoGallery() {
       setPagination(data.pagination || { total: 0, page: 1, pageSize: 8, totalPages: 1 })
       
       console.log('Videos loaded successfully:', data.videos.length)
+      
+      // Handle case when no videos are found
+      if (data.videos.length === 0) {
+        console.log('No videos found in database')
+        // Don't set error for empty results - this is normal
+      }
     } catch (err) {
       console.error('Error loading videos:', err)
       setError({
