@@ -77,15 +77,15 @@ const heroContent = [
     posterUrl: "/home-hero-photos/woman tourist.jpg",
     badge: "🌸 Women in Travel",
     stats: { rating: 4.8, reviews: 1780, bookings: "2.2K+" },
-    cta: "Women’s Tours",
+    cta: "Women's Tours",
     secondaryCta: "Learn More",
   },
   {
     id: 7,
     title: "Animal Kingdom Awaits",
-    subtitle: "Discover Uganda’s Rich Biodiversity",
+    subtitle: "Discover Uganda's Rich Biodiversity",
     description:
-      "From lions to rare birds, Uganda is a haven for animal lovers. Explore the wild and capture the beauty of Africa’s animal kingdom.",
+      "From lions to rare birds, Uganda is a haven for animal lovers. Explore the wild and capture the beauty of Africa's animal kingdom.",
     posterUrl: "/home-hero-photos/animals.jpg",
     badge: "🦁 Wildlife Wonders",
     stats: { rating: 4.9, reviews: 2999, bookings: "3.9K+" },
@@ -94,38 +94,66 @@ const heroContent = [
   },
 ]
 
+// Blur data URL for better loading experience
+const blurDataURL = 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=='
+
 export default function HeroSection() {
   const [currentSlide, setCurrentSlide] = useState(0)
   const [isTransitioning, setIsTransitioning] = useState(false)
+  const [preloadedImages, setPreloadedImages] = useState<Set<number>>(new Set([0]))
 
   useEffect(() => {
     const interval = setInterval(() => {
       setIsTransitioning(true)
       setTimeout(() => {
-        setCurrentSlide((prev) => (prev + 1) % heroContent.length)
+        const nextSlide = (currentSlide + 1) % heroContent.length
+        setCurrentSlide(nextSlide)
         setIsTransitioning(false)
+        
+        // Preload next image
+        if (!preloadedImages.has(nextSlide)) {
+          setPreloadedImages(prev => new Set([...prev, nextSlide]))
+        }
       }, 500)
     }, 15000)
     return () => clearInterval(interval)
-  }, [])
+  }, [currentSlide, preloadedImages])
 
   const current = heroContent[currentSlide]
 
   return (
     <section className="relative h-screen flex items-center justify-center overflow-hidden">
-      {/* Image Background */}
+      {/* Current Image Background */}
       <div className="absolute inset-0 z-0">
         <Image
           key={current.posterUrl}
           src={current.posterUrl}
           alt={current.title}
           fill
-          priority
+          priority={currentSlide === 0}
           className={`object-cover transition-opacity duration-500 ${isTransitioning ? 'opacity-0' : 'opacity-100'}`}
+          sizes="100vw"
+          quality={85}
+          placeholder="blur"
+          blurDataURL={blurDataURL}
+          data-lcp="true"
         />
         {/* Gradient Overlays */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
       </div>
+
+      {/* Preload next image for smooth transitions */}
+      {preloadedImages.has((currentSlide + 1) % heroContent.length) && (
+        <div className="hidden">
+          <Image
+            src={heroContent[(currentSlide + 1) % heroContent.length].posterUrl}
+            alt=""
+            width={1}
+            height={1}
+            priority={false}
+          />
+        </div>
+      )}
 
       {/* Main Content */}
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-white">

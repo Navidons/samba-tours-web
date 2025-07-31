@@ -30,6 +30,9 @@ export default function TourGrid({ filters, sortBy }: TourGridProps) {
   const [filteredTours, setFilteredTours] = useState<Tour[]>([])
   const [loading, setLoading] = useState(true)
 
+  // Blur data URL for better loading experience
+  const blurDataURL = 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAREBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=='
+
   const { comparisonTours, addToComparison, removeFromComparison, clearComparison, isInComparison, canAddMore } =
     useTourComparisonContext()
 
@@ -214,7 +217,7 @@ export default function TourGrid({ filters, sortBy }: TourGridProps) {
         {/* Tours Grid */}
         {filteredTours.length > 0 && (
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
-            {filteredTours.map((tour) => (
+            {filteredTours.map((tour, index) => (
               <Card key={tour.id} className="group hover:shadow-xl transition-all duration-300 overflow-hidden border border-emerald-100">
                 <div className="relative">
                   <Image
@@ -223,6 +226,12 @@ export default function TourGrid({ filters, sortBy }: TourGridProps) {
                     width={400}
                     height={250}
                     className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+                    priority={index < 6} // Prioritize first 6 images
+                    quality={85}
+                    placeholder="blur"
+                    blurDataURL={blurDataURL}
+                    loading={index < 6 ? "eager" : "lazy"}
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
 

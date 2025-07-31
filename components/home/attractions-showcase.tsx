@@ -98,27 +98,16 @@ const attractions = [
     rating: 4.7,
     views: 1892
   },
-  {
-    id: 10,
-    title: "Wildlife Diversity",
-    location: "Uganda's National Parks",
-    description: "Discover the incredible variety of animals that call Uganda home",
-    image: "/tours-attractions/animals.jpg",
-    category: "Wildlife",
-    rating: 4.9,
-    views: 3567
-  }
 ]
 
-export default function AttractionsShowcase() {
-  const [selectedCategory, setSelectedCategory] = useState<string>("All")
-  const [likedAttractions, setLikedAttractions] = useState<Set<number>>(new Set())
+// Blur data URL for better loading experience
+const blurDataURL = 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=='
 
-  const categories = ["All", "Wildlife", "Adventure"]
-  
-  const filteredAttractions = selectedCategory === "All" 
-    ? attractions 
-    : attractions.filter(attraction => attraction.category === selectedCategory)
+const categories = ["All", "Wildlife", "Adventure"]
+
+export default function AttractionsShowcase() {
+  const [selectedCategory, setSelectedCategory] = useState("All")
+  const [likedAttractions, setLikedAttractions] = useState<Set<number>>(new Set())
 
   const toggleLike = (id: number) => {
     setLikedAttractions(prev => {
@@ -132,19 +121,23 @@ export default function AttractionsShowcase() {
     })
   }
 
+  const filteredAttractions = selectedCategory === "All" 
+    ? attractions 
+    : attractions.filter(attraction => attraction.category === selectedCategory)
+
   return (
-    <section className="py-20 bg-gradient-to-br from-emerald-50 via-white to-green-50">
-      <div className="container-max px-4">
-        {/* Section Header */}
-        <div className="text-center mb-16">
-          <Badge className="bg-gradient-to-r from-green-100 to-emerald-100 text-green-700 px-6 py-2 text-sm font-bold mb-6 border border-green-200">
-            🦁 Uganda's Wildlife Wonders
+    <section className="py-20 bg-white">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-12">
+          <Badge className="bg-gradient-to-r from-green-500 to-emerald-500 text-white mb-4">
+            <Camera className="w-4 h-4 mr-2" />
+            Featured Attractions
           </Badge>
           
-          <h2 className="text-5xl md:text-6xl font-playfair font-bold text-gray-900 mb-6 leading-tight">
-            Discover
-            <span className="block text-transparent bg-clip-text bg-gradient-to-r from-green-600 via-emerald-600 to-teal-600">
-              Amazing Attractions
+          <h2 className="text-4xl md:text-5xl font-playfair font-bold text-gray-900 mb-6">
+            Discover Uganda's
+            <span className="block text-transparent bg-clip-text bg-gradient-to-r from-green-600 to-emerald-600">
+              Natural Wonders
             </span>
           </h2>
           
@@ -173,7 +166,7 @@ export default function AttractionsShowcase() {
 
         {/* Attractions Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-          {filteredAttractions.map((attraction) => (
+          {filteredAttractions.map((attraction, index) => (
             <Card
               key={attraction.id}
               className="group overflow-hidden border-0 shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 bg-white rounded-2xl"
@@ -187,6 +180,11 @@ export default function AttractionsShowcase() {
                     fill
                     className="object-cover group-hover:scale-110 transition-transform duration-700"
                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
+                    priority={index < 4} // Prioritize first 4 images
+                    quality={85}
+                    placeholder="blur"
+                    blurDataURL={blurDataURL}
+                    loading={index < 4 ? "eager" : "lazy"}
                   />
                   
                   {/* Gradient Overlay */}
@@ -255,20 +253,6 @@ export default function AttractionsShowcase() {
               </CardContent>
             </Card>
           ))}
-        </div>
-
-        {/* View All Button */}
-        <div className="text-center mt-12">
-          <Button
-            size="lg"
-            className="bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white px-8 py-4 text-lg font-bold border-0 rounded-full"
-            asChild
-          >
-            <a href="/tours">
-              View All Tours & Attractions
-              <ArrowRight className="ml-2 h-5 w-5" />
-            </a>
-          </Button>
         </div>
       </div>
     </section>

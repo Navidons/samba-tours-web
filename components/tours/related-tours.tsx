@@ -75,6 +75,9 @@ interface RelatedToursProps {
 }
 
 export default function RelatedTours({ currentTour, relatedTours }: RelatedToursProps) {
+  // Blur data URL for better loading experience
+  const blurDataURL = 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAREBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=='
+
   if (!relatedTours || relatedTours.length === 0) {
     return null
   }
@@ -90,7 +93,7 @@ export default function RelatedTours({ currentTour, relatedTours }: RelatedTours
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {relatedTours.map((tour) => (
+          {relatedTours.map((tour, index) => (
             <Card key={tour.id} className="group overflow-hidden hover:shadow-xl transition-all duration-300 border border-emerald-100">
               <div className="relative aspect-[4/3] overflow-hidden">
                 <Image
@@ -98,6 +101,12 @@ export default function RelatedTours({ currentTour, relatedTours }: RelatedTours
                   alt={tour.title}
                   fill
                   className="object-cover group-hover:scale-105 transition-transform duration-300"
+                  priority={index < 3} // Prioritize first 3 images
+                  quality={85}
+                  placeholder="blur"
+                  blurDataURL={blurDataURL}
+                  loading={index < 3 ? "eager" : "lazy"}
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                 />
                 <div className="absolute top-4 left-4 flex flex-wrap gap-2">
                   <Badge className="bg-emerald-600 text-white">{tour.category?.name || "Uncategorized"}</Badge>

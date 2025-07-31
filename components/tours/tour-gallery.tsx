@@ -28,6 +28,9 @@ interface TourGalleryProps {
 export default function TourGallery({ gallery, images, title }: TourGalleryProps) {
   const [selectedImage, setSelectedImage] = useState<number | null>(null)
   
+  // Blur data URL for better loading experience
+  const blurDataURL = 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAREBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=='
+  
   // Handle both prop names
   const imageArray = gallery || images || []
   
@@ -110,10 +113,16 @@ export default function TourGallery({ gallery, images, title }: TourGalleryProps
                   onClick={() => openLightbox(index)}
                 >
                   {imageSrc ? (
-                    <img
+                    <Image
                       src={imageSrc}
                       alt={imageAlt}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      fill
+                      className="object-cover group-hover:scale-105 transition-transform duration-300"
+                      sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
+                      quality={85}
+                      placeholder="blur"
+                      blurDataURL={blurDataURL}
+                      loading="lazy"
                     />
                   ) : (
                     <div className="w-full h-full bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center">
@@ -165,10 +174,14 @@ export default function TourGallery({ gallery, images, title }: TourGalleryProps
 
           <div className="max-w-4xl max-h-[80vh] relative">
             {imageArray[selectedImage] ? (
-              <img
+              <Image
                 src={getImageSrc(imageArray[selectedImage])}
                 alt={getImageAlt(imageArray[selectedImage], selectedImage)}
+                width={1200}
+                height={800}
                 className="max-w-full max-h-full object-contain"
+                quality={90}
+                priority
               />
             ) : (
               <div className="w-full h-full bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center">

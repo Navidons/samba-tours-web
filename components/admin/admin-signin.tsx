@@ -6,6 +6,7 @@ import { useState, useEffect } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import Image from "next/image"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Alert, AlertDescription } from "@/components/ui/alert"
@@ -52,10 +53,14 @@ export default function AdminSignIn() {
         <CardHeader className="text-center">
           <div className="flex justify-center mb-4">
             <div className="w-16 h-16 flex items-center justify-center rounded-full shadow-lg overflow-hidden">
-              <img 
+              <Image 
                 src="/logo/samba tours-01.png" 
                 alt="Samba Tours Logo" 
+                width={64}
+                height={64}
                 className="w-full h-full object-contain"
+                priority
+                quality={85}
                 onError={(e) => {
                   const target = e.target as HTMLImageElement
                   target.style.display = 'none'

@@ -97,6 +97,9 @@ export default function ToursClient({
   const [totalTours, setTotalTours] = useState(initialTotalTours)
   const [currentPage, setCurrentPage] = useState(1)
   const [totalPages, setTotalPages] = useState(initialTotalPages)
+
+  // Blur data URL for better loading experience
+  const blurDataURL = 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAREBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=='
   
   // Scroll management hook
   const { startLoading, endLoading } = useScrollManagement({
@@ -390,7 +393,7 @@ export default function ToursClient({
           ) : tours.length > 0 ? (
             <>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {tours.map((tour) => (
+                {tours.map((tour, index) => (
                   <Card key={tour.id} className="overflow-hidden hover:shadow-xl transition-all duration-300 group border-emerald-200">
                     {/* Tour Image */}
                     <div className="relative h-64 overflow-hidden">
@@ -400,6 +403,11 @@ export default function ToursClient({
                           alt={tour.title}
                           fill
                           className="object-cover group-hover:scale-105 transition-transform duration-500"
+                          priority={index < 6} // Prioritize first 6 images
+                          quality={85}
+                          placeholder="blur"
+                          blurDataURL={blurDataURL}
+                          loading={index < 6 ? "eager" : "lazy"}
                           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                         />
                       ) : (

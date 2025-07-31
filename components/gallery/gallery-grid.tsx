@@ -22,6 +22,9 @@ export default function GalleryGrid({ images = [], viewMode = "masonry" }: Galle
   const [visibleImages, setVisibleImages] = useState<number[]>([])
   const [imageStats, setImageStats] = useState<Record<number, { likes: number; views: number }>>({})
   
+  // Blur data URL for better loading experience
+  const blurDataURL = 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAREBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=='
+  
   // Load images in batches of 8
   const BATCH_SIZE = 8
   
@@ -138,9 +141,11 @@ export default function GalleryGrid({ images = [], viewMode = "masonry" }: Galle
               alt={item.alt}
               fill
               sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-              quality={75}
-              priority={index < 4} // Prioritize first 4 images
-              loading={index < 4 ? "eager" : "lazy"}
+              quality={85}
+              priority={index < 6} // Prioritize first 6 images
+              loading={index < 6 ? "eager" : "lazy"}
+              placeholder="blur"
+              blurDataURL={blurDataURL}
               className={`object-cover group-hover:scale-105 transition-transform duration-500 ${
                 loadedImages.has(item.id) ? "opacity-100" : "opacity-0"
               }`}

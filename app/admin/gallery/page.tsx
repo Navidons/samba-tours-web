@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback, useMemo } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -15,6 +15,8 @@ import { Progress } from "@/components/ui/progress"
 import { useToast } from "@/components/ui/use-toast"
 import { Plus, Edit, Trash2, Image as ImageIcon, Search, Upload, Database, RefreshCw, AlertCircle, Video, FileImage, Play, Clock, Eye, X } from "lucide-react"
 import LoadingSpinner from "@/components/ui/loading-spinner"
+import Image from "next/image"
+import ErrorBoundary from "@/components/ui/error-boundary"
 
 interface Gallery {
   id: number
@@ -215,18 +217,29 @@ export default function AdminGalleryPage() {
   
   const { toast } = useToast()
 
+  // Memoize filtered galleries to prevent unnecessary re-renders
+  const filteredGalleries = useMemo(() => {
+    if (!searchTerm) return galleries
+    return galleries.filter(gallery => 
+      gallery.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      gallery.description?.toLowerCase().includes(searchTerm.toLowerCase())
+    )
+  }, [galleries, searchTerm])
+
   useEffect(() => {
     loadGalleries()
     loadStats()
     loadCategories()
     loadLocations()
-  }, [searchTerm, pagination.page])
+  }, [])
 
   useEffect(() => {
     loadMedia()
-  }, [mediaType, mediaSearchTerm, selectedMediaGallery, mediaPagination.page])
+  }, [])
 
-  const loadGalleries = async () => {
+
+
+  const loadGalleries = useCallback(async () => {
     try {
       setLoading(true)
       setError(null)
@@ -246,20 +259,20 @@ export default function AdminGalleryPage() {
       }
 
       setGalleries(data.galleries || [])
-      setPagination({
-        ...pagination,
+      setPagination(prev => ({
+        ...prev,
         total: data.pagination.total,
         totalPages: data.pagination.totalPages
-      })
+      }))
     } catch (err) {
       console.error('Error loading galleries:', err)
       handleLoadError(err, 'Failed to load galleries')
     } finally {
       setLoading(false)
     }
-  }
+  }, [pagination.page, pagination.limit, searchTerm])
 
-  const loadStats = async () => {
+  const loadStats = useCallback(async () => {
     try {
       const response = await fetch('/api/admin/gallery/stats')
       const data = await response.json()
@@ -274,9 +287,9 @@ export default function AdminGalleryPage() {
       console.error('Error loading stats:', err)
       // Don't show error for stats - they're not critical
     }
-  }
+  }, [])
 
-  const loadCategories = async () => {
+  const loadCategories = useCallback(async () => {
     try {
       const response = await fetch('/api/admin/gallery/categories')
       const data = await response.json()
@@ -287,9 +300,9 @@ export default function AdminGalleryPage() {
     } catch (err) {
       console.error('Error loading categories:', err)
     }
-  }
+  }, [])
 
-  const loadLocations = async () => {
+  const loadLocations = useCallback(async () => {
     try {
       const response = await fetch('/api/admin/gallery/locations')
       const data = await response.json()
@@ -300,9 +313,9 @@ export default function AdminGalleryPage() {
     } catch (err) {
       console.error('Error loading locations:', err)
     }
-  }
+  }, [])
 
-  const loadMedia = async () => {
+  const loadMedia = useCallback(async () => {
     try {
       setMediaLoading(true)
       setMediaError(null)
@@ -324,18 +337,23 @@ export default function AdminGalleryPage() {
       }
 
       setMediaList(data.media || [])
-      setMediaPagination({
-        ...mediaPagination,
+      setMediaPagination(prev => ({
+        ...prev,
         total: data.pagination.total,
         totalPages: data.pagination.totalPages
-      })
+      }))
     } catch (err) {
       console.error('Error loading media:', err)
       setMediaError('Failed to load media')
     } finally {
       setMediaLoading(false)
     }
-  }
+  }, [mediaPagination.page, mediaPagination.limit, mediaType, mediaSearchTerm, selectedMediaGallery])
+
+  // Effect to reload media when dependencies change
+  useEffect(() => {
+    loadMedia()
+  }, [loadMedia])
 
   const handleEditImage = async (imageId: number) => {
     try {
@@ -1118,9 +1136,43 @@ export default function AdminGalleryPage() {
     }
   }
 
+  // Show loading state
+  if (loading && galleries.length === 0) {
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-earth-900">Gallery Management</h1>
+            <p className="text-earth-600 mt-1">Manage your photo and video galleries</p>
+          </div>
+        </div>
+        
+        <Tabs defaultValue="galleries" className="space-y-6">
+          <TabsList className="grid w-full grid-cols-3">
+            <TabsTrigger value="galleries">Galleries</TabsTrigger>
+            <TabsTrigger value="media">Media</TabsTrigger>
+            <TabsTrigger value="stats">Statistics</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="galleries" className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="border rounded-lg p-4 animate-pulse">
+                  <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
+                  <div className="h-3 bg-gray-200 rounded w-1/2 mb-4"></div>
+                  <div className="aspect-video bg-gray-200 rounded"></div>
+                </div>
+              ))}
+            </div>
+          </TabsContent>
+        </Tabs>
+      </div>
+    )
+  }
+
   // Show connection error state
   if (error?.type === 'CONNECTION_ERROR') {
-  return (
+    return (
       <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-red-50 flex items-center justify-center">
         <div className="text-center max-w-md mx-auto p-8">
           <div className="w-16 h-16 mx-auto mb-4 bg-red-100 rounded-full flex items-center justify-center">
@@ -1141,7 +1193,8 @@ export default function AdminGalleryPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <ErrorBoundary>
+      <div className="space-y-6">
       <div className="flex items-center justify-between">
             <div>
           <h1 className="text-3xl font-bold text-earth-900">Gallery Management</h1>
@@ -1261,10 +1314,17 @@ export default function AdminGalleryPage() {
                     <CardContent>
                       <div className="space-y-4">
                         <div className="aspect-video bg-gray-100 rounded-md overflow-hidden">
-                          <img
+                          <Image
                             src={getThumbnailUrl(gallery)}
                             alt={gallery.name}
-                            className="w-full h-full object-cover"
+                            fill
+                            className="object-cover"
+                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                            quality={75}
+                            placeholder="blur"
+                            blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAREBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=="
+                            loading="lazy"
+                            priority={false}
                           />
                         </div>
                         <div className="flex items-center justify-between text-sm text-gray-600">
@@ -1438,10 +1498,17 @@ export default function AdminGalleryPage() {
                     <CardContent className="p-3">
                       <div className="space-y-2">
                         <div className="relative aspect-square bg-gray-100 rounded-md overflow-hidden">
-                          <img
+                          <Image
                             src={getMediaThumbnail(media)}
                             alt={media.title || media.alt || 'Media'}
-                            className="w-full h-full object-cover"
+                            fill
+                            className="object-cover"
+                            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 20vw"
+                            quality={75}
+                            placeholder="blur"
+                            blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAREBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=="
+                            loading="lazy"
+                            priority={false}
                           />
                           
                           {/* Media Type Badge */}
@@ -2039,11 +2106,17 @@ export default function AdminGalleryPage() {
                   <div className="space-y-2">
                     <Label>Current Thumbnail</Label>
                     <div className="relative w-full h-32 border-2 border-gray-300 rounded-lg overflow-hidden">
-                      <img
+                      <Image
                         src={editVideoData.currentThumbnail}
                         alt="Current thumbnail"
-                      className="w-full h-full object-cover"
-                    />
+                        fill
+                        className="object-cover"
+                        sizes="(max-width: 768px) 100vw, 400px"
+                        quality={85}
+                        placeholder="blur"
+                        blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAREBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=="
+                        loading="lazy"
+                      />
                       <div className="absolute top-2 left-2 bg-green-100 text-green-800 px-2 py-1 rounded text-xs">
                         Current
                       </div>
@@ -2063,10 +2136,16 @@ export default function AdminGalleryPage() {
                   />
                   {editThumbnailPreview && (
                     <div className="relative w-full h-32 border-2 border-dashed border-gray-300 rounded-lg overflow-hidden mt-2">
-                      <img
+                      <Image
                         src={editThumbnailPreview}
                         alt="New thumbnail preview"
-                        className="w-full h-full object-cover"
+                        fill
+                        className="object-cover"
+                        sizes="(max-width: 768px) 100vw, 400px"
+                        quality={85}
+                        placeholder="blur"
+                        blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAREBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=="
+                        loading="lazy"
                       />
                       <div className="absolute top-2 left-2 bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs">
                         New
@@ -2226,10 +2305,16 @@ export default function AdminGalleryPage() {
               {/* Thumbnail Preview */}
               {thumbnailPreview && (
                 <div className="relative w-full h-48 border-2 border-dashed border-gray-300 rounded-lg overflow-hidden">
-                  <img
+                  <Image
                     src={thumbnailPreview}
                     alt="Thumbnail preview"
-                    className="w-full h-full object-cover"
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 768px) 100vw, 600px"
+                    quality={85}
+                    placeholder="blur"
+                    blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAREBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=="
+                    loading="lazy"
                   />
                   <button
                     type="button"
@@ -2738,6 +2823,7 @@ export default function AdminGalleryPage() {
           </div>
         </DialogContent>
       </Dialog>
-    </div>
+      </div>
+    </ErrorBoundary>
   )
 }

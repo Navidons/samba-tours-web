@@ -6,6 +6,7 @@ import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import Image from "next/image"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -116,7 +117,17 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     <div className="flex flex-col h-full">
       {/* Logo - Fixed */}
       <div className="flex-shrink-0 flex items-center px-6 py-6 border-b border-gray-200">
-        <img src="/logo/samba tours-01.png" alt="Samba Tours Logo" className="h-12 w-auto mr-3" />
+        <div className="relative h-12 w-auto mr-3">
+          <Image 
+            src="/logo/samba tours-01.png" 
+            alt="Samba Tours Logo" 
+            width={48}
+            height={48}
+            className="h-12 w-auto"
+            priority
+            quality={85}
+          />
+        </div>
         <span className="text-xl font-bold text-gray-900 tracking-wide">SambaTours</span>
       </div>
 

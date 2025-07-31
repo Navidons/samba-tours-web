@@ -394,18 +394,19 @@ export default function HomePage() {
                   key={index} 
                   className="relative group overflow-hidden rounded-xl"
                 >
-                                      <div className="aspect-w-16 aspect-h-9 relative">
-                      <Image
-                        src={wildlife.image}
-                        alt={wildlife.title}
-                        fill
-                        className="object-cover w-full h-full group-hover:scale-110 transition-transform duration-500"
-                        priority
-                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                        quality={imageOptimization.quality}
-                        placeholder="blur"
-                        blurDataURL={imageOptimization.blurDataURL}
-                      />
+                  <div className="aspect-w-16 aspect-h-9 relative">
+                    <Image
+                      src={wildlife.image}
+                      alt={wildlife.title}
+                      fill
+                      className="object-cover w-full h-full group-hover:scale-110 transition-transform duration-500"
+                      priority={index === 0} // Only prioritize the first image
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                      quality={85}
+                      placeholder="blur"
+                      blurDataURL={imageOptimization.blurDataURL}
+                      loading={index === 0 ? "eager" : "lazy"}
+                    />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
                   </div>
                   <div className="absolute bottom-0 left-0 right-0 p-6">

@@ -20,263 +20,184 @@ import {
 import { prisma } from "@/lib/prisma"
 import Link from "next/link"
 
-// Dashboard Data Fetcher Component
+// Dashboard Data Fetcher Component - Simplified for better performance
 async function DashboardData() {
   const now = new Date()
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
   const yesterday = new Date(today.getTime() - 24 * 60 * 60 * 1000)
-  const lastWeek = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000)
-  const lastMonth = new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000)
 
-  const data = await (async () => {
-    try {
-      // Fetch all dashboard data in parallel
-      const [
-        todayRevenue,
-        yesterdayRevenue,
-        todayBookings,
-        yesterdayBookings,
-        todayCustomers,
-        yesterdayCustomers,
-        pendingBookings,
-        recentBookings,
-        recentActivity,
-        topTours,
-        contactInquiries,
-        systemStats
-      ] = await Promise.all([
-        // Today's revenue
-        prisma.booking.aggregate({
-          where: {
-            createdAt: { gte: today },
-            status: { in: ['confirmed', 'completed'] }
-          },
-          _sum: { finalAmount: true }
-        }),
+  try {
+    // Simplified queries - only fetch essential data
+    const [
+      todayRevenue,
+      yesterdayRevenue,
+      todayBookings,
+      yesterdayBookings,
+      todayCustomers,
+      yesterdayCustomers,
+      pendingBookings,
+      systemStats
+    ] = await Promise.all([
+      // Today's revenue
+      prisma.booking.aggregate({
+        where: {
+          createdAt: { gte: today },
+          status: { in: ['confirmed', 'completed'] }
+        },
+        _sum: { finalAmount: true }
+      }),
 
-        // Yesterday's revenue
-        prisma.booking.aggregate({
-          where: {
-            createdAt: { gte: yesterday, lt: today },
-            status: { in: ['confirmed', 'completed'] }
-          },
-          _sum: { finalAmount: true }
-        }),
+      // Yesterday's revenue
+      prisma.booking.aggregate({
+        where: {
+          createdAt: { gte: yesterday, lt: today },
+          status: { in: ['confirmed', 'completed'] }
+        },
+        _sum: { finalAmount: true }
+      }),
 
-        // Today's bookings
-        prisma.booking.count({
-          where: {
-            createdAt: { gte: today },
-            status: { in: ['confirmed', 'completed'] }
-          }
-        }),
+      // Today's bookings
+      prisma.booking.count({
+        where: {
+          createdAt: { gte: today },
+          status: { in: ['confirmed', 'completed'] }
+        }
+      }),
 
-        // Yesterday's bookings
-        prisma.booking.count({
-          where: {
-            createdAt: { gte: yesterday, lt: today },
-            status: { in: ['confirmed', 'completed'] }
-          }
-        }),
+      // Yesterday's bookings
+      prisma.booking.count({
+        where: {
+          createdAt: { gte: yesterday, lt: today },
+          status: { in: ['confirmed', 'completed'] }
+        }
+      }),
 
-        // Today's new customers
-        prisma.customer.count({
-          where: {
-            joinDate: { gte: today }
-          }
-        }),
+      // Today's new customers
+      prisma.customer.count({
+        where: {
+          joinDate: { gte: today }
+        }
+      }),
 
-        // Yesterday's new customers
-        prisma.customer.count({
-          where: {
-            joinDate: { gte: yesterday, lt: today }
-          }
-        }),
+      // Yesterday's new customers
+      prisma.customer.count({
+        where: {
+          joinDate: { gte: yesterday, lt: today }
+        }
+      }),
 
+      // Pending bookings
+      prisma.booking.count({
+        where: {
+          status: 'pending'
+        }
+      }),
 
-
-        // Pending bookings
-        prisma.booking.count({
-          where: {
-            status: 'pending'
-          }
-        }),
-
-        // Recent bookings
-        prisma.booking.findMany({
-          where: {
-            createdAt: { gte: lastWeek }
-          },
-          include: {
-            tour: { select: { title: true, price: true } }
-          },
-          orderBy: { createdAt: 'desc' },
-          take: 5
-        }),
-
-        // Recent activity
-        prisma.$queryRaw`
-          (SELECT 'booking' as type, customer_name as title, 'New booking' as action, created_at as date, booking_reference as reference, final_amount as amount
-           FROM bookings 
-           WHERE created_at >= ${lastWeek}
-           ORDER BY created_at DESC LIMIT 3)
-          UNION ALL
-          (SELECT 'review' as type, reviewer_name as title, 'New review' as action, created_at as date, CONCAT(rating, ' stars') as reference, NULL as amount
-           FROM tour_reviews 
-           WHERE created_at >= ${lastWeek}
-           ORDER BY created_at DESC LIMIT 3)
-          UNION ALL
-          (SELECT 'contact' as type, name as title, 'New inquiry' as action, created_at as date, subject as reference, NULL as amount
-           FROM contact_inquiries 
-           WHERE created_at >= ${lastWeek}
-           ORDER BY created_at DESC LIMIT 3)
-          ORDER BY date DESC LIMIT 8
-        `,
-
-        // Top performing tours
-        prisma.booking.groupBy({
-          by: ['tourId'],
-          where: {
-            createdAt: { gte: lastMonth },
-            status: { in: ['confirmed', 'completed'] }
-          },
-          _count: { id: true },
-          _sum: { finalAmount: true },
-          orderBy: { _sum: { finalAmount: 'desc' } },
-          take: 5
-        }),
-
-        // Recent contact inquiries
-        prisma.contactInquiry.findMany({
-          where: {
-            createdAt: { gte: lastWeek },
-            status: 'new'
-          },
-          orderBy: { createdAt: 'desc' },
-          take: 5
-        }),
-
-        // System statistics
-        Promise.all([
-          prisma.tour.count(),
-          prisma.customer.count(),
-          prisma.booking.count(),
-          prisma.tourReview.aggregate({
-            _avg: { rating: true }
-          })
-        ])
-      ])
-
-      // Calculate percentage changes
-      const calculateChange = (current: number, previous: number) => {
-        if (previous === 0) return current > 0 ? 100 : 0
-        return ((current - previous) / previous) * 100
-      }
-
-      const revenueChange = calculateChange(
-        Number(todayRevenue._sum.finalAmount || 0),
-        Number(yesterdayRevenue._sum.finalAmount || 0)
-      )
-
-      const bookingsChange = calculateChange(todayBookings, yesterdayBookings)
-      const customersChange = calculateChange(todayCustomers, yesterdayCustomers)
-
-      // Get tour details for top tours
-      const topToursWithDetails = await Promise.all(
-        topTours.map(async (tour) => {
-          const tourDetails = await prisma.tour.findUnique({
-            where: { id: tour.tourId },
-            select: { title: true, price: true, rating: true }
-          })
-          return {
-            name: tourDetails?.title || 'Unknown Tour',
-            bookings: tour._count.id,
-            revenue: Number(tour._sum.finalAmount || 0),
-            rating: Number(tourDetails?.rating || 0)
-          }
+      // System statistics (simplified)
+      Promise.all([
+        prisma.tour.count(),
+        prisma.customer.count(),
+        prisma.booking.count(),
+        prisma.tourReview.aggregate({
+          _avg: { rating: true }
         })
-      )
+      ])
+    ])
 
-      // Process recent activity
-      const processedActivity = (recentActivity as any[]).map((item: any) => ({
-        action: item.action,
-        details: `${item.title} - ${item.reference}`,
-        time: new Date(item.date).toLocaleDateString('en-US', {
-          month: 'short',
-          day: 'numeric',
-          hour: '2-digit',
-          minute: '2-digit'
-        }),
-        type: item.type,
-        amount: item.amount ? Number(item.amount) : null
-      }))
+    // Calculate percentage changes
+    const calculateChange = (current: number, previous: number) => {
+      if (previous === 0) return current > 0 ? 100 : 0
+      return ((current - previous) / previous) * 100
+    }
 
-      const stats = [
-        {
-          title: "Today's Revenue",
-          value: `$${Number(todayRevenue._sum.finalAmount || 0).toLocaleString()}`,
-          change: `${revenueChange >= 0 ? '+' : ''}${revenueChange.toFixed(1)}%`,
-          changeType: revenueChange >= 0 ? "positive" as const : "negative" as const,
-          icon: DollarSign,
-          color: "bg-gradient-to-br from-green-50 to-green-100 border-green-200"
-        },
-        {
-          title: "Today's Bookings",
-          value: todayBookings.toString(),
-          change: `${bookingsChange >= 0 ? '+' : ''}${bookingsChange.toFixed(1)}%`,
-          changeType: bookingsChange >= 0 ? "positive" as const : "negative" as const,
-          icon: Calendar,
-          color: "bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200"
-        },
-        {
-          title: "New Customers",
-          value: todayCustomers.toString(),
-          change: `${customersChange >= 0 ? '+' : ''}${customersChange.toFixed(1)}%`,
-          changeType: customersChange >= 0 ? "positive" as const : "negative" as const,
-          icon: Users,
-          color: "bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200"
-        },
+    const revenueChange = calculateChange(
+      Number(todayRevenue._sum.finalAmount || 0),
+      Number(yesterdayRevenue._sum.finalAmount || 0)
+    )
 
-      ]
+    const bookingsChange = calculateChange(todayBookings, yesterdayBookings)
+    const customersChange = calculateChange(todayCustomers, yesterdayCustomers)
 
-      return {
-        stats,
-        pendingBookings,
-        recentBookings,
-        processedActivity,
-        topToursWithDetails,
-        contactInquiries,
-        systemStats: {
-          totalTours: systemStats[0],
-          totalCustomers: systemStats[1],
-          totalBookings: systemStats[2],
-          averageRating: Number(systemStats[3]._avg.rating || 0)
-        }
-      }
-    } catch (error) {
-      console.error('Error fetching dashboard data:', error)
-      return {
-        stats: [],
-        pendingBookings: 0,
-        recentBookings: [],
-        processedActivity: [],
-        topToursWithDetails: [],
-        contactInquiries: [],
-        systemStats: {
-          totalTours: 0,
-          totalCustomers: 0,
-          totalBookings: 0,
-          averageRating: 0
-        }
+    const data = {
+      revenue: {
+        today: Number(todayRevenue._sum.finalAmount || 0),
+        yesterday: Number(yesterdayRevenue._sum.finalAmount || 0),
+        change: revenueChange
+      },
+      bookings: {
+        today: todayBookings,
+        yesterday: yesterdayBookings,
+        change: bookingsChange,
+        pending: pendingBookings
+      },
+      customers: {
+        today: todayCustomers,
+        yesterday: yesterdayCustomers,
+        change: customersChange
+      },
+      recentBookings: [],
+      recentActivity: [],
+      topTours: [],
+      contactInquiries: [],
+      systemStats: {
+        totalTours: systemStats[0],
+        totalCustomers: systemStats[1],
+        totalBookings: systemStats[2],
+        averageRating: Number(systemStats[3]._avg.rating || 0)
       }
     }
-  })();
-  return data
+
+    return <DashboardContent data={data} />
+  } catch (error) {
+    console.error('Error fetching dashboard data:', error)
+    // Return fallback data
+    const fallbackData = {
+      revenue: { today: 0, yesterday: 0, change: 0 },
+      bookings: { today: 0, yesterday: 0, change: 0, pending: 0 },
+      customers: { today: 0, yesterday: 0, change: 0 },
+      recentBookings: [],
+      recentActivity: [],
+      topTours: [],
+      contactInquiries: [],
+      systemStats: { totalTours: 0, totalCustomers: 0, totalBookings: 0, averageRating: 0 }
+    }
+    return <DashboardContent data={fallbackData} />
+  }
 }
 
 // Dashboard Content Component
 function DashboardContent({ data }: { data: any }) {
-  const { stats, pendingBookings, recentBookings, processedActivity, topToursWithDetails, contactInquiries, systemStats } = data
+  const { revenue, bookings, customers, recentBookings, recentActivity, topTours, contactInquiries, systemStats } = data
+
+  // Create stats array for the dashboard cards
+  const stats = [
+    {
+      title: "Today's Revenue",
+      value: `$${revenue.today.toLocaleString()}`,
+      change: `${revenue.change >= 0 ? '+' : ''}${revenue.change.toFixed(1)}%`,
+      changeType: revenue.change >= 0 ? "positive" as const : "negative" as const,
+      icon: DollarSign,
+      color: "bg-gradient-to-br from-green-50 to-green-100 border-green-200"
+    },
+    {
+      title: "Today's Bookings",
+      value: bookings.today.toString(),
+      change: `${bookings.change >= 0 ? '+' : ''}${bookings.change.toFixed(1)}%`,
+      changeType: bookings.change >= 0 ? "positive" as const : "negative" as const,
+      icon: Calendar,
+      color: "bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200"
+    },
+    {
+      title: "New Customers",
+      value: customers.today.toString(),
+      change: `${customers.change >= 0 ? '+' : ''}${customers.change.toFixed(1)}%`,
+      changeType: customers.change >= 0 ? "positive" as const : "negative" as const,
+      icon: Users,
+      color: "bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200"
+    },
+  ]
+
+  const pendingBookings = bookings.pending
 
   return (
     <div className="space-y-8">
@@ -323,8 +244,8 @@ function DashboardContent({ data }: { data: any }) {
             </CardHeader>
             <CardContent className="p-0">
               <div className="divide-y divide-earth-100">
-                {processedActivity.length > 0 ? (
-                  processedActivity.map((activity: any, index: number) => (
+                {recentActivity.length > 0 ? (
+                  recentActivity.map((activity: any, index: number) => (
                     <div key={index} className="p-4 hover:bg-earth-50 transition-colors duration-200">
                       <div className="flex items-start justify-between">
                         <div className="flex items-start space-x-3">
@@ -339,14 +260,19 @@ function DashboardContent({ data }: { data: any }) {
                           </div>
                           <div className="flex-1">
                             <p className="text-sm font-medium text-earth-900">{activity.action}</p>
-                            <p className="text-sm text-earth-600">{activity.details}</p>
-                            <p className="text-xs text-earth-500 mt-1">{activity.time}</p>
+                            <p className="text-sm text-earth-600">{activity.title} - {activity.reference}</p>
+                            <p className="text-xs text-earth-500 mt-1">{activity.date.toLocaleDateString('en-US', {
+                              month: 'short',
+                              day: 'numeric',
+                              hour: '2-digit',
+                              minute: '2-digit'
+                            })}</p>
                           </div>
                         </div>
                         {activity.amount && (
                           <div className="text-right">
                             <p className="text-sm font-semibold text-green-600">
-                              ${activity.amount.toLocaleString()}
+                              ${Number(activity.amount).toLocaleString()}
                             </p>
                           </div>
                         )}
@@ -377,8 +303,8 @@ function DashboardContent({ data }: { data: any }) {
             </CardHeader>
             <CardContent className="p-0">
               <div className="divide-y divide-earth-100">
-                {topToursWithDetails.length > 0 ? (
-                  topToursWithDetails.map((tour: any, index: number) => (
+                {topTours.length > 0 ? (
+                  topTours.map((tour: any, index: number) => (
                     <div key={index} className="p-4 hover:bg-earth-50 transition-colors duration-200">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-3">

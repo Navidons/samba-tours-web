@@ -36,32 +36,43 @@ export async function POST(
     // Check if this visitor has already viewed this image recently (within 24 hours)
     const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000)
     
-    const existingView = await prisma.galleryImageView.findFirst({
-      where: {
-        imageId,
-        visitorId,
-        viewedAt: {
-          gte: twentyFourHoursAgo
-        }
-      }
-    })
-
+    let existingView = null
     let newViewsCount = image.views
 
-    if (!existingView) {
-      // Create a new view record
-      await prisma.galleryImageView.create({
-        data: {
+    try {
+      existingView = await prisma.galleryImageView.findFirst({
+        where: {
           imageId,
           visitorId,
-          viewedAt: new Date()
+          viewedAt: {
+            gte: twentyFourHoursAgo
+          }
         }
       })
-      
-      // Increment the view count
-      newViewsCount = image.views + 1
 
-      // Update the image's view count
+      if (!existingView) {
+        // Create a new view record
+        await prisma.galleryImageView.create({
+          data: {
+            imageId,
+            visitorId,
+            viewedAt: new Date()
+          }
+        })
+        
+        // Increment the view count
+        newViewsCount = image.views + 1
+
+        // Update the image's view count
+        await prisma.galleryImage.update({
+          where: { id: imageId },
+          data: { views: newViewsCount }
+        })
+      }
+    } catch (dbError) {
+      console.error('Database error in view tracking:', dbError)
+      // If there's a database error, just increment the view count directly
+      newViewsCount = image.views + 1
       await prisma.galleryImage.update({
         where: { id: imageId },
         data: { views: newViewsCount }

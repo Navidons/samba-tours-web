@@ -8,6 +8,7 @@ import { MockAuthProvider } from "@/components/auth/mock-auth-provider"
 import { UserAuthProvider } from "@/components/auth/user-auth-provider"
 import { CartProvider } from "@/hooks/use-cart"
 import ConditionalLayout from "@/components/layout/conditional-layout"
+import PerformanceMonitor from "@/components/ui/performance-monitor"
 
 
 
@@ -139,6 +140,7 @@ export default function RootLayout({
               <CartProvider>
                 <ConditionalLayout>{children}</ConditionalLayout>
                 <Toaster />
+                <PerformanceMonitor />
               </CartProvider>
             </UserAuthProvider>
           </MockAuthProvider>

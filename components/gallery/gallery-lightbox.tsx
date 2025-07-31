@@ -69,6 +69,9 @@ export default function GalleryLightbox({
   const imageRef = useRef<HTMLDivElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
 
+  // Blur data URL for better loading experience
+  const blurDataURL = 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAREBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=='
+
   // Reset zoom, rotation, and position when image changes
   useEffect(() => {
     setScale(1)
@@ -387,6 +390,9 @@ export default function GalleryLightbox({
                 isImageLoaded ? 'opacity-100' : 'opacity-0'
               }`}
               priority
+              quality={90}
+              placeholder="blur"
+              blurDataURL={blurDataURL}
               onLoad={() => setIsImageLoaded(true)}
             />
             
@@ -495,7 +501,12 @@ export default function GalleryLightbox({
               src={image.src} 
               alt={image.alt} 
               fill 
-              className="object-cover" 
+              className="object-cover"
+              quality={85}
+              placeholder="blur"
+              blurDataURL={blurDataURL}
+              loading="lazy"
+              sizes="64px"
             />
             {index === currentIndex && (
               <div className="absolute inset-0 bg-emerald-400/20" />
