@@ -1,3 +1,10 @@
+import type { Metadata } from "next"
+
+export const metadata: Metadata = {
+  title: "Terms of Service - Samba Tours & Travel",
+  description: "Read our terms of service for Uganda safari bookings, cancellation policies, payment terms, and travel requirements. Clear guidelines for your safari experience."
+}
+
 export default function TermsPage() {
   return (
     <main className="min-h-screen bg-cream-50">

@@ -20,11 +20,6 @@ import {
 import { prisma } from "@/lib/prisma"
 import Link from "next/link"
 
-export const metadata = {
-  title: "Admin Dashboard - Samba Tours",
-  description: "Welcome to the Samba Tours admin dashboard.",
-}
-
 // Dashboard Data Fetcher Component
 async function DashboardData() {
   const now = new Date()

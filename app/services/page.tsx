@@ -1,3 +1,4 @@
+import type { Metadata } from "next"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -34,6 +35,11 @@ import {
   Palette,
   Compass
 } from "lucide-react"
+
+export const metadata: Metadata = {
+  title: "Uganda Safari Services - Complete Travel Solutions",
+  description: "Comprehensive Uganda safari services: gorilla trekking, wildlife tours, hotel booking, visa assistance, and adventure activities. Expert guides and personalized experiences."
+}
 
 const services = [
   {

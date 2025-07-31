@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+
+  <!-- Home Hero Images -->
+  <url>
+    <loc>https://sambatours.co/</loc>
+    <image:image>
+      <image:loc>https://sambatours.co/home-hero-photos/elephant.jpg</image:loc>
+      <image:title>African Elephant in Uganda Safari</image:title>
+      <image:caption>Gentle giants of the savannah</image:caption>
+      <image:license>https://sambatours.co/terms</image:license>
+    </image:image>
+    <image:image>
+      <image:loc>https://sambatours.co/home-hero-photos/giraffes.jpg</image:loc>
+      <image:title>Giraffes in Uganda</image:title>
+      <image:caption>Towering over the acacia trees</image:caption>
+      <image:license>https://sambatours.co/terms</image:license>
+    </image:image>
+    <image:image>
+      <image:loc>https://sambatours.co/home-hero-photos/zebras.jpg</image:loc>
+      <image:title>Zebras in Uganda</image:title>
+      <image:caption>Striped beauties of the grasslands</image:caption>
+      <image:license>https://sambatours.co/terms</image:license>
+    </image:image>
+    <image:image>
+      <image:loc>https://sambatours.co/home-hero-photos/tourists.jpg</image:loc>
+      <image:title>Tourists on Safari in Uganda</image:title>
+      <image:caption>Unforgettable wildlife encounters</image:caption>
+      <image:license>https://sambatours.co/terms</image:license>
+    </image:image>
+    <image:image>
+      <image:loc>https://sambatours.co/home-hero-photos/woman tourist.jpg</image:loc>
+      <image:title>Female Tourist in Uganda</image:title>
+      <image:caption>Personal safari experiences</image:caption>
+      <image:license>https://sambatours.co/terms</image:license>
+    </image:image>
+    <image:image>
+      <image:loc>https://sambatours.co/home-hero-photos/giraffe.jpg</image:loc>
+      <image:title>Giraffe in Uganda</image:title>
+      <image:caption>Graceful giants of the plains</image:caption>
+      <image:license>https://sambatours.co/terms</image:license>
+    </image:image>
+    <image:image>
+      <image:loc>https://sambatours.co/home-hero-photos/animals.jpg</image:loc>
+      <image:title>Uganda Wildlife</image:title>
+      <image:caption>Diverse wildlife of Uganda</image:caption>
+      <image:license>https://sambatours.co/terms</image:license>
+    </image:image>
+  </url>
+
+  <!-- Gallery Page Images -->
+  <url>
+    <loc>https://sambatours.co/gallery</loc>
+    <image:image>
+      <image:loc>https://sambatours.co/photos/uganda-wildlife.jpg</image:loc>
+      <image:title>Uganda Wildlife</image:title>
+      <image:caption>Diverse wildlife of Uganda's national parks</image:caption>
+      <image:license>https://sambatours.co/terms</image:license>
+    </image:image>
+    <image:image>
+      <image:loc>https://sambatours.co/photos/uganda-monkeys.jpg</image:loc>
+      <image:title>Uganda Monkeys</image:title>
+      <image:caption>Playful primates in Uganda's forests</image:caption>
+      <image:license>https://sambatours.co/terms</image:license>
+    </image:image>
+    <image:image>
+      <image:loc>https://sambatours.co/photos/river-nile-jinja-hero.jpg</image:loc>
+      <image:title>River Nile Jinja</image:title>
+      <image:caption>The source of the Nile River in Jinja</image:caption>
+      <image:license>https://sambatours.co/terms</image:license>
+    </image:image>
+    <image:image>
+      <image:loc>https://sambatours.co/photos/rwenzori-mountain-hero.jpg</image:loc>
+      <image:title>Rwenzori Mountains</image:title>
+      <image:caption>Snow-capped peaks of the Rwenzori Mountains</image:caption>
+      <image:license>https://sambatours.co/terms</image:license>
+    </image:image>
+    <image:image>
+      <image:loc>https://sambatours.co/photos/queen-elizabeth-national-park-uganda.jpg</image:loc>
+      <image:title>Queen Elizabeth National Park</image:title>
+      <image:caption>Iconic wildlife park with tree-climbing lions</image:caption>
+      <image:license>https://sambatours.co/terms</image:license>
+    </image:image>
+    <image:image>
+      <image:loc>https://sambatours.co/photos/chimpanzee-bwindi-forest-impenetrable-park.jpg</image:loc>
+      <image:title>Chimpanzee Bwindi Forest</image:title>
+      <image:caption>Chimpanzees in Bwindi Impenetrable Forest</image:caption>
+      <image:license>https://sambatours.co/terms</image:license>
+    </image:image>
+  </url>
+
+  <!-- Tours Attractions Images -->
+  <url>
+    <loc>https://sambatours.co/tours</loc>
+    <image:image>
+      <image:loc>https://sambatours.co/tours-attractions/lion.jpg</image:loc>
+      <image:title>Lion in Uganda</image:title>
+      <image:caption>Majestic lions of Uganda's national parks</image:caption>
+      <image:license>https://sambatours.co/terms</image:license>
+    </image:image>
+    <image:image>
+      <image:loc>https://sambatours.co/tours-attractions/elephant 2.jpg</image:loc>
+      <image:title>Elephant in Uganda</image:title>
+      <image:caption>Gentle giants of the savannah</image:caption>
+      <image:license>https://sambatours.co/terms</image:license>
+    </image:image>
+    <image:image>
+      <image:loc>https://sambatours.co/tours-attractions/giraffe.jpg</image:loc>
+      <image:title>Giraffe in Uganda</image:title>
+      <image:caption>Graceful giraffes of Uganda</image:caption>
+      <image:license>https://sambatours.co/terms</image:license>
+    </image:image>
+    <image:image>
+      <image:loc>https://sambatours.co/tours-attractions/buffalo.jpg</image:loc>
+      <image:title>Buffalo in Uganda</image:title>
+      <image:caption>African buffalo in their natural habitat</image:caption>
+      <image:license>https://sambatours.co/terms</image:license>
+    </image:image>
+    <image:image>
+      <image:loc>https://sambatours.co/tours-attractions/lion cubs.jpg</image:loc>
+      <image:title>Lion Cubs</image:title>
+      <image:caption>Adorable lion cubs in Uganda</image:caption>
+      <image:license>https://sambatours.co/terms</image:license>
+    </image:image>
+    <image:image>
+      <image:loc>https://sambatours.co/tours-attractions/boat cruise.jpg</image:loc>
+      <image:title>Boat Cruise</image:title>
+      <image:caption>Nile River boat safari experience</image:caption>
+      <image:license>https://sambatours.co/terms</image:license>
+    </image:image>
+  </url>
+
+  <!-- Logo Images -->
+  <url>
+    <loc>https://sambatours.co/</loc>
+    <image:image>
+      <image:loc>https://sambatours.co/logo/samba tours-01.png</image:loc>
+      <image:title>Samba Tours Logo</image:title>
+      <image:caption>Official Samba Tours logo</image:caption>
+      <image:license>https://sambatours.co/terms</image:license>
+    </image:image>
+    <image:image>
+      <image:loc>https://sambatours.co/logo/samba tours-02.png</image:loc>
+      <image:title>Samba Tours Logo Variant</image:title>
+      <image:caption>Alternative Samba Tours logo design</image:caption>
+      <image:license>https://sambatours.co/terms</image:license>
+    </image:image>
+    <image:image>
+      <image:loc>https://sambatours.co/logo/samba tours-03.png</image:loc>
+      <image:title>Samba Tours Logo Small</image:title>
+      <image:caption>Small version of Samba Tours logo</image:caption>
+      <image:license>https://sambatours.co/terms</image:license>
+    </image:image>
+  </url>
+
+</urlset> 

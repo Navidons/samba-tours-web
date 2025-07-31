@@ -8,11 +8,6 @@ import { Search, Filter, Download, Eye, MessageSquare, Mail } from "lucide-react
 import LoadingSpinner from "@/components/ui/loading-spinner"
 import CustomersClient from "./CustomersClient"
 
-export const metadata = {
-  title: "Customer Management - Samba Tours Admin",
-  description: "Manage customer accounts and profiles.",
-}
-
 const getStatusColor = (status: "active" | "inactive" | "blocked") => {
   switch (status) {
     case "active":

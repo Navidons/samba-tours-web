@@ -5,11 +5,6 @@ import Link from "next/link"
 import LoadingSpinner from "@/components/ui/loading-spinner"
 import BlogManagementClient from "./BlogManagementClient"
 
-export const metadata = {
-  title: "Blog Management - Samba Tours Admin",
-  description: "Manage blog posts and content.",
-}
-
 export default function BlogManagement() {
   return (
     <main className="min-h-screen bg-gray-50">

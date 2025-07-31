@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  
+  <!-- Main Sitemap -->
+  <sitemap>
+    <loc>https://sambatours.co/sitemap.xml</loc>
+    <lastmod>2024-12-19</lastmod>
+  </sitemap>
+  
+  <!-- Image Sitemap -->
+  <sitemap>
+    <loc>https://sambatours.co/sitemap-images.xml</loc>
+    <lastmod>2024-12-19</lastmod>
+  </sitemap>
+  
+  <!-- Blog Sitemap (if you have many blog posts) -->
+  <sitemap>
+    <loc>https://sambatours.co/sitemap-blog.xml</loc>
+    <lastmod>2024-12-19</lastmod>
+  </sitemap>
+  
+  <!-- Tours Sitemap (if you have many tour pages) -->
+  <sitemap>
+    <loc>https://sambatours.co/sitemap-tours.xml</loc>
+    <lastmod>2024-12-19</lastmod>
+  </sitemap>
+  
+</sitemapindex> 

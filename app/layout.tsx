@@ -38,8 +38,69 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   title: 'Samba Tours - Uganda\'s Premier Safari & Adventure Travel Company',
-  description: 'Experience authentic Uganda with Samba Tours. Expert-guided gorilla trekking, wildlife safaris, cultural tours, and adventure travel.',
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || (process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : 'https://sambatours.co'))
+  description: 'Expert-guided gorilla trekking, wildlife safaris, and cultural tours in Uganda. Discover the Pearl of Africa with Samba Tours - the authentic Uganda safari experience.',
+  keywords: 'Samba Tours, Uganda safari, gorilla trekking Uganda, wildlife safari Africa, Uganda tours, African adventure travel, Bwindi gorilla trekking, Queen Elizabeth National Park, authentic Uganda experience, local Uganda tour operator, Samba Tours Uganda, Samba Tours & Travel',
+  authors: [{ name: "Samba Tours" }],
+  creator: "Samba Tours",
+  publisher: "Samba Tours",
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || (process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : 'https://sambatours.co')),
+  alternates: {
+    canonical: '/',
+  },
+  openGraph: {
+    title: 'Samba Tours - Uganda\'s Premier Safari & Adventure Travel Company',
+    description: 'Expert-guided gorilla trekking, wildlife safaris, and cultural tours in Uganda. Discover the Pearl of Africa with Samba Tours - the authentic Uganda safari experience.',
+    url: '/',
+    siteName: 'Samba Tours',
+    images: [
+      {
+        url: '/photos/uganda-wildlife.jpg',
+        width: 1200,
+        height: 630,
+        alt: 'Samba Tours - Uganda Wildlife Safari',
+      },
+      {
+        url: '/photos/giraffe-uganda-savana-hero.jpg',
+        width: 1200,
+        height: 630,
+        alt: 'Samba Tours - Giraffes in Uganda Savannah',
+      },
+    ],
+    locale: 'en_US',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Samba Tours - Uganda\'s Premier Safari & Adventure Travel Company',
+    description: 'Expert-guided gorilla trekking, wildlife safaris, and cultural tours in Uganda. Discover the Pearl of Africa with Samba Tours.',
+    images: ['/photos/uganda-wildlife.jpg'],
+    creator: '@sambatours',
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+  verification: {
+    google: 'your-google-verification-code',
+  },
+  other: {
+    'brand': 'Samba Tours',
+    'company': 'Samba Tours Uganda',
+    'official-name': 'Samba Tours & Travel',
+    'differentiation': 'Authentic Uganda safari operator, not Pamba Tours',
+  }
 }
 
 export default function RootLayout({
@@ -59,6 +120,15 @@ export default function RootLayout({
         <link rel="icon" href="/favicon.png" type="image/png" sizes="32x32" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
         <link rel="manifest" href="/site.webmanifest" />
+
+        {/* Brand differentiation meta tags */}
+        <meta name="brand" content="Samba Tours" />
+        <meta name="company" content="Samba Tours Uganda" />
+        <meta name="official-name" content="Samba Tours & Travel" />
+        <meta name="differentiation" content="Authentic Uganda safari operator, not Pamba Tours" />
+        
+        {/* Additional brand keywords */}
+        <meta name="keywords" content="Samba Tours, Uganda safari, gorilla trekking Uganda, wildlife safari Africa, Uganda tours, African adventure travel, Bwindi gorilla trekking, Queen Elizabeth National Park, authentic Uganda experience, local Uganda tour operator, Samba Tours Uganda, Samba Tours & Travel" />
       </head>
       
       <body className={`${inter.variable} ${playfair.variable} font-sans antialiased`} style={{ margin: 0, padding: 0 }}>

@@ -4,11 +4,6 @@ import { cookies } from "next/headers"
 import ContactManagementClient from "./ContactManagementClient"
 import { Skeleton } from "@/components/ui/skeleton"
 
-export const metadata = {
-  title: "Contact Messages - Samba Tours Admin",
-  description: "View and manage contact form submissions.",
-}
-
 export default function ContactManagementPage() {
   // Check for admin session on server side
   const cookieStore = cookies()

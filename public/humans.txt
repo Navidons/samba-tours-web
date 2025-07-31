@@ -1,0 +1,23 @@
+/* TEAM */
+    Developer: Samba Tours Development Team
+    Contact: info@sambatours.co
+    From: Kampala, Uganda
+
+/* SITE */
+    Last update: 2024/12/19
+    Language: English
+    Doctype: HTML5
+    IDE: Visual Studio Code
+    Standards: HTML5, CSS3, JavaScript ES6+
+    Components: Next.js 14, React 18, TypeScript
+    Software: Node.js, Prisma ORM, MySQL
+
+/* THANKS */
+    Name: Samba Tours Team
+    Description: Dedicated to providing exceptional Uganda safari experiences
+
+/* SITE */
+    Name: Samba Tours - Uganda Safari & Adventure Travel
+    Description: Expert-guided gorilla trekking, wildlife safaris, and cultural tours in Uganda
+    Keywords: Uganda safari, gorilla trekking, wildlife tours, African adventure
+    Author: Samba Tours Development Team 

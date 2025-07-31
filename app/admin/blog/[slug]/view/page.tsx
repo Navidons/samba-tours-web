@@ -5,11 +5,6 @@ import Link from "next/link"
 import LoadingSpinner from "@/components/ui/loading-spinner"
 import BlogPostView from "../../BlogPostView"
 
-export const metadata = {
-  title: "View Blog Post - Samba Tours Admin",
-  description: "View blog post details.",
-}
-
 interface ViewBlogPostProps {
   params: { slug: string }
 }

@@ -8,8 +8,7 @@ import CallToAction from "@/components/about/call-to-action"
 
 export const metadata: Metadata = {
   title: "About Samba Tours Uganda - Your Trusted Safari Partner",
-  description:
-    "Learn about Samba Tours Uganda, your trusted partner for authentic safari experiences. Discover our story, values, and commitment to sustainable tourism.",
+  description: "Learn about Samba Tours Uganda, your trusted partner for authentic safari experiences. Discover our story, values, and commitment to sustainable tourism."
 }
 
 export default function AboutPage() {

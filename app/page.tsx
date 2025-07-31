@@ -189,13 +189,149 @@ const ugandaRegions = [
 ]
 
 export const metadata: Metadata = {
-  title: "Uganda Safari & Adventure Tours | Pearl of Africa",
-  description: "Experience the Pearl of Africa with expert-guided gorilla trekking, wildlife safaris, and cultural tours. Discover Uganda's natural wonders and warm hospitality."
+  title: "Samba Tours - Uganda Safari & Adventure Tours | Pearl of Africa",
+  description: "Expert-guided gorilla trekking, wildlife safaris, and cultural tours in Uganda. Discover the Pearl of Africa with Samba Tours - the authentic Uganda safari experience.",
+  keywords: "Samba Tours, Uganda safari, gorilla trekking Uganda, wildlife safari Africa, Uganda tours, African adventure travel, Samba Tours Uganda, authentic Uganda safari, local Uganda tour operator",
+  authors: [{ name: "Samba Tours" }],
+  creator: "Samba Tours",
+  publisher: "Samba Tours",
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://sambatours.co'),
+  alternates: {
+    canonical: '/',
+  },
+  openGraph: {
+    title: "Samba Tours - Uganda Safari & Adventure Tours | Pearl of Africa",
+    description: "Expert-guided gorilla trekking, wildlife safaris, and cultural tours in Uganda. Discover the Pearl of Africa with Samba Tours - the authentic Uganda safari experience.",
+    url: '/',
+    siteName: 'Samba Tours',
+    images: [
+      {
+        url: '/photos/uganda-wildlife.jpg',
+        width: 1200,
+        height: 630,
+        alt: 'Samba Tours - Uganda Wildlife Safari',
+      },
+      {
+        url: '/photos/giraffe-uganda-savana-hero.jpg',
+        width: 1200,
+        height: 630,
+        alt: 'Samba Tours - Giraffes in Uganda Savannah',
+      },
+    ],
+    locale: 'en_US',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: "Samba Tours - Uganda Safari & Adventure Tours | Pearl of Africa",
+    description: "Expert-guided gorilla trekking, wildlife safaris, and cultural tours in Uganda. Discover the Pearl of Africa with Samba Tours.",
+    images: ['/photos/uganda-wildlife.jpg'],
+    creator: '@sambatours',
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+  verification: {
+    google: 'your-google-verification-code',
+  },
+  other: {
+    'brand': 'Samba Tours',
+    'company': 'Samba Tours Uganda',
+    'official-name': 'Samba Tours & Travel',
+    'differentiation': 'Authentic Uganda safari operator, not Pamba Tours',
+  }
+}
+
+// Structured Data for Homepage
+const homepageStructuredData = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "Samba Tours",
+  "alternateName": "Samba Tours & Travel",
+  "description": "Authentic Uganda safari operator providing expert-guided gorilla trekking, wildlife safaris, and cultural tours in Uganda. Not to be confused with Pamba Tours.",
+  "url": "https://sambatours.co",
+  "logo": "https://sambatours.co/logo/samba tours-01.png",
+  "foundingDate": "2016",
+  "address": {
+    "@type": "PostalAddress",
+    "addressCountry": "Uganda",
+    "addressLocality": "Kampala"
+  },
+  "contactPoint": {
+    "@type": "ContactPoint",
+    "telephone": "+256-XXX-XXX-XXX",
+    "contactType": "customer service",
+    "email": "info@sambatours.co"
+  },
+  "sameAs": [
+    "https://sambatours.co",
+    "https://www.facebook.com/sambatoursuganda",
+    "https://www.instagram.com/sambatoursuganda"
+  ],
+  "knowsAbout": [
+    "Uganda Safari",
+    "Gorilla Trekking",
+    "Wildlife Photography",
+    "Cultural Tours",
+    "Bwindi Impenetrable National Park",
+    "Queen Elizabeth National Park"
+  ],
+  "hasOfferCatalog": {
+    "@type": "OfferCatalog",
+    "name": "Uganda Safari Tours",
+    "itemListElement": [
+      {
+        "@type": "Offer",
+        "itemOffered": {
+          "@type": "Service",
+          "name": "Gorilla Trekking Safari",
+          "description": "Expert-guided mountain gorilla trekking in Bwindi Impenetrable National Park"
+        }
+      },
+      {
+        "@type": "Offer",
+        "itemOffered": {
+          "@type": "Service",
+          "name": "Wildlife Safari",
+          "description": "Comprehensive wildlife safaris in Uganda's national parks"
+        }
+      },
+      {
+        "@type": "Offer",
+        "itemOffered": {
+          "@type": "Service",
+          "name": "Cultural Tours",
+          "description": "Authentic cultural experiences with local communities"
+        }
+      }
+    ]
+  }
 }
 
 export default function HomePage() {
   return (
     <ScrollGuard>
+      {/* Structured Data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(homepageStructuredData),
+        }}
+      />
+
       <main className="min-h-screen bg-gradient-to-b from-white via-emerald-50/30 to-white">
         {/* Above the fold content */}
         <header role="banner" className="relative">

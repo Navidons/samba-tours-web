@@ -1,4 +1,10 @@
+import type { Metadata } from "next"
 import CartContent from "@/components/cart/cart-content"
+
+export const metadata: Metadata = {
+  title: "Shopping Cart - Review Your Uganda Safari Tours",
+  description: "Review your selected Uganda safari tours, gorilla trekking packages, and adventure activities. Secure booking with instant confirmation and flexible payment options."
+}
 
 export const dynamic = 'force-dynamic'
 

@@ -7,11 +7,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Bell, Send, Calendar, Check, X, Eye, Trash2, Edit } from "lucide-react"
 
-export const metadata = {
-  title: "Notifications - Samba Tours Admin",
-  description: "Manage notifications and communications.",
-}
-
 const notifications = [
   {
     id: 1,

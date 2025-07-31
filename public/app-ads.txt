@@ -1,0 +1,10 @@
+# Samba Tours - App Advertising.txt
+# This file lists authorized digital sellers for mobile app advertising
+# For more information: https://iabtechlab.com/app-ads-txt/
+
+# Example entries (replace with actual advertising partners when applicable)
+# google.com, pub-0000000000000000, DIRECT, f08c47fec0942fa0
+# facebook.com, 000000000000000, DIRECT, 9a4c75c1804f4e3a
+
+# No current mobile app advertising partners
+# This file is maintained for transparency and future mobile app advertising partnerships 

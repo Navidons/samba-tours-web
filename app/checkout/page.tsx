@@ -1,4 +1,10 @@
+import type { Metadata } from "next"
 import CheckoutForm from "@/components/checkout/checkout-form"
+
+export const metadata: Metadata = {
+  title: "Checkout - Complete Your Uganda Safari Booking",
+  description: "Complete your Uganda safari booking with secure payment. Enter your details for gorilla trekking, wildlife tours, and adventure activities. Instant confirmation guaranteed."
+}
 
 export const dynamic = 'force-dynamic'
 

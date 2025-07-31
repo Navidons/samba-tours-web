@@ -6,8 +6,7 @@ import { MapPin, Clock, Users, Award, Heart, Globe, Briefcase, GraduationCap } f
 
 export const metadata: Metadata = {
   title: "Careers - Join Samba Tours & Travel Team",
-  description:
-    "Join our passionate team and help create unforgettable travel experiences. Explore career opportunities in Uganda's leading tour company."
+  description: "Join our passionate team and help create unforgettable travel experiences. Explore career opportunities in Uganda's leading tour company."
 }
 
 export default function CareersPage() {

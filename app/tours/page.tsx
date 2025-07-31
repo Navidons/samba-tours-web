@@ -1,7 +1,13 @@
+import type { Metadata } from "next"
 import ToursClient from "./ToursClient"
 import TourHero from "@/components/tours/tour-hero"
 import { getTours, getCategories } from "@/lib/tours-service"
 import ScrollGuard from "@/components/ui/scroll-guard"
+
+export const metadata: Metadata = {
+  title: "Uganda Safari Tours - Gorilla Trekking & Wildlife Adventures",
+  description: "Discover Uganda's best safari tours: gorilla trekking, wildlife safaris, cultural experiences, and adventure activities. Expert guides and unforgettable experiences."
+}
 
 export const dynamic = 'force-dynamic'
 

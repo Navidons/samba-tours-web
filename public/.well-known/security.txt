@@ -1,0 +1,11 @@
+# Security Policy for Samba Tours
+# This file is for security researchers to report vulnerabilities
+
+Contact: mailto:security@sambatours.co
+Expires: 2025-12-31T23:59:59.000Z
+Preferred-Languages: en
+Canonical: https://sambatours.co/.well-known/security.txt
+Policy: https://sambatours.co/security-policy
+
+# Please report security vulnerabilities to our security team
+# We appreciate responsible disclosure and will respond within 48 hours 

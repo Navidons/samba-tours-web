@@ -1,51 +1,64 @@
+# Samba Tours - Uganda Safari & Adventure Travel
+# Robots.txt file for search engine crawling
+# Official website: https://sambatours.co
+# Brand: Samba Tours (NOT Pamba Tours)
+
 User-agent: *
 Allow: /
+
+# Allow all major search engines
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: Slurp
+Allow: /
+
+User-agent: DuckDuckBot
+Allow: /
+
+User-agent: Baiduspider
+Allow: /
+
+User-agent: YandexBot
+Allow: /
+
+# Block admin areas
 Disallow: /admin/
 Disallow: /signin
-Disallow: /cart/
-Disallow: /checkout/
-Disallow: /booking-confirmation/
-Disallow: /api/admin/
-Disallow: /api/test-*
-Disallow: /api/upload/
-Disallow: /api/email/
-Disallow: /api/track-visitor
+Disallow: /api/
 Disallow: /_next/
-Disallow: /search?*
-Disallow: *?*utm_*
-Disallow: *?*ref=*
-Disallow: *?*fbclid=*
-Disallow: *?*gclid=*
-Disallow: *.json
-Disallow: *.xml
-Disallow: /tmp/
-Disallow: /temp/
+Disallow: /static/
 
-# Block malicious bots
-User-agent: AhrefsBot
-Disallow: /
+# Block private and sensitive areas
+Disallow: /checkout
+Disallow: /cart
+Disallow: /booking-confirmation
 
-User-agent: MJ12bot
-Disallow: /
+# Allow important pages
+Allow: /
+Allow: /about
+Allow: /contact
+Allow: /services
+Allow: /tours
+Allow: /gallery
+Allow: /blog
+Allow: /faqs
+Allow: /terms
+Allow: /privacy
+Allow: /careers
 
-User-agent: DotBot
-Disallow: /
+# Allow images and assets
+Allow: /photos/
+Allow: /tours-attractions/
+Allow: /logo/
+Allow: /home-hero-photos/
+Allow: /fonts/
 
-User-agent: SemrushBot
-Disallow: /
-
-User-agent: MegaIndex.ru
-Disallow: /
-
-User-agent: BLEXBot
-Disallow: /
-
-User-agent: PetalBot
-Disallow: /
-
-# Sitemaps
-Sitemap: https://sambatours.co/sitemap.xml
+# Sitemap location
 Sitemap: https://sambatours.co/sitemap.xml
 
-# Host
-Host: https://sambatours.co 
+# Crawl delay (optional - be respectful to server)
+Crawl-delay: 1 

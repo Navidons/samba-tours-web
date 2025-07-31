@@ -1,3 +1,10 @@
+import type { Metadata } from "next"
+
+export const metadata: Metadata = {
+  title: "Privacy Policy - Samba Tours & Travel",
+  description: "Learn how Samba Tours protects your personal information during Uganda safari bookings. Secure data handling, privacy rights, and transparent information practices."
+}
+
 export default function PrivacyPage() {
   return (
     <main className="min-h-screen bg-cream-50">

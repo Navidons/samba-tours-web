@@ -18,11 +18,6 @@ import {
   Clock,
 } from "lucide-react"
 
-export const metadata = {
-  title: "System Monitor - Samba Tours Admin",
-  description: "Monitor system health and performance.",
-}
-
 const systemStats = [
   {
     name: "CPU Usage",

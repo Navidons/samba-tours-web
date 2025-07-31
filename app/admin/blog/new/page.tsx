@@ -5,11 +5,6 @@ import Link from "next/link"
 import LoadingSpinner from "@/components/ui/loading-spinner"
 import BlogPostForm from "../BlogPostForm"
 
-export const metadata = {
-  title: "New Blog Post - Samba Tours Admin",
-  description: "Create a new blog post.",
-}
-
 export default function NewBlogPost() {
   return (
     <main className="min-h-screen bg-gray-50">

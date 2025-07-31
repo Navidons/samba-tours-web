@@ -5,11 +5,6 @@ import Link from "next/link"
 import LoadingSpinner from "@/components/ui/loading-spinner"
 import BlogPostForm from "../../BlogPostForm"
 
-export const metadata = {
-  title: "Edit Blog Post - Samba Tours Admin",
-  description: "Edit an existing blog post.",
-}
-
 interface EditBlogPostProps {
   params: { slug: string }
 }
