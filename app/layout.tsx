@@ -8,7 +8,6 @@ import { MockAuthProvider } from "@/components/auth/mock-auth-provider"
 import { UserAuthProvider } from "@/components/auth/user-auth-provider"
 import { CartProvider } from "@/hooks/use-cart"
 import ConditionalLayout from "@/components/layout/conditional-layout"
-import PerformanceMonitor from "@/components/ui/performance-monitor"
 
 
 
@@ -140,7 +139,6 @@ export default function RootLayout({
               <CartProvider>
                 <ConditionalLayout>{children}</ConditionalLayout>
                 <Toaster />
-                <PerformanceMonitor />
               </CartProvider>
             </UserAuthProvider>
           </MockAuthProvider>
@@ -177,6 +175,24 @@ export default function RootLayout({
             <path d="M16 3C9.373 3 4 8.373 4 15c0 2.647.87 5.093 2.36 7.09L4 29l7.184-2.312A12.93 12.93 0 0016 27c6.627 0 12-5.373 12-12S22.627 3 16 3zm0 22.917c-2.13 0-4.19-.624-5.93-1.8l-.424-.267-4.27 1.375 1.4-4.16-.276-.43A9.93 9.93 0 016 15c0-5.514 4.486-10 10-10s10 4.486 10 10-4.486 10-10 10zm5.29-7.6c-.29-.145-1.71-.844-1.974-.94-.264-.097-.456-.145-.648.146-.193.29-.744.94-.912 1.134-.168.193-.336.218-.626.073-.29-.145-1.225-.452-2.334-1.44-.863-.77-1.445-1.72-1.615-2.01-.168-.29-.018-.447.127-.592.13-.13.29-.336.435-.504.145-.168.193-.29.29-.484.097-.193.048-.363-.024-.508-.073-.145-.648-1.566-.888-2.146-.234-.563-.472-.486-.648-.495l-.553-.01c-.193 0-.508.073-.774.363-.266.29-1.016.994-1.016 2.425 0 1.43 1.04 2.81 1.186 3.005.145.193 2.05 3.13 4.97 4.267.695.3 1.236.478 1.66.612.698.222 1.334.19 1.836.115.56-.084 1.71-.698 1.953-1.372.24-.674.24-1.252.168-1.372-.07-.12-.264-.193-.553-.338z"/>
           </svg>
         </a>
+        
+        {/* Ensure page load completion */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              // Ensure page load is properly signaled
+              if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', function() {
+                  // Dispatch load event to ensure browser recognizes page is loaded
+                  window.dispatchEvent(new Event('load'));
+                });
+              } else {
+                // If already loaded, dispatch immediately
+                window.dispatchEvent(new Event('load'));
+              }
+            `,
+          }}
+        />
       </body>
     </html>
   )

@@ -8,8 +8,6 @@ export const dynamic = 'force-dynamic'
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
-    const category = searchParams.get('category')
-    const location = searchParams.get('location')
     const featured = searchParams.get('featured')
     const galleryId = searchParams.get('galleryId')
     const search = searchParams.get('search')
@@ -19,18 +17,6 @@ export async function GET(request: NextRequest) {
 
     // Build where clause for filtering
     const whereClause: any = {}
-    
-    if (category) {
-      whereClause.category = {
-        slug: category
-      }
-    }
-    
-    if (location) {
-      whereClause.location = {
-        slug: location
-      }
-    }
     
     if (featured === 'true') {
       whereClause.featured = true
@@ -44,8 +30,7 @@ export async function GET(request: NextRequest) {
       whereClause.OR = [
         { title: { contains: search, mode: 'insensitive' } },
         { description: { contains: search, mode: 'insensitive' } },
-        { videoUrl: { contains: search, mode: 'insensitive' } },
-        { photographer: { contains: search, mode: 'insensitive' } }
+        { videoUrl: { contains: search, mode: 'insensitive' } }
       ]
     }
 
@@ -59,28 +44,10 @@ export async function GET(request: NextRequest) {
             name: true,
             slug: true
           }
-        },
-        category: {
-          select: {
-            id: true,
-            name: true,
-            slug: true,
-            color: true
-          }
-        },
-        location: {
-          select: {
-            id: true,
-            name: true,
-            slug: true,
-            country: true,
-            region: true
-          }
         }
       },
       orderBy: [
         { featured: 'desc' },
-        { displayOrder: 'asc' },
         { createdAt: 'desc' }
       ],
       take: pageSize,
@@ -145,21 +112,11 @@ export async function GET(request: NextRequest) {
         title: video.title,
         description: video.description,
         duration: video.duration,
-        videoName: video.videoUrl, // Use videoUrl as videoName for compatibility
-        videoType: video.videoProvider || 'external', // Use videoProvider as videoType
-        videoSize: video.thumbnailSize,
-        photographer: video.photographer,
-        date: video.createdAt, // Use createdAt as date
         featured: video.featured,
-        category: video.category,
-        location: video.location,
-        likes: video.likes,
         views: video.views,
-        displayOrder: video.displayOrder,
         createdAt: video.createdAt,
-        updatedAt: video.updatedAt,
         thumbnail: thumbnailObj,
-        videoUrl: video.videoUrl, // Use the actual videoUrl field
+        videoUrl: video.videoUrl,
         videoProvider: video.videoProvider,
         videoId: video.videoId
       }

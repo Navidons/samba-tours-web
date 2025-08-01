@@ -8,8 +8,6 @@ export const dynamic = 'force-dynamic'
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
-    const category = searchParams.get('category')
-    const location = searchParams.get('location')
     const featured = searchParams.get('featured')
     const limit = searchParams.get('limit') ? parseInt(searchParams.get('limit')!) : undefined
     const page = searchParams.get('page') ? parseInt(searchParams.get('page')!) : 1
@@ -18,41 +16,22 @@ export async function GET(request: NextRequest) {
     // Build where clause for filtering
     const whereClause: any = {}
     
-    if (category) {
-      whereClause.category = {
-        slug: category
-      }
-    }
-    
-    if (location) {
-      whereClause.location = {
-        slug: location
-      }
-    }
-    
     if (featured === 'true') {
       whereClause.featured = true
     }
 
     // Get galleries with images
     const galleries = await prisma.gallery.findMany({
+      where: whereClause,
       include: {
         images: {
-          include: {
-            category: true,
-            location: true
-          },
           orderBy: {
-            displayOrder: 'asc'
+            createdAt: 'desc'
           }
         },
         videos: {
-          include: {
-            category: true,
-            location: true
-          },
           orderBy: {
-            displayOrder: 'asc'
+            createdAt: 'desc'
           }
         }
       },
@@ -64,7 +43,9 @@ export async function GET(request: NextRequest) {
     })
 
     // Get total count for pagination
-    const total = await prisma.gallery.count()
+    const total = await prisma.gallery.count({
+      where: whereClause
+    })
 
     // Transform data for response - handle empty results gracefully
     const transformedGalleries = galleries.map(gallery => ({
@@ -73,10 +54,10 @@ export async function GET(request: NextRequest) {
       slug: gallery.slug,
       description: gallery.description,
       featured: gallery.featured,
-      thumbnail: gallery.thumbnailData ? {
-        data: gallery.thumbnailData.toString('base64'),
-        name: gallery.thumbnailName,
-        type: gallery.thumbnailType
+      thumbnail: gallery.thumbnail_data ? {
+        data: Buffer.from(gallery.thumbnail_data).toString('base64'),
+        name: gallery.thumbnail_name,
+        type: gallery.thumbnail_type
       } : null,
       imageCount: gallery.imageCount,
       videoCount: gallery.videoCount,
@@ -84,20 +65,14 @@ export async function GET(request: NextRequest) {
       updatedAt: gallery.updatedAt,
       images: gallery.images.map(image => ({
         id: image.id,
-        imageData: image.imageData.toString('base64'),
+        imageData: Buffer.from(image.imageData).toString('base64'),
         imageName: image.imageName,
         imageType: image.imageType,
         alt: image.alt,
         title: image.title,
         description: image.description,
-        photographer: image.photographer,
-        date: image.date,
         featured: image.featured,
-        category: image.category,
-        location: image.location,
-        likes: image.likes,
         views: image.views,
-        displayOrder: image.displayOrder,
         createdAt: image.createdAt
       })),
       videos: gallery.videos.map(video => ({
@@ -106,17 +81,16 @@ export async function GET(request: NextRequest) {
         description: video.description,
         duration: video.duration,
         featured: video.featured,
-        category: video.category,
-        location: video.location,
-        likes: video.likes,
         views: video.views,
-        displayOrder: video.displayOrder,
         createdAt: video.createdAt,
         thumbnail: video.thumbnailData ? {
-          data: video.thumbnailData.toString('base64'),
+          data: Buffer.from(video.thumbnailData).toString('base64'),
           name: video.thumbnailName,
           type: video.thumbnailType
-        } : null
+        } : null,
+        videoUrl: video.videoUrl,
+        videoProvider: video.videoProvider,
+        videoId: video.videoId
       }))
     }))
 

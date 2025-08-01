@@ -48,7 +48,7 @@ export default function TourHero({ tour, isListingPage = false }: TourHeroProps)
   const averageRating = tour.rating || 0
   const reviewCount = tour.reviewCount || 0
 
-  // Blur data URL for better loading experience
+  // Optimized blur data URL for better loading experience
   const blurDataURL = 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAREBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=='
 
   // Get the featured or first image with improved fallback logic
@@ -56,12 +56,17 @@ export default function TourHero({ tour, isListingPage = false }: TourHeroProps)
                    tour.images?.find(img => img.isFeatured) || 
                    tour.images?.[0]
 
-  // Determine if the image data is a valid data URL or base64
+  // Optimized image source handling
   const imageSource = heroImage?.data ? (
     heroImage.data.startsWith('data:') ? heroImage.data : 
     heroImage.data.startsWith('/') ? heroImage.data : 
     `data:${heroImage.type || 'image/jpeg'};base64,${heroImage.data}`
   ) : ''
+
+  // Get alt text for the image
+  const altText = (heroImage && 'altText' in heroImage && heroImage.altText 
+    ? heroImage.altText 
+    : tour.title) as string
 
   return (
     <section className="relative text-white min-h-[60vh]">
@@ -69,14 +74,15 @@ export default function TourHero({ tour, isListingPage = false }: TourHeroProps)
         {imageSource ? (
           <Image
             src={imageSource}
-            alt={heroImage?.altText || tour.title}
+            alt={altText}
             fill
             priority
             className="object-cover"
             sizes="100vw"
-            quality={85}
+            quality={75} // Reduced from 85 to 75 for better performance
             placeholder="blur"
             blurDataURL={blurDataURL}
+            loading="eager" // Force eager loading for hero
           />
         ) : (
           <div className="w-full h-full bg-gradient-to-br from-emerald-900 to-green-900" />

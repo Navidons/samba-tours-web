@@ -17,8 +17,7 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
 
   let imageData, imageName, imageType, imageSize;
   if (imageFile && typeof imageFile === 'object' && 'arrayBuffer' in imageFile) {
-    const buffer = Buffer.from(await imageFile.arrayBuffer());
-    imageData = buffer.toString('base64');
+    imageData = Buffer.from(await imageFile.arrayBuffer());
     imageName = imageFile.name;
     imageType = imageFile.type;
     imageSize = imageFile.size;

@@ -97,7 +97,7 @@ export default function RelatedTours({ currentTour, relatedTours }: RelatedTours
             <Card key={tour.id} className="group overflow-hidden hover:shadow-xl transition-all duration-300 border border-emerald-100">
               <div className="relative aspect-[4/3] overflow-hidden">
                 <Image
-                  src={tour.featuredImage?.data || tour.images?.[0]?.data}
+                  src={tour.featuredImage?.data || tour.images?.[0]?.data || '/placeholder-tour.jpg'}
                   alt={tour.title}
                   fill
                   className="object-cover group-hover:scale-105 transition-transform duration-300"

@@ -173,9 +173,9 @@ export default function TourGallery({ gallery, images, title }: TourGalleryProps
           </Button>
 
           <div className="max-w-4xl max-h-[80vh] relative">
-            {imageArray[selectedImage] ? (
+            {imageArray[selectedImage] && getImageSrc(imageArray[selectedImage]) ? (
               <Image
-                src={getImageSrc(imageArray[selectedImage])}
+                src={getImageSrc(imageArray[selectedImage])!}
                 alt={getImageAlt(imageArray[selectedImage], selectedImage)}
                 width={1200}
                 height={800}

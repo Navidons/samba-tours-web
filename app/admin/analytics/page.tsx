@@ -42,7 +42,7 @@ function AnalyticsSkeleton() {
 }
 
 export default async function Analytics() {
-  const period = "30days";
+  const period = "30days" as "7days" | "30days" | "90days" | "1year";
   const now = new Date()
   let startDate: Date
 

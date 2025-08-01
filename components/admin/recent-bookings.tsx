@@ -2,7 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Eye, MoreHorizontal } from "lucide-react"
-import { mockRecentBookings } from "@/lib/admin-mock-data"
+import { mockRecentBookings } from "@/lib/mock-data"
 import Link from "next/link"
 
 const getStatusColor = (status: "confirmed" | "pending" | "cancelled") => {
@@ -33,11 +33,11 @@ export function RecentBookings() {
               <div className="flex-1">
                 <div className="flex items-center space-x-3 mb-2">
                   <h4 className="font-semibold text-earth-900">{booking.customerName}</h4>
-                  <Badge className={getStatusColor(booking.status)}>{booking.status}</Badge>
+                  <Badge className={getStatusColor(booking.status as "confirmed" | "pending" | "cancelled")}>{booking.status}</Badge>
                 </div>
                 <p className="text-sm text-earth-600 mb-1">{booking.tourName}</p>
                 <p className="text-xs text-earth-500">
-                  Booking ID: {booking.id} • Date: {booking.date}
+                  Booking ID: {booking.id} • Date: {booking.bookingDate}
                 </p>
               </div>
               <div className="flex items-center space-x-3">

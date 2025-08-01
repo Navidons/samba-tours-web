@@ -577,7 +577,7 @@ export async function PATCH(request: NextRequest) {
         region: tour.locationRegion
       },
       featuredImage: tour.featuredImageData ? {
-        data: `data:${tour.featuredImageType};base64,${tour.featuredImageData.toString('base64')}`,
+        data: `data:${tour.featuredImageType};base64,${Buffer.from(tour.featuredImageData).toString('base64')}`,
         name: tour.featuredImageName,
         type: tour.featuredImageType
       } : null,

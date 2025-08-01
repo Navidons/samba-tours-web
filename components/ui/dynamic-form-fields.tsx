@@ -5,7 +5,7 @@ import { Input } from './input'
 import { Label } from './label'
 import { Textarea } from './textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './select'
-import { RichTextEditor } from './rich-text-editor'
+import RichTextEditor from './rich-text-editor'
 
 interface FieldConfig {
   name: string
@@ -301,8 +301,8 @@ export function DynamicFormFields({ templateId, onDataChange, initialData = {} }
       case 'rich-text':
         return (
           <RichTextEditor
-            content={formData[field.name] || ''}
-            onChange={(content) => handleFieldChange(field.name, content)}
+            value={formData[field.name] || ''}
+            onChange={(value) => handleFieldChange(field.name, value)}
             placeholder={field.placeholder}
           />
         )

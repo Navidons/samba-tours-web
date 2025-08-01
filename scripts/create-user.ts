@@ -13,7 +13,7 @@ async function createUser() {
         fullName: 'Admin User',
         firstName: 'Admin',
         lastName: 'User',
-        phone: '+256 700 123 456',
+        phone: '+256 703 267 150',
         country: 'Uganda',
         city: 'Kampala',
         roleId: 1, // Assuming role 1 is admin
@@ -26,25 +26,48 @@ async function createUser() {
     const hashedPassword = await bcrypt.hash(userData.password, saltRounds)
 
     // Create the user with profile
-    const user = await prisma.user.create({
-      data: {
-        email: userData.email,
-        passwordHash: hashedPassword,
-        emailConfirmed: true, // Set to true for admin user
-        profile: {
-          create: userData.profile
+    let user
+    try {
+      user = await prisma.user.create({
+        data: {
+          email: userData.email,
+          passwordHash: hashedPassword,
+          emailConfirmed: true,
+          profile: {
+            create: userData.profile
+          }
+        },
+        include: {
+          profile: {
+            include: {
+              role: true
+            } 
+          }
         }
-      },
-      include: {
-        profile: {
+      })
+      console.log('✅ User created successfully!')
+    } catch (error: any) {
+      if (error.code === 'P2002') {
+        console.log('ℹ️  User already exists, updating password...')
+        user = await prisma.user.update({
+          where: { email: userData.email },
+          data: {
+            passwordHash: hashedPassword,
+            emailConfirmed: true
+          },
           include: {
-            role: true
-          } 
-        }
+            profile: {
+              include: {
+                role: true
+              } 
+            }
+          }
+        })
+      } else {
+        throw error
       }
-    })
+    }
 
-    console.log('✅ User created successfully!')
     console.log('📧 Email:', user.email)
     console.log('👤 Name:', user.profile?.fullName)
     console.log('🔑 Password:', userData.password) // Show the plain password for reference
@@ -81,25 +104,48 @@ async function createRegularUser() {
     const saltRounds = 12
     const hashedPassword = await bcrypt.hash(userData.password, saltRounds)
 
-    const user = await prisma.user.create({
-      data: {
-        email: userData.email,
-        passwordHash: hashedPassword,
-        emailConfirmed: true,
-        profile: {
-          create: userData.profile
-        }
-      },
-      include: {
-        profile: {
-          include: {
-            role: true
+    let user
+    try {
+      user = await prisma.user.create({
+        data: {
+          email: userData.email,
+          passwordHash: hashedPassword,
+          emailConfirmed: true,
+          profile: {
+            create: userData.profile
+          }
+        },
+        include: {
+          profile: {
+            include: {
+              role: true
+            }
           }
         }
+      })
+      console.log('✅ Regular user created successfully!')
+    } catch (error: any) {
+      if (error.code === 'P2002') {
+        console.log('ℹ️  Regular user already exists, updating password...')
+        user = await prisma.user.update({
+          where: { email: userData.email },
+          data: {
+            passwordHash: hashedPassword,
+            emailConfirmed: true
+          },
+          include: {
+            profile: {
+              include: {
+                role: true
+              }
+            }
+          }
+        })
+      } else {
+        throw error
       }
-    })
+    }
 
-    console.log('✅ Regular user created successfully!')
     console.log('📧 Email:', user.email)
     console.log('👤 Name:', user.profile?.fullName)
     console.log('🔑 Password:', userData.password)

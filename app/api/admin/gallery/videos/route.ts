@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { PrismaClientInitializationError, PrismaClientKnownRequestError } from "@prisma/client/runtime/library"
-import { extractVideoInfo } from "@/lib/utils/video-utils"
+import { extractVideoInfo, getYouTubeThumbnailUrl } from "@/lib/utils/video-utils"
 
-// GET /api/admin/gallery/videos - Get all videos
+// GET /api/admin/gallery/videos - Get videos from gallery
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
@@ -11,91 +11,80 @@ export async function GET(request: NextRequest) {
     const page = searchParams.get('page') ? parseInt(searchParams.get('page')!) : 1
     const limit = searchParams.get('limit') ? parseInt(searchParams.get('limit')!) : 20
     const search = searchParams.get('search')
-    const category = searchParams.get('category')
-    const location = searchParams.get('location')
-    const featured = searchParams.get('featured')
+
+    if (!galleryId) {
+      return NextResponse.json(
+        { error: 'Gallery ID is required' },
+        { status: 400 }
+      )
+    }
 
     // Build where clause
-    const whereClause: any = {}
-    
-    if (galleryId) {
-      whereClause.galleryId = parseInt(galleryId)
+    const whereClause: any = {
+      galleryId: parseInt(galleryId)
     }
-    
+
     if (search) {
       whereClause.OR = [
         { title: { contains: search, mode: 'insensitive' } },
         { description: { contains: search, mode: 'insensitive' } },
-        { videoUrl: { contains: search, mode: 'insensitive' } },
-        { photographer: { contains: search, mode: 'insensitive' } }
+        { videoUrl: { contains: search, mode: 'insensitive' } }
       ]
     }
-    
-    if (category) {
-      whereClause.category = {
-        slug: category
-      }
-    }
-    
-    if (location) {
-      whereClause.location = {
-        slug: location
-      }
-    }
-    
-    if (featured === 'true') {
-      whereClause.featured = true
-    }
 
+    // Get videos
     const videos = await prisma.galleryVideo.findMany({
       where: whereClause,
-      include: {
+      select: {
+        id: true,
+        title: true,
+        description: true,
+        videoUrl: true,
+        videoProvider: true,
+        videoId: true,
+        thumbnailData: true,
+        thumbnailName: true,
+        thumbnailType: true,
+        duration: true,
+        featured: true,
+        views: true,
+        createdAt: true,
         gallery: {
           select: {
             id: true,
-            name: true,
-            slug: true
+            name: true
           }
-        },
-        category: true,
-        location: true
+        }
       },
-      orderBy: [
-        { displayOrder: 'asc' },
-        { createdAt: 'desc' }
-      ],
+      orderBy: {
+        createdAt: 'desc'
+      },
       take: limit,
       skip: (page - 1) * limit
     })
 
+    // Get total count
     const total = await prisma.galleryVideo.count({
       where: whereClause
     })
 
+    // Transform videos to include base64 data
     const transformedVideos = videos.map(video => ({
       id: video.id,
-      galleryId: video.galleryId,
-      gallery: video.gallery,
+      type: 'video' as const,
       title: video.title,
       description: video.description,
-      duration: video.duration,
       videoUrl: video.videoUrl,
       videoProvider: video.videoProvider,
       videoId: video.videoId,
-      photographer: video.photographer,
+      thumbnailData: video.thumbnailData ? Buffer.from(video.thumbnailData).toString('base64') : null,
+      thumbnailName: video.thumbnailName,
+      thumbnailType: video.thumbnailType,
+      duration: video.duration,
       featured: video.featured,
-      category: video.category,
-      location: video.location,
-      likes: video.likes,
       views: video.views,
-      displayOrder: video.displayOrder,
       createdAt: video.createdAt,
-      updatedAt: video.updatedAt,
-      thumbnail: video.thumbnailData ? {
-        data: video.thumbnailData.toString('base64'),
-        name: video.thumbnailName,
-        type: video.thumbnailType
-      } : null
+      gallery: video.gallery
     }))
 
     return NextResponse.json({
@@ -105,67 +94,41 @@ export async function GET(request: NextRequest) {
         page,
         limit,
         totalPages: Math.ceil(total / limit)
-      },
-      success: true
+      }
     })
 
   } catch (error) {
     console.error('Error fetching videos:', error)
-    
-    // Handle specific database connection errors
-    if (error instanceof PrismaClientInitializationError) {
-      return NextResponse.json(
-        { 
-          error: 'Database connection failed. Please check if the database server is running.',
-          type: 'CONNECTION_ERROR',
-          success: false
-        },
-        { status: 503 }
-      )
-    }
-    
-    if (error instanceof PrismaClientKnownRequestError) {
-      return NextResponse.json(
-        { 
-          error: 'Database query failed. Please try again.',
-          type: 'QUERY_ERROR',
-          success: false
-        },
-        { status: 500 }
-      )
-    }
-    
     return NextResponse.json(
-      { 
-        error: 'An unexpected error occurred while fetching videos.',
-        type: 'UNKNOWN_ERROR',
-        success: false
-      },
+      { error: 'Failed to fetch videos' },
       { status: 500 }
     )
   }
 }
 
-// POST /api/admin/gallery/videos - Add video link
+// POST /api/admin/gallery/videos - Add video to gallery
 export async function POST(request: NextRequest) {
   try {
     const formData = await request.formData()
     
     const galleryId = parseInt(formData.get('galleryId') as string)
     const videoUrl = formData.get('videoUrl') as string
-    const videoProvider = formData.get('videoProvider') as string
+    const videoProvider = formData.get('videoProvider') as string || 'youtube'
+    const title = formData.get('title') as string || null
+    const description = formData.get('description') as string || null
+    const duration = formData.get('duration') as string || null
     const thumbnailFile = formData.get('thumbnail') as File | null
-    
+
     if (!galleryId) {
       return NextResponse.json(
-        { error: 'Gallery ID is required', success: false },
+        { error: 'Gallery ID is required' },
         { status: 400 }
       )
     }
 
     if (!videoUrl) {
       return NextResponse.json(
-        { error: 'Video URL is required', success: false },
+        { error: 'Video URL is required' },
         { status: 400 }
       )
     }
@@ -177,9 +140,52 @@ export async function POST(request: NextRequest) {
 
     if (!gallery) {
       return NextResponse.json(
-        { error: 'Gallery not found', success: false },
+        { error: 'Gallery not found' },
         { status: 404 }
       )
+    }
+
+    // Extract video info from URL
+    const videoInfo = extractVideoInfo(videoUrl)
+    
+    // Process thumbnail - either from uploaded file or fetch from YouTube
+    let thumbnailData = null
+    let thumbnailName = null
+    let thumbnailType = null
+
+    if (thumbnailFile) {
+      // Use uploaded thumbnail
+      const buffer = Buffer.from(await thumbnailFile.arrayBuffer())
+      thumbnailData = buffer
+      thumbnailName = thumbnailFile.name
+      thumbnailType = thumbnailFile.type
+    } else if (videoInfo.provider === 'youtube' && videoInfo.videoId) {
+      // Fetch thumbnail from YouTube
+      try {
+        const thumbnailUrl = getYouTubeThumbnailUrl(videoInfo.videoId, 'maxres')
+        const thumbnailResponse = await fetch(thumbnailUrl)
+        
+        if (thumbnailResponse.ok) {
+          const thumbnailBuffer = await thumbnailResponse.arrayBuffer()
+          thumbnailData = Buffer.from(thumbnailBuffer)
+          thumbnailName = `youtube_${videoInfo.videoId}_thumbnail.jpg`
+          thumbnailType = 'image/jpeg'
+        } else {
+          // Fallback to medium quality thumbnail
+          const fallbackUrl = getYouTubeThumbnailUrl(videoInfo.videoId, 'medium')
+          const fallbackResponse = await fetch(fallbackUrl)
+          
+          if (fallbackResponse.ok) {
+            const thumbnailBuffer = await fallbackResponse.arrayBuffer()
+            thumbnailData = Buffer.from(thumbnailBuffer)
+            thumbnailName = `youtube_${videoInfo.videoId}_thumbnail.jpg`
+            thumbnailType = 'image/jpeg'
+          }
+        }
+      } catch (error) {
+        console.error('Failed to fetch YouTube thumbnail:', error)
+        // Continue without thumbnail
+      }
     }
 
     // Helper function to convert MM:SS duration to seconds
@@ -210,163 +216,81 @@ export async function POST(request: NextRequest) {
       return null
     }
 
-    // Extract video information
-    const videoInfo = extractVideoInfo(videoUrl)
-    
-    // Get metadata
-    const title = formData.get('title') as string || `Video from ${videoInfo.provider}`
-    const description = formData.get('description') as string || null
-    const durationRaw = formData.get('duration') as string || null
-    const duration = parseDurationToSeconds(durationRaw)
-    const categoryId = formData.get('categoryId') ? parseInt(formData.get('categoryId') as string) : null
-    const locationId = formData.get('locationId') ? parseInt(formData.get('locationId') as string) : null
-    const photographer = formData.get('photographer') as string || null
-    const featured = formData.get('featured') === 'true'
-
-    // Process thumbnail if provided
-    let thumbnailData = null
-    let thumbnailName = null
-    let thumbnailType = null
-    let thumbnailSize = null
-
-    if (thumbnailFile) {
-      const thumbnailBuffer = Buffer.from(await thumbnailFile.arrayBuffer())
-      thumbnailData = thumbnailBuffer
-      thumbnailName = thumbnailFile.name
-      thumbnailType = thumbnailFile.type
-      thumbnailSize = thumbnailFile.size
-    }
-
-    // Get next display order
-    const maxOrder = await prisma.galleryVideo.findFirst({
-      where: { galleryId },
-      orderBy: { displayOrder: 'desc' },
-      select: { displayOrder: true }
-    })
-
-    const displayOrder = maxOrder ? maxOrder.displayOrder + 1 : 0
+    const durationInSeconds = parseDurationToSeconds(duration)
 
     // Create video record
     const video = await prisma.galleryVideo.create({
       data: {
-        gallery: {
-          connect: { id: galleryId }
-        },
+        galleryId,
         videoUrl,
         videoProvider: videoInfo.provider,
         videoId: videoInfo.videoId,
-        title,
-        description,
-        duration,
-        photographer,
-        featured,
-        ...(categoryId && {
-          category: {
-            connect: { id: categoryId }
-          }
-        }),
-        ...(locationId && {
-          location: {
-            connect: { id: locationId }
-          }
-        }),
-        displayOrder,
+        title: title,
+        description: description,
+        duration: durationInSeconds,
         thumbnailData,
         thumbnailName,
-        thumbnailType,
-        thumbnailSize
+        thumbnailType
       },
       include: {
-        category: true,
-        location: true,
         gallery: {
           select: {
             id: true,
-            name: true,
-            slug: true
+            name: true
           }
         }
       }
     })
 
     // Update gallery video count
-    const videoCount = await prisma.galleryVideo.count({
-      where: { 
-        gallery: {
-          id: galleryId
+    await prisma.gallery.update({
+      where: { id: galleryId },
+      data: {
+        videoCount: {
+          increment: 1
         }
       }
     })
 
-    await prisma.gallery.update({
-      where: { id: galleryId },
-      data: { videoCount }
-    })
-
-    const transformedVideo = {
-      id: video.id,
-      galleryId: video.gallery?.id || galleryId,
-      gallery: video.gallery,
-      title: video.title,
-      description: video.description,
-      duration: video.duration,
-      videoUrl: video.videoUrl,
-      videoProvider: video.videoProvider,
-      videoId: video.videoId,
-      photographer: video.photographer,
-      featured: video.featured,
-      category: video.category,
-      location: video.location,
-      likes: video.likes,
-      views: video.views,
-      displayOrder: video.displayOrder,
-      createdAt: video.createdAt,
-      updatedAt: video.updatedAt,
-      thumbnail: thumbnailData ? {
-        data: Buffer.from(thumbnailData).toString('base64'),
-        name: thumbnailName,
-        type: thumbnailType
-      } : null
-    }
-
     return NextResponse.json({
-      message: 'Video added successfully',
-      video: transformedVideo,
-      success: true
+      video: {
+        id: video.id,
+        title: video.title,
+        description: video.description,
+        videoUrl: video.videoUrl,
+        videoProvider: video.videoProvider,
+        videoId: video.videoId,
+        thumbnailData: thumbnailData ? Buffer.from(thumbnailData).toString('base64') : null,
+        thumbnailName: video.thumbnailName,
+        thumbnailType: video.thumbnailType,
+        duration: video.duration,
+        featured: video.featured,
+        views: video.views,
+        createdAt: video.createdAt,
+        gallery: video.gallery
+      },
+      message: 'Video added successfully'
     })
 
   } catch (error) {
-    console.error('Error uploading video:', error)
+    console.error('Error adding video:', error)
     
-    // Handle specific database connection errors
     if (error instanceof PrismaClientInitializationError) {
       return NextResponse.json(
-        { 
-          error: 'Database connection failed. Please check if the database server is running.',
-          type: 'CONNECTION_ERROR',
-          success: false
-        },
+        { error: 'Database connection failed', type: 'CONNECTION_ERROR' },
         { status: 503 }
       )
     }
     
     if (error instanceof PrismaClientKnownRequestError) {
       return NextResponse.json(
-        { 
-          error: 'Database query failed. Please try again.',
-          type: 'QUERY_ERROR',
-          success: false
-        },
+        { error: 'Database operation failed', type: 'DATABASE_ERROR' },
         { status: 500 }
       )
     }
     
     return NextResponse.json(
-      { 
-        error: 'An unexpected error occurred while uploading video.',
-        type: 'UNKNOWN_ERROR',
-        success: false
-      },
+      { error: 'Internal server error' },
       { status: 500 }
     )
   }

@@ -75,7 +75,7 @@ export default function TourBooking({ tour }: TourBookingProps) {
         tourId: tour.id,
         title: tour.title,
         slug: tour.slug,
-        image: tour.featuredImage?.data,
+        image: tour.featuredImage?.data || '/placeholder-tour.jpg',
         price: tour.price,
         duration: tour.duration,
         location: tour.locationRegion ? `${tour.locationRegion}, ${tour.locationCountry}` : tour.locationCountry,

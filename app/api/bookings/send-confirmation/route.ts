@@ -74,9 +74,10 @@ export async function POST(request: NextRequest) {
     })
 
     // Prepare email content
+    const customerName = mainBooking.customer?.name || mainBooking.customerName || 'Valued Customer';
     const emailContent = `
       <h2>Booking Confirmation - ${mainBooking.bookingReference}</h2>
-      <p>Dear ${mainBooking.customer.name},</p>
+      <p>Dear ${customerName},</p>
       <p>Thank you for booking with Samba Tours! Your booking has been confirmed.</p>
 
       <h3>Booking Details:</h3>

@@ -55,7 +55,6 @@ export async function GET(request: NextRequest) {
         id: true,
         title: true,
         imageName: true,
-        photographer: true,
         createdAt: true,
         gallery: {
           select: {
@@ -67,71 +66,7 @@ export async function GET(request: NextRequest) {
       }
     })
 
-    // Get category stats - fixed to use proper counting
-    const categories = await prisma.galleryMediaCategory.findMany({
-      orderBy: {
-        name: 'asc'
-      }
-    })
 
-    const categoryStats = await Promise.all(
-      categories.map(async (category) => {
-        const [imageCount, videoCount] = await Promise.all([
-          prisma.galleryImage.count({
-            where: { categoryId: category.id }
-          }),
-          prisma.galleryVideo.count({
-            where: { categoryId: category.id }
-          })
-        ])
-        
-        return {
-          id: category.id,
-          name: category.name,
-          slug: category.slug,
-          color: category.color,
-          imageCount,
-          videoCount,
-          totalCount: imageCount + videoCount
-        }
-      })
-    )
-
-    // Get location stats - fixed to use proper counting
-    const locations = await prisma.galleryMediaLocation.findMany({
-      orderBy: {
-        name: 'asc'
-      }
-    })
-
-    const locationStats = await Promise.all(
-      locations.map(async (location) => {
-        const [imageCount, videoCount] = await Promise.all([
-          prisma.galleryImage.count({
-            where: { locationId: location.id }
-          }),
-          prisma.galleryVideo.count({
-            where: { locationId: location.id }
-          })
-        ])
-        
-        return {
-          id: location.id,
-          name: location.name,
-          slug: location.slug,
-          country: location.country,
-          region: location.region,
-          imageCount,
-          videoCount,
-          totalCount: imageCount + videoCount
-        }
-      })
-    )
-
-    // Sort locations by total count and take top 10
-    const sortedLocationStats = locationStats
-      .sort((a, b) => b.totalCount - a.totalCount)
-      .slice(0, 10)
 
     // Get monthly upload stats for the last 6 months
     const sixMonthsAgo = new Date()
@@ -175,8 +110,6 @@ export async function GET(request: NextRequest) {
         galleries: recentGalleries,
         images: recentImages
       },
-      categoryStats,
-      locationStats: sortedLocationStats,
       monthlyUploads,
       success: true
     })

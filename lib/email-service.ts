@@ -19,8 +19,7 @@ const emailConfig = {
   rateLimit: 5,      // Reduced from 10
   // Add TLS options for better security
   tls: {
-    rejectUnauthorized: true,
-    minVersion: 'TLSv1.2'
+    rejectUnauthorized: true
   }
 }
 
@@ -230,8 +229,7 @@ class EmailQueue {
           where: { id: emailData.databaseId },
           data: {
             status: 'failed',
-            errorMessage: error.message || 'Failed to send email',
-            updatedAt: new Date()
+            errorMessage: error instanceof Error ? error.message : 'Failed to send email'
           }
         })
       }
@@ -250,7 +248,7 @@ class EmailQueue {
   }
 
   private async handleRetry(emailData: EmailData & { databaseId?: number }): Promise<void> {
-    const retryKey = emailData.messageId || emailData.to
+    const retryKey = emailData.to
     const attempts = this.retryAttempts.get(retryKey) || 0
 
     if (attempts < this.maxRetries) {
@@ -361,10 +359,20 @@ export class EmailCampaignService {
   }
 
   static async addRecipientsToCampaign(campaignId: number, recipients: string[]) {
+    const campaign = await prisma.emailCampaign.findUnique({
+      where: { id: campaignId },
+      include: { template: true }
+    })
+
+    if (!campaign) throw new Error('Campaign not found')
+
     const emails = recipients.map(email => ({
       campaignId,
       recipientEmail: email,
-      status: 'pending'
+      templateId: campaign.templateId,
+      subject: campaign.subject,
+      htmlContent: '', // Will be populated when email is sent
+      status: 'pending' as const
     }))
 
     await prisma.emailSent.createMany({
@@ -400,7 +408,7 @@ export class EmailCampaignService {
         data: campaign.customData || {},
         subject: campaign.subject,
         campaignId,
-        userId: campaign.createdBy
+        userId: campaign.createdBy || undefined
       })
     }
 
@@ -445,6 +453,9 @@ export async function sendEmail(data: EmailData): Promise<EmailResult> {
     }
 
     // Send email directly
+    if (!transporter) {
+      throw new Error('Email transporter is not initialized')
+    }
     const info = await transporter.sendMail(mailOptions)
 
     // Create database record
@@ -483,7 +494,7 @@ export async function sendEmail(data: EmailData): Promise<EmailResult> {
           subject: data.subject || 'Failed Email',
           htmlContent: '',
           status: 'failed',
-          errorMessage: error.message,
+          errorMessage: error instanceof Error ? error.message : 'Failed to send email',
           customData: data.data,
           campaignId: data.campaignId,
           createdBy: data.userId
@@ -495,7 +506,7 @@ export async function sendEmail(data: EmailData): Promise<EmailResult> {
 
     return {
       success: false,
-      error: error.message,
+      error: error instanceof Error ? error.message : 'Failed to send email',
       status: 'failed'
     }
   }
@@ -551,6 +562,7 @@ export async function sendBulkEmail(recipients: string[], data: Omit<EmailData, 
 
 export async function verifyEmailConfig(): Promise<boolean> {
   try {
+    if (!transporter) throw new Error('Email transporter is not initialized')
     await transporter.verify()
     console.log('Email configuration is valid')
     return true
@@ -562,6 +574,8 @@ export async function verifyEmailConfig(): Promise<boolean> {
 
 // Cleanup function for graceful shutdown
 export async function cleanup() {
-  await transporter.close()
+  if (transporter) {
+    await transporter.close()
+  }
   await prisma.$disconnect()
 } 

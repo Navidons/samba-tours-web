@@ -12,93 +12,78 @@ export async function GET(
 
     const video = await prisma.galleryVideo.findUnique({
       where: { id: videoId },
-      include: {
+      select: {
+        id: true,
+        title: true,
+        videoUrl: true,
+        videoProvider: true,
+        videoId: true,
+        thumbnailData: true,
+        thumbnailName: true,
+        thumbnailType: true,
+        duration: true,
+        featured: true,
+        views: true,
+        createdAt: true,
         gallery: {
           select: {
             id: true,
-            name: true,
-            slug: true
+            name: true
           }
-        },
-        category: true,
-        location: true
+        }
       }
     })
 
     if (!video) {
       return NextResponse.json(
-        { error: 'Video not found', success: false },
+        { error: 'Video not found' },
         { status: 404 }
       )
     }
 
     const transformedVideo = {
       id: video.id,
-      galleryId: video.galleryId,
-      gallery: video.gallery,
       title: video.title,
-      description: video.description,
+      videoUrl: video.videoUrl,
+      videoProvider: video.videoProvider,
+      videoId: video.videoId,
+      thumbnailData: video.thumbnailData ? Buffer.from(video.thumbnailData).toString('base64') : null,
+      thumbnailName: video.thumbnailName,
+      thumbnailType: video.thumbnailType,
       duration: video.duration,
-      videoName: video.videoName,
-      videoType: video.videoType,
-      videoSize: video.videoSize,
-      photographer: video.photographer,
       featured: video.featured,
-      category: video.category,
-      location: video.location,
-      likes: video.likes,
       views: video.views,
-      displayOrder: video.displayOrder,
       createdAt: video.createdAt,
-      updatedAt: video.updatedAt,
-      thumbnail: video.thumbnailData ? {
-        data: video.thumbnailData.toString('base64'),
-        name: video.thumbnailName,
-        type: video.thumbnailType
-      } : null,
-      videoUrl: `/api/admin/gallery/videos/${video.id}/stream`
+      gallery: video.gallery
     }
 
-    return NextResponse.json({ video: transformedVideo, success: true })
+    return NextResponse.json({ video: transformedVideo })
 
   } catch (error) {
     console.error('Error fetching video:', error)
     
-    // Handle specific database connection errors
     if (error instanceof PrismaClientInitializationError) {
       return NextResponse.json(
-        { 
-          error: 'Database connection failed. Please check if the database server is running.',
-          type: 'CONNECTION_ERROR',
-          success: false
-        },
+        { error: 'Database connection failed', type: 'CONNECTION_ERROR' },
         { status: 503 }
       )
     }
     
     if (error instanceof PrismaClientKnownRequestError) {
       return NextResponse.json(
-        { 
-          error: 'Database query failed. Please try again.',
-          type: 'QUERY_ERROR',
-          success: false
-        },
+        { error: 'Database operation failed', type: 'DATABASE_ERROR' },
         { status: 500 }
       )
     }
     
     return NextResponse.json(
-      { 
-        error: 'An unexpected error occurred while fetching video.',
-        type: 'UNKNOWN_ERROR',
-        success: false
-      },
+      { error: 'Internal server error' },
       { status: 500 }
     )
   }
 }
 
-// PUT /api/admin/gallery/videos/[id] - Update video metadata
+// PUT /api/admin/gallery/videos/[id] - Update video
 export async function PUT(
   request: NextRequest,
   { params }: { params: { id: string } }
@@ -107,6 +92,13 @@ export async function PUT(
     const videoId = parseInt(params.id)
     const formData = await request.formData()
 
+    const title = formData.get('title') as string
+    const duration = formData.get('duration') as string
+    const featured = formData.get('featured') === 'true'
+    const views = formData.get('views') ? parseInt(formData.get('views') as string) : 0
+    const removeThumbnail = formData.get('removeThumbnail') === 'true'
+    const thumbnailFile = formData.get('thumbnail') as File | null
+
     // Check if video exists
     const existingVideo = await prisma.galleryVideo.findUnique({
       where: { id: videoId }
@@ -114,152 +106,128 @@ export async function PUT(
 
     if (!existingVideo) {
       return NextResponse.json(
-        { error: 'Video not found', success: false },
+        { error: 'Video not found' },
         { status: 404 }
       )
     }
 
-    // Helper function to parse duration
-    const parseDuration = (duration: string | null): number | null => {
-      if (!duration) return null;
-      if (duration.includes(':')) {
-        const [minutes, seconds] = duration.split(':').map(Number);
-        return minutes * 60 + seconds;
+    // Helper function to convert MM:SS duration to seconds
+    const parseDuration = (durationStr: string | null): number | null => {
+      if (!durationStr) return null
+      
+      // If it's already a number (seconds), return it
+      if (/^\d+$/.test(durationStr)) {
+        return parseInt(durationStr)
       }
-      return parseInt(duration, 10);
-    };
+      
+      // Parse MM:SS format
+      const parts = durationStr.split(':')
+      if (parts.length === 2) {
+        const minutes = parseInt(parts[0]) || 0
+        const seconds = parseInt(parts[1]) || 0
+        return minutes * 60 + seconds
+      }
+      
+      // Parse HH:MM:SS format
+      if (parts.length === 3) {
+        const hours = parseInt(parts[0]) || 0
+        const minutes = parseInt(parts[1]) || 0
+        const seconds = parseInt(parts[2]) || 0
+        return hours * 3600 + minutes * 60 + seconds
+      }
+      
+      return null
+    }
 
-    // Get update data
-    const title = formData.get('title') as string
-    const description = formData.get('description') as string || null
-    const durationInput = formData.get('duration') as string || null
-    const duration = parseDuration(durationInput)
-    const categoryId = formData.get('categoryId') ? parseInt(formData.get('categoryId') as string) : null
-    const locationId = formData.get('locationId') ? parseInt(formData.get('locationId') as string) : null
-    const photographer = formData.get('photographer') as string || null
-    const featured = formData.get('featured') === 'true'
-    const displayOrder = formData.get('displayOrder') ? parseInt(formData.get('displayOrder') as string) : existingVideo.displayOrder
-    const likes = formData.get('likes') ? parseInt(formData.get('likes') as string) : null
-    const views = formData.get('views') ? parseInt(formData.get('views') as string) : null
-
-    // Handle thumbnail update
-    const thumbnailFile = formData.get('thumbnail') as File | null
-    const removeThumbnail = formData.get('removeThumbnail') === 'true'
-
+    // Process thumbnail
     let thumbnailData = existingVideo.thumbnailData
     let thumbnailName = existingVideo.thumbnailName
     let thumbnailType = existingVideo.thumbnailType
-    let thumbnailSize = existingVideo.thumbnailSize
 
     if (removeThumbnail) {
       thumbnailData = null
       thumbnailName = null
       thumbnailType = null
-      thumbnailSize = null
     } else if (thumbnailFile) {
       const buffer = Buffer.from(await thumbnailFile.arrayBuffer())
       thumbnailData = buffer
       thumbnailName = thumbnailFile.name
       thumbnailType = thumbnailFile.type
-      thumbnailSize = thumbnailFile.size
     }
+
+    const durationInSeconds = parseDuration(duration)
 
     // Update video
     const updatedVideo = await prisma.galleryVideo.update({
       where: { id: videoId },
       data: {
-        title,
-        description,
-        duration,
-        categoryId,
-        locationId,
-        photographer,
+        title: title || null,
+        duration: durationInSeconds,
         featured,
-        displayOrder,
+        views,
         thumbnailData,
         thumbnailName,
-        thumbnailType,
-        thumbnailSize,
-        likes: likes !== null ? likes : existingVideo.likes,
-        views: views !== null ? views : existingVideo.views
+        thumbnailType
       },
-      include: {
+      select: {
+        id: true,
+        title: true,
+        videoUrl: true,
+        videoProvider: true,
+        videoId: true,
+        thumbnailData: true,
+        thumbnailName: true,
+        thumbnailType: true,
+        duration: true,
+        featured: true,
+        views: true,
+        createdAt: true,
         gallery: {
           select: {
             id: true,
-            name: true,
-            slug: true
+            name: true
           }
-        },
-        category: true,
-        location: true
+        }
       }
     })
 
-    const transformedVideo = {
-      id: updatedVideo.id,
-      galleryId: updatedVideo.galleryId,
-      gallery: updatedVideo.gallery,
-      title: updatedVideo.title,
-      description: updatedVideo.description,
-      duration: updatedVideo.duration,
-      videoName: updatedVideo.videoName,
-      videoType: updatedVideo.videoType,
-      videoSize: updatedVideo.videoSize,
-      photographer: updatedVideo.photographer,
-      featured: updatedVideo.featured,
-      category: updatedVideo.category,
-      location: updatedVideo.location,
-      likes: updatedVideo.likes,
-      views: updatedVideo.views,
-      displayOrder: updatedVideo.displayOrder,
-      createdAt: updatedVideo.createdAt,
-      updatedAt: updatedVideo.updatedAt,
-      thumbnail: thumbnailData ? {
-        data: thumbnailData.toString('base64'),
-        name: thumbnailName,
-        type: thumbnailType
-      } : null,
-      videoUrl: `/api/admin/gallery/videos/${updatedVideo.id}/stream`
-    }
-
     return NextResponse.json({
-      video: transformedVideo,
-      success: true
+      video: {
+        id: updatedVideo.id,
+        title: updatedVideo.title,
+        videoUrl: updatedVideo.videoUrl,
+        videoProvider: updatedVideo.videoProvider,
+        videoId: updatedVideo.videoId,
+        thumbnailData: updatedVideo.thumbnailData ? Buffer.from(updatedVideo.thumbnailData).toString('base64') : null,
+        thumbnailName: updatedVideo.thumbnailName,
+        thumbnailType: updatedVideo.thumbnailType,
+        duration: updatedVideo.duration,
+        featured: updatedVideo.featured,
+        views: updatedVideo.views,
+        createdAt: updatedVideo.createdAt,
+        gallery: updatedVideo.gallery
+      }
     })
 
   } catch (error) {
     console.error('Error updating video:', error)
     
-    // Handle specific database connection errors
     if (error instanceof PrismaClientInitializationError) {
       return NextResponse.json(
-        { 
-          error: 'Database connection failed. Please check if the database server is running.',
-          type: 'CONNECTION_ERROR',
-          success: false
-        },
+        { error: 'Database connection failed', type: 'CONNECTION_ERROR' },
         { status: 503 }
       )
     }
     
     if (error instanceof PrismaClientKnownRequestError) {
       return NextResponse.json(
-        { 
-          error: 'Database query failed. Please try again.',
-          type: 'QUERY_ERROR',
-          success: false
-        },
+        { error: 'Database operation failed', type: 'DATABASE_ERROR' },
         { status: 500 }
       )
     }
     
     return NextResponse.json(
-      { 
-        error: 'An unexpected error occurred while updating video.',
-        type: 'UNKNOWN_ERROR',
-        success: false
-      },
+      { error: 'Internal server error' },
       { status: 500 }
     )
   }
@@ -273,19 +241,18 @@ export async function DELETE(
   try {
     const videoId = parseInt(params.id)
 
-    // Check if video exists
-    const existingVideo = await prisma.galleryVideo.findUnique({
+    // Check if video exists and get gallery info
+    const video = await prisma.galleryVideo.findUnique({
       where: { id: videoId },
       select: {
         id: true,
-        galleryId: true,
-        title: true
+        galleryId: true
       }
     })
 
-    if (!existingVideo) {
+    if (!video) {
       return NextResponse.json(
-        { error: 'Video not found', success: false },
+        { error: 'Video not found' },
         { status: 404 }
       )
     }
@@ -295,53 +262,41 @@ export async function DELETE(
       where: { id: videoId }
     })
 
-    // Update gallery video count
-    const videoCount = await prisma.galleryVideo.count({
-      where: { galleryId: existingVideo.galleryId }
-    })
-
-    await prisma.gallery.update({
-      where: { id: existingVideo.galleryId },
-      data: { videoCount }
-    })
+    // Update gallery video count if video belongs to a gallery
+    if (video.galleryId) {
+      await prisma.gallery.update({
+        where: { id: video.galleryId },
+        data: {
+          videoCount: {
+            decrement: 1
+          }
+        }
+      })
+    }
 
     return NextResponse.json({
-      message: `Video "${existingVideo.title}" deleted successfully`,
-      success: true
+      message: 'Video deleted successfully'
     })
 
   } catch (error) {
     console.error('Error deleting video:', error)
     
-    // Handle specific database connection errors
     if (error instanceof PrismaClientInitializationError) {
       return NextResponse.json(
-        { 
-          error: 'Database connection failed. Please check if the database server is running.',
-          type: 'CONNECTION_ERROR',
-          success: false
-        },
+        { error: 'Database connection failed', type: 'CONNECTION_ERROR' },
         { status: 503 }
       )
     }
     
     if (error instanceof PrismaClientKnownRequestError) {
       return NextResponse.json(
-        { 
-          error: 'Database query failed. Please try again.',
-          type: 'QUERY_ERROR',
-          success: false
-        },
+        { error: 'Database operation failed', type: 'DATABASE_ERROR' },
         { status: 500 }
       )
     }
     
     return NextResponse.json(
-      { 
-        error: 'An unexpected error occurred while deleting video.',
-        type: 'UNKNOWN_ERROR',
-        success: false
-      },
+      { error: 'Internal server error' },
       { status: 500 }
     )
   }

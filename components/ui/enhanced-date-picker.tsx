@@ -103,7 +103,7 @@ export function EnhancedDatePicker({
             initialFocus
             fromMonth={today}
             toMonth={addDays(today, 365)}
-            captionLayout="dropdown-buttons"
+            captionLayout="dropdown"
             showOutsideDays={false}
             className="p-3"
           />

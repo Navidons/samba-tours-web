@@ -1,10 +1,14 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { TrendingUp, TrendingDown, Users, Calendar, DollarSign } from "lucide-react"
-import { mockAdminStats } from "@/lib/admin-mock-data"
 
 export async function AdminStats() {
-  // Using mock data instead of fetching from an API
-  const stats = mockAdminStats
+  // Simple stats data - in a real app, this would come from the database
+  const stats = {
+    totalRevenue: { value: 89500, change: 12.5 },
+    totalBookings: { value: 1247, change: 8.3 },
+    totalCustomers: { value: 892, change: 15.2 },
+    conversionRate: { value: 85.5, change: 2.1 },
+  }
 
   const statsCards = [
     {

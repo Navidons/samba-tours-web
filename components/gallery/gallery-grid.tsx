@@ -5,10 +5,9 @@ import Image from "next/image"
 import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Heart, Share2, Eye, MapPin, Camera } from "lucide-react"
+import { Share2, Eye, Camera } from "lucide-react"
 import GalleryLightbox from "./gallery-lightbox"
 import { useInView } from "react-intersection-observer"
-import { galleryService } from "@/lib/gallery-service"
 
 interface GalleryGridProps {
   images?: any[]
@@ -17,10 +16,8 @@ interface GalleryGridProps {
 
 export default function GalleryGrid({ images = [], viewMode = "masonry" }: GalleryGridProps) {
   const [selectedImage, setSelectedImage] = useState<number | null>(null)
-  const [likedImages, setLikedImages] = useState<Set<number>>(new Set())
   const [loadedImages, setLoadedImages] = useState<Set<number>>(new Set())
   const [visibleImages, setVisibleImages] = useState<number[]>([])
-  const [imageStats, setImageStats] = useState<Record<number, { likes: number; views: number }>>({})
   
   // Blur data URL for better loading experience
   const blurDataURL = 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAREBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=='
@@ -51,48 +48,6 @@ export default function GalleryGrid({ images = [], viewMode = "masonry" }: Galle
 
   const handleImageLoad = (id: number) => {
     setLoadedImages((prev) => new Set([...prev, id]))
-  }
-
-  const toggleLike = async (id: number) => {
-    try {
-      const result = await galleryService.toggleImageLike(id)
-      
-      // Update local state
-    setLikedImages((prev) => {
-      const newSet = new Set(prev)
-        if (result.liked) {
-          newSet.add(id)
-        } else {
-        newSet.delete(id)
-      }
-      return newSet
-    })
-      
-      // Update stats
-      setImageStats((prev) => ({
-        ...prev,
-        [id]: { ...prev[id], likes: result.likes }
-      }))
-    } catch (error) {
-      console.error('Error toggling like:', error)
-    }
-  }
-
-  const trackView = async (id: number) => {
-    try {
-      await galleryService.trackImageView(id)
-      
-      // Update stats locally
-      setImageStats((prev) => ({
-        ...prev,
-        [id]: { 
-          ...prev[id], 
-          views: (prev[id]?.views || 0) + 1 
-        }
-      }))
-    } catch (error) {
-      console.error('Error tracking view:', error)
-    }
   }
 
   const getGridItemClass = (aspectRatio: string) => {
@@ -128,7 +83,6 @@ export default function GalleryGrid({ images = [], viewMode = "masonry" }: Galle
         }`}
         onClick={() => {
           setSelectedImage(index)
-          trackView(item.id)
         }}
       >
         <div className="relative overflow-hidden">
@@ -160,28 +114,17 @@ export default function GalleryGrid({ images = [], viewMode = "masonry" }: Galle
             {/* Overlay */}
             <div className="absolute inset-0 bg-gradient-to-t from-emerald-900/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
-            {/* Category badge */}
-            <div className="absolute top-3 left-3">
-              <Badge className="bg-gradient-to-r from-emerald-500 to-green-500 text-white capitalize border-0">
-                {item.category.replace("-", " ")}
-              </Badge>
-            </div>
+            {/* Featured badge */}
+            {item.featured && (
+              <div className="absolute top-3 left-3">
+                <Badge className="bg-gradient-to-r from-emerald-500 to-green-500 text-white border-0">
+                  Featured
+                </Badge>
+              </div>
+            )}
 
             {/* Action buttons */}
             <div className="absolute top-3 right-3 flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-              <Button
-                size="sm"
-                variant="secondary"
-                className="h-8 w-8 p-0 bg-white/90 hover:bg-white border-emerald-200"
-                onClick={(e) => {
-                  e.stopPropagation()
-                  toggleLike(item.id)
-                }}
-              >
-                <Heart
-                  className={`h-4 w-4 ${likedImages.has(item.id) ? "fill-red-500 text-red-500" : "text-emerald-600"}`}
-                />
-              </Button>
               <Button
                 size="sm"
                 variant="secondary"
@@ -200,22 +143,14 @@ export default function GalleryGrid({ images = [], viewMode = "masonry" }: Galle
               <div className="flex items-center justify-between text-xs text-emerald-200">
                 <div className="flex items-center space-x-3">
                   <div className="flex items-center space-x-1">
-                    <MapPin className="h-3 w-3" />
-                    <span>{item.location}</span>
-                  </div>
-                  <div className="flex items-center space-x-1">
                     <Camera className="h-3 w-3" />
-                    <span>{item.photographer}</span>
+                    <span>Gallery</span>
                   </div>
                 </div>
                 <div className="flex items-center space-x-3">
                   <div className="flex items-center space-x-1">
-                    <Heart className="h-3 w-3" />
-                    <span>{imageStats[item.id]?.likes ?? item.likes}</span>
-                  </div>
-                  <div className="flex items-center space-x-1">
                     <Eye className="h-3 w-3" />
-                    <span>{imageStats[item.id]?.views ?? item.views}</span>
+                    <span>{item.views || 0}</span>
                   </div>
                 </div>
               </div>

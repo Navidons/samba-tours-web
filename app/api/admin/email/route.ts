@@ -281,7 +281,7 @@ async function getEmailAnalytics() {
       count: Number(template._count.templateId)
     }))
 
-    const processedEmailTrends = emailTrends.map((trend: any) => ({
+    const processedEmailTrends = (emailTrends as Array<{ date: string; count: bigint }>).map((trend) => ({
       date: trend.date,
       count: Number(trend.count)
     }))
@@ -320,7 +320,7 @@ async function getEmailAnalytics() {
 async function getCampaigns(page: number, limit: number, status?: string | null) {
   try {
     const skip = (page - 1) * limit
-    const where = status ? { status } : {}
+    const where = status ? { status: status as any } : {}
 
     const [campaigns, total] = await Promise.all([
       prisma.emailCampaign.findMany({
@@ -467,7 +467,11 @@ async function sendSingleEmail(data: any) {
     }
 
     // Process attachments if provided
-    let processedAttachments = []
+    let processedAttachments: Array<{
+      filename: string;
+      content: Buffer;
+      contentType: string;
+    }> = []
     if (attachments && Array.isArray(attachments)) {
       processedAttachments = await Promise.all(attachments.map(async (file: File) => ({
         filename: file.name,
@@ -599,7 +603,8 @@ async function sendCampaign(campaignId: number) {
     return NextResponse.json({ success: true, message: 'Campaign sent successfully' })
   } catch (error) {
     console.error('Error sending campaign:', error)
-    return NextResponse.json({ error: error.message }, { status: 400 })
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred'
+    return NextResponse.json({ error: errorMessage }, { status: 400 })
   }
 }
 

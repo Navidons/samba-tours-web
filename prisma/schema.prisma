@@ -50,29 +50,29 @@ model User {
 }
 
 model Profile {
-  id           Int        @id
-  fullName     String?    @map("full_name") @db.VarChar(255)
-  firstName    String?    @map("first_name") @db.VarChar(100)
-  lastName     String?    @map("last_name") @db.VarChar(100)
-  phone        String?    @db.VarChar(50)
-  avatarData   Bytes?     @map("avatar_data")
-  avatarName   String?    @map("avatar_name") @db.VarChar(255)
-  avatarType   String?    @map("avatar_type") @db.VarChar(50)
-  avatarSize   Int?       @map("avatar_size")
-  dateOfBirth  DateTime?  @map("date_of_birth") @db.Date
+  id           Int       @id
+  fullName     String?   @map("full_name") @db.VarChar(255)
+  firstName    String?   @map("first_name") @db.VarChar(100)
+  lastName     String?   @map("last_name") @db.VarChar(100)
+  phone        String?   @db.VarChar(50)
+  avatarData   Bytes?    @map("avatar_data")
+  avatarName   String?   @map("avatar_name") @db.VarChar(255)
+  avatarType   String?   @map("avatar_type") @db.VarChar(50)
+  avatarSize   Int?      @map("avatar_size")
+  dateOfBirth  DateTime? @map("date_of_birth") @db.Date
   gender       Gender?
-  nationality  String?    @db.VarChar(100)
-  country      String?    @db.VarChar(100)
-  city         String?    @db.VarChar(100)
-  address      String?    @db.Text
+  nationality  String?   @db.VarChar(100)
+  country      String?   @db.VarChar(100)
+  city         String?   @db.VarChar(100)
+  address      String?   @db.Text
   preferences  Json?
-  roleId       Int?       @default(1) @map("role_id")
-  isActive     Boolean    @default(true) @map("is_active")
-  lastActivity DateTime?  @map("last_activity")
-  createdAt    DateTime   @default(now()) @map("created_at")
-  updatedAt    DateTime   @updatedAt @map("updated_at")
-  user         User       @relation(fields: [id], references: [id], onDelete: Cascade)
-  role         UserRole?  @relation(fields: [roleId], references: [id])
+  roleId       Int?      @default(1) @map("role_id")
+  isActive     Boolean   @default(true) @map("is_active")
+  lastActivity DateTime? @map("last_activity")
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
+  user         User      @relation(fields: [id], references: [id], onDelete: Cascade)
+  role         UserRole? @relation(fields: [roleId], references: [id])
 
   @@index([roleId])
   @@index([isActive])
@@ -286,18 +286,18 @@ model BlogCategory {
 }
 
 model BlogAuthor {
-  id          Int        @id @default(autoincrement())
-  name        String     @db.VarChar(255)
-  email       String?    @db.VarChar(255)
-  bio         String?    @db.Text
-  avatarData  Bytes?     @map("avatar_data")
-  avatarName  String?    @map("avatar_name") @db.VarChar(255)
-  avatarType  String?    @map("avatar_type") @db.VarChar(50)
-  avatarSize  Int?       @map("avatar_size")
-  isActive    Boolean    @default(true) @map("is_active")
-  createdAt   DateTime   @default(now()) @map("created_at")
-  updatedAt   DateTime   @updatedAt @map("updated_at")
-  posts       BlogPost[]
+  id         Int        @id @default(autoincrement())
+  name       String     @db.VarChar(255)
+  email      String?    @db.VarChar(255)
+  bio        String?    @db.Text
+  avatarData Bytes?     @map("avatar_data")
+  avatarName String?    @map("avatar_name") @db.VarChar(255)
+  avatarType String?    @map("avatar_type") @db.VarChar(50)
+  avatarSize Int?       @map("avatar_size")
+  isActive   Boolean    @default(true) @map("is_active")
+  createdAt  DateTime   @default(now()) @map("created_at")
+  updatedAt  DateTime   @updatedAt @map("updated_at")
+  posts      BlogPost[]
 
   @@index([name])
   @@index([email])
@@ -338,7 +338,6 @@ model BlogPost {
   thumbnailName   String?              @map("thumbnail_name") @db.VarChar(255)
   thumbnailType   String?              @map("thumbnail_type") @db.VarChar(50)
   thumbnailSize   Int?                 @map("thumbnail_size")
-
   createdAt       DateTime             @default(now()) @map("created_at")
   updatedAt       DateTime             @updatedAt @map("updated_at")
   comments        BlogComment[]
@@ -368,21 +367,21 @@ model BlogPostTagMapping {
 }
 
 model BlogComment {
-  id              Int           @id @default(autoincrement())
-  postId          Int           @map("post_id")
-  userId          Int?          @map("user_id")
-  authorName      String        @map("author_name") @db.VarChar(255)
-  authorEmail     String?       @map("author_email") @db.VarChar(255)
-  content         String        @db.Text
-  parentCommentId Int?          @map("parent_comment_id")
-  status          CommentStatus @default(pending)
-  likes           Int           @default(0)
-  createdAt       DateTime      @default(now()) @map("created_at")
-  updatedAt       DateTime      @updatedAt @map("updated_at")
-  parentComment   BlogComment?  @relation("CommentReplies", fields: [parentCommentId], references: [id], onDelete: Cascade)
-  replies         BlogComment[] @relation("CommentReplies")
-  post            BlogPost      @relation(fields: [postId], references: [id], onDelete: Cascade)
-  user            User?         @relation(fields: [userId], references: [id])
+  id              Int             @id @default(autoincrement())
+  postId          Int             @map("post_id")
+  userId          Int?            @map("user_id")
+  authorName      String          @map("author_name") @db.VarChar(255)
+  authorEmail     String?         @map("author_email") @db.VarChar(255)
+  content         String          @db.Text
+  parentCommentId Int?            @map("parent_comment_id")
+  status          CommentStatus   @default(pending)
+  likes           Int             @default(0)
+  createdAt       DateTime        @default(now()) @map("created_at")
+  updatedAt       DateTime        @updatedAt @map("updated_at")
+  parentComment   BlogComment?    @relation("CommentReplies", fields: [parentCommentId], references: [id], onDelete: Cascade)
+  replies         BlogComment[]   @relation("CommentReplies")
+  post            BlogPost        @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user            User?           @relation(fields: [userId], references: [id])
   reports         CommentReport[]
 
   @@index([postId])
@@ -394,15 +393,15 @@ model BlogComment {
 }
 
 model CommentReport {
-  id          Int      @id @default(autoincrement())
-  commentId   Int      @map("comment_id")
-  reporterName String  @map("reporter_name") @db.VarChar(255)
-  reporterEmail String? @map("reporter_email") @db.VarChar(255)
-  reason      String   @db.Text
-  status      ReportStatus @default(pending)
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
-  comment     BlogComment @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  id            Int          @id @default(autoincrement())
+  commentId     Int          @map("comment_id")
+  reporterName  String       @map("reporter_name") @db.VarChar(255)
+  reporterEmail String?      @map("reporter_email") @db.VarChar(255)
+  reason        String       @db.Text
+  status        ReportStatus @default(pending)
+  createdAt     DateTime     @default(now()) @map("created_at")
+  updatedAt     DateTime     @updatedAt @map("updated_at")
+  comment       BlogComment  @relation(fields: [commentId], references: [id], onDelete: Cascade)
 
   @@index([commentId])
   @@index([status])
@@ -410,56 +409,22 @@ model CommentReport {
   @@map("comment_reports")
 }
 
-model GalleryMediaCategory {
-  id          Int            @id @default(autoincrement())
-  name        String         @unique @db.VarChar(255)
-  slug        String         @unique @db.VarChar(255)
-  description String?        @db.Text
-  color       String         @default("#10B981") @db.VarChar(7)
-  createdAt   DateTime       @default(now()) @map("created_at")
-  updatedAt   DateTime       @updatedAt @map("updated_at")
-  images      GalleryImage[]
-  videos      GalleryVideo[]
-
-  @@index([slug])
-  @@map("gallery_media_categories")
-}
-
-model GalleryMediaLocation {
+model Gallery {
   id             Int            @id @default(autoincrement())
-  name           String         @unique @db.VarChar(255)
+  name           String         @db.VarChar(255)
   slug           String         @unique @db.VarChar(255)
   description    String?        @db.Text
-  country        String?        @db.VarChar(100)
-  region         String?        @db.VarChar(100)
-  coordinatesLat Decimal?       @map("coordinates_lat") @db.Decimal(10, 8)
-  coordinatesLng Decimal?       @map("coordinates_lng") @db.Decimal(11, 8)
+  featured       Boolean        @default(false)
+  thumbnail_data Bytes?
+  thumbnail_name String?        @db.VarChar(255)
+  thumbnail_type String?        @db.VarChar(50)
+  thumbnail_size Int?
+  imageCount     Int            @default(0) @map("image_count")
+  videoCount     Int            @default(0) @map("video_count")
   createdAt      DateTime       @default(now()) @map("created_at")
   updatedAt      DateTime       @updatedAt @map("updated_at")
   images         GalleryImage[]
   videos         GalleryVideo[]
-
-  @@index([slug])
-  @@index([country])
-  @@map("gallery_media_locations")
-}
-
-model Gallery {
-  id            Int            @id @default(autoincrement())
-  name          String         @db.VarChar(255)
-  slug          String         @unique @db.VarChar(255)
-  description   String?        @db.Text
-  featured      Boolean        @default(false)
-  thumbnailData Bytes?         @map("thumbnail_data")
-  thumbnailName String?        @map("thumbnail_name") @db.VarChar(255)
-  thumbnailType String?        @map("thumbnail_type") @db.VarChar(50)
-  thumbnailSize Int?           @map("thumbnail_size")
-  imageCount    Int            @default(0) @map("image_count")
-  videoCount    Int            @default(0) @map("video_count")
-  createdAt     DateTime       @default(now()) @map("created_at")
-  updatedAt     DateTime       @updatedAt @map("updated_at")
-  images        GalleryImage[]
-  videos        GalleryVideo[]
 
   @@index([slug])
   @@index([featured])
@@ -467,96 +432,44 @@ model Gallery {
 }
 
 model GalleryImage {
-  id           Int                   @id @default(autoincrement())
-  galleryId    Int?                  @map("gallery_id")
-  imageData    Bytes                 @map("image_data")
-  imageName    String?               @map("image_name") @db.VarChar(255)
-  imageType    String?               @map("image_type") @db.VarChar(50)
-  imageSize    Int?                  @map("image_size")
-  alt          String?               @db.VarChar(255)
-  title        String?               @db.VarChar(255)
-  description  String?               @db.Text
-  photographer String?               @db.VarChar(255)
-  date         DateTime?             @db.Date
-  featured     Boolean               @default(false)
-  categoryId   Int?                  @map("category_id")
-  locationId   Int?                  @map("location_id")
-  likes        Int                   @default(0)
-  views        Int                   @default(0)
-  displayOrder Int                   @default(0) @map("display_order")
-  createdAt    DateTime              @default(now()) @map("created_at")
-  updatedAt    DateTime              @updatedAt @map("updated_at")
-  category     GalleryMediaCategory? @relation(fields: [categoryId], references: [id])
-  gallery      Gallery?              @relation(fields: [galleryId], references: [id], onDelete: Cascade)
-  location     GalleryMediaLocation? @relation(fields: [locationId], references: [id])
-  imageLikes   GalleryImageLike[]
-  imageViews   GalleryImageView[]
+  id           Int      @id @default(autoincrement())
+  galleryId    Int?     @map("gallery_id")
+  imageData    Bytes    @map("image_data")
+  imageName    String?  @map("image_name") @db.VarChar(255)
+  imageType    String?  @map("image_type") @db.VarChar(50)
+  imageSize    Int?     @map("image_size")
+  title        String?  @db.VarChar(255)
+  description  String?  @db.Text
+  alt          String?  @db.VarChar(255)
+  featured     Boolean  @default(false)
+  views        Int      @default(0)
+  createdAt    DateTime @default(now()) @map("created_at")
+  gallery      Gallery? @relation(fields: [galleryId], references: [id], onDelete: Cascade)
 
   @@index([galleryId])
   @@index([featured])
-  @@index([categoryId])
-  @@index([locationId])
-  @@index([displayOrder])
   @@map("gallery_images")
 }
 
-model GalleryImageLike {
-  id         Int      @id @default(autoincrement())
-  imageId    Int      @map("image_id")
-  visitorId  String   @map("visitor_id") @db.VarChar(255)
-  createdAt  DateTime @default(now()) @map("created_at")
-  image      GalleryImage @relation(fields: [imageId], references: [id], onDelete: Cascade)
-
-  @@unique([imageId, visitorId])
-  @@index([imageId])
-  @@index([visitorId])
-  @@index([createdAt])
-  @@map("gallery_image_likes")
-}
-
-model GalleryImageView {
-  id        Int      @id @default(autoincrement())
-  imageId   Int      @map("image_id")
-  visitorId String   @map("visitor_id") @db.VarChar(255)
-  viewedAt  DateTime @default(now()) @map("viewed_at")
-  image     GalleryImage @relation(fields: [imageId], references: [id], onDelete: Cascade)
-
-  @@index([imageId])
-  @@index([visitorId])
-  @@index([viewedAt])
-  @@map("gallery_image_views")
-}
-
 model GalleryVideo {
-  id            Int                   @id @default(autoincrement())
-  galleryId     Int?                  @map("gallery_id")
-  videoUrl      String                @map("video_url") @db.VarChar(500)
-  videoProvider String?               @map("video_provider") @db.VarChar(50) // youtube, vimeo, etc.
-  videoId       String?               @map("video_id") @db.VarChar(100) // YouTube video ID, etc.
-  thumbnailData Bytes?                @map("thumbnail_data")
-  thumbnailName String?               @map("thumbnail_name") @db.VarChar(255)
-  thumbnailType String?               @map("thumbnail_type") @db.VarChar(50)
-  thumbnailSize Int?                  @map("thumbnail_size")
-  title         String?               @db.VarChar(255)
-  description   String?               @db.Text
+  id            Int      @id @default(autoincrement())
+  galleryId     Int?     @map("gallery_id")
+  videoUrl      String   @map("video_url") @db.VarChar(500)
+  videoProvider String?  @map("video_provider") @db.VarChar(50)
+  videoId       String?  @map("video_id") @db.VarChar(100)
+  thumbnailData Bytes?   @map("thumbnail_data")
+  thumbnailName String?  @map("thumbnail_name") @db.VarChar(255)
+  thumbnailType String?  @map("thumbnail_type") @db.VarChar(50)
+  title         String?  @db.VarChar(255)
+  description   String?  @db.Text
   duration      Int?
-  featured      Boolean               @default(false)
-  categoryId    Int?                  @map("category_id")
-  locationId    Int?                  @map("location_id")
-  photographer  String?               @db.VarChar(255)
-  likes         Int                   @default(0)
-  views         Int                   @default(0)
-  displayOrder  Int                   @default(0) @map("display_order")
-  createdAt     DateTime              @default(now()) @map("created_at")
-  category      GalleryMediaCategory? @relation(fields: [categoryId], references: [id])
-  gallery       Gallery?              @relation(fields: [galleryId], references: [id], onDelete: Cascade)
-  location      GalleryMediaLocation? @relation(fields: [locationId], references: [id])
+  featured      Boolean  @default(false)
+  views         Int      @default(0)
+  createdAt     DateTime @default(now()) @map("created_at")
+  gallery       Gallery? @relation(fields: [galleryId], references: [id], onDelete: Cascade)
 
   @@index([galleryId])
   @@index([featured])
-  @@index([categoryId])
-  @@index([locationId])
-  @@index([displayOrder])
   @@index([videoProvider])
   @@map("gallery_videos")
 }
@@ -681,7 +594,7 @@ model TourReview {
   bookingId      Int?         @map("booking_id")
   reviewerName   String       @map("reviewer_name") @db.VarChar(255)
   reviewerEmail  String?      @map("reviewer_email") @db.VarChar(255)
-  userImage      Bytes?       @map("user_image") @db.LongBlob
+  userImage      Bytes?       @map("user_image")
   rating         Int          @db.TinyInt
   title          String?      @db.VarChar(255)
   comment        String       @db.Text
@@ -787,34 +700,6 @@ model NewsletterSubscriber {
   @@index([email])
   @@index([isActive])
   @@map("newsletter_subscribers")
-}
-
-model Visitor {
-  id               Int      @id @default(autoincrement())
-  uniqueIdentifier String   @unique @map("unique_identifier") @db.VarChar(255)
-  ipAddress        String?  @map("ip_address") @db.VarChar(45)
-  userAgent        String?  @map("user_agent") @db.Text
-  deviceType       String?  @map("device_type") @db.VarChar(50)
-  browser          String?  @db.VarChar(100)
-  operatingSystem  String?  @map("operating_system") @db.VarChar(100)
-  country          String?  @db.VarChar(100)
-  city             String?  @db.VarChar(100)
-  latitude         Decimal? @db.Decimal(10, 8)
-  longitude        Decimal? @db.Decimal(11, 8)
-  timezone         String?  @db.VarChar(50)
-  language         String?  @db.VarChar(10)
-  referrer         String?  @db.Text
-  pageVisited      String?  @map("page_visited") @db.VarChar(500)
-  isMobile         Boolean  @default(false) @map("is_mobile")
-  firstVisitAt     DateTime @default(now()) @map("first_visit_at")
-  lastVisitAt      DateTime @updatedAt @map("last_visit_at")
-  totalVisits      Int      @default(1) @map("total_visits")
-
-  @@index([uniqueIdentifier])
-  @@index([country])
-  @@index([firstVisitAt])
-  @@index([ipAddress])
-  @@map("visitors")
 }
 
 model Notification {

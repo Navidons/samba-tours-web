@@ -12,8 +12,6 @@ interface ConditionalLayoutProps {
 export default function ConditionalLayout({ children }: ConditionalLayoutProps) {
   const [isClient, setIsClient] = useState(false)
   const pathname = usePathname()
-  const scrollPositionRef = useRef<number>(0)
-  const isDataLoadingRef = useRef<boolean>(false)
 
   // Ensure component only runs on client side
   useEffect(() => {
@@ -30,83 +28,6 @@ export default function ConditionalLayout({ children }: ConditionalLayoutProps) 
   const shouldExcludeLayout = isClient && noLayoutRoutes.some((route) => 
     currentPathname === route || currentPathname.startsWith(`${route}/`)
   )
-
-  // Preserve scroll position when data is loading
-  useEffect(() => {
-    if (!isClient) return
-
-    const handleBeforeUnload = () => {
-      scrollPositionRef.current = window.scrollY
-    }
-
-    const handleLoad = () => {
-      // Restore scroll position after data loads
-      if (scrollPositionRef.current > 0 && !isDataLoadingRef.current) {
-        window.scrollTo(0, scrollPositionRef.current)
-      }
-    }
-
-    // Prevent scroll to bottom during data loading
-    const preventScrollToBottom = () => {
-      isDataLoadingRef.current = true
-      const currentScrollY = window.scrollY
-      
-      // Use requestAnimationFrame to restore position after DOM updates
-      requestAnimationFrame(() => {
-        if (window.scrollY !== currentScrollY) {
-          window.scrollTo(0, currentScrollY)
-        }
-        isDataLoadingRef.current = false
-      })
-    }
-
-    // Listen for data loading events
-    const handleDataLoading = () => {
-      isDataLoadingRef.current = true
-    }
-
-    const handleDataLoaded = () => {
-      setTimeout(() => {
-        isDataLoadingRef.current = false
-      }, 100)
-    }
-
-    // Add event listeners
-    window.addEventListener('beforeunload', handleBeforeUnload)
-    window.addEventListener('load', handleLoad)
-    
-    // Custom events for data loading states
-    window.addEventListener('data-loading', handleDataLoading)
-    window.addEventListener('data-loaded', handleDataLoaded)
-
-    // Prevent scroll restoration on initial load
-    if (typeof window !== 'undefined' && window.history.scrollRestoration) {
-      window.history.scrollRestoration = 'manual'
-    }
-
-    return () => {
-      window.removeEventListener('beforeunload', handleBeforeUnload)
-      window.removeEventListener('load', handleLoad)
-      window.removeEventListener('data-loading', handleDataLoading)
-      window.removeEventListener('data-loaded', handleDataLoaded)
-    }
-  }, [isClient, currentPathname])
-
-  // Prevent scroll to bottom on route changes
-  useEffect(() => {
-    if (!isClient) return
-    
-    const currentScrollY = window.scrollY
-    
-    // Use a small delay to ensure DOM has updated
-    const timer = setTimeout(() => {
-      if (window.scrollY !== currentScrollY && currentScrollY > 0) {
-        window.scrollTo(0, currentScrollY)
-      }
-    }, 50)
-
-    return () => clearTimeout(timer)
-  }, [isClient, currentPathname])
 
   // For admin routes, always exclude layout immediately
   if (currentPathname.startsWith('/admin')) {

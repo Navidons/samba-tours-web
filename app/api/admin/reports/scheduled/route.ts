@@ -11,7 +11,7 @@ export async function GET() {
 
     // For now, return empty array since we don't have a scheduled reports table yet
     // In a real implementation, you would fetch scheduled reports from the database
-    const scheduledReports = []
+    const scheduledReports: any[] = []
 
     return NextResponse.json({ reports: scheduledReports })
   } catch (error) {

@@ -69,4 +69,38 @@ export function getEmbedUrl(url: string): string | null {
 export function getThumbnailUrl(url: string): string | null {
   const videoInfo = extractVideoInfo(url)
   return videoInfo.thumbnailUrl
+}
+
+/**
+ * Get YouTube thumbnail URL with specified quality
+ */
+export function getYouTubeThumbnailUrl(videoId: string, quality: 'default' | 'medium' | 'high' | 'standard' | 'maxres' = 'maxres'): string {
+  const qualityMap = {
+    default: 'default.jpg',
+    medium: 'mqdefault.jpg',
+    high: 'hqdefault.jpg',
+    standard: 'sddefault.jpg',
+    maxres: 'maxresdefault.jpg'
+  }
+  
+  return `https://img.youtube.com/vi/${videoId}/${qualityMap[quality]}`
+}
+
+/**
+ * Get all available YouTube thumbnail URLs for a video
+ */
+export function getYouTubeThumbnailUrls(videoId: string): {
+  default: string
+  medium: string
+  high: string
+  standard: string
+  maxres: string
+} {
+  return {
+    default: getYouTubeThumbnailUrl(videoId, 'default'),
+    medium: getYouTubeThumbnailUrl(videoId, 'medium'),
+    high: getYouTubeThumbnailUrl(videoId, 'high'),
+    standard: getYouTubeThumbnailUrl(videoId, 'standard'),
+    maxres: getYouTubeThumbnailUrl(videoId, 'maxres')
+  }
 } 

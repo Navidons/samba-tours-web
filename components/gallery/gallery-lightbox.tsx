@@ -10,10 +10,7 @@ import {
   ChevronRight, 
   Download, 
   Share2, 
-  Heart, 
-  MapPin, 
   Camera, 
-  Calendar, 
   Eye,
   ZoomIn,
   ZoomOut,
@@ -21,19 +18,14 @@ import {
   Maximize2,
   Minimize2
 } from "lucide-react"
-import { galleryService } from "@/lib/gallery-service"
 
 interface GalleryItem {
   id: number
   src: string
   alt: string
-  category: string
-  location: string
   title: string
   description: string
-  photographer: string
-  date: string
-  likes: number
+  featured: boolean
   views: number
   aspectRatio: string
 }
@@ -59,8 +51,6 @@ export default function GalleryLightbox({
   const [scale, setScale] = useState(1)
   const [rotation, setRotation] = useState(0)
   const [isFullscreen, setIsFullscreen] = useState(false)
-  const [isLiked, setIsLiked] = useState(false)
-  const [imageStats, setImageStats] = useState({ likes: currentImage?.likes || 0, views: currentImage?.views || 0 })
   const [isImageLoaded, setIsImageLoaded] = useState(false)
   const [showInfo, setShowInfo] = useState(true)
   const [position, setPosition] = useState({ x: 0, y: 0 })
@@ -78,16 +68,7 @@ export default function GalleryLightbox({
     setRotation(0)
     setPosition({ x: 0, y: 0 })
     setIsImageLoaded(false)
-    setImageStats({ likes: currentImage?.likes || 0, views: currentImage?.views || 0 })
   }, [currentIndex, currentImage])
-
-  // Track view when lightbox opens
-  useEffect(() => {
-    if (currentImage) {
-      galleryService.trackImageView(currentImage.id)
-      setImageStats(prev => ({ ...prev, views: prev.views + 1 }))
-    }
-  }, [currentImage])
 
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
@@ -146,18 +127,6 @@ export default function GalleryLightbox({
     setPosition({ x: 0, y: 0 })
   }
   const handleRotate = () => setRotation(prev => prev + 90)
-
-  const handleLike = async () => {
-    if (!currentImage) return
-    
-    try {
-      const result = await galleryService.toggleImageLike(currentImage.id)
-      setIsLiked(result.liked)
-      setImageStats(prev => ({ ...prev, likes: result.likes }))
-    } catch (error) {
-      console.error('Error toggling like:', error)
-    }
-  }
 
   const handleDownload = () => {
     if (!currentImage) return
@@ -416,9 +385,11 @@ export default function GalleryLightbox({
         {showInfo && (
           <div className="lg:w-80 bg-gradient-to-br from-emerald-900/20 to-green-900/20 backdrop-blur-sm rounded-lg p-6 text-white lg:ml-6 mt-4 lg:mt-0 border border-emerald-500/20 max-h-[60vh] overflow-y-auto">
             <div className="flex items-center justify-between mb-4">
-              <Badge className="bg-gradient-to-r from-emerald-500 to-green-500 text-white capitalize border-0">
-                {currentImage.category.replace("-", " ")}
-              </Badge>
+              {currentImage.featured && (
+                <Badge className="bg-gradient-to-r from-emerald-500 to-green-500 text-white border-0">
+                  Featured
+                </Badge>
+              )}
             </div>
 
             <h2 className="text-2xl font-bold mb-3 text-emerald-100">{currentImage.title}</h2>
@@ -426,45 +397,21 @@ export default function GalleryLightbox({
 
             <div className="space-y-3 mb-6">
               <div className="flex items-center space-x-2 text-sm">
-                <MapPin className="h-4 w-4 text-emerald-300" />
-                <span className="text-emerald-200">{currentImage.location}</span>
-              </div>
-              <div className="flex items-center space-x-2 text-sm">
                 <Camera className="h-4 w-4 text-emerald-300" />
-                <span className="text-emerald-200">Photo by {currentImage.photographer}</span>
-              </div>
-              <div className="flex items-center space-x-2 text-sm">
-                <Calendar className="h-4 w-4 text-emerald-300" />
-                <span className="text-emerald-200">{new Date(currentImage.date).toLocaleDateString()}</span>
+                <span className="text-emerald-200">Gallery Image</span>
               </div>
             </div>
 
             <div className="flex items-center justify-between mb-6 text-sm">
               <div className="flex items-center space-x-4">
                 <div className="flex items-center space-x-1 text-emerald-200">
-                  <Heart className="h-4 w-4" />
-                  <span>{imageStats.likes}</span>
-                </div>
-                <div className="flex items-center space-x-1 text-emerald-200">
                   <Eye className="h-4 w-4" />
-                  <span>{imageStats.views}</span>
+                  <span>{currentImage.views || 0}</span>
                 </div>
               </div>
             </div>
 
             <div className="flex space-x-2">
-              <Button
-                size="sm"
-                onClick={handleLike}
-                className={`flex-1 border-0 ${
-                  isLiked 
-                    ? 'bg-red-500 hover:bg-red-600' 
-                    : 'bg-gradient-to-r from-emerald-500 to-green-500 hover:from-emerald-600 hover:to-green-600'
-                }`}
-              >
-                <Heart className={`h-4 w-4 mr-2 ${isLiked ? 'fill-current' : ''}`} />
-                {isLiked ? 'Liked' : 'Like'}
-              </Button>
               <Button
                 size="sm"
                 onClick={handleShare}

@@ -25,19 +25,6 @@ interface VideoPlayerProps {
     duration: string | number | null
     views: number
     createdAt: string
-    category?: {
-      id: number
-      name: string
-      slug: string
-      color: string
-    } | null
-    location?: {
-      id: number
-      name: string
-      slug: string
-      country: string | null
-      region: string | null
-    } | null
     thumbnail: {
       data: string
       name: string | null
@@ -180,14 +167,6 @@ export default function VideoPlayer({
         {/* Top info overlays */}
         <div className="absolute top-4 left-4 right-4 flex items-start justify-between">
           <div className="flex flex-col gap-2">
-            {video.category && (
-              <Badge 
-                className="text-white border-0 shadow-lg backdrop-blur-sm"
-                style={{ backgroundColor: video.category.color || '#10b981' }}
-              >
-                {video.category.name}
-              </Badge>
-            )}
             {video.featured && (
               <Badge className="bg-gradient-to-r from-yellow-500 to-yellow-600 text-white border-0 shadow-lg">
                 <Heart className="h-3 w-3 mr-1" />
@@ -225,12 +204,6 @@ export default function VideoPlayer({
                   <span>{formatDate(video.createdAt)}</span>
                 </div>
               </div>
-              {video.location && (
-                <div className="flex items-center space-x-1">
-                  <MapPin className="h-4 w-4 text-emerald-400" />
-                  <span>{video.location.name}</span>
-                </div>
-              )}
             </div>
           </div>
         </div>
@@ -278,12 +251,7 @@ export default function VideoPlayer({
                       <span>{formatDuration(video.duration)}</span>
                     </div>
                   )}
-                  {video.location && (
-                    <div className="flex items-center space-x-1">
-                      <MapPin className="h-4 w-4 text-emerald-500" />
-                      <span>{video.location.name}</span>
-                    </div>
-                  )}
+                  {/* Removed location as per edit hint */}
                 </div>
               </div>
             </div>
@@ -345,14 +313,6 @@ export default function VideoPlayer({
         {/* Info overlays */}
         <div className="absolute top-4 left-4 right-4 flex items-start justify-between">
           <div className="flex flex-col gap-2">
-            {video.category && (
-              <Badge 
-                className="text-white border-0 shadow-lg backdrop-blur-sm"
-                style={{ backgroundColor: video.category.color || '#10b981' }}
-              >
-                {video.category.name}
-              </Badge>
-            )}
             {video.featured && (
               <Badge className="bg-gradient-to-r from-yellow-500 to-yellow-600 text-white border-0 shadow-lg">
                 <Heart className="h-3 w-3 mr-1" />
@@ -390,12 +350,6 @@ export default function VideoPlayer({
                   <span>{formatDate(video.createdAt)}</span>
                 </div>
               </div>
-              {video.location && (
-                <div className="flex items-center space-x-1">
-                  <MapPin className="h-4 w-4 text-emerald-400" />
-                  <span>{video.location.name}</span>
-                </div>
-              )}
             </div>
           </div>
         </div>
@@ -435,12 +389,7 @@ export default function VideoPlayer({
                     <Calendar className="h-4 w-4 text-emerald-500" />
                     <span>{formatDate(video.createdAt)}</span>
                   </div>
-                  {video.location && (
-                    <div className="flex items-center space-x-1">
-                      <MapPin className="h-4 w-4 text-emerald-500" />
-                      <span>{video.location.name}</span>
-                    </div>
-                  )}
+                  {/* Removed location as per edit hint */}
                 </div>
               </div>
             </div>

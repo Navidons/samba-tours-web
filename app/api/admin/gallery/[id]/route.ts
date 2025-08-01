@@ -14,21 +14,13 @@ export async function GET(
       where: { id: galleryId },
       include: {
         images: {
-          include: {
-            category: true,
-            location: true
-          },
           orderBy: {
-            displayOrder: 'asc'
+            createdAt: 'asc'
           }
         },
         videos: {
-          include: {
-            category: true,
-            location: true
-          },
           orderBy: {
-            displayOrder: 'asc'
+            createdAt: 'asc'
           }
         }
       }
@@ -48,10 +40,10 @@ export async function GET(
       slug: gallery.slug,
       description: gallery.description,
       featured: gallery.featured,
-      thumbnail: gallery.thumbnailData ? {
-        data: gallery.thumbnailData.toString('base64'),
-        name: gallery.thumbnailName,
-        type: gallery.thumbnailType
+      thumbnail: gallery.thumbnail_data ? {
+        data: Buffer.from(gallery.thumbnail_data).toString('base64'),
+        name: gallery.thumbnail_name,
+        type: gallery.thumbnail_type
       } : null,
       imageCount: gallery.imageCount,
       videoCount: gallery.videoCount,
@@ -59,21 +51,15 @@ export async function GET(
       updatedAt: gallery.updatedAt,
       images: gallery.images.map(image => ({
         id: image.id,
-        imageData: image.imageData.toString('base64'),
+        imageData: Buffer.from(image.imageData).toString('base64'),
         imageName: image.imageName,
         imageType: image.imageType,
         imageSize: image.imageSize,
         alt: image.alt,
         title: image.title,
         description: image.description,
-        photographer: image.photographer,
-        date: image.date,
         featured: image.featured,
-        category: image.category,
-        location: image.location,
-        likes: image.likes,
         views: image.views,
-        displayOrder: image.displayOrder,
         createdAt: image.createdAt
       })),
       videos: gallery.videos.map(video => ({
@@ -82,14 +68,10 @@ export async function GET(
         description: video.description,
         duration: video.duration,
         featured: video.featured,
-        category: video.category,
-        location: video.location,
-        likes: video.likes,
         views: video.views,
-        displayOrder: video.displayOrder,
         createdAt: video.createdAt,
         thumbnail: video.thumbnailData ? {
-          data: video.thumbnailData.toString('base64'),
+          data: Buffer.from(video.thumbnailData).toString('base64'),
           name: video.thumbnailName,
           type: video.thumbnailType
         } : null
@@ -188,10 +170,10 @@ export async function PUT(
     }
 
     // Process thumbnail
-    let thumbnailData = existingGallery.thumbnailData
-    let thumbnailName = existingGallery.thumbnailName
-    let thumbnailType = existingGallery.thumbnailType
-    let thumbnailSize = existingGallery.thumbnailSize
+    let thumbnailData = existingGallery.thumbnail_data
+    let thumbnailName = existingGallery.thumbnail_name
+    let thumbnailType = existingGallery.thumbnail_type
+    let thumbnailSize = existingGallery.thumbnail_size
 
     if (removeThumbnail) {
       thumbnailData = null
@@ -214,10 +196,10 @@ export async function PUT(
         slug,
         description,
         featured,
-        thumbnailData,
-        thumbnailName,
-        thumbnailType,
-        thumbnailSize
+        thumbnail_data: thumbnailData,
+        thumbnail_name: thumbnailName,
+        thumbnail_type: thumbnailType,
+        thumbnail_size: thumbnailSize
       }
     })
 
@@ -229,7 +211,7 @@ export async function PUT(
         description: updatedGallery.description,
         featured: updatedGallery.featured,
         thumbnail: thumbnailData ? {
-          data: thumbnailData.toString('base64'),
+          data: Buffer.from(thumbnailData).toString('base64'),
           name: thumbnailName,
           type: thumbnailType
         } : null,

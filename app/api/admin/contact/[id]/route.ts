@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { PrismaClient } from "@prisma/client"
 import { z } from "zod"
-import { requireAdminAuth } from '@/lib/server-auth'
+import { requireAdminAuthAPI } from '@/lib/server-auth'
 
 const prisma = new PrismaClient()
 
@@ -20,7 +20,7 @@ export async function PATCH(
 ) {
   try {
     // Check admin authentication
-    const authResult = await requireAdminAuth(request)
+    const authResult = await requireAdminAuthAPI()
     if (authResult.error) {
       return NextResponse.json(
         { error: authResult.error },
@@ -113,7 +113,7 @@ export async function GET(
 ) {
   try {
     // Check admin authentication
-    const authResult = await requireAdminAuth(request)
+    const authResult = await requireAdminAuthAPI()
     if (authResult.error) {
       return NextResponse.json(
         { error: authResult.error },
@@ -176,7 +176,7 @@ export async function DELETE(
 ) {
   try {
     // Check admin authentication
-    const authResult = await requireAdminAuth(request)
+    const authResult = await requireAdminAuthAPI()
     if (authResult.error) {
       return NextResponse.json(
         { error: authResult.error },

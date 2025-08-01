@@ -11,7 +11,7 @@ export async function GET() {
 
     // For now, return empty array since we don't have a reports table yet
     // In a real implementation, you would store generated reports in the database
-    const recentReports = []
+    const recentReports: any[] = []
 
     return NextResponse.json({ reports: recentReports })
   } catch (error) {

@@ -29,7 +29,11 @@ export async function GET(request: NextRequest) {
         take: limit,
         orderBy: { name: 'asc' },
         include: {
-          _count: { sentEmails: true }
+          sentEmails: {
+            select: {
+              id: true
+            }
+          }
         }
       }),
       prisma.emailTemplate.count({ where })

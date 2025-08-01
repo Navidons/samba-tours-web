@@ -394,7 +394,7 @@ export default function HomePage() {
                   key={index} 
                   className="relative group overflow-hidden rounded-xl"
                 >
-                  <div className="aspect-w-16 aspect-h-9 relative">
+                  <div className="relative h-64 md:h-80">
                     <Image
                       src={wildlife.image}
                       alt={wildlife.title}
@@ -513,7 +513,7 @@ export default function HomePage() {
                   className="group relative bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 border border-emerald-100"
                 >
                   {/* Main Hero Image */}
-                  <div className="aspect-w-16 aspect-h-9 relative">
+                  <div className="relative h-64 md:h-80">
                     <Image
                       src={region.image}
                       alt={region.name}
@@ -610,12 +610,12 @@ export default function HomePage() {
             </div>
             
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-              <div className="relative group overflow-hidden rounded-xl">
+              <div className="relative group overflow-hidden rounded-xl h-48">
                 <Image
                   src="/home-hero-photos/elephant.jpg"
                   alt="African elephant in Uganda"
                   fill
-                  className="object-cover w-full h-48 group-hover:scale-110 transition-transform duration-500"
+                  className="object-cover w-full group-hover:scale-110 transition-transform duration-500"
                   sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
                   quality={imageOptimization.quality}
                   placeholder="blur"
@@ -628,12 +628,12 @@ export default function HomePage() {
                 </div>
               </div>
               
-              <div className="relative group overflow-hidden rounded-xl">
+              <div className="relative group overflow-hidden rounded-xl h-48">
                 <Image
                   src="/home-hero-photos/giraffe.jpg"
                   alt="Giraffe in Uganda"
                   fill
-                  className="object-cover w-full h-48 group-hover:scale-110 transition-transform duration-500"
+                  className="object-cover w-full group-hover:scale-110 transition-transform duration-500"
                   sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
                   quality={imageOptimization.quality}
                   placeholder="blur"
@@ -646,12 +646,12 @@ export default function HomePage() {
                 </div>
               </div>
               
-              <div className="relative group overflow-hidden rounded-xl">
+              <div className="relative group overflow-hidden rounded-xl h-48">
                 <Image
                   src="/home-hero-photos/giraffes.jpg"
                   alt="Giraffes in Uganda"
                   fill
-                  className="object-cover w-full h-48 group-hover:scale-110 transition-transform duration-500"
+                  className="object-cover w-full group-hover:scale-110 transition-transform duration-500"
                   sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
                   quality={imageOptimization.quality}
                   placeholder="blur"
@@ -664,12 +664,12 @@ export default function HomePage() {
                 </div>
               </div>
               
-              <div className="relative group overflow-hidden rounded-xl">
+              <div className="relative group overflow-hidden rounded-xl h-48">
                 <Image
                   src="/home-hero-photos/zebras.jpg"
                   alt="Zebras in Uganda"
                   fill
-                  className="object-cover w-full h-48 group-hover:scale-110 transition-transform duration-500"
+                  className="object-cover w-full group-hover:scale-110 transition-transform duration-500"
                   sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
                   quality={imageOptimization.quality}
                   placeholder="blur"
@@ -682,12 +682,12 @@ export default function HomePage() {
                 </div>
               </div>
               
-              <div className="relative group overflow-hidden rounded-xl">
+              <div className="relative group overflow-hidden rounded-xl h-48">
                 <Image
                   src="/home-hero-photos/tourists.jpg"
                   alt="Tourists on safari in Uganda"
                   fill
-                  className="object-cover w-full h-48 group-hover:scale-110 transition-transform duration-500"
+                  className="object-cover w-full group-hover:scale-110 transition-transform duration-500"
                   sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
                   quality={imageOptimization.quality}
                   placeholder="blur"
@@ -700,12 +700,12 @@ export default function HomePage() {
                 </div>
               </div>
               
-              <div className="relative group overflow-hidden rounded-xl">
+              <div className="relative group overflow-hidden rounded-xl h-48">
                 <Image
                   src="/home-hero-photos/woman tourist.jpg"
                   alt="Female tourist in Uganda"
                   fill
-                  className="object-cover w-full h-48 group-hover:scale-110 transition-transform duration-500"
+                  className="object-cover w-full group-hover:scale-110 transition-transform duration-500"
                   sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
                   quality={imageOptimization.quality}
                   placeholder="blur"
@@ -718,12 +718,12 @@ export default function HomePage() {
                 </div>
               </div>
               
-              <div className="relative group overflow-hidden rounded-xl">
+              <div className="relative group overflow-hidden rounded-xl h-48">
                 <Image
                   src="/tours-attractions/lion cubs.jpg"
                   alt="Lion cubs in Uganda"
                   fill
-                  className="object-cover w-full h-48 group-hover:scale-110 transition-transform duration-500"
+                  className="object-cover w-full group-hover:scale-110 transition-transform duration-500"
                   sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
                   quality={imageOptimization.quality}
                   placeholder="blur"
@@ -736,12 +736,12 @@ export default function HomePage() {
                 </div>
               </div>
               
-              <div className="relative group overflow-hidden rounded-xl">
+              <div className="relative group overflow-hidden rounded-xl h-48">
                 <Image
                   src="/tours-attractions/boat cruise.jpg"
                   alt="Boat cruise in Uganda"
                   fill
-                  className="object-cover w-full h-48 group-hover:scale-110 transition-transform duration-500"
+                  className="object-cover w-full group-hover:scale-110 transition-transform duration-500"
                   sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
                   quality={imageOptimization.quality}
                   placeholder="blur"

@@ -8,8 +8,6 @@ export const dynamic = 'force-dynamic'
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
-    const category = searchParams.get('category')
-    const location = searchParams.get('location')
     const featured = searchParams.get('featured')
     const galleryId = searchParams.get('galleryId')
     const search = searchParams.get('search')
@@ -19,18 +17,6 @@ export async function GET(request: NextRequest) {
 
     // Build where clause for filtering
     const whereClause: any = {}
-    
-    if (category) {
-      whereClause.category = {
-        slug: category
-      }
-    }
-    
-    if (location) {
-      whereClause.location = {
-        slug: location
-      }
-    }
     
     if (featured === 'true') {
       whereClause.featured = true
@@ -44,8 +30,7 @@ export async function GET(request: NextRequest) {
       whereClause.OR = [
         { title: { contains: search, mode: 'insensitive' } },
         { description: { contains: search, mode: 'insensitive' } },
-        { alt: { contains: search, mode: 'insensitive' } },
-        { photographer: { contains: search, mode: 'insensitive' } }
+        { alt: { contains: search, mode: 'insensitive' } }
       ]
     }
 
@@ -59,28 +44,10 @@ export async function GET(request: NextRequest) {
             name: true,
             slug: true
           }
-        },
-        category: {
-          select: {
-            id: true,
-            name: true,
-            slug: true,
-            color: true
-          }
-        },
-        location: {
-          select: {
-            id: true,
-            name: true,
-            slug: true,
-            country: true,
-            region: true
-          }
         }
       },
       orderBy: [
         { featured: 'desc' },
-        { displayOrder: 'asc' },
         { createdAt: 'desc' }
       ],
       take: pageSize,
@@ -145,16 +112,9 @@ export async function GET(request: NextRequest) {
         alt: image.alt,
         title: image.title,
         description: image.description,
-        photographer: image.photographer,
-        date: image.date,
         featured: image.featured,
-        category: image.category,
-        location: image.location,
-        likes: image.likes,
         views: image.views,
-        displayOrder: image.displayOrder,
-        createdAt: image.createdAt,
-        updatedAt: image.updatedAt
+        createdAt: image.createdAt
       }
     })
 

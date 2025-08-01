@@ -11,13 +11,11 @@ import LoadingSpinner from "@/components/ui/loading-spinner"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { AlertCircle, Database, RefreshCw } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { galleryService, type GalleryImage, type GalleryCategory, type GalleryLocation, DatabaseConnectionError, GalleryServiceError } from "@/lib/gallery-service"
+import { galleryService, type GalleryImage, DatabaseConnectionError, GalleryServiceError } from "@/lib/gallery-service"
 import { useScrollManagement } from "@/hooks/use-scroll-management"
 
 interface GalleryClientProps {
   searchParams: {
-    category?: string
-    location?: string
     featured?: string
     search?: string
     page?: string
@@ -29,8 +27,6 @@ export default function GalleryClient({ searchParams, hideMainHeading }: Gallery
   const router = useRouter()
   const urlSearchParams = useSearchParams()
   const [images, setImages] = useState<GalleryImage[]>([])
-  const [categories, setCategories] = useState<GalleryCategory[]>([])
-  const [locations, setLocations] = useState<GalleryLocation[]>([])
   const [totalVideos, setTotalVideos] = useState<number>(0)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<{ message: string; type: string } | null>(null)
@@ -49,8 +45,6 @@ export default function GalleryClient({ searchParams, hideMainHeading }: Gallery
   })
 
   // Get search params
-  const category = searchParams.category
-  const location = searchParams.location
   const featured = searchParams.featured === 'true'
   const search = searchParams.search
   const page = parseInt(searchParams.page || '1')
@@ -65,8 +59,7 @@ export default function GalleryClient({ searchParams, hideMainHeading }: Gallery
 
   useEffect(() => {
     loadGalleryData()
-    loadFiltersData()
-  }, [category, location, featured, search, page])
+  }, [featured, search, page])
 
   const loadGalleryData = async () => {
     try {
@@ -75,8 +68,6 @@ export default function GalleryClient({ searchParams, hideMainHeading }: Gallery
       setError(null)
 
       const filters = {
-        category,
-        location,
         featured: searchParams.featured === 'true' ? true : searchParams.featured === 'false' ? false : undefined,
         search,
         page,
@@ -114,27 +105,8 @@ export default function GalleryClient({ searchParams, hideMainHeading }: Gallery
     }
   }
 
-  const loadFiltersData = async () => {
-    try {
-      // These are not critical - if they fail, we just won't show filters
-      const [categoriesData, locationsData, videosResponse] = await Promise.all([
-        galleryService.getCategories(),
-        galleryService.getLocations(),
-        galleryService.getGalleryVideos({ limit: 1 }) // Just get total count
-      ])
-      
-      setCategories(categoriesData)
-      setLocations(locationsData)
-      setTotalVideos(videosResponse.pagination.total)
-    } catch (err) {
-      console.warn('Error loading filters data:', err)
-      // Don't show error for filters - just log it
-    }
-  }
-
   const handleRetry = () => {
     loadGalleryData()
-    loadFiltersData()
   }
 
   // Transform images for the existing gallery grid component
@@ -142,13 +114,8 @@ export default function GalleryClient({ searchParams, hideMainHeading }: Gallery
     id: image.id,
     src: galleryService.getImageUrl(image),
     alt: image.alt || image.title || 'Gallery Image',
-    category: image.category?.name || 'uncategorized',
-    location: image.location?.name || 'Unknown',
     title: image.title || '',
     description: image.description || '',
-    photographer: image.photographer || '',
-    date: galleryService.formatDate(image.date),
-    likes: image.likes,
     views: image.views,
     aspectRatio: "4:3", // Default aspect ratio
     featured: image.featured
@@ -213,12 +180,10 @@ export default function GalleryClient({ searchParams, hideMainHeading }: Gallery
           )}
 
           {/* Show stats if we have data */}
-          {(images.length > 0 || categories.length > 0) && (
+          {(images.length > 0) && (
             <GalleryStats 
               totalImages={pagination.total}
               totalVideos={totalVideos}
-              categories={categories}
-              locations={locations}
             />
           )}
 
@@ -226,10 +191,6 @@ export default function GalleryClient({ searchParams, hideMainHeading }: Gallery
             <div className="lg:col-span-1">
               <div className="sticky top-24">
                 <GalleryFilters 
-                  categories={categories}
-                  locations={locations}
-                  selectedCategory={category}
-                  selectedLocation={location}
                   selectedFeatured={searchParams.featured}
                   searchQuery={search}
                   viewMode={viewMode}
@@ -255,12 +216,12 @@ export default function GalleryClient({ searchParams, hideMainHeading }: Gallery
                   </div>
                   <h3 className="text-lg font-semibold text-gray-900 mb-2">No images found</h3>
                   <p className="text-gray-600 mb-4">
-                    {search || category || location ? 
+                    {search ? 
                       "No images match your current filters. Try adjusting your search criteria." :
                       "No images are available in the gallery yet."
                     }
                   </p>
-                  {(search || category || location) && (
+                  {search && (
                     <Button 
                       variant="outline"
                       onClick={() => router.replace('/gallery', { scroll: false })}

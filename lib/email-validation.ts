@@ -214,7 +214,7 @@ export class EmailValidationService {
       
       // If all checks pass, attempt to send test email
       if (checks.format && checks.domain && checks.mx && checks.smtp) {
-        const transporter = nodemailer.createTransporter({
+        const transporter = nodemailer.createTransport({
           host: process.env.GMAIL_USER ? 'smtp.gmail.com' : 'localhost',
           port: 587,
           secure: false,
@@ -246,7 +246,7 @@ export class EmailValidationService {
     } catch (error) {
       return {
         success: false,
-        error: error.message,
+        error: error instanceof Error ? error.message : 'Unknown error',
         checks
       }
     }

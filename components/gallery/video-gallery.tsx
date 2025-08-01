@@ -34,19 +34,6 @@ interface VideoData {
   duration: string | number | null
   views: number
   createdAt: string
-  category?: {
-    id: number
-    name: string
-    slug: string
-    color: string
-  } | null
-  location?: {
-    id: number
-    name: string
-    slug: string
-    country: string | null
-    region: string | null
-  } | null
   thumbnail: {
     data: string
     name: string | null
@@ -426,8 +413,6 @@ export default function VideoGallery() {
                   video={video}
                   mode={viewMode}
                   size={gridSize}
-                  autoPlay={false}
-                  showControls={viewMode === "inline"}
                 />
                 
                 {/* Video info below player (for inline mode) */}
@@ -470,22 +455,8 @@ export default function VideoGallery() {
                     
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
-                        {video.category && (
-                          <Badge 
-                            className="text-white border-0 text-xs"
-                            style={{ backgroundColor: video.category.color || '#10b981' }}
-                          >
-                            {video.category.name}
-                          </Badge>
-                        )}
+                        {/* Category and location removed as they don't exist in GalleryVideo model */}
                       </div>
-                      
-                      {video.location && (
-                        <div className="flex items-center space-x-1 text-xs text-gray-500">
-                          <MapPin className="h-3 w-3" />
-                          <span>{video.location.name}</span>
-                        </div>
-                      )}
                     </div>
                   </div>
                 )}

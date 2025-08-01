@@ -40,38 +40,6 @@ export function useScrollManagement(options: UseScrollManagementOptions = {}) {
     }
   }
 
-  // Prevent auto-scroll during data loading
-  useEffect(() => {
-    if (!preventAutoScroll) return
-
-    const preventScroll = () => {
-      if (isLoadingRef.current) {
-        const currentScrollY = window.scrollY
-        requestAnimationFrame(() => {
-          if (window.scrollY !== currentScrollY) {
-            window.scrollTo(0, currentScrollY)
-          }
-        })
-      }
-    }
-
-    // Use MutationObserver to detect DOM changes
-    const observer = new MutationObserver(preventScroll)
-    
-    if (typeof window !== 'undefined') {
-      observer.observe(document.body, {
-        childList: true,
-        subtree: true,
-        attributes: true,
-        attributeFilter: ['class', 'style']
-      })
-    }
-
-    return () => {
-      observer.disconnect()
-    }
-  }, [preventAutoScroll])
-
   return {
     startLoading,
     endLoading,

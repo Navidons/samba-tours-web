@@ -11,16 +11,23 @@ export async function GET(
 
     const image = await prisma.galleryImage.findUnique({
       where: { id: imageId },
-      include: {
+      select: {
+        id: true,
+        title: true,
+        alt: true,
+        imageName: true,
+        imageType: true,
+        imageSize: true,
+        imageData: true,
+        featured: true,
+        views: true,
+        createdAt: true,
         gallery: {
           select: {
             id: true,
-            name: true,
-            slug: true
+            name: true
           }
-        },
-        category: true,
-        location: true
+        }
       }
     })
 
@@ -33,25 +40,16 @@ export async function GET(
 
     const transformedImage = {
       id: image.id,
-      galleryId: image.galleryId,
-      gallery: image.gallery,
-      imageData: image.imageData.toString('base64'),
+      title: image.title,
+      alt: image.alt,
       imageName: image.imageName,
       imageType: image.imageType,
       imageSize: image.imageSize,
-      alt: image.alt,
-      title: image.title,
-      description: image.description,
-      photographer: image.photographer,
-      date: image.date,
+      imageData: image.imageData ? Buffer.from(image.imageData).toString('base64') : null,
       featured: image.featured,
-      category: image.category,
-      location: image.location,
-      likes: image.likes,
       views: image.views,
-      displayOrder: image.displayOrder,
       createdAt: image.createdAt,
-      updatedAt: image.updatedAt
+      gallery: image.gallery
     }
 
     return NextResponse.json({ image: transformedImage })
@@ -76,15 +74,8 @@ export async function PUT(
 
     const title = formData.get('title') as string
     const alt = formData.get('alt') as string
-    const description = formData.get('description') as string
-    const photographer = formData.get('photographer') as string
-    const date = formData.get('date') as string
     const featured = formData.get('featured') === 'true'
-    const categoryId = formData.get('categoryId') ? parseInt(formData.get('categoryId') as string) : null
-    const locationId = formData.get('locationId') ? parseInt(formData.get('locationId') as string) : null
-    const displayOrder = formData.get('displayOrder') ? parseInt(formData.get('displayOrder') as string) : null
-    const likes = formData.get('likes') ? parseInt(formData.get('likes') as string) : null
-    const views = formData.get('views') ? parseInt(formData.get('views') as string) : null
+    const views = formData.get('views') ? parseInt(formData.get('views') as string) : 0
 
     // Check if image exists
     const existingImage = await prisma.galleryImage.findUnique({
@@ -102,55 +93,46 @@ export async function PUT(
     const updatedImage = await prisma.galleryImage.update({
       where: { id: imageId },
       data: {
-        title: title || existingImage.title,
-        alt: alt || existingImage.alt,
-        description: description || existingImage.description,
-        photographer: photographer || existingImage.photographer,
-        date: date ? new Date(date) : existingImage.date,
+        title: title || null,
+        alt: alt || null,
         featured,
-        categoryId,
-        locationId,
-        displayOrder: displayOrder !== null ? displayOrder : existingImage.displayOrder,
-        likes: likes !== null ? likes : existingImage.likes,
-        views: views !== null ? views : existingImage.views
+        views
       },
-      include: {
+      select: {
+        id: true,
+        title: true,
+        alt: true,
+        imageName: true,
+        imageType: true,
+        imageSize: true,
+        imageData: true,
+        featured: true,
+        views: true,
+        createdAt: true,
         gallery: {
           select: {
             id: true,
-            name: true,
-            slug: true
+            name: true
           }
-        },
-        category: true,
-        location: true
+        }
       }
     })
 
-    const transformedImage = {
-      id: updatedImage.id,
-      galleryId: updatedImage.galleryId,
-      gallery: updatedImage.gallery,
-      imageData: updatedImage.imageData.toString('base64'),
-      imageName: updatedImage.imageName,
-      imageType: updatedImage.imageType,
-      imageSize: updatedImage.imageSize,
-      alt: updatedImage.alt,
-      title: updatedImage.title,
-      description: updatedImage.description,
-      photographer: updatedImage.photographer,
-      date: updatedImage.date,
-      featured: updatedImage.featured,
-      category: updatedImage.category,
-      location: updatedImage.location,
-      likes: updatedImage.likes,
-      views: updatedImage.views,
-      displayOrder: updatedImage.displayOrder,
-      createdAt: updatedImage.createdAt,
-      updatedAt: updatedImage.updatedAt
-    }
-
-    return NextResponse.json({ image: transformedImage })
+    return NextResponse.json({
+      image: {
+        id: updatedImage.id,
+        title: updatedImage.title,
+        alt: updatedImage.alt,
+        imageName: updatedImage.imageName,
+        imageType: updatedImage.imageType,
+        imageSize: updatedImage.imageSize,
+        imageData: updatedImage.imageData ? Buffer.from(updatedImage.imageData).toString('base64') : null,
+        featured: updatedImage.featured,
+        views: updatedImage.views,
+        createdAt: updatedImage.createdAt,
+        gallery: updatedImage.gallery
+      }
+    })
 
   } catch (error) {
     console.error('Error updating image:', error)
@@ -169,12 +151,16 @@ export async function DELETE(
   try {
     const imageId = parseInt(params.id)
 
-    // Check if image exists
-    const existingImage = await prisma.galleryImage.findUnique({
-      where: { id: imageId }
+    // Check if image exists and get gallery info
+    const image = await prisma.galleryImage.findUnique({
+      where: { id: imageId },
+      select: {
+        id: true,
+        galleryId: true
+      }
     })
 
-    if (!existingImage) {
+    if (!image) {
       return NextResponse.json(
         { error: 'Image not found' },
         { status: 404 }
@@ -186,15 +172,17 @@ export async function DELETE(
       where: { id: imageId }
     })
 
-    // Update gallery image count
-    const imageCount = await prisma.galleryImage.count({
-      where: { galleryId: existingImage.galleryId }
-    })
-
-    await prisma.gallery.update({
-      where: { id: existingImage.galleryId },
-      data: { imageCount }
-    })
+    // Update gallery image count if image belongs to a gallery
+    if (image.galleryId) {
+      await prisma.gallery.update({
+        where: { id: image.galleryId },
+        data: {
+          imageCount: {
+            decrement: 1
+          }
+        }
+      })
+    }
 
     return NextResponse.json({
       message: 'Image deleted successfully'

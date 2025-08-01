@@ -8,13 +8,8 @@ import { Search, Filter, Grid, List, X } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Switch } from "@/components/ui/switch"
 import { Label } from "@/components/ui/label"
-import type { GalleryCategory, GalleryLocation } from "@/lib/gallery-service"
 
 interface GalleryFiltersProps {
-  categories: GalleryCategory[]
-  locations: GalleryLocation[]
-  selectedCategory?: string
-  selectedLocation?: string
   selectedFeatured?: string
   searchQuery?: string
   viewMode?: "grid" | "masonry"
@@ -22,10 +17,6 @@ interface GalleryFiltersProps {
 }
 
 export default function GalleryFilters({
-  categories,
-  locations,
-  selectedCategory,
-  selectedLocation,
   selectedFeatured,
   searchQuery,
   viewMode = "masonry",
@@ -63,14 +54,6 @@ export default function GalleryFilters({
     router.replace(`/gallery${query}`, { scroll: false })
   }
 
-  const handleCategoryChange = (categorySlug: string) => {
-    updateFilters({ category: categorySlug === "all" ? undefined : categorySlug })
-  }
-
-  const handleLocationChange = (locationSlug: string) => {
-    updateFilters({ location: locationSlug === "all" ? undefined : locationSlug })
-  }
-
   const handleFeaturedChange = (featured: boolean) => {
     updateFilters({ featured: featured ? "true" : undefined })
   }
@@ -85,18 +68,7 @@ export default function GalleryFilters({
     router.replace("/gallery", { scroll: false })
   }
 
-  const hasActiveFilters = selectedCategory || selectedLocation || selectedFeatured || searchQuery
-
-  // Add "All" option to categories and locations
-  const allCategories = [
-    { id: 0, name: "All Categories", slug: "all", description: null, color: "#3B82F6", imageCount: 0, videoCount: 0 },
-    ...categories
-  ]
-
-  const allLocations = [
-    { id: 0, name: "All Locations", slug: "all", description: null, country: null, region: null, imageCount: 0, videoCount: 0 },
-    ...locations
-  ]
+  const hasActiveFilters = selectedFeatured || searchQuery
 
   return (
     <div className="mb-8">
@@ -105,7 +77,7 @@ export default function GalleryFilters({
         <form onSubmit={handleSearchSubmit} className="flex-1 relative">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-emerald-400" />
           <Input
-            placeholder="Search photos by location, activity, or description..."
+            placeholder="Search photos by title, description, or content..."
             value={localSearchTerm}
             onChange={(e) => setLocalSearchTerm(e.target.value)}
             className="pl-10 h-12 border-emerald-200 focus:border-emerald-400 focus:ring-emerald-400"
@@ -167,34 +139,6 @@ export default function GalleryFilters({
           <div className="flex flex-wrap items-center gap-2">
             <span className="text-sm font-medium text-emerald-900">Active filters:</span>
             
-            {selectedCategory && (
-              <Badge variant="secondary" className="bg-emerald-100 text-emerald-800">
-                {categories.find(c => c.slug === selectedCategory)?.name}
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => handleCategoryChange("all")}
-                  className="ml-1 h-4 w-4 p-0 hover:bg-emerald-200"
-                >
-                  <X className="h-3 w-3" />
-                </Button>
-              </Badge>
-            )}
-            
-            {selectedLocation && (
-              <Badge variant="secondary" className="bg-emerald-100 text-emerald-800">
-                {locations.find(l => l.slug === selectedLocation)?.name}
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => handleLocationChange("all")}
-                  className="ml-1 h-4 w-4 p-0 hover:bg-emerald-200"
-                >
-                  <X className="h-3 w-3" />
-                </Button>
-              </Badge>
-            )}
-            
             {selectedFeatured === "true" && (
               <Badge variant="secondary" className="bg-emerald-100 text-emerald-800">
                 Featured only
@@ -248,70 +192,6 @@ export default function GalleryFilters({
             <Label htmlFor="featured" className="font-semibold text-gray-900">
               Featured images only
             </Label>
-          </div>
-        </div>
-
-        {/* Category Filters */}
-        <div>
-          <h3 className="font-semibold text-gray-900 mb-3">Categories</h3>
-          <div className="flex flex-wrap gap-2">
-            {allCategories.map((category) => {
-              const isActive = selectedCategory === category.slug || (!selectedCategory && category.slug === "all")
-              const totalCount = category.imageCount + category.videoCount
-              
-              return (
-                <Button
-                  key={category.slug}
-                  variant={isActive ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => handleCategoryChange(category.slug)}
-                  className={`${
-                    isActive
-                      ? "bg-gradient-to-r from-emerald-500 to-green-500 hover:from-emerald-600 hover:to-green-600 text-white border-0"
-                      : "border-emerald-200 hover:bg-emerald-50 hover:border-emerald-300"
-                  }`}
-                >
-                  {category.name}
-                  {totalCount > 0 && (
-                    <Badge variant="secondary" className="ml-2 text-xs bg-white/20 text-current">
-                      {totalCount}
-                    </Badge>
-                  )}
-                </Button>
-              )
-            })}
-          </div>
-        </div>
-
-        {/* Location Filters */}
-        <div>
-          <h3 className="font-semibold text-gray-900 mb-3">Locations</h3>
-          <div className="flex flex-wrap gap-2">
-            {allLocations.map((location) => {
-              const isActive = selectedLocation === location.slug || (!selectedLocation && location.slug === "all")
-              const totalCount = location.imageCount + location.videoCount
-              
-              return (
-                <Button
-                  key={location.slug}
-                  variant={isActive ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => handleLocationChange(location.slug)}
-                  className={`${
-                    isActive
-                      ? "bg-gradient-to-r from-emerald-500 to-green-500 hover:from-emerald-600 hover:to-green-600 text-white border-0"
-                      : "border-emerald-200 hover:bg-emerald-50 hover:border-emerald-300"
-                  }`}
-                >
-                  {location.name}
-                  {totalCount > 0 && (
-                    <Badge variant="secondary" className="ml-2 text-xs bg-white/20 text-current">
-                      {totalCount}
-                    </Badge>
-                  )}
-                </Button>
-              )
-            })}
           </div>
         </div>
       </div>

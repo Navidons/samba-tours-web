@@ -67,9 +67,33 @@ export async function requireAdminAuth() {
   }
 }
 
+export async function requireAdminAuthAPI() {
+  const session = validateAdminSession()
+  if (!session) {
+    return { error: "Unauthorized", status: 401 }
+  }
+  
+  // Verify user still exists and is admin
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id: Number(session.userId) },
+      include: {
+        profile: { include: { role: true } }
+      }
+    })
+    
+    if (!user || user.profile?.role?.roleName !== 'admin') {
+      return { error: "Forbidden", status: 403 }
+    }
+    
+    return { session, user }
+  } catch (error) {
+    return { error: "Internal server error", status: 500 }
+  }
+}
+
 export async function redirectIfAuthenticated() {
   const session = validateAdminSession()
-  console.log('[redirectIfAuthenticated] session:', session)
   if (!session) return
   try {
     const user = await prisma.user.findUnique({
@@ -78,12 +102,10 @@ export async function redirectIfAuthenticated() {
         profile: { include: { role: true } }
       }
     })
-    console.log('[redirectIfAuthenticated] user:', user)
     if (user && user.profile?.role?.roleName === 'admin') {
       redirect('/admin')
     }
   } catch (error) {
-    console.log('[redirectIfAuthenticated] error:', error)
     // do nothing, let them see the signin page
   }
 } 

@@ -167,37 +167,45 @@ async function DashboardData() {
 
 // Dashboard Content Component
 function DashboardContent({ data }: { data: any }) {
-  const { revenue, bookings, customers, recentBookings, recentActivity, topTours, contactInquiries, systemStats } = data
+  // Ensure data has proper structure with fallbacks
+  const revenue = data?.revenue || { today: 0, yesterday: 0, change: 0 }
+  const bookings = data?.bookings || { today: 0, yesterday: 0, change: 0, pending: 0 }
+  const customers = data?.customers || { today: 0, yesterday: 0, change: 0 }
+  const recentBookings = data?.recentBookings || []
+  const recentActivity = data?.recentActivity || []
+  const topTours = data?.topTours || []
+  const contactInquiries = data?.contactInquiries || []
+  const systemStats = data?.systemStats || { totalTours: 0, totalCustomers: 0, totalBookings: 0, averageRating: 0 }
 
   // Create stats array for the dashboard cards
   const stats = [
     {
       title: "Today's Revenue",
-      value: `$${revenue.today.toLocaleString()}`,
-      change: `${revenue.change >= 0 ? '+' : ''}${revenue.change.toFixed(1)}%`,
-      changeType: revenue.change >= 0 ? "positive" as const : "negative" as const,
+      value: `$${(revenue.today || 0).toLocaleString()}`,
+      change: `${(revenue.change || 0) >= 0 ? '+' : ''}${(revenue.change || 0).toFixed(1)}%`,
+      changeType: (revenue.change || 0) >= 0 ? "positive" as const : "negative" as const,
       icon: DollarSign,
       color: "bg-gradient-to-br from-green-50 to-green-100 border-green-200"
     },
     {
       title: "Today's Bookings",
-      value: bookings.today.toString(),
-      change: `${bookings.change >= 0 ? '+' : ''}${bookings.change.toFixed(1)}%`,
-      changeType: bookings.change >= 0 ? "positive" as const : "negative" as const,
+      value: (bookings.today || 0).toString(),
+      change: `${(bookings.change || 0) >= 0 ? '+' : ''}${(bookings.change || 0).toFixed(1)}%`,
+      changeType: (bookings.change || 0) >= 0 ? "positive" as const : "negative" as const,
       icon: Calendar,
       color: "bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200"
     },
     {
       title: "New Customers",
-      value: customers.today.toString(),
-      change: `${customers.change >= 0 ? '+' : ''}${customers.change.toFixed(1)}%`,
-      changeType: customers.change >= 0 ? "positive" as const : "negative" as const,
+      value: (customers.today || 0).toString(),
+      change: `${(customers.change || 0) >= 0 ? '+' : ''}${(customers.change || 0).toFixed(1)}%`,
+      changeType: (customers.change || 0) >= 0 ? "positive" as const : "negative" as const,
       icon: Users,
       color: "bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200"
     },
   ]
 
-  const pendingBookings = bookings.pending
+  const pendingBookings = bookings.pending || 0
 
   return (
     <div className="space-y-8">

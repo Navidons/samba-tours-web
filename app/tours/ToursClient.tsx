@@ -98,7 +98,7 @@ export default function ToursClient({
   const [currentPage, setCurrentPage] = useState(1)
   const [totalPages, setTotalPages] = useState(initialTotalPages)
 
-  // Blur data URL for better loading experience
+  // Optimized blur data URL for better loading experience
   const blurDataURL = 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAREBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=='
   
   // Scroll management hook
@@ -119,7 +119,8 @@ export default function ToursClient({
   const [sortBy, setSortBy] = useState("popular")
   const [showFilters, setShowFilters] = useState(false)
 
-  const pageSize = 12
+  // Reduced page size for better performance
+  const pageSize = 8 // Reduced from 12 to 8
 
   // Handle URL parameters on mount
   useEffect(() => {
@@ -148,35 +149,28 @@ export default function ToursClient({
       })
 
       if (filters.search) params.append('search', filters.search)
-      if (filters.categories.length > 0) {
-        filters.categories.forEach(cat => params.append('categories', cat))
-      }
-      if (filters.difficulties.length > 0) {
-        filters.difficulties.forEach(diff => params.append('difficulties', diff))
-      }
-      if (filters.destinations.length > 0) {
-        filters.destinations.forEach(dest => params.append('destinations', dest))
-      }
-      if (filters.durations.length > 0) {
-        filters.durations.forEach(dur => params.append('durations', dur))
-      }
+      if (filters.categories.length > 0) params.append('categories', filters.categories.join(','))
+      if (filters.durations.length > 0) params.append('durations', filters.durations.join(','))
+      if (filters.difficulties.length > 0) params.append('difficulties', filters.difficulties.join(','))
+      if (filters.destinations.length > 0) params.append('destinations', filters.destinations.join(','))
       if (filters.minPrice > 100) params.append('minPrice', filters.minPrice.toString())
       if (filters.maxPrice < 5000) params.append('maxPrice', filters.maxPrice.toString())
 
       const response = await fetch(`/api/tours?${params.toString()}`)
+      if (!response.ok) throw new Error('Failed to fetch tours')
+      
       const data = await response.json()
-
-      if (data.success) {
+      
+      if (currentPage === 1) {
         setTours(data.tours)
-        setTotalTours(data.pagination.total)
-        setTotalPages(data.pagination.totalPages)
       } else {
-        console.error('Failed to load tours:', data.error)
-        setTours([])
+        setTours(prev => [...prev, ...data.tours])
       }
+      
+      setTotalTours(data.pagination.total)
+      setTotalPages(data.pagination.totalPages)
     } catch (error) {
       console.error('Error loading tours:', error)
-      setTours([])
     } finally {
       setLoading(false)
       endLoading() // Signal data loading end
@@ -185,15 +179,12 @@ export default function ToursClient({
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
-    if (filters.search.trim()) {
-      setCurrentPage(1) // Reset to first page when searching
-      loadTours()
-    }
+    setCurrentPage(1)
   }
 
   const handleFiltersChange = (newFilters: typeof filters) => {
     setFilters(newFilters)
-    setCurrentPage(1) // Reset to first page when filters change
+    setCurrentPage(1)
   }
 
   const clearFilters = () => {
@@ -212,8 +203,8 @@ export default function ToursClient({
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
       case 'Easy': return 'bg-green-100 text-green-800 border-green-200'
-      case 'Moderate': return 'bg-emerald-100 text-emerald-800 border-emerald-200'
-      case 'Challenging': return 'bg-teal-100 text-teal-800 border-teal-200'
+      case 'Moderate': return 'bg-yellow-100 text-yellow-800 border-yellow-200'
+      case 'Challenging': return 'bg-red-100 text-red-800 border-red-200'
       default: return 'bg-gray-100 text-gray-800 border-gray-200'
     }
   }
@@ -222,193 +213,141 @@ export default function ToursClient({
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'USD',
-      minimumFractionDigits: 0
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
     }).format(price)
   }
 
   return (
     <TourComparisonProvider>
-      <div>
-        {/* Search and Filters */}
-        <div className="max-w-7xl mx-auto px-4 py-8">
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <form onSubmit={handleSearch} className="relative flex-1 max-w-md">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
-              <Input
-                placeholder="Search tours..."
-                className="pl-10 bg-white text-gray-900 border-0 focus:ring-2 focus:ring-emerald-300"
-                value={filters.search}
-                onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
-              />
-              <Button 
-                type="submit"
-                size="sm"
-                className="absolute right-1 top-1/2 transform -translate-y-1/2 bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1 h-8"
-              >
-                Search
-              </Button>
-            </form>
-            <Button 
-              variant="outline" 
-              className="border-emerald-200 text-emerald-600 hover:bg-emerald-50 hover:border-emerald-300"
-              onClick={() => setShowFilters(!showFilters)}
-            >
-              <Filter className="h-4 w-4 mr-2" />
-              Filters
-            </Button>
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-emerald-50 to-green-50">
+        {/* Header Section */}
+        <div className="bg-white shadow-sm border-b border-emerald-100">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            {/* Search and Filters Bar */}
+            <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between">
+              {/* Search */}
+              <form onSubmit={handleSearch} className="flex-1 max-w-md">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                  <Input
+                    type="text"
+                    placeholder="Search tours..."
+                    value={filters.search}
+                    onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
+                    className="pl-10 bg-white border-emerald-200 focus:border-emerald-400 focus:ring-emerald-400"
+                  />
+                </div>
+              </form>
+
+              {/* Sort */}
+              <div className="flex items-center gap-4">
+                <Select value={sortBy} onValueChange={setSortBy}>
+                  <SelectTrigger className="w-40 bg-white border-emerald-200 focus:border-emerald-400 focus:ring-emerald-400">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="popular">Most Popular</SelectItem>
+                    <SelectItem value="rating">Highest Rated</SelectItem>
+                    <SelectItem value="price-low">Price: Low to High</SelectItem>
+                    <SelectItem value="price-high">Price: High to Low</SelectItem>
+                    <SelectItem value="duration">Duration</SelectItem>
+                    <SelectItem value="newest">Newest</SelectItem>
+                  </SelectContent>
+                </Select>
+
+                <Button
+                  variant="outline"
+                  onClick={() => setShowFilters(!showFilters)}
+                  className="border-emerald-200 text-emerald-600 hover:bg-emerald-50 hover:border-emerald-300"
+                >
+                  <Filter className="h-4 w-4 mr-2" />
+                  Filters
+                </Button>
+              </div>
+            </div>
+
+            {/* Active Filters */}
+            {(filters.search || filters.categories.length > 0 || filters.difficulties.length > 0 || filters.durations.length > 0) && (
+              <div className="mt-4 flex flex-wrap gap-2">
+                {filters.search && (
+                  <Badge variant="secondary" className="bg-emerald-100 text-emerald-800">
+                    Search: {filters.search}
+                  </Badge>
+                )}
+                {filters.categories.map(cat => (
+                  <Badge key={cat} variant="secondary" className="bg-emerald-100 text-emerald-800">
+                    {cat}
+                  </Badge>
+                ))}
+                {filters.difficulties.map(diff => (
+                  <Badge key={diff} variant="secondary" className="bg-emerald-100 text-emerald-800">
+                    {diff}
+                  </Badge>
+                ))}
+                {filters.durations.map(dur => (
+                  <Badge key={dur} variant="secondary" className="bg-emerald-100 text-emerald-800">
+                    {dur}
+                  </Badge>
+                ))}
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={clearFilters}
+                  className="text-emerald-600 hover:text-emerald-700"
+                >
+                  Clear All
+                </Button>
+              </div>
+            )}
           </div>
         </div>
 
-        {/* Quick Stats */}
-        <section className="py-16 bg-white border-b border-gray-100">
-          <div className="max-w-7xl mx-auto px-4">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-              <div className="group">
-                <div className="text-4xl font-bold text-emerald-600 group-hover:text-emerald-700 transition-colors">{totalTours}+</div>
-                <div className="text-gray-600 font-medium">Tour Packages</div>
-              </div>
-              <div className="group">
-                <div className="text-4xl font-bold text-emerald-600 group-hover:text-emerald-700 transition-colors">{categories.length}+</div>
-                <div className="text-gray-600 font-medium">Categories</div>
-              </div>
-              <div className="group">
-                <div className="text-4xl font-bold text-emerald-600 group-hover:text-emerald-700 transition-colors">500+</div>
-                <div className="text-gray-600 font-medium">Happy Travelers</div>
-              </div>
-              <div className="group">
-                <div className="text-4xl font-bold text-emerald-600 group-hover:text-emerald-700 transition-colors">10+</div>
-                <div className="text-gray-600 font-medium">Years Experience</div>
-              </div>
+        {/* Filters Panel */}
+        {showFilters && (
+          <div className="bg-white border-b border-emerald-100">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+              <TourFilters
+                onFiltersChange={handleFiltersChange}
+              />
             </div>
           </div>
-        </section>
+        )}
 
         {/* Main Content */}
-        <main className="max-w-7xl mx-auto px-4 py-12">
-          {/* Filters */}
-          {showFilters && (
-            <Card className="mb-8 border-emerald-200 shadow-lg">
-              <CardContent className="p-6">
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                  <Select 
-                    value={filters.categories[0] || 'all'} 
-                    onValueChange={(value) => {
-                      const newFilters = {
-                        ...filters,
-                        categories: value && value !== 'all' ? [value] : []
-                      }
-                      handleFiltersChange(newFilters)
-                    }}
-                  >
-                    <SelectTrigger className="border-emerald-200 focus:border-emerald-500 focus:ring-emerald-500">
-                      <SelectValue placeholder="Category" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">All Categories</SelectItem>
-                      {categories.map(category => (
-                        <SelectItem key={category.id} value={category.slug}>
-                          {category.name} ({category.tourCount})
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-
-                  <Select 
-                    value={filters.difficulties[0] || 'all'} 
-                    onValueChange={(value) => {
-                      const newFilters = {
-                        ...filters,
-                        difficulties: value && value !== 'all' ? [value] : []
-                      }
-                      handleFiltersChange(newFilters)
-                    }}
-                  >
-                    <SelectTrigger className="border-emerald-200 focus:border-emerald-500 focus:ring-emerald-500">
-                      <SelectValue placeholder="Difficulty" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">All Levels</SelectItem>
-                      <SelectItem value="Easy">Easy</SelectItem>
-                      <SelectItem value="Moderate">Moderate</SelectItem>
-                      <SelectItem value="Challenging">Challenging</SelectItem>
-                    </SelectContent>
-                  </Select>
-
-                  <Select 
-                    value={sortBy} 
-                    onValueChange={(value) => {
-                      setSortBy(value)
-                      setCurrentPage(1)
-                    }}
-                  >
-                    <SelectTrigger className="border-emerald-200 focus:border-emerald-500 focus:ring-emerald-500">
-                      <SelectValue placeholder="Sort by" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="popular">Most Popular</SelectItem>
-                      <SelectItem value="price_low">Price: Low to High</SelectItem>
-                      <SelectItem value="price_high">Price: High to Low</SelectItem>
-                      <SelectItem value="rating">Highest Rated</SelectItem>
-                      <SelectItem value="newest">Newest Tours</SelectItem>
-                      <SelectItem value="alphabetical">Alphabetical</SelectItem>
-                    </SelectContent>
-                  </Select>
-
-                  <div className="flex items-center gap-2">
-                    <div className="text-sm text-gray-600 flex items-center justify-center bg-gray-50 rounded-lg px-3 py-2 flex-1">
-                      <Globe className="h-4 w-4 mr-2 text-emerald-600" />
-                      {tours.length} of {totalTours}
-                    </div>
-                    <Button 
-                      variant="outline" 
-                      size="sm"
-                      onClick={clearFilters}
-                      className="border-emerald-200 text-emerald-600 hover:bg-emerald-50 hover:border-emerald-300"
-                    >
-                      Clear
-                    </Button>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          )}
+        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          {/* Results Header */}
+          <div className="flex items-center justify-between mb-8">
+            <div>
+              <h2 className="text-2xl font-bold text-gray-900">
+                {totalTours} {totalTours === 1 ? 'Tour' : 'Tours'} Found
+              </h2>
+              <p className="text-gray-600 mt-1">
+                Discover amazing adventures in Uganda
+              </p>
+            </div>
+          </div>
 
           {/* Tours Grid */}
-          {loading ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {Array.from({ length: 6 }).map((_, i) => (
-                <Card key={i} className="overflow-hidden border-emerald-200 shadow-lg">
-                  <Skeleton className="h-64 w-full" />
-                  <CardContent className="p-6">
-                    <Skeleton className="h-6 w-3/4 mb-2" />
-                    <Skeleton className="h-4 w-1/2 mb-4" />
-                    <div className="flex justify-between items-center">
-                      <Skeleton className="h-8 w-20" />
-                      <Skeleton className="h-6 w-16" />
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          ) : tours.length > 0 ? (
+          {tours.length > 0 ? (
             <>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 {tours.map((tour, index) => (
-                  <Card key={tour.id} className="overflow-hidden hover:shadow-xl transition-all duration-300 group border-emerald-200">
+                  <Card key={tour.id} className="group overflow-hidden hover:shadow-xl transition-all duration-300 border-emerald-100 hover:border-emerald-200">
                     {/* Tour Image */}
-                    <div className="relative h-64 overflow-hidden">
+                    <div className="relative aspect-[4/3] overflow-hidden">
                       {tour.featuredImage && tour.featuredImage.data ? (
                         <Image
                           src={tour.featuredImage.data.startsWith('/') ? tour.featuredImage.data : tour.featuredImage.data}
                           alt={tour.title}
                           fill
                           className="object-cover group-hover:scale-105 transition-transform duration-500"
-                          priority={index < 6} // Prioritize first 6 images
-                          quality={85}
+                          priority={index < 4} // Reduced from 6 to 4 for better performance
+                          quality={75} // Reduced from 85 to 75
                           placeholder="blur"
                           blurDataURL={blurDataURL}
-                          loading={index < 6 ? "eager" : "lazy"}
-                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                          loading={index < 4 ? "eager" : "lazy"} // Only first 4 images eager load
+                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw" // Optimized sizes
                         />
                       ) : (
                         <div className="w-full h-full bg-gradient-to-br from-emerald-100 to-green-100 flex items-center justify-center">

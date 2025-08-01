@@ -70,13 +70,9 @@ export async function sendContactInquiryNotifications(data: ContactInquiryData) 
 
     // Send notification to admin
     const adminEmail = process.env.ADMIN_EMAIL || 'admin@sambatours.com'
-    await sendEmail(adminEmail, 'contactNotification', {
-      name: data.name,
-      email: data.email,
-      phone: data.phone || '',
-      tourType: data.tourType,
-      message: data.message,
-      inquiryId: data.inquiryId
+    await sendEmail(adminEmail, 'custom', {
+      customMessage: `Contact inquiry from ${data.name}: ${data.message}`,
+      subject: 'New Contact Inquiry'
     })
 
     return { success: true }
@@ -132,13 +128,9 @@ export async function sendPaymentConfirmationNotification(data: PaymentData) {
 
     // Send notification to admin
     const adminEmail = process.env.ADMIN_EMAIL || 'admin@sambatours.com'
-    await sendEmail(adminEmail, 'paymentNotification', {
-      paymentId: data.paymentId,
-      customerName: data.customerName,
-      customerEmail: data.customerEmail,
-      amount: data.amount,
-      tourName: data.tourName,
-      paymentMethod: data.paymentMethod
+    await sendEmail(adminEmail, 'custom', {
+      customMessage: `Payment received: ${data.customerName} paid ${data.amount} for ${data.tourName}`,
+      subject: 'Payment Notification'
     })
 
     return { success: true }
@@ -150,14 +142,9 @@ export async function sendPaymentConfirmationNotification(data: PaymentData) {
 
 export async function sendTourReminderNotification(data: TourReminderData) {
   try {
-    await sendEmail(data.customerEmail, 'tourReminder', {
-      customerName: data.customerName,
-      tourName: data.tourName,
-      startDate: data.startDate,
-      departureTime: data.departureTime,
-      meetingPoint: data.meetingPoint,
-      guideName: data.guideName,
-      guidePhone: data.guidePhone
+    await sendEmail(data.customerEmail, 'custom', {
+      customMessage: `Tour reminder: ${data.tourName} starts on ${data.startDate}`,
+      subject: 'Tour Reminder'
     })
 
     return { success: true }
@@ -185,31 +172,11 @@ export async function sendAdminAlertNotification(subject: string, message: strin
   try {
     const adminEmail = process.env.ADMIN_EMAIL || 'admin@sambatours.com'
     
-    // For now, we'll use a simple email format for admin alerts
-    // You can create a specific template for this in the email service
-    const emailData = {
-      subject: `Admin Alert: ${subject}`,
-      html: `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-          <div style="background: ${alertType === 'error' ? '#dc2626' : alertType === 'warning' ? '#f59e0b' : '#3b82f6'}; padding: 20px; text-align: center;">
-            <h1 style="color: white; margin: 0; font-size: 24px;">Admin Alert</h1>
-          </div>
-          
-          <div style="padding: 30px; background: #f9fafb;">
-            <h2 style="color: #1f2937; margin-bottom: 20px;">${subject}</h2>
-            <div style="background: white; padding: 20px; border-radius: 8px; margin: 20px 0;">
-              <p style="color: #4b5563; line-height: 1.6; margin: 0;">${message}</p>
-            </div>
-            <p style="color: #6b7280; font-size: 14px; margin-top: 20px;">
-              Alert Type: ${alertType.toUpperCase()} | Time: ${new Date().toLocaleString()}
-            </p>
-          </div>
-        </div>
-      `
-    }
-
     // Send using the basic email function
-    await sendEmail(adminEmail, 'adminAlert', emailData)
+    await sendEmail(adminEmail, 'custom', {
+      customMessage: message,
+      subject: `Admin Alert: ${subject}`
+    })
 
     return { success: true }
   } catch (error) {
@@ -222,44 +189,16 @@ export async function sendAdminAlertNotification(subject: string, message: strin
 export async function sendBulkNewsletterNotification(recipients: string[], subject: string, content: string) {
   try {
     const emailData = {
-      subject,
-      html: `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-          <div style="background: linear-gradient(135deg, #f97316, #dc2626); padding: 30px; text-align: center;">
-            <h1 style="color: white; margin: 0; font-size: 28px;">Samba Tours Uganda</h1>
-            <p style="color: white; margin: 10px 0 0 0; font-size: 16px;">Newsletter</p>
-          </div>
-          
-          <div style="padding: 30px; background: #f9fafb;">
-            <div style="background: white; padding: 20px; border-radius: 8px; margin: 20px 0;">
-              ${content}
-            </div>
-            
-            <div style="text-align: center; margin: 30px 0;">
-              <a href="https://sambatours.com/tours" 
-                 style="background: linear-gradient(135deg, #f97316, #dc2626); color: white; padding: 15px 30px; 
-                        text-decoration: none; border-radius: 8px; display: inline-block; font-weight: bold;">
-                Explore Our Tours
-              </a>
-            </div>
-          </div>
-          
-          <div style="background: #1f2937; padding: 20px; text-align: center;">
-            <p style="color: #9ca3af; margin: 0; font-size: 14px;">
-              © 2024 Samba Tours Uganda. All rights reserved.
-            </p>
-          </div>
-        </div>
-      `
+      customMessage: content,
+      subject: subject
     }
 
-    // For bulk emails, you might want to use a different approach
-    // This is a simplified version - in production, consider using a queue system
+    // Send to each recipient
     for (const recipient of recipients) {
-      await sendEmail(recipient, 'bulkNewsletter', emailData)
+      await sendEmail(recipient, 'custom', emailData)
     }
 
-    return { success: true, sentCount: recipients.length }
+    return { success: true }
   } catch (error) {
     console.error('Error sending bulk newsletter notification:', error)
     return { success: false, error }
