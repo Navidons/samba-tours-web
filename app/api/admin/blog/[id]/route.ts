@@ -48,11 +48,10 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
         }
       }
     })
-
     if (!post) {
-      return NextResponse.json({ error: "Blog post not found" }, { status: 404 })
+      // Always return a valid structure
+      return NextResponse.json({ post: null }, { status: 200 })
     }
-
     const transformedPost = {
       id: post.id,
       title: post.title,
@@ -71,7 +70,6 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
       thumbnailName: post.thumbnailName,
       thumbnailType: post.thumbnailType,
       thumbnailSize: post.thumbnailSize,
-
       category: post.category ? {
         id: post.category.id,
         name: post.category.name,
@@ -102,11 +100,11 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
       createdAt: post.createdAt.toISOString(),
       updatedAt: post.updatedAt.toISOString()
     }
-
-    return NextResponse.json({ post: transformedPost })
+    return NextResponse.json({ post: transformedPost }, { status: 200 })
   } catch (error) {
     console.error("API error:", error)
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 })
+    // Always return a valid structure
+    return NextResponse.json({ post: null, error: "Internal server error" }, { status: 200 })
   }
 }
 
