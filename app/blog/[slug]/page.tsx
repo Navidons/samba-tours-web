@@ -160,15 +160,17 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
     const response = await fetch(`${baseUrl}/api/blog/${params.slug}`, {
       cache: 'no-store'
     })
+    
     let post = null
     if (response.ok) {
       const data = await response.json()
       post = data.post
     }
+    
     // If no post, use empty fallback values
     if (!post) {
       post = {
-        id: '',
+        id: 0,
         title: '',
         excerpt: '',
         content: '',
@@ -184,25 +186,35 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
         tags: [],
       }
     }
-    // Parse HTML content for table of contents
-    const $ = cheerio.load(post.content || '')
-    const headings = $("h2, h3").map((_, el) => ({
-      id: slugify($(el).text()),
-      text: $(el).text(),
-      level: el.tagName,
-    })).get()
+
+    // Parse HTML content for table of contents (safely)
+    let headings: Array<{ id: string; text: string; level: string }> = []
+    try {
+      const $ = cheerio.load(post.content || '')
+      headings = $("h2, h3").map((_, el) => ({
+        id: slugify($(el).text()),
+        text: $(el).text(),
+        level: el.tagName,
+      })).get()
+    } catch (error) {
+      console.warn('Could not parse content for headings:', error)
+    }
+
     // Get related posts (handle errors gracefully)
     let relatedPosts = []
     try {
-      relatedPosts = post.id ? await getRelatedBlogPosts(
-        post.id,
-        post.category?.id || null,
-        3
-      ) : []
+      if (post.id) {
+        relatedPosts = await getRelatedBlogPosts(
+          post.id,
+          post.category?.id || null,
+          3
+        )
+      }
     } catch (error) {
       console.warn('Could not fetch related posts:', error)
     }
-    // Transform post data to match component expectations
+
+    // Transform post data to match component expectations (safely)
     const transformedPost = {
       ...post,
       publishDate: post.publishDate || null,
@@ -219,19 +231,20 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
       },
       date: post.publishDate || post.createdAt,
       readTime: post.readTimeMinutes ? `${post.readTimeMinutes} min read` : '5 min read',
-      views: post.viewCount,
-      likes: post.likeCount,
-      tags: post.tags.map((t: any) => t.tag?.name || t.name || t) || [],
+      views: post.viewCount || 0,
+      likes: post.likeCount || 0,
+      tags: Array.isArray(post.tags) ? post.tags.map((t: any) => t.tag?.name || t.name || t) : [],
       tableOfContents: headings.map(h => ({
         text: h.text,
         id: h.id
       }))
     }
-    // Structured Data for Blog Post
+
+    // Structured Data for Blog Post (safely)
     const articleStructuredData = {
       "@context": "https://schema.org",
       "@type": "Article",
-      "headline": post.title,
+      "headline": post.title || '',
       "description": post.excerpt || '',
       "image": post.thumbnail || "https://sambatours.co/photos/queen-elizabeth-national-park-uganda.jpg",
       "author": {
@@ -254,10 +267,11 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
         "@id": `https://sambatours.co/blog/${params.slug}`
       },
       "articleSection": post.category?.name || "Uganda Safari",
-      "keywords": post.tags?.map((tag: any) => tag.name).join(', ') + ', Uganda safari, gorilla trekking, wildlife, travel blog',
+      "keywords": Array.isArray(post.tags) ? post.tags.map((tag: any) => tag.name).join(', ') + ', Uganda safari, gorilla trekking, wildlife, travel blog' : 'Uganda safari, gorilla trekking, wildlife, travel blog',
       "wordCount": post.content?.length || 0,
       "timeRequired": `PT${post.readTimeMinutes || 5}M`
     }
+
     return (
       <div className="min-h-screen bg-gray-50">
         {/* Structured Data */}
@@ -267,6 +281,7 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
             __html: JSON.stringify(articleStructuredData),
           }}
         />
+        
         <div className="container mx-auto px-4 py-8 grid grid-cols-1 lg:grid-cols-12 gap-8">
           <div className="lg:col-span-8">
             <BlogPostHeader post={transformedPost as any} />
@@ -274,7 +289,9 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
               <BlogPostContent post={transformedPost as any} />
             </Suspense>
             <RelatedPosts currentPost={transformedPost as any} />
-            <BlogComments postId={post.id} />
+            <Suspense fallback={<LoadingSpinner />}>
+              <BlogComments postId={post.id || 0} />
+            </Suspense>
           </div>
           <div className="lg:col-span-4">
             <BlogPostSidebar post={transformedPost as any} />
@@ -286,7 +303,7 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
     console.error('Error rendering blog post:', error)
     // Render with empty fallback values
     const emptyPost = {
-      id: '',
+      id: 0,
       title: '',
       excerpt: '',
       content: '',
