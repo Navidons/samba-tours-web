@@ -1,19 +1,14 @@
 import { Suspense } from "react"
+import { notFound } from "next/navigation"
 import * as cheerio from "cheerio"
 import type { Metadata } from "next"
-import dynamicImport from "next/dynamic"
 import BlogPostHeader from "@/components/blog/blog-post-header"
 import BlogPostContent from "@/components/blog/blog-post-content"
 import BlogPostSidebar from "@/components/blog/blog-post-sidebar"
 import RelatedPosts from "@/components/blog/related-posts"
+import BlogComments from "@/components/blog/blog-comments"
 import LoadingSpinner from "@/components/ui/loading-spinner"
 import { getRelatedBlogPosts } from "@/lib/services/blog-service"
-
-// Dynamically import BlogComments to avoid SSR issues
-const BlogComments = dynamicImport(() => import("@/components/blog/blog-comments"), {
-  ssr: false,
-  loading: () => <LoadingSpinner />
-})
 
 // Helper function to create a URL-friendly slug from a string
 const slugify = (text: string) =>
@@ -160,91 +155,69 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
       cache: 'no-store'
     })
     
-    let post = null
-    if (response.ok) {
-      const data = await response.json()
-      post = data.post
+    if (!response.ok) {
+      notFound()
     }
     
-    // If no post, use empty fallback values
+    const data = await response.json()
+    const post = data.post
+    
     if (!post) {
-      post = {
-        id: 0,
-        title: '',
-        excerpt: '',
-        content: '',
-        thumbnail: '',
-        publishDate: '',
-        createdAt: '',
-        updatedAt: '',
-        author: { name: '', bio: '' },
-        category: { name: '' },
-        readTimeMinutes: 0,
-        viewCount: 0,
-        likeCount: 0,
-        tags: [],
-      }
+      notFound()
     }
 
-    // Parse HTML content for table of contents (safely)
-    let headings: Array<{ id: string; text: string; level: string }> = []
-    try {
-      const $ = cheerio.load(post.content || '')
-      headings = $("h2, h3").map((_, el) => ({
-        id: slugify($(el).text()),
-        text: $(el).text(),
-        level: el.tagName,
-      })).get()
-    } catch (error) {
-      console.warn('Could not parse content for headings:', error)
-    }
+    // Parse HTML content for table of contents
+    const $ = cheerio.load(post.content || '')
+    const headings = $("h2, h3").map((_, el) => ({
+      id: slugify($(el).text()),
+      text: $(el).text(),
+      level: el.tagName,
+    })).get()
 
     // Get related posts (handle errors gracefully)
     let relatedPosts = []
     try {
-      if (post.id) {
-        relatedPosts = await getRelatedBlogPosts(
-          post.id,
-          post.category?.id || null,
-          3
-        )
-      }
+      relatedPosts = await getRelatedBlogPosts(
+        post.id,
+        post.category?.id || null,
+        3
+      )
     } catch (error) {
       console.warn('Could not fetch related posts:', error)
     }
 
-    // Transform post data to match component expectations (safely)
+    // Transform post data to match component expectations
     const transformedPost = {
       ...post,
       publishDate: post.publishDate || null,
       createdAt: post.createdAt,
       updatedAt: post.updatedAt,
-      image: post.thumbnail,
-      thumbnail: post.thumbnail,
+              image: post.thumbnail,
+        thumbnail: post.thumbnail,
       category: post.category?.name || 'Uncategorized',
       author: {
         name: post.author?.name || 'Unknown Author',
         role: "Travel Writer",
-        image: "",
-        bio: post.author?.bio || "",
+                  image: "",
+        bio: post.author?.bio || "Experienced travel writer with deep knowledge of Uganda's wildlife and culture.",
       },
       date: post.publishDate || post.createdAt,
       readTime: post.readTimeMinutes ? `${post.readTimeMinutes} min read` : '5 min read',
-      views: post.viewCount || 0,
-      likes: post.likeCount || 0,
-      tags: Array.isArray(post.tags) ? post.tags.map((t: any) => t.tag?.name || t.name || t) : [],
+      views: post.viewCount,
+      likes: post.likeCount,
+      tags: post.tags.map((t: any) => t.tag.name),
       tableOfContents: headings.map(h => ({
         text: h.text,
         id: h.id
       }))
     }
 
-    // Structured Data for Blog Post (safely)
+    // Structured Data for Blog Post
     const articleStructuredData = {
       "@context": "https://schema.org",
       "@type": "Article",
-      "headline": post.title || '',
-      "description": post.excerpt || '',
+      "headline": post.title,
+      "description": post.excerpt || `Read about ${post.title} on our Uganda safari blog. Expert insights, travel tips, and wildlife stories from the Pearl of Africa.`,
       "image": post.thumbnail || "https://sambatours.co/photos/queen-elizabeth-national-park-uganda.jpg",
       "author": {
         "@type": "Person",
@@ -266,7 +239,7 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
         "@id": `https://sambatours.co/blog/${params.slug}`
       },
       "articleSection": post.category?.name || "Uganda Safari",
-      "keywords": Array.isArray(post.tags) ? post.tags.map((tag: any) => tag.name).join(', ') + ', Uganda safari, gorilla trekking, wildlife, travel blog' : 'Uganda safari, gorilla trekking, wildlife, travel blog',
+      "keywords": post.tags?.map((tag: any) => tag.name).join(', ') + ', Uganda safari, gorilla trekking, wildlife, travel blog',
       "wordCount": post.content?.length || 0,
       "timeRequired": `PT${post.readTimeMinutes || 5}M`
     }
@@ -288,9 +261,7 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
               <BlogPostContent post={transformedPost as any} />
             </Suspense>
             <RelatedPosts currentPost={transformedPost as any} />
-            <Suspense fallback={<LoadingSpinner />}>
-              <BlogComments postId={post.id || 0} />
-            </Suspense>
+            <BlogComments postId={post.id} />
           </div>
           <div className="lg:col-span-4">
             <BlogPostSidebar post={transformedPost as any} />
@@ -300,30 +271,6 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
     )
   } catch (error) {
     console.error('Error rendering blog post:', error)
-    // Render with empty fallback values
-    const emptyPost = {
-      id: 0,
-      title: '',
-      excerpt: '',
-      content: '',
-      thumbnail: '',
-      publishDate: '',
-      createdAt: '',
-      updatedAt: '',
-      author: { name: '', bio: '' },
-      category: { name: '' },
-      readTimeMinutes: 0,
-      viewCount: 0,
-      likeCount: 0,
-      tags: [],
-    }
-    return (
-      <div className="min-h-screen bg-gray-50">
-        <div className="container mx-auto px-4 py-8">
-          <h1 className="text-2xl font-bold mb-4">Blog post not found</h1>
-          <p>This blog post does not exist or could not be loaded.</p>
-        </div>
-      </div>
-    )
+    notFound()
   }
 }
