@@ -78,9 +78,10 @@ export async function GET(
     })
 
     if (!post) {
+      // Always return a valid structure
       return NextResponse.json(
-        { error: 'Blog post not found', success: false },
-        { status: 404 }
+        { post: null, success: false },
+        { status: 200 }
       )
     }
 
@@ -110,9 +111,10 @@ export async function GET(
 
   } catch (error) {
     console.error('Error fetching blog post:', error)
+    // Always return a valid structure
     return NextResponse.json(
-      { error: 'Failed to fetch blog post', success: false },
-      { status: 500 }
+      { post: null, success: false, error: 'Failed to fetch blog post' },
+      { status: 200 }
     )
   }
 } 

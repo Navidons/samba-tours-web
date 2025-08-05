@@ -43,6 +43,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ authors: transformedAuthors })
   } catch (error) {
     console.error("API error:", error)
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 })
+    // Always return a valid structure
+    return NextResponse.json({ authors: [] }, { status: 200 })
   }
 } 
