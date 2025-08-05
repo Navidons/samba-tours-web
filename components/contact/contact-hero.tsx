@@ -24,16 +24,16 @@ export default function ContactHero() {
         
         <Image
           src="/photos/savannah-plains-kidepo-uganda-1024x683.webp"
-          alt="Ugandan savannah with giraffes at golden hour"
+          alt="Ugandan savannah landscape"
           fill
-          className={`object-cover transition-opacity duration-500 ${
+          className={`object-cover transition-opacity duration-300 ${
             imageLoaded ? 'opacity-100' : 'opacity-0'
           }`}
           priority
           placeholder="blur"
-          blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k="
+          blurDataURL="data:image/webp;base64,UklGRiQAAABXRUJQVlA4IBgAAAAwAQCdASoBAAADsAD+JaQAA3AAAAAA"
           sizes="100vw"
-          quality={85}
+          quality={80}
           onLoad={() => setImageLoaded(true)}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-emerald-900/80 via-emerald-800/60 to-transparent" />
