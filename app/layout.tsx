@@ -50,7 +50,7 @@ export const metadata: Metadata = {
   },
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || (process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : 'https://sambatours.co')),
   alternates: {
-    canonical: '/',
+    canonical: 'https://sambatours.co/',
   },
   openGraph: {
     title: 'Samba Tours - Uganda\'s Premier Safari & Adventure Travel Company',
@@ -93,7 +93,7 @@ export const metadata: Metadata = {
     },
   },
   verification: {
-    google: 'your-google-verification-code',
+    google: 'your-google-verification-code', // TODO: Replace with your real code
   },
   other: {
     'brand': 'Samba Tours',

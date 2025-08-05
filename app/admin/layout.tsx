@@ -4,6 +4,13 @@ import AdminLayout from "@/components/admin/admin-layout"
 
 export const dynamic = 'force-dynamic'
 
+export const metadata = {
+  robots: {
+    index: false,
+    follow: false,
+  },
+}
+
 export default async function AdminLayoutWrapper({
   children,
 }: {

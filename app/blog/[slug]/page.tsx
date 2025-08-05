@@ -60,7 +60,7 @@ export async function generateMetadata({ params }: { params: { slug: string } })
     const author = post.author?.name || 'Samba Tours'
     const publishDate = post.publishDate || post.createdAt
     const imageUrl = post.thumbnail || '/photos/queen-elizabeth-national-park-uganda.jpg'
-    const canonicalUrl = `/blog/${params.slug}`
+    const canonicalUrl = `${baseUrl}/blog/${params.slug}`
 
     return {
       title,
