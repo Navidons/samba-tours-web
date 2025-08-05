@@ -25,13 +25,6 @@ Allow: /
 User-agent: YandexBot
 Allow: /
 
-# Allow Google Images to index images (for Google Images search)
-User-agent: Googlebot-Image
-Allow: /photos/
-Allow: /tours-attractions/
-Allow: /home-hero-photos/
-Allow: /logo/
-
 # Block admin areas
 Disallow: /admin/
 Disallow: /signin

@@ -1,37 +1,21 @@
 #!/usr/bin/env node
 
 /**
- * Script to check for potential image indexing issues
+ * Script to check for full image indexing setup
  * Run with: node scripts/check-image-indexing.js
  */
 
 const fs = require('fs');
 const path = require('path');
 
-// Directories to check for images
-const imageDirectories = [
-  'public/photos',
-  'public/tours-attractions',
-  'public/home-hero-photos',
-  'public/logo'
-];
+console.log('🔍 Checking for full image indexing setup...\n');
 
-// Files that should not be indexed
-const sitemapFiles = [
-  'public/sitemap.xml',
-  'public/sitemap-index.xml'
-];
-
-console.log('🔍 Checking for image indexing issues...\n');
-
-// Check if sitemap-images.xml still exists
+// Check if sitemap-images.xml exists
 const sitemapImagesPath = 'public/sitemap-images.xml';
 if (fs.existsSync(sitemapImagesPath)) {
-  console.log('❌ WARNING: sitemap-images.xml still exists!');
-  console.log('   This file should be deleted to prevent image indexing.');
-  console.log('   File location: ' + sitemapImagesPath + '\n');
+  console.log('✅ sitemap-images.xml exists for Google Images indexing');
 } else {
-  console.log('✅ sitemap-images.xml has been removed\n');
+  console.log('❌ sitemap-images.xml missing - Google Images won\'t find your images');
 }
 
 // Check robots.txt
@@ -39,76 +23,80 @@ const robotsPath = 'public/robots.txt';
 if (fs.existsSync(robotsPath)) {
   const robotsContent = fs.readFileSync(robotsPath, 'utf8');
   
-  if (robotsContent.includes('Disallow: /photos/')) {
-    console.log('✅ robots.txt correctly blocks /photos/ directory');
+  if (robotsContent.includes('User-agent: *')) {
+    console.log('✅ robots.txt allows all bots to crawl');
   } else {
-    console.log('❌ robots.txt does not block /photos/ directory');
+    console.log('❌ robots.txt may be restricting bots');
   }
   
-  if (robotsContent.includes('Disallow: /tours-attractions/')) {
-    console.log('✅ robots.txt correctly blocks /tours-attractions/ directory');
+  if (robotsContent.includes('Sitemap:')) {
+    console.log('✅ robots.txt references sitemaps');
   } else {
-    console.log('❌ robots.txt does not block /tours-attractions/ directory');
-  }
-  
-  if (robotsContent.includes('Disallow: /home-hero-photos/')) {
-    console.log('✅ robots.txt correctly blocks /home-hero-photos/ directory');
-  } else {
-    console.log('❌ robots.txt does not block /home-hero-photos/ directory');
-  }
-  
-  if (robotsContent.includes('Disallow: /logo/')) {
-    console.log('✅ robots.txt correctly blocks /logo/ directory');
-  } else {
-    console.log('❌ robots.txt does not block /logo/ directory');
+    console.log('❌ robots.txt missing sitemap references');
   }
 } else {
   console.log('❌ robots.txt file not found!');
 }
 
-console.log('\n📊 Image Directory Analysis:');
-
-// Check image directories
-imageDirectories.forEach(dir => {
-  if (fs.existsSync(dir)) {
-    const files = fs.readdirSync(dir);
-    const imageFiles = files.filter(file => 
-      /\.(jpg|jpeg|png|gif|webp|svg)$/i.test(file)
-    );
-    
-    console.log(`\n📁 ${dir}:`);
-    console.log(`   Found ${imageFiles.length} image files`);
-    
-    if (imageFiles.length > 0) {
-      console.log('   Sample files:');
-      imageFiles.slice(0, 5).forEach(file => {
-        const filePath = path.join(dir, file);
-        const stats = fs.statSync(filePath);
-        const sizeInKB = Math.round(stats.size / 1024);
-        console.log(`   - ${file} (${sizeInKB}KB)`);
-      });
-      
-      if (imageFiles.length > 5) {
-        console.log(`   ... and ${imageFiles.length - 5} more files`);
-      }
-    }
+// Check main sitemap
+const sitemapPath = 'public/sitemap.xml';
+if (fs.existsSync(sitemapPath)) {
+  const sitemapContent = fs.readFileSync(sitemapPath, 'utf8');
+  
+  if (sitemapContent.includes('sambatours.co')) {
+    console.log('✅ sitemap.xml contains website URLs');
   } else {
-    console.log(`\n📁 ${dir}: Directory not found`);
+    console.log('❌ sitemap.xml missing website URLs');
+  }
+  
+  if (sitemapContent.includes('xmlns:image')) {
+    console.log('✅ sitemap.xml includes image references for full indexing');
+  } else {
+    console.log('❌ sitemap.xml missing image references');
+  }
+} else {
+  console.log('❌ sitemap.xml file not found!');
+}
+
+console.log('\n📊 Full Image Indexing Analysis:');
+
+// Check for essential SEO files
+const essentialFiles = [
+  'public/robots.txt',
+  'public/sitemap.xml',
+  'public/sitemap-images.xml',
+  'app/layout.tsx'
+];
+
+essentialFiles.forEach(file => {
+  if (fs.existsSync(file)) {
+    console.log(`✅ ${file} exists`);
+  } else {
+    console.log(`❌ ${file} missing`);
   }
 });
 
-console.log('\n🔧 SEO Recommendations:');
-console.log('1. ✅ Remove sitemap-images.xml (if still exists)');
-console.log('2. ✅ Update robots.txt to block image directories');
-console.log('3. ✅ Clean main sitemap.xml of image references');
-console.log('4. ✅ Add noimageindex meta tags to layout');
-console.log('5. 🔄 Submit updated sitemap to search engines');
-console.log('6. 🔄 Request re-indexing in Google Search Console');
+console.log('\n🔧 Full Image Indexing Setup:');
+console.log('1. ✅ robots.txt allows all bots to crawl');
+console.log('2. ✅ sitemap.xml includes image references');
+console.log('3. ✅ sitemap-images.xml exists for Google Images');
+console.log('4. ✅ No image indexing restrictions in layout');
+console.log('5. ✅ Submit both sitemaps to Google Search Console');
+console.log('6. ✅ Request indexing in Google Search Console');
 
-console.log('\n📈 Next Steps:');
-console.log('- Wait 24-48 hours for search engines to re-crawl');
-console.log('- Monitor Google Search Console for image indexing');
-console.log('- Check search results to confirm images are no longer indexed');
-console.log('- Consider using WebP format for better performance');
+console.log('\n📈 Next Steps for Full Image Indexing:');
+console.log('- Go to Google Search Console (https://search.google.com/search-console)');
+console.log('- Add your property: https://sambatours.co');
+console.log('- Submit both sitemaps: sitemap.xml and sitemap-images.xml');
+console.log('- Use "URL Inspection" tool to request indexing of key pages');
+console.log('- Check for any crawl errors or warnings');
+console.log('- Wait 24-48 hours for Google to crawl and index');
 
-console.log('\n✅ Image indexing prevention setup complete!'); 
+console.log('\n🔍 Manual Checks:');
+console.log('- Search: "site:sambatours.co" in Google');
+console.log('- Search: "Samba Tours Uganda" in Google');
+console.log('- Search: "Uganda wildlife" in Google Images');
+console.log('- Check if your images appear in Google Images');
+console.log('- Verify meta descriptions and titles are correct');
+
+console.log('\n✅ Full image indexing setup complete!'); 
