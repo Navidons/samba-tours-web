@@ -1,3 +1,6 @@
+"use client"
+
+import { useState } from "react"
 import Image from "next/image"
 import {
   Breadcrumb,
@@ -9,15 +12,29 @@ import {
 } from "@/components/ui/breadcrumb"
 
 export default function ContactHero() {
+  const [imageLoaded, setImageLoaded] = useState(false)
+
   return (
     <section className="relative bg-emerald-800 text-white">
       <div className="absolute inset-0">
+        {/* Loading skeleton */}
+        {!imageLoaded && (
+          <div className="absolute inset-0 bg-gradient-to-br from-emerald-700 to-emerald-900 animate-pulse" />
+        )}
+        
         <Image
-          src="/photos/giraffe-uganda-savana-hero.jpg"
+          src="/photos/savannah-plains-kidepo-uganda-1024x683.webp"
           alt="Ugandan savannah with giraffes at golden hour"
           fill
-          className="object-cover"
+          className={`object-cover transition-opacity duration-500 ${
+            imageLoaded ? 'opacity-100' : 'opacity-0'
+          }`}
           priority
+          placeholder="blur"
+          blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k="
+          sizes="100vw"
+          quality={85}
+          onLoad={() => setImageLoaded(true)}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-emerald-900/80 via-emerald-800/60 to-transparent" />
       </div>

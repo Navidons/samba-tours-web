@@ -11,6 +11,14 @@ export const metadata: Metadata = {
 export default function ContactPage() {
   return (
     <div className="min-h-screen bg-emerald-50">
+      {/* Preload the hero image */}
+      <link
+        rel="preload"
+        href="/photos/savannah-plains-kidepo-uganda-1024x683.webp"
+        as="image"
+        type="image/webp"
+      />
+      
       <ContactHero />
 
       {/* Contact Section */}

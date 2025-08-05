@@ -1,11 +1,19 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { put } from "@vercel/blob"
 
+// Type guard to check if an object has File-like properties
+function isFileLike(obj: any): obj is File {
+  return obj && 
+    typeof obj.type === 'string' && 
+    typeof obj.name === 'string' && 
+    typeof obj.size === 'number' &&
+    typeof obj.arrayBuffer === 'function'
+}
+
 export async function POST(request: NextRequest) {
   try {
-
     const formData = await request.formData()
-    const files = formData.getAll("files") as unknown as File[]
+    const files = formData.getAll("files")
 
     if (!files || files.length === 0) {
       return NextResponse.json({ error: "No files provided" }, { status: 400 })
@@ -14,6 +22,12 @@ export async function POST(request: NextRequest) {
     const uploadedImages = []
 
     for (const file of files) {
+      // Skip if not a valid file object
+      if (!isFileLike(file)) {
+        console.warn('Skipping invalid file object:', file)
+        continue
+      }
+
       if (!file.type?.startsWith("image/")) {
         continue // Skip non-image files
       }

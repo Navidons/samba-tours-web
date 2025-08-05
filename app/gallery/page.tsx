@@ -115,26 +115,6 @@ export default function GalleryPage({ searchParams }: GalleryPageProps) {
     <ScrollGuard>
       <h1 className="sr-only">Uganda Safari Gallery - Wildlife & Adventure Photos</h1>
 
-      {/* Samba Tours Uganda Static Section */}
-      <section className="flex flex-col items-center justify-center py-10 md:py-16 bg-gradient-to-br from-emerald-50 via-white to-green-50">
-        <img
-          src="/logo/samba tours-01.png"
-          alt="Samba Tours Uganda Logo"
-          width={160}
-          height={160}
-          className="mb-6 rounded-full shadow-lg border-4 border-emerald-100"
-        />
-        <h2 className="text-3xl md:text-5xl font-bold text-emerald-700 text-center mb-2">
-          Samba Tours Uganda
-        </h2>
-        <p className="text-xl md:text-2xl text-emerald-600 text-center mb-2 font-semibold">
-          The Best and Largest in Africa and East Africa
-        </p>
-        <p className="text-gray-700 text-center max-w-2xl">
-          Discover unforgettable safari experiences, cultural journeys, and adventure tours with the region's most trusted and experienced team. We offer the most comprehensive travel experiences across Uganda and the entire East African region.
-        </p>
-      </section>
-
       {/* Structured Data */}
       <script
         type="application/ld+json"

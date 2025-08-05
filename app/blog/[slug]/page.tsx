@@ -8,6 +8,7 @@ import RelatedPosts from "@/components/blog/related-posts"
 import BlogComments from "@/components/blog/blog-comments"
 import LoadingSpinner from "@/components/ui/loading-spinner"
 import { getRelatedBlogPosts } from "@/lib/services/blog-service"
+import { safeServerImport } from "@/lib/utils/production-safe"
 
 // Helper function to create a URL-friendly slug from a string
 const slugify = (text: string) =>
@@ -20,24 +21,26 @@ const slugify = (text: string) =>
     .replace(/--+/g, "-") // Replace multiple - with single -
 
 // Helper function to parse HTML content for table of contents
-const parseTableOfContents = (content: string) => {
+const parseTableOfContents = async (content: string) => {
   try {
-    // Only import cheerio on the server side
-    if (typeof window === 'undefined') {
-      const cheerio = require('cheerio')
-      const $ = cheerio.load(content || '')
-      const headings = $("h2, h3").map((_: any, el: any) => ({
-        id: slugify($(el).text()),
-        text: $(el).text(),
-        level: el.tagName,
-      })).get()
-
-      return headings.map((h: any) => ({
-        text: h.text,
-        id: h.id
-      }))
+    // Use safe server import to avoid production issues
+    const cheerio = await safeServerImport<any>('cheerio')
+    if (!cheerio || !cheerio.load) {
+      console.warn('Cheerio not available for table of contents parsing')
+      return []
     }
-    return []
+
+    const $ = cheerio.load(content || '')
+    const headings = $("h2, h3").map((_: any, el: any) => ({
+      id: slugify($(el).text()),
+      text: $(el).text(),
+      level: el.tagName,
+    })).get()
+
+    return headings.map((h: any) => ({
+      text: h.text,
+      id: h.id
+    }))
   } catch (error) {
     console.warn('Error parsing table of contents:', error)
     return []
@@ -191,7 +194,7 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
     }
 
     // Parse HTML content for table of contents
-    const tableOfContents = parseTableOfContents(post.content || '')
+    const tableOfContents = await parseTableOfContents(post.content || '')
 
     // Get related posts (handle errors gracefully)
     let relatedPosts = []
