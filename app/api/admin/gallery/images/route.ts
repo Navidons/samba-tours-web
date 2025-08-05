@@ -2,6 +2,10 @@ import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { PrismaClientInitializationError, PrismaClientKnownRequestError } from "@prisma/client/runtime/library"
 
+// File size limits (5MB per image)
+const MAX_FILE_SIZE = 5 * 1024 * 1024 // 5MB
+const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif']
+
 // POST /api/admin/gallery/images - Upload images to gallery
 export async function POST(request: NextRequest) {
   try {
@@ -40,15 +44,65 @@ export async function POST(request: NextRequest) {
     }
 
     const uploadedImages = []
+    const failedImages = []
 
     // Process images
     for (const file of files) {
       try {
-        const buffer = Buffer.from(await file.arrayBuffer())
+        // Validate file type
+        if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
+          failedImages.push({
+            name: file.name,
+            error: `Invalid file type: ${file.type}. Allowed types: ${ALLOWED_IMAGE_TYPES.join(', ')}`
+          })
+          continue
+        }
+
+        // Validate file size
+        if (file.size > MAX_FILE_SIZE) {
+          failedImages.push({
+            name: file.name,
+            error: `File too large: ${(file.size / 1024 / 1024).toFixed(2)}MB. Maximum size: ${(MAX_FILE_SIZE / 1024 / 1024).toFixed(2)}MB`
+          })
+          continue
+        }
+
+        // Validate file has content
+        if (file.size === 0) {
+          failedImages.push({
+            name: file.name,
+            error: 'File is empty'
+          })
+          continue
+        }
+
+        // Convert file to buffer with error handling
+        let buffer: Buffer
+        try {
+          const arrayBuffer = await file.arrayBuffer()
+          buffer = Buffer.from(arrayBuffer)
+          
+          // Validate buffer has content
+          if (buffer.length === 0) {
+            failedImages.push({
+              name: file.name,
+              error: 'Failed to read file content'
+            })
+            continue
+          }
+        } catch (bufferError) {
+          console.error(`Error reading file ${file.name}:`, bufferError)
+          failedImages.push({
+            name: file.name,
+            error: 'Failed to read file content'
+          })
+          continue
+        }
         
         // Extract filename without extension for title
         const imageTitle = file.name.replace(/\.[^/.]+$/, "").replace(/[-_]/g, " ")
         
+        // Create image record with better error handling
         const image = await prisma.galleryImage.create({
           data: {
             galleryId,
@@ -84,26 +138,54 @@ export async function POST(request: NextRequest) {
           gallery: image.gallery
         })
 
+        console.log(`✅ Successfully uploaded: ${file.name} (${(file.size / 1024).toFixed(2)}KB)`)
+
       } catch (error) {
-        console.error(`Error uploading image ${file.name}:`, error)
-        // Continue with other images even if one fails
+        console.error(`❌ Error uploading image ${file.name}:`, error)
+        failedImages.push({
+          name: file.name,
+          error: error instanceof Error ? error.message : 'Unknown error occurred'
+        })
       }
     }
 
-    // Update gallery counts
-    await prisma.gallery.update({
-      where: { id: galleryId },
-      data: {
-        imageCount: {
-          increment: uploadedImages.length
-        }
+    // Update gallery counts only if images were successfully uploaded
+    if (uploadedImages.length > 0) {
+      try {
+        await prisma.gallery.update({
+          where: { id: galleryId },
+          data: {
+            imageCount: {
+              increment: uploadedImages.length
+            }
+          }
+        })
+      } catch (updateError) {
+        console.error('Error updating gallery count:', updateError)
+        // Don't fail the entire request if count update fails
       }
-    })
+    }
 
-    return NextResponse.json({
+    // Return detailed response
+    const response = {
       images: uploadedImages,
-      message: `Successfully uploaded ${uploadedImages.length} images`
-    })
+      message: `Successfully uploaded ${uploadedImages.length} images`,
+      failed: failedImages,
+      summary: {
+        total: files.length,
+        successful: uploadedImages.length,
+        failed: failedImages.length
+      }
+    }
+
+    // Return different status codes based on results
+    if (uploadedImages.length === 0 && failedImages.length > 0) {
+      return NextResponse.json(response, { status: 400 })
+    } else if (failedImages.length > 0) {
+      return NextResponse.json(response, { status: 207 }) // Partial success
+    } else {
+      return NextResponse.json(response, { status: 200 })
+    }
 
   } catch (error) {
     console.error('Error uploading images:', error)

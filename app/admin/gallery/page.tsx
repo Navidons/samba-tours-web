@@ -86,6 +86,71 @@ export default function AdminGalleryPage() {
   
   const { toast } = useToast()
 
+  // File validation constants
+  const MAX_FILE_SIZE = 5 * 1024 * 1024 // 5MB
+  const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif']
+
+  // File validation function
+  const validateFiles = (files: File[]): { valid: File[], invalid: { file: File, error: string }[] } => {
+    const valid: File[] = []
+    const invalid: { file: File, error: string }[] = []
+
+    files.forEach(file => {
+      // Check file type
+      if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
+        invalid.push({
+          file,
+          error: `Invalid file type: ${file.type}. Allowed: ${ALLOWED_IMAGE_TYPES.join(', ')}`
+        })
+        return
+      }
+
+      // Check file size
+      if (file.size > MAX_FILE_SIZE) {
+        invalid.push({
+          file,
+          error: `File too large: ${(file.size / 1024 / 1024).toFixed(2)}MB. Maximum: ${(MAX_FILE_SIZE / 1024 / 1024).toFixed(2)}MB`
+        })
+        return
+      }
+
+      // Check if file is empty
+      if (file.size === 0) {
+        invalid.push({
+          file,
+          error: 'File is empty'
+        })
+        return
+      }
+
+      valid.push(file)
+    })
+
+    return { valid, invalid }
+  }
+
+  // Handle file selection with validation
+  const handleFileSelection = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(event.target.files || [])
+    const { valid, invalid } = validateFiles(files)
+
+    // Show errors for invalid files
+    if (invalid.length > 0) {
+      const errorMessages = invalid.map(item => `${item.file.name}: ${item.error}`).join('\n')
+      toast({
+        title: "Invalid Files",
+        description: errorMessages,
+        variant: "destructive",
+      })
+    }
+
+    // Set only valid files
+    setUploadFiles(valid)
+
+    // Clear the input to allow selecting the same file again
+    event.target.value = ''
+  }
+
   useEffect(() => {
     loadGalleries()
   }, [])
@@ -277,14 +342,26 @@ export default function AdminGalleryPage() {
 
       setUploadProgress(prev => ({
         ...prev,
-        completedFiles: uploadFiles.length,
+        completedFiles: data.images?.length || uploadFiles.length,
         progress: 100
       }))
 
-      toast({
-        title: "Success",
-        description: `Successfully uploaded ${data.images?.length || uploadFiles.length} images`,
-      })
+      // Handle detailed response
+      if (data.failed && data.failed.length > 0) {
+        // Show warnings for failed uploads
+        const failedNames = data.failed.map((f: any) => f.name).join(', ')
+        toast({
+          title: "Partial Success",
+          description: `Uploaded ${data.images?.length || 0} images. Failed: ${failedNames}`,
+          variant: "default",
+        })
+      } else {
+        // All successful
+        toast({
+          title: "Success",
+          description: `Successfully uploaded ${data.images?.length || uploadFiles.length} images`,
+        })
+      }
 
       setUploadFiles([])
       setImageTitle("")
@@ -293,9 +370,16 @@ export default function AdminGalleryPage() {
       loadGalleries()
     } catch (err) {
       console.error('Error uploading images:', err)
+      
+      // Handle specific error types
+      let errorMessage = "Failed to upload images"
+      if (err instanceof Error) {
+        errorMessage = err.message
+      }
+      
       toast({
         title: "Error",
-        description: err instanceof Error ? err.message : "Failed to upload images",
+        description: errorMessage,
         variant: "destructive",
       })
     } finally {
@@ -602,7 +686,7 @@ export default function AdminGalleryPage() {
                 type="file"
                 accept="image/*"
                 multiple
-                onChange={(e) => setUploadFiles(Array.from(e.target.files || []))}
+                onChange={handleFileSelection}
                       disabled={uploadProgress.isUploading}
               />
               {uploadFiles.length > 0 && (
