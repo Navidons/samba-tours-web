@@ -9,6 +9,8 @@ const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp
 // POST /api/admin/gallery/images - Upload images to gallery
 export async function POST(request: NextRequest) {
   try {
+    console.log('📁 Gallery image upload started')
+    
     const formData = await request.formData()
     
     const galleryId = parseInt(formData.get('galleryId') as string)
@@ -16,6 +18,13 @@ export async function POST(request: NextRequest) {
     const description = formData.get('description') as string || null
     const alt = formData.get('alt') as string || null
     const files = formData.getAll('images') as File[]
+    
+    console.log(`📊 Upload details: Gallery ID: ${galleryId}, Files: ${files.length}`)
+    
+    // Log file sizes for debugging
+    files.forEach((file, index) => {
+      console.log(`📄 File ${index + 1}: ${file.name} (${(file.size / 1024 / 1024).toFixed(2)}MB)`)
+    })
     
     if (!galleryId) {
       return NextResponse.json(
@@ -49,8 +58,11 @@ export async function POST(request: NextRequest) {
     // Process images
     for (const file of files) {
       try {
+        console.log(`🔄 Processing: ${file.name} (${(file.size / 1024 / 1024).toFixed(2)}MB)`)
+        
         // Validate file type
         if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
+          console.log(`❌ Invalid type: ${file.name} (${file.type})`)
           failedImages.push({
             name: file.name,
             error: `Invalid file type: ${file.type}. Allowed types: ${ALLOWED_IMAGE_TYPES.join(', ')}`
@@ -60,6 +72,7 @@ export async function POST(request: NextRequest) {
 
         // Validate file size
         if (file.size > MAX_FILE_SIZE) {
+          console.log(`❌ Too large: ${file.name} (${(file.size / 1024 / 1024).toFixed(2)}MB)`)
           failedImages.push({
             name: file.name,
             error: `File too large: ${(file.size / 1024 / 1024).toFixed(2)}MB. Maximum size: ${(MAX_FILE_SIZE / 1024 / 1024).toFixed(2)}MB`
@@ -69,6 +82,7 @@ export async function POST(request: NextRequest) {
 
         // Validate file has content
         if (file.size === 0) {
+          console.log(`❌ Empty file: ${file.name}`)
           failedImages.push({
             name: file.name,
             error: 'File is empty'
@@ -79,11 +93,13 @@ export async function POST(request: NextRequest) {
         // Convert file to buffer with error handling
         let buffer: Buffer
         try {
+          console.log(`📦 Converting to buffer: ${file.name}`)
           const arrayBuffer = await file.arrayBuffer()
           buffer = Buffer.from(arrayBuffer)
           
           // Validate buffer has content
           if (buffer.length === 0) {
+            console.log(`❌ Empty buffer: ${file.name}`)
             failedImages.push({
               name: file.name,
               error: 'Failed to read file content'
@@ -91,7 +107,7 @@ export async function POST(request: NextRequest) {
             continue
           }
         } catch (bufferError) {
-          console.error(`Error reading file ${file.name}:`, bufferError)
+          console.error(`❌ Buffer error for ${file.name}:`, bufferError)
           failedImages.push({
             name: file.name,
             error: 'Failed to read file content'
@@ -101,6 +117,8 @@ export async function POST(request: NextRequest) {
         
         // Extract filename without extension for title
         const imageTitle = file.name.replace(/\.[^/.]+$/, "").replace(/[-_]/g, " ")
+        
+        console.log(`💾 Saving to database: ${file.name}`)
         
         // Create image record with better error handling
         const image = await prisma.galleryImage.create({
@@ -160,6 +178,7 @@ export async function POST(request: NextRequest) {
             }
           }
         })
+        console.log(`📈 Updated gallery count: +${uploadedImages.length}`)
       } catch (updateError) {
         console.error('Error updating gallery count:', updateError)
         // Don't fail the entire request if count update fails
@@ -178,6 +197,8 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    console.log(`🎉 Upload complete: ${uploadedImages.length} successful, ${failedImages.length} failed`)
+
     // Return different status codes based on results
     if (uploadedImages.length === 0 && failedImages.length > 0) {
       return NextResponse.json(response, { status: 400 })
@@ -188,7 +209,7 @@ export async function POST(request: NextRequest) {
     }
 
   } catch (error) {
-    console.error('Error uploading images:', error)
+    console.error('❌ Error uploading images:', error)
     
     if (error instanceof PrismaClientInitializationError) {
       return NextResponse.json(

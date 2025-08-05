@@ -1,21 +1,33 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  images: {
-    formats: ['image/webp', 'image/avif'],
-    deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
-    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
-    minimumCacheTTL: 60,
-    dangerouslyAllowSVG: true,
-    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
-    remotePatterns: [
-      { protocol: 'https', hostname: 'img.youtube.com', port: '', pathname: '/vi/**' },
-      { protocol: 'https', hostname: 'i.ytimg.com', port: '', pathname: '/vi/**' },
-    ],
+  experimental: {
+    appDir: true,
   },
-  // Performance optimizations
-  compress: true,
-  poweredByHeader: false,
-  generateEtags: false,
+  images: {
+    domains: ['sambatours.co', 'localhost'],
+    formats: ['image/webp', 'image/avif'],
+  },
+  // Increase body parser limit for file uploads
+  api: {
+    bodyParser: {
+      sizeLimit: '50mb',
+    },
+    responseLimit: '50mb',
+  },
+  // Increase timeout for API routes
+  serverRuntimeConfig: {
+    maxDuration: 300, // 5 minutes
+  },
+  // Handle large file uploads
+  webpack: (config, { isServer }) => {
+    if (!isServer) {
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        fs: false,
+      }
+    }
+    return config
+  },
 }
 
 export default nextConfig
