@@ -60,7 +60,7 @@ export default function BlogPostForm({ postId, slug }: BlogPostFormProps) {
   const [creatingCategory, setCreatingCategory] = useState(false)
   const [creatingAuthor, setCreatingAuthor] = useState(false)
   const [creatingTag, setCreatingTag] = useState(false)
-  const [thumbnailFile, setThumbnailFile] = useState<File | null>(null)
+  const [thumbnailFile, setThumbnailFile] = useState<any>(null)
   const [thumbnailPreview, setThumbnailPreview] = useState<string | null>(null)
 
   const [formData, setFormData] = useState({

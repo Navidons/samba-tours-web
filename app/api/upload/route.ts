@@ -5,7 +5,7 @@ export async function POST(request: NextRequest) {
   try {
 
     const formData = await request.formData()
-    const files = formData.getAll("files") as File[]
+    const files = formData.getAll("files")
 
     if (!files || files.length === 0) {
       return NextResponse.json({ error: "No files provided" }, { status: 400 })
@@ -14,6 +14,16 @@ export async function POST(request: NextRequest) {
     const uploadedImages = []
 
     for (const file of files) {
+      // Check if it's a file object
+      if (!(file instanceof Blob)) {
+        continue // Skip non-file items
+      }
+
+      // Type guard to ensure we have a file with the expected properties
+      if (!('type' in file) || !('name' in file) || !('size' in file)) {
+        continue
+      }
+
       if (!file.type.startsWith("image/")) {
         continue // Skip non-image files
       }
@@ -21,7 +31,7 @@ export async function POST(request: NextRequest) {
       // Generate unique filename
       const timestamp = Date.now()
       const randomString = Math.random().toString(36).substring(2, 15)
-      const extension = file.name.split(".").pop()
+      const extension = (file as any).name.split(".").pop()
       const filename = `tours/${timestamp}-${randomString}.${extension}`
 
       try {
@@ -33,7 +43,7 @@ export async function POST(request: NextRequest) {
         uploadedImages.push({
           url: blob.url,
           filename: filename,
-          size: file.size,
+          size: (file as any).size,
           type: file.type,
         })
       } catch (uploadError) {

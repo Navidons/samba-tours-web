@@ -339,18 +339,18 @@ export async function POST(request: NextRequest) {
     }
 
     // Handle featured image
-    const featuredImageFile = formData.get('featuredImage') as File | null
+    const featuredImageFile = formData.get('featuredImage')
     let featuredImageData = null
     let featuredImageName = null
     let featuredImageType = null
     let featuredImageSize = null
 
-    if (featuredImageFile) {
+    if (featuredImageFile && featuredImageFile instanceof Blob) {
       const buffer = Buffer.from(await featuredImageFile.arrayBuffer())
       featuredImageData = buffer
-      featuredImageName = featuredImageFile.name
+      featuredImageName = (featuredImageFile as any).name
       featuredImageType = featuredImageFile.type
-      featuredImageSize = featuredImageFile.size
+      featuredImageSize = (featuredImageFile as any).size
     }
 
     // Create tour
@@ -472,15 +472,15 @@ export async function POST(request: NextRequest) {
       for (let i = 0; i < galleryImages.length; i++) {
         const file = galleryImages[i]
         // Only process if it's a File (not a string)
-        if (typeof file === 'object' && file !== null && typeof (file as File).arrayBuffer === 'function') {
-          const buffer = Buffer.from(await (file as File).arrayBuffer())
+        if (typeof file === 'object' && file !== null && file instanceof Blob && typeof file.arrayBuffer === 'function') {
+          const buffer = Buffer.from(await file.arrayBuffer())
           await prisma.tourImage.create({
             data: {
               tourId: tour.id,
               imageData: buffer,
-              imageName: (file as File).name,
-              imageType: (file as File).type,
-              imageSize: (file as File).size,
+              imageName: (file as any).name,
+              imageType: file.type,
+              imageSize: (file as any).size,
               displayOrder: i + 1,
               isFeatured: false,
             }

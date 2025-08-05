@@ -136,18 +136,18 @@ export async function POST(request: NextRequest) {
     }
 
     // Handle image upload
-    const imageFile = formData.get('image') as File | null
+    const imageFile = formData.get('image')
     let imageData = null
     let imageName = null
     let imageType = null
     let imageSize = null
 
-    if (imageFile) {
+    if (imageFile && imageFile instanceof Blob) {
       const buffer = Buffer.from(await imageFile.arrayBuffer())
       imageData = buffer
-      imageName = imageFile.name
+      imageName = (imageFile as any).name
       imageType = imageFile.type
-      imageSize = imageFile.size
+      imageSize = (imageFile as any).size
     }
 
     // Create category

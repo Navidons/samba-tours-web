@@ -11,7 +11,7 @@ export async function POST(request: NextRequest) {
     const title = formData.get('title') as string || null
     const description = formData.get('description') as string || null
     const alt = formData.get('alt') as string || null
-    const files = formData.getAll('images') as File[]
+    const files = formData.getAll('images')
     
     if (!galleryId) {
       return NextResponse.json(
@@ -43,19 +43,29 @@ export async function POST(request: NextRequest) {
 
     // Process images
     for (const file of files) {
+      // Check if it's a file object
+      if (!(file instanceof Blob)) {
+        continue // Skip non-file items
+      }
+
+      // Type guard to ensure we have a file with the expected properties
+      if (!('type' in file) || !('name' in file) || !('size' in file)) {
+        continue
+      }
+
       try {
         const buffer = Buffer.from(await file.arrayBuffer())
         
         // Extract filename without extension for title
-        const imageTitle = file.name.replace(/\.[^/.]+$/, "").replace(/[-_]/g, " ")
+        const imageTitle = (file as any).name.replace(/\.[^/.]+$/, "").replace(/[-_]/g, " ")
         
         const image = await prisma.galleryImage.create({
           data: {
             galleryId,
             imageData: buffer,
-            imageName: file.name,
+            imageName: (file as any).name,
             imageType: file.type,
-            imageSize: file.size,
+            imageSize: (file as any).size,
             alt: alt || imageTitle,
             title: title || imageTitle,
             description: description
@@ -85,7 +95,7 @@ export async function POST(request: NextRequest) {
         })
 
       } catch (error) {
-        console.error(`Error uploading image ${file.name}:`, error)
+        console.error(`Error uploading image ${(file as any).name}:`, error)
         // Continue with other images even if one fails
       }
     }

@@ -377,7 +377,7 @@ export async function PUT(
     }
 
     // Handle featured image
-    const featuredImageFile = formData.get('featuredImage') as File | null
+    const featuredImageFile = formData.get('featuredImage')
     const removeFeaturedImage = formData.get('removeFeaturedImage') === 'true'
     
     let featuredImageData = existingTour.featuredImageData
@@ -390,12 +390,12 @@ export async function PUT(
       featuredImageName = null
       featuredImageType = null
       featuredImageSize = null
-    } else if (featuredImageFile) {
+    } else if (featuredImageFile && featuredImageFile instanceof Blob) {
       const buffer = Buffer.from(await featuredImageFile.arrayBuffer())
       featuredImageData = buffer
-      featuredImageName = featuredImageFile.name
+      featuredImageName = (featuredImageFile as any).name
       featuredImageType = featuredImageFile.type
-      featuredImageSize = featuredImageFile.size
+      featuredImageSize = (featuredImageFile as any).size
     }
 
     // Update tour in transaction

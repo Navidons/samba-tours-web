@@ -214,7 +214,7 @@ function ComposeEmailModal({ open, onOpenChange, recipients, defaultSubject = ''
     template: defaultTemplate,
     message: '',
     htmlMessage: '',
-    attachments: [] as File[]
+    attachments: [] as any[]
   })
   const [isHtmlMode, setIsHtmlMode] = useState(false)
   const [isDragOver, setIsDragOver] = useState(false)

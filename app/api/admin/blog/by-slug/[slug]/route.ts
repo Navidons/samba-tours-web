@@ -146,7 +146,7 @@ export async function PUT(request: NextRequest, { params }: { params: { slug: st
     const authorId = formData.get('authorId') as string
 
     const tagIds = formData.getAll('tagIds').map(id => parseInt(id as string))
-    const thumbnail = formData.get('thumbnail') as File | null
+    const thumbnail = formData.get('thumbnail')
 
     // Prepare update data
     const updateData: any = {
@@ -165,14 +165,14 @@ export async function PUT(request: NextRequest, { params }: { params: { slug: st
     }
 
     // Handle thumbnail upload
-    if (thumbnail && thumbnail.size > 0) {
+    if (thumbnail && thumbnail instanceof Blob && (thumbnail as any).size > 0) {
       const bytes = await thumbnail.arrayBuffer()
       const buffer = Buffer.from(bytes)
       
       updateData.thumbnailData = buffer
-      updateData.thumbnailName = thumbnail.name
+      updateData.thumbnailName = (thumbnail as any).name
       updateData.thumbnailType = thumbnail.type
-      updateData.thumbnailSize = thumbnail.size
+      updateData.thumbnailSize = (thumbnail as any).size
     }
 
     // Update the post

@@ -13,14 +13,14 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
   const description = formData.get('description') as string;
   const displayOrder = Number(formData.get('displayOrder'));
   const isActive = formData.get('isActive') === 'true';
-  const imageFile = formData.get('image') as File | null;
+  const imageFile = formData.get('image');
 
   let imageData, imageName, imageType, imageSize;
-  if (imageFile && typeof imageFile === 'object' && 'arrayBuffer' in imageFile) {
+  if (imageFile && imageFile instanceof Blob) {
     imageData = Buffer.from(await imageFile.arrayBuffer());
-    imageName = imageFile.name;
+    imageName = (imageFile as any).name;
     imageType = imageFile.type;
-    imageSize = imageFile.size;
+    imageSize = (imageFile as any).size;
   }
 
   try {
