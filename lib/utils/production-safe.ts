@@ -63,7 +63,7 @@ export const safeServerImport = async <T>(moduleName: string): Promise<T | null>
  */
 export const safeLocalStorage = {
   getItem: (key: string): string | null => {
-    return safeBrowserExecute(() => localStorage.getItem(key), null)
+    return safeBrowserExecute(() => localStorage.getItem(key), null) ?? null
   },
   setItem: (key: string, value: string): void => {
     safeBrowserExecute(() => localStorage.setItem(key, value))
@@ -78,7 +78,7 @@ export const safeLocalStorage = {
  */
 export const safeSessionStorage = {
   getItem: (key: string): string | null => {
-    return safeBrowserExecute(() => sessionStorage.getItem(key), null)
+    return safeBrowserExecute(() => sessionStorage.getItem(key), null) ?? null
   },
   setItem: (key: string, value: string): void => {
     safeBrowserExecute(() => sessionStorage.setItem(key, value))
@@ -93,10 +93,10 @@ export const safeSessionStorage = {
  */
 export const safeDocument = {
   getElementById: (id: string): HTMLElement | null => {
-    return safeBrowserExecute(() => document.getElementById(id), null)
+    return safeBrowserExecute(() => document.getElementById(id), null) ?? null
   },
   querySelector: (selector: string): Element | null => {
-    return safeBrowserExecute(() => document.querySelector(selector), null)
+    return safeBrowserExecute(() => document.querySelector(selector), null) ?? null
   },
   addEventListener: (type: string, listener: EventListener): void => {
     safeBrowserExecute(() => document.addEventListener(type, listener))
@@ -114,12 +114,12 @@ export const safeWindow = {
     safeBrowserExecute(() => window.scrollTo(x, y))
   },
   scrollY: (): number => {
-    return safeBrowserExecute(() => window.scrollY, 0)
+    return safeBrowserExecute(() => window.scrollY, 0) ?? 0
   },
   innerHeight: (): number => {
-    return safeBrowserExecute(() => window.innerHeight, 0)
+    return safeBrowserExecute(() => window.innerHeight, 0) ?? 0
   },
   innerWidth: (): number => {
-    return safeBrowserExecute(() => window.innerWidth, 0)
+    return safeBrowserExecute(() => window.innerWidth, 0) ?? 0
   }
 } 
