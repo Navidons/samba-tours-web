@@ -18,6 +18,7 @@ import {
   Maximize2,
   Minimize2
 } from "lucide-react"
+import { useIsMobile } from "@/hooks/use-mobile"
 
 interface GalleryItem {
   id: number
@@ -48,16 +49,19 @@ export default function GalleryLightbox({
   onIndexChange 
 }: GalleryLightboxProps) {
   const currentImage = images[currentIndex]
+  const isMobile = useIsMobile()
   const [scale, setScale] = useState(1)
   const [rotation, setRotation] = useState(0)
   const [isFullscreen, setIsFullscreen] = useState(false)
   const [isImageLoaded, setIsImageLoaded] = useState(false)
-  const [showInfo, setShowInfo] = useState(true)
+  // Hide info panel by default on mobile
+  const [showInfo, setShowInfo] = useState(!isMobile)
   const [position, setPosition] = useState({ x: 0, y: 0 })
   const [isDragging, setIsDragging] = useState(false)
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 })
   const imageRef = useRef<HTMLDivElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
+  const touchStartX = useRef<number | null>(null)
 
   // Blur data URL for better loading experience
   const blurDataURL = 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAREBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=='
@@ -69,6 +73,20 @@ export default function GalleryLightbox({
     setPosition({ x: 0, y: 0 })
     setIsImageLoaded(false)
   }, [currentIndex, currentImage])
+
+  // Preload next/prev images for instant navigation
+  useEffect(() => {
+    if (images.length > 1) {
+      const preload = (idx: number) => {
+        if (idx >= 0 && idx < images.length) {
+          const img = new window.Image()
+          img.src = images[idx].src
+        }
+      }
+      preload(currentIndex + 1)
+      preload(currentIndex - 1)
+    }
+  }, [currentIndex, images])
 
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
@@ -205,6 +223,9 @@ export default function GalleryLightbox({
         y: e.touches[0].clientY - position.y 
       })
     }
+    if (e.touches.length === 1) {
+      touchStartX.current = e.touches[0].clientX
+    }
   }
 
   const handleTouchMove = (e: React.TouchEvent) => {
@@ -217,8 +238,16 @@ export default function GalleryLightbox({
     }
   }
 
-  const handleTouchEnd = () => {
+  const handleTouchEnd = (e: React.TouchEvent) => {
     setIsDragging(false)
+    if (touchStartX.current !== null && e.changedTouches.length === 1) {
+      const deltaX = e.changedTouches[0].clientX - touchStartX.current
+      if (Math.abs(deltaX) > 50) {
+        if (deltaX > 0) onPrev()
+        else onNext()
+      }
+      touchStartX.current = null
+    }
   }
 
   if (!currentImage) return null
@@ -226,73 +255,12 @@ export default function GalleryLightbox({
   return (
     <div 
       ref={containerRef}
-      className={`fixed inset-0 z-50 bg-black/95 flex items-center justify-center ${
-        isFullscreen ? 'z-[60]' : ''
-      }`}
+      className={`fixed inset-0 z-50 bg-black/95 flex items-center justify-center ${isFullscreen ? 'z-[60]' : ''}`}
     >
       {/* Top toolbar */}
       <div className="absolute top-4 left-4 right-4 z-10 flex items-center justify-between">
+        <div />
         <div className="flex items-center space-x-2">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setShowInfo(!showInfo)}
-            className="text-white hover:bg-white/20 h-10 w-10 p-0"
-            title="Toggle info (I)"
-          >
-            <X className="h-5 w-5" />
-          </Button>
-          <span className="text-white text-sm font-medium">
-            {currentIndex + 1} of {images.length}
-          </span>
-        </div>
-
-        <div className="flex items-center space-x-2">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={handleZoomOut}
-            className="text-white hover:bg-white/20 h-10 w-10 p-0"
-            title="Zoom out (-)"
-          >
-            <ZoomOut className="h-5 w-5" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={handleZoomIn}
-            className="text-white hover:bg-white/20 h-10 w-10 p-0"
-            title="Zoom in (+)"
-          >
-            <ZoomIn className="h-5 w-5" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={handleRotate}
-            className="text-white hover:bg-white/20 h-10 w-10 p-0"
-            title="Rotate (R)"
-          >
-            <RotateCw className="h-5 w-5" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={handleReset}
-            className="text-white hover:bg-white/20 h-10 w-10 p-0"
-            title="Reset (0)"
-          >
-            <Minimize2 className="h-5 w-5" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setIsFullscreen(!isFullscreen)}
-            className="text-white hover:bg-white/20 h-10 w-10 p-0"
-            title="Fullscreen (F)"
-          >
-            {isFullscreen ? <Minimize2 className="h-5 w-5" /> : <Maximize2 className="h-5 w-5" />}
-          </Button>
           <Button
             variant="ghost"
             size="sm"
@@ -312,6 +280,7 @@ export default function GalleryLightbox({
         onClick={onPrev}
         className="absolute left-4 top-1/2 transform -translate-y-1/2 z-10 text-white hover:bg-white/20 h-12 w-12 p-0"
         title="Previous (←)"
+        style={isMobile ? { left: 0, width: 48, height: 48 } : {}}
       >
         <ChevronLeft className="h-8 w-8" />
       </Button>
@@ -322,12 +291,13 @@ export default function GalleryLightbox({
         onClick={onNext}
         className="absolute right-4 top-1/2 transform -translate-y-1/2 z-10 text-white hover:bg-white/20 h-12 w-12 p-0"
         title="Next (→)"
+        style={isMobile ? { right: 0, width: 48, height: 48 } : {}}
       >
         <ChevronRight className="h-8 w-8" />
       </Button>
 
       {/* Main content */}
-      <div className="flex flex-col lg:flex-row h-full w-full max-w-7xl mx-auto p-4 pt-20">
+      <div className="flex flex-col lg:flex-row h-full w-full max-w-7xl mx-auto p-2 pt-16 md:p-4 md:pt-20">
         {/* Image container with zoom and scroll */}
         <div 
           className="flex-1 flex items-center justify-center relative overflow-hidden"
@@ -342,9 +312,7 @@ export default function GalleryLightbox({
         >
           <div 
             ref={imageRef}
-            className={`relative max-w-full max-h-full ${
-              scale > 1 ? 'cursor-grab active:cursor-grabbing' : 'cursor-zoom-in'
-            }`}
+            className={`relative max-w-full max-h-full ${scale > 1 ? 'cursor-grab active:cursor-grabbing' : 'cursor-zoom-in'}`}
             style={{
               transform: `scale(${scale}) rotate(${rotation}deg) translate(${position.x}px, ${position.y}px)`,
               transition: isDragging ? 'none' : 'transform 0.2s ease-out'
@@ -352,17 +320,16 @@ export default function GalleryLightbox({
           >
             <Image
               src={currentImage.src}
-              alt={currentImage.alt}
-              width={1200}
-              height={800}
-              className={`max-w-full max-h-[80vh] object-contain transition-opacity duration-300 ${
-                isImageLoaded ? 'opacity-100' : 'opacity-0'
-              }`}
-              priority
-              quality={90}
+              alt={currentImage.alt || currentImage.title || "Gallery Image"}
+              width={isMobile ? 600 : 1200}
+              height={isMobile ? 400 : 800}
+              className={`max-w-full max-h-[80vh] object-contain transition-opacity duration-300 ${isImageLoaded ? 'opacity-100' : 'opacity-0'}`}
+              priority={currentIndex === 0}
+              quality={isMobile ? 60 : 90}
               placeholder="blur"
               blurDataURL={blurDataURL}
               onLoad={() => setIsImageLoaded(true)}
+              sizes={isMobile ? "100vw" : "80vw"}
             />
             
             {/* Loading indicator */}
@@ -381,63 +348,20 @@ export default function GalleryLightbox({
           )}
         </div>
 
-        {/* Info panel */}
+        {/* Info panel: hide by default on mobile, toggleable */}
         {showInfo && (
-          <div className="lg:w-80 bg-gradient-to-br from-emerald-900/20 to-green-900/20 backdrop-blur-sm rounded-lg p-6 text-white lg:ml-6 mt-4 lg:mt-0 border border-emerald-500/20 max-h-[60vh] overflow-y-auto">
-            <div className="flex items-center justify-between mb-4">
-              {currentImage.featured && (
-                <Badge className="bg-gradient-to-r from-emerald-500 to-green-500 text-white border-0">
-                  Featured
-                </Badge>
-              )}
-            </div>
-
+          <div className="lg:w-80 bg-gradient-to-br from-emerald-900/20 to-green-900/20 backdrop-blur-sm rounded-lg p-4 md:p-6 text-white lg:ml-6 mt-4 lg:mt-0 border border-emerald-500/20 max-h-[60vh] overflow-y-auto">
             <h2 className="text-2xl font-bold mb-3 text-emerald-100">{currentImage.title}</h2>
-            <p className="text-emerald-200 mb-6 leading-relaxed">{currentImage.description}</p>
-
-            <div className="space-y-3 mb-6">
-              <div className="flex items-center space-x-2 text-sm">
-                <Camera className="h-4 w-4 text-emerald-300" />
-                <span className="text-emerald-200">Gallery Image</span>
-              </div>
-            </div>
-
-            <div className="flex items-center justify-between mb-6 text-sm">
-              <div className="flex items-center space-x-4">
-                <div className="flex items-center space-x-1 text-emerald-200">
-                  <Eye className="h-4 w-4" />
-                  <span>{currentImage.views || 0}</span>
-                </div>
-              </div>
-            </div>
-
-            <div className="flex space-x-2">
-              <Button
-                size="sm"
-                onClick={handleShare}
-                className="flex-1 bg-gradient-to-r from-emerald-500 to-green-500 hover:from-emerald-600 hover:to-green-600 border-0"
-              >
-                <Share2 className="h-4 w-4 mr-2" />
-                Share
-              </Button>
-              <Button
-                size="sm"
-                onClick={handleDownload}
-                className="bg-gradient-to-r from-emerald-500 to-green-500 hover:from-emerald-600 hover:to-green-600 border-0"
-              >
-                <Download className="h-4 w-4" />
-              </Button>
-            </div>
           </div>
         )}
       </div>
 
       {/* Thumbnail strip */}
-      <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2 max-w-full overflow-x-auto px-4 pb-2">
+      <div className="absolute bottom-2 md:bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2 max-w-full overflow-x-auto px-2 md:px-4 pb-2">
         {images.map((image, index) => (
           <div
             key={image.id}
-            className={`relative w-16 h-16 flex-shrink-0 rounded cursor-pointer overflow-hidden transition-all duration-200 ${
+            className={`relative w-12 h-12 md:w-16 md:h-16 flex-shrink-0 rounded cursor-pointer overflow-hidden transition-all duration-200 ${
               index === currentIndex 
                 ? "ring-2 ring-emerald-400 scale-110" 
                 : "opacity-60 hover:opacity-100 hover:scale-105"
@@ -446,14 +370,14 @@ export default function GalleryLightbox({
           >
             <Image 
               src={image.src} 
-              alt={image.alt} 
+              alt={image.alt || image.title || "Gallery Image"} 
               fill 
               className="object-cover"
-              quality={85}
+              quality={isMobile ? 40 : 85}
               placeholder="blur"
               blurDataURL={blurDataURL}
               loading="lazy"
-              sizes="64px"
+              sizes={isMobile ? "48px" : "64px"}
             />
             {index === currentIndex && (
               <div className="absolute inset-0 bg-emerald-400/20" />
@@ -463,9 +387,11 @@ export default function GalleryLightbox({
       </div>
 
       {/* Keyboard shortcuts help */}
-      <div className="absolute bottom-4 right-4 text-white/60 text-xs">
-        <div>ESC: Close | ←→: Navigate | +/-: Zoom | R: Rotate | 0: Reset | F: Fullscreen | I: Info | Mouse: Drag/Zoom</div>
-      </div>
+      {!isMobile && (
+        <div className="absolute bottom-4 right-4 text-white/60 text-xs">
+          <div>ESC: Close | ←→: Navigate | +/-: Zoom | R: Rotate | 0: Reset | F: Fullscreen | I: Info | Mouse: Drag/Zoom</div>
+        </div>
+      )}
     </div>
   )
 }

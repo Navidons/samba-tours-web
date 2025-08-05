@@ -1,0 +1,17 @@
+DB_HOST=82.25.97.212
+DB_USER=samba_user
+DB_PASSWORD=R1CH@Rd12
+DB_NAME=samba_tours_db
+DATABASE_URL="mysql://samba_user:R1CH@Rd12@82.25.97.212:3306/samba_tours_db"
+NODE_ENV=development
+NEXT_PUBLIC_APP_URL=https://sambatours.co
+ENABLE_PERFORMANCE_MONITORING=true
+ENABLE_ERROR_TRACKING=true
+RATE_LIMIT_MAX=100
+RATE_LIMIT_WINDOW=900000
+CACHE_TTL=3600
+UPLOAD_MAX_SIZE=5242880
+ALLOWED_FILE_TYPES=jpg,jpeg,png,gif,webp,pdf,doc,docx
+GMAIL_USER=sambatours256@gmail.com
+GMAIL_APP_PASSWORD=gwgn qwce prdx pqsl
+pn

@@ -116,7 +116,6 @@ export default function GalleryClient({ searchParams, hideMainHeading }: Gallery
     alt: image.alt || image.title || 'Gallery Image',
     title: image.title || '',
     description: image.description || '',
-    views: image.views,
     aspectRatio: "4:3", // Default aspect ratio
     featured: image.featured
   }))

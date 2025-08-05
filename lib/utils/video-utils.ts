@@ -1,106 +1,37 @@
-/**
- * Utility functions for handling video URLs and extracting video IDs
- */
-
-export interface VideoInfo {
-  provider: 'youtube' | 'vimeo' | 'other'
-  videoId: string | null
-  embedUrl: string | null
-  thumbnailUrl: string | null
-}
-
-/**
- * Extract video information from a URL
- */
-export function extractVideoInfo(url: string): VideoInfo {
-  const youtubeRegex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/
-  const vimeoRegex = /(?:vimeo\.com\/)(\d+)/
-  
-  const youtubeMatch = url.match(youtubeRegex)
-  const vimeoMatch = url.match(vimeoRegex)
-  
-  if (youtubeMatch) {
-    const videoId = youtubeMatch[1]
-    return {
-      provider: 'youtube',
-      videoId,
-      embedUrl: `https://www.youtube.com/embed/${videoId}`,
-      thumbnailUrl: `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`
-    }
-  }
-  
-  if (vimeoMatch) {
-    const videoId = vimeoMatch[1]
-    return {
-      provider: 'vimeo',
-      videoId,
-      embedUrl: `https://player.vimeo.com/video/${videoId}`,
-      thumbnailUrl: null // Vimeo requires API call for thumbnails
-    }
-  }
-  
-  return {
-    provider: 'other',
-    videoId: null,
-    embedUrl: null,
-    thumbnailUrl: null
-  }
-}
-
-/**
- * Validate if a URL is a valid video URL
- */
-export function isValidVideoUrl(url: string): boolean {
-  const videoInfo = extractVideoInfo(url)
-  return videoInfo.provider !== 'other' || url.includes('video') || url.includes('watch')
-}
-
-/**
- * Get embed URL for a video
- */
 export function getEmbedUrl(url: string): string | null {
-  const videoInfo = extractVideoInfo(url)
-  return videoInfo.embedUrl
-}
-
-/**
- * Get thumbnail URL for a video
- */
-export function getThumbnailUrl(url: string): string | null {
-  const videoInfo = extractVideoInfo(url)
-  return videoInfo.thumbnailUrl
-}
-
-/**
- * Get YouTube thumbnail URL with specified quality
- */
-export function getYouTubeThumbnailUrl(videoId: string, quality: 'default' | 'medium' | 'high' | 'standard' | 'maxres' = 'maxres'): string {
-  const qualityMap = {
-    default: 'default.jpg',
-    medium: 'mqdefault.jpg',
-    high: 'hqdefault.jpg',
-    standard: 'sddefault.jpg',
-    maxres: 'maxresdefault.jpg'
+  // YouTube URL patterns
+  const youtubeRegex = /(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\n?#]+)/
+  const youtubeMatch = url.match(youtubeRegex)
+  if (youtubeMatch) {
+    return `https://www.youtube.com/embed/${youtubeMatch[1]}?autoplay=1&rel=0`
   }
-  
-  return `https://img.youtube.com/vi/${videoId}/${qualityMap[quality]}`
+
+  // Vimeo URL patterns
+  const vimeoRegex = /vimeo\.com\/(\d+)/
+  const vimeoMatch = url.match(vimeoRegex)
+  if (vimeoMatch) {
+    return `https://player.vimeo.com/video/${vimeoMatch[1]}?autoplay=1`
+  }
+
+  // If it's already an embed URL, return as is
+  if (url.includes("embed") || url.includes("player.vimeo.com")) {
+    return url
+  }
+
+  return null
 }
 
-/**
- * Get all available YouTube thumbnail URLs for a video
- */
-export function getYouTubeThumbnailUrls(videoId: string): {
-  default: string
-  medium: string
-  high: string
-  standard: string
-  maxres: string
-} {
-  return {
-    default: getYouTubeThumbnailUrl(videoId, 'default'),
-    medium: getYouTubeThumbnailUrl(videoId, 'medium'),
-    high: getYouTubeThumbnailUrl(videoId, 'high'),
-    standard: getYouTubeThumbnailUrl(videoId, 'standard'),
-    maxres: getYouTubeThumbnailUrl(videoId, 'maxres')
+export function isVideoUrl(url: string): boolean {
+  const videoExtensions = [".mp4", ".webm", ".ogg", ".mov", ".avi"]
+  return videoExtensions.some((ext) => url.toLowerCase().includes(ext))
+}
+
+export function getVideoProvider(url: string): string | null {
+  if (url.includes("youtube.com") || url.includes("youtu.be")) {
+    return "youtube"
   }
+  if (url.includes("vimeo.com")) {
+    return "vimeo"
+  }
+  return null
 } 

@@ -139,18 +139,11 @@ export default function GalleryGrid({ images = [], viewMode = "masonry" }: Galle
             <div className="absolute bottom-0 left-0 right-0 p-4 text-white transform translate-y-full group-hover:translate-y-0 transition-transform duration-300">
               <h3 className="font-semibold mb-1">{item.title}</h3>
               <p className="text-sm text-emerald-100 mb-2 line-clamp-2">{item.description}</p>
-
               <div className="flex items-center justify-between text-xs text-emerald-200">
                 <div className="flex items-center space-x-3">
                   <div className="flex items-center space-x-1">
                     <Camera className="h-3 w-3" />
                     <span>Gallery</span>
-                  </div>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <div className="flex items-center space-x-1">
-                    <Eye className="h-3 w-3" />
-                    <span>{item.views || 0}</span>
                   </div>
                 </div>
               </div>

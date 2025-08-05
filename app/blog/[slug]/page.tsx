@@ -23,8 +23,8 @@ const slugify = (text: string) =>
 // Generate metadata for SEO
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
   try {
-    // Fetch blog post from API for metadata
-    const response = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL || 'https://sambatours.co'}/api/blog/${params.slug}`, {
+    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
+    const response = await fetch(`${baseUrl}/api/blog/${params.slug}`, {
       cache: 'no-store'
     })
     
@@ -150,8 +150,8 @@ export const dynamic = 'force-dynamic'
 
 export default async function BlogPostPage({ params }: { params: { slug: string } }) {
   try {
-    // Fetch blog post from API
-    const response = await fetch(`/api/blog/${params.slug}`, {
+    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
+    const response = await fetch(`${baseUrl}/api/blog/${params.slug}`, {
       cache: 'no-store'
     })
     
