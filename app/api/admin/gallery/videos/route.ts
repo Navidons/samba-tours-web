@@ -162,7 +162,7 @@ export async function POST(request: NextRequest) {
     } else if (videoInfo.provider === 'youtube' && videoInfo.videoId) {
       // Fetch thumbnail from YouTube
       try {
-        const thumbnailUrl = getYouTubeThumbnailUrl(videoInfo.videoId, 'maxres')
+        const thumbnailUrl = getYouTubeThumbnailUrl(videoInfo.videoId, 'maxresdefault')
         const thumbnailResponse = await fetch(thumbnailUrl)
         
         if (thumbnailResponse.ok) {
@@ -172,7 +172,7 @@ export async function POST(request: NextRequest) {
           thumbnailType = 'image/jpeg'
         } else {
           // Fallback to medium quality thumbnail
-          const fallbackUrl = getYouTubeThumbnailUrl(videoInfo.videoId, 'medium')
+          const fallbackUrl = getYouTubeThumbnailUrl(videoInfo.videoId, 'mqdefault')
           const fallbackResponse = await fetch(fallbackUrl)
           
           if (fallbackResponse.ok) {

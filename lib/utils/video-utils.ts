@@ -34,4 +34,25 @@ export function getVideoProvider(url: string): string | null {
     return "vimeo"
   }
   return null
+}
+
+export function extractVideoInfo(url: string): { provider: string | null, videoId: string | null } {
+  // YouTube
+  const youtubeRegex = /(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([\w-]{11})/
+  const youtubeMatch = url.match(youtubeRegex)
+  if (youtubeMatch) {
+    return { provider: 'youtube', videoId: youtubeMatch[1] }
+  }
+  // Vimeo
+  const vimeoRegex = /vimeo\.com\/(\d+)/
+  const vimeoMatch = url.match(vimeoRegex)
+  if (vimeoMatch) {
+    return { provider: 'vimeo', videoId: vimeoMatch[1] }
+  }
+  return { provider: null, videoId: null }
+}
+
+export function getYouTubeThumbnailUrl(videoId: string, quality: 'default' | 'mqdefault' | 'hqdefault' | 'sddefault' | 'maxresdefault' = 'hqdefault'): string {
+  // quality: default, mqdefault, hqdefault, sddefault, maxresdefault
+  return `https://img.youtube.com/vi/${videoId}/${quality}.jpg`
 } 
