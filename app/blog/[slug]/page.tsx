@@ -2,13 +2,19 @@ import { Suspense } from "react"
 import { notFound } from "next/navigation"
 import * as cheerio from "cheerio"
 import type { Metadata } from "next"
+import dynamicImport from "next/dynamic"
 import BlogPostHeader from "@/components/blog/blog-post-header"
 import BlogPostContent from "@/components/blog/blog-post-content"
 import BlogPostSidebar from "@/components/blog/blog-post-sidebar"
 import RelatedPosts from "@/components/blog/related-posts"
-import BlogComments from "@/components/blog/blog-comments"
 import LoadingSpinner from "@/components/ui/loading-spinner"
 import { getRelatedBlogPosts } from "@/lib/services/blog-service"
+
+// Dynamically import BlogComments to avoid SSR issues
+const BlogComments = dynamicImport(() => import("@/components/blog/blog-comments"), {
+  ssr: false,
+  loading: () => <LoadingSpinner />
+})
 
 // Helper function to create a URL-friendly slug from a string
 const slugify = (text: string) =>
