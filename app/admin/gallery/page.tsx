@@ -61,7 +61,7 @@ export default function AdminGalleryPage() {
   const [mediaLoading, setMediaLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [selectedGallery, setSelectedGallery] = useState<number | null>(null)
-  const [uploadFiles, setUploadFiles] = useState<any[]>([])
+  const [uploadFiles, setUploadFiles] = useState<File[]>([])
   const [videoUrl, setVideoUrl] = useState("")
   const [imageTitle, setImageTitle] = useState("")
   const [imageDescription, setImageDescription] = useState("")

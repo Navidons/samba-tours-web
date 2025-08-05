@@ -54,7 +54,7 @@ export default function TourCategoriesAdminPage() {
     description: '',
     displayOrder: 0,
     isActive: true,
-    image: null as any,
+    image: null as File | null,
   });
   const [editCategory, setEditCategory] = useState<Category | null>(null);
   const [editValues, setEditValues] = useState({
@@ -63,7 +63,7 @@ export default function TourCategoriesAdminPage() {
     description: '',
     displayOrder: 0,
     isActive: true,
-    image: null as any,
+    image: null as File | null,
   });
   const [editImagePreview, setEditImagePreview] = useState<string | null>(null);
   const [addImagePreview, setAddImagePreview] = useState<string | null>(null);

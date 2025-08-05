@@ -117,7 +117,7 @@ export async function POST(request: NextRequest) {
     const title = formData.get('title') as string || null
     const description = formData.get('description') as string || null
     const duration = formData.get('duration') as string || null
-    const thumbnailFile = formData.get('thumbnail')
+    const thumbnailFile = formData.get('thumbnail') as File | null
 
     if (!galleryId) {
       return NextResponse.json(
@@ -153,11 +153,11 @@ export async function POST(request: NextRequest) {
     let thumbnailName = null
     let thumbnailType = null
 
-    if (thumbnailFile && thumbnailFile instanceof Blob) {
+    if (thumbnailFile) {
       // Use uploaded thumbnail
       const buffer = Buffer.from(await thumbnailFile.arrayBuffer())
       thumbnailData = buffer
-      thumbnailName = (thumbnailFile as any).name
+      thumbnailName = thumbnailFile.name
       thumbnailType = thumbnailFile.type
     } else if (videoInfo.provider === 'youtube' && videoInfo.videoId) {
       // Fetch thumbnail from YouTube

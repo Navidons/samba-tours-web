@@ -175,7 +175,7 @@ export async function POST(request: NextRequest) {
     const authorId = formData.get('authorId') as string
 
     const tagIds = formData.getAll('tagIds').map(id => parseInt(id as string))
-    const thumbnail = formData.get('thumbnail')
+    const thumbnail = formData.get('thumbnail') as File | null
 
     // Prepare create data
     const createData: any = {
@@ -194,14 +194,14 @@ export async function POST(request: NextRequest) {
     }
 
     // Handle thumbnail upload
-    if (thumbnail && thumbnail instanceof Blob && (thumbnail as any).size > 0) {
+    if (thumbnail && thumbnail.size > 0) {
       const bytes = await thumbnail.arrayBuffer()
       const buffer = Buffer.from(bytes)
       
       createData.thumbnailData = buffer
-      createData.thumbnailName = (thumbnail as any).name
+      createData.thumbnailName = thumbnail.name
       createData.thumbnailType = thumbnail.type
-      createData.thumbnailSize = (thumbnail as any).size
+      createData.thumbnailSize = thumbnail.size
     }
 
     const post = await prisma.blogPost.create({

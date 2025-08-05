@@ -91,15 +91,19 @@ export function ReviewForm({ tourId, onSubmit, onClose }: ReviewFormProps) {
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files
-    if (files) {
+    if (files && typeof FileReader !== 'undefined') {
       Array.from(files).forEach((file) => {
-        const reader = new FileReader()
-        reader.onload = (e) => {
-          if (e.target?.result) {
-            setImages((prev) => [...prev, e.target!.result as string])
+        try {
+          const reader = new FileReader()
+          reader.onload = (e) => {
+            if (e.target?.result) {
+              setImages((prev) => [...prev, e.target!.result as string])
+            }
           }
+          reader.readAsDataURL(file)
+        } catch (error) {
+          console.warn('FileReader not available:', error)
         }
-        reader.readAsDataURL(file)
       })
     }
   }

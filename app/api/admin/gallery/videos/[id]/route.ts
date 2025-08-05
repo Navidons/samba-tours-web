@@ -97,7 +97,7 @@ export async function PUT(
     const featured = formData.get('featured') === 'true'
     const views = formData.get('views') ? parseInt(formData.get('views') as string) : 0
     const removeThumbnail = formData.get('removeThumbnail') === 'true'
-    const thumbnailFile = formData.get('thumbnail')
+    const thumbnailFile = formData.get('thumbnail') as File | null
 
     // Check if video exists
     const existingVideo = await prisma.galleryVideo.findUnique({
@@ -148,10 +148,10 @@ export async function PUT(
       thumbnailData = null
       thumbnailName = null
       thumbnailType = null
-    } else if (thumbnailFile && thumbnailFile instanceof Blob) {
+    } else if (thumbnailFile) {
       const buffer = Buffer.from(await thumbnailFile.arrayBuffer())
       thumbnailData = buffer
-      thumbnailName = (thumbnailFile as any).name
+      thumbnailName = thumbnailFile.name
       thumbnailType = thumbnailFile.type
     }
 

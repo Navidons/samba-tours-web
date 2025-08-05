@@ -129,7 +129,7 @@ export async function PUT(
     const name = formData.get('name') as string
     const description = formData.get('description') as string
     const featured = formData.get('featured') === 'true'
-    const thumbnailFile = formData.get('thumbnail')
+    const thumbnailFile = formData.get('thumbnail') as File | null
     const removeThumbnail = formData.get('removeThumbnail') === 'true'
 
     if (!name) {
@@ -180,12 +180,12 @@ export async function PUT(
       thumbnailName = null
       thumbnailType = null
       thumbnailSize = null
-    } else if (thumbnailFile && thumbnailFile instanceof Blob) {
+    } else if (thumbnailFile) {
       const buffer = Buffer.from(await thumbnailFile.arrayBuffer())
       thumbnailData = buffer
-      thumbnailName = (thumbnailFile as any).name
+      thumbnailName = thumbnailFile.name
       thumbnailType = thumbnailFile.type
-      thumbnailSize = (thumbnailFile as any).size
+      thumbnailSize = thumbnailFile.size
     }
 
     // Update gallery
