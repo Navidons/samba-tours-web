@@ -1,6 +1,5 @@
 import { Suspense } from "react"
 import { notFound } from "next/navigation"
-import * as cheerio from "cheerio"
 import type { Metadata } from "next"
 import BlogPostHeader from "@/components/blog/blog-post-header"
 import BlogPostContent from "@/components/blog/blog-post-content"
@@ -19,6 +18,31 @@ const slugify = (text: string) =>
     .replace(/\s+/g, "-") // Replace spaces with -
     .replace(/[^\w-]+/g, "") // Remove all non-word chars
     .replace(/--+/g, "-") // Replace multiple - with single -
+
+// Helper function to parse HTML content for table of contents
+const parseTableOfContents = (content: string) => {
+  try {
+    // Only import cheerio on the server side
+    if (typeof window === 'undefined') {
+      const cheerio = require('cheerio')
+      const $ = cheerio.load(content || '')
+      const headings = $("h2, h3").map((_: any, el: any) => ({
+        id: slugify($(el).text()),
+        text: $(el).text(),
+        level: el.tagName,
+      })).get()
+
+      return headings.map((h: any) => ({
+        text: h.text,
+        id: h.id
+      }))
+    }
+    return []
+  } catch (error) {
+    console.warn('Error parsing table of contents:', error)
+    return []
+  }
+}
 
 // Generate metadata for SEO
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
@@ -167,12 +191,7 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
     }
 
     // Parse HTML content for table of contents
-    const $ = cheerio.load(post.content || '')
-    const headings = $("h2, h3").map((_, el) => ({
-      id: slugify($(el).text()),
-      text: $(el).text(),
-      level: el.tagName,
-    })).get()
+    const tableOfContents = parseTableOfContents(post.content || '')
 
     // Get related posts (handle errors gracefully)
     let relatedPosts = []
@@ -192,13 +211,13 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
       publishDate: post.publishDate || null,
       createdAt: post.createdAt,
       updatedAt: post.updatedAt,
-              image: post.thumbnail,
-        thumbnail: post.thumbnail,
+      image: post.thumbnail,
+      thumbnail: post.thumbnail,
       category: post.category?.name || 'Uncategorized',
       author: {
         name: post.author?.name || 'Unknown Author',
         role: "Travel Writer",
-                  image: "",
+        image: "",
         bio: post.author?.bio || "Experienced travel writer with deep knowledge of Uganda's wildlife and culture.",
       },
       date: post.publishDate || post.createdAt,
@@ -206,10 +225,7 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
       views: post.viewCount,
       likes: post.likeCount,
       tags: post.tags.map((t: any) => t.tag.name),
-      tableOfContents: headings.map(h => ({
-        text: h.text,
-        id: h.id
-      }))
+      tableOfContents
     }
 
     // Structured Data for Blog Post

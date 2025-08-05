@@ -5,7 +5,7 @@ export async function POST(request: NextRequest) {
   try {
 
     const formData = await request.formData()
-    const files = formData.getAll("files") as File[]
+    const files = formData.getAll("files") as any[]
 
     if (!files || files.length === 0) {
       return NextResponse.json({ error: "No files provided" }, { status: 400 })
@@ -14,14 +14,14 @@ export async function POST(request: NextRequest) {
     const uploadedImages = []
 
     for (const file of files) {
-      if (!file.type.startsWith("image/")) {
+      if (!file.type?.startsWith("image/")) {
         continue // Skip non-image files
       }
 
       // Generate unique filename
       const timestamp = Date.now()
       const randomString = Math.random().toString(36).substring(2, 15)
-      const extension = file.name.split(".").pop()
+      const extension = file.name?.split(".").pop() || 'jpg'
       const filename = `tours/${timestamp}-${randomString}.${extension}`
 
       try {
