@@ -154,18 +154,30 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
     const response = await fetch(`${baseUrl}/api/blog/${params.slug}`, {
       cache: 'no-store'
     })
-    
-    if (!response.ok) {
-      notFound()
+    let post = null
+    if (response.ok) {
+      const data = await response.json()
+      post = data.post
     }
-    
-    const data = await response.json()
-    const post = data.post
-    
+    // If no post, use empty fallback values
     if (!post) {
-      notFound()
+      post = {
+        id: '',
+        title: '',
+        excerpt: '',
+        content: '',
+        thumbnail: '',
+        publishDate: '',
+        createdAt: '',
+        updatedAt: '',
+        author: { name: '', bio: '' },
+        category: { name: '' },
+        readTimeMinutes: 0,
+        viewCount: 0,
+        likeCount: 0,
+        tags: [],
+      }
     }
-
     // Parse HTML content for table of contents
     const $ = cheerio.load(post.content || '')
     const headings = $("h2, h3").map((_, el) => ({
@@ -173,51 +185,48 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
       text: $(el).text(),
       level: el.tagName,
     })).get()
-
     // Get related posts (handle errors gracefully)
     let relatedPosts = []
     try {
-      relatedPosts = await getRelatedBlogPosts(
+      relatedPosts = post.id ? await getRelatedBlogPosts(
         post.id,
         post.category?.id || null,
         3
-      )
+      ) : []
     } catch (error) {
       console.warn('Could not fetch related posts:', error)
     }
-
     // Transform post data to match component expectations
     const transformedPost = {
       ...post,
       publishDate: post.publishDate || null,
       createdAt: post.createdAt,
       updatedAt: post.updatedAt,
-              image: post.thumbnail,
-        thumbnail: post.thumbnail,
+      image: post.thumbnail,
+      thumbnail: post.thumbnail,
       category: post.category?.name || 'Uncategorized',
       author: {
         name: post.author?.name || 'Unknown Author',
         role: "Travel Writer",
-                  image: "",
-        bio: post.author?.bio || "Experienced travel writer with deep knowledge of Uganda's wildlife and culture.",
+        image: "",
+        bio: post.author?.bio || "",
       },
       date: post.publishDate || post.createdAt,
       readTime: post.readTimeMinutes ? `${post.readTimeMinutes} min read` : '5 min read',
       views: post.viewCount,
       likes: post.likeCount,
-      tags: post.tags.map((t: any) => t.tag.name),
+      tags: post.tags.map((t: any) => t.tag?.name || t.name || t) || [],
       tableOfContents: headings.map(h => ({
         text: h.text,
         id: h.id
       }))
     }
-
     // Structured Data for Blog Post
     const articleStructuredData = {
       "@context": "https://schema.org",
       "@type": "Article",
       "headline": post.title,
-      "description": post.excerpt || `Read about ${post.title} on our Uganda safari blog. Expert insights, travel tips, and wildlife stories from the Pearl of Africa.`,
+      "description": post.excerpt || '',
       "image": post.thumbnail || "https://sambatours.co/photos/queen-elizabeth-national-park-uganda.jpg",
       "author": {
         "@type": "Person",
@@ -243,7 +252,6 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
       "wordCount": post.content?.length || 0,
       "timeRequired": `PT${post.readTimeMinutes || 5}M`
     }
-
     return (
       <div className="min-h-screen bg-gray-50">
         {/* Structured Data */}
@@ -253,7 +261,6 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
             __html: JSON.stringify(articleStructuredData),
           }}
         />
-        
         <div className="container mx-auto px-4 py-8 grid grid-cols-1 lg:grid-cols-12 gap-8">
           <div className="lg:col-span-8">
             <BlogPostHeader post={transformedPost as any} />
@@ -271,6 +278,30 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
     )
   } catch (error) {
     console.error('Error rendering blog post:', error)
-    notFound()
+    // Render with empty fallback values
+    const emptyPost = {
+      id: '',
+      title: '',
+      excerpt: '',
+      content: '',
+      thumbnail: '',
+      publishDate: '',
+      createdAt: '',
+      updatedAt: '',
+      author: { name: '', bio: '' },
+      category: { name: '' },
+      readTimeMinutes: 0,
+      viewCount: 0,
+      likeCount: 0,
+      tags: [],
+    }
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <div className="container mx-auto px-4 py-8">
+          <h1 className="text-2xl font-bold mb-4">Blog post not found</h1>
+          <p>This blog post does not exist or could not be loaded.</p>
+        </div>
+      </div>
+    )
   }
 }

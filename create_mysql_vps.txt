@@ -5,7 +5,9 @@ sudo apt install mysql-server
 # Create database and user:
 sudo mysql
 CREATE DATABASE samba_tours_db;
-CREATE USER 'samba_user'@'localhost' IDENTIFIED BY 'your_password';
+CREATE USER 'samba_user'@'localhost' IDENTIFIED BY 'R1CH@Rd12';
 GRANT ALL PRIVILEGES ON samba_tours_db.* TO 'samba_user'@'localhost';
 FLUSH PRIVILEGES;
 EXIT;
+
+mysql -h 82.25.97.212 -u samba_user -p
