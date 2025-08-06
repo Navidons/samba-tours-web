@@ -180,11 +180,11 @@ export default function AttractionsShowcase() {
                     fill
                     className="object-cover group-hover:scale-110 transition-transform duration-700"
                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
-                    priority={index < 4} // Prioritize first 4 images
-                    quality={85}
+                    priority={index < 2} // Only prioritize first 2 images
+                    quality={75} // Reduced quality for faster loading
                     placeholder="blur"
                     blurDataURL={blurDataURL}
-                    loading={index < 4 ? "eager" : "lazy"}
+                    loading={index < 2 ? "eager" : "lazy"}
                   />
                   
                   {/* Gradient Overlay */}

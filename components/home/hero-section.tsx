@@ -110,14 +110,25 @@ export default function HeroSection() {
         setCurrentSlide(nextSlide)
         setIsTransitioning(false)
         
-        // Preload next image
-        if (!preloadedImages.has(nextSlide)) {
-          setPreloadedImages(prev => new Set([...prev, nextSlide]))
+        // Only preload the next image when needed, not all images
+        const nextImageIndex = (nextSlide + 1) % heroContent.length
+        if (!preloadedImages.has(nextImageIndex)) {
+          setPreloadedImages(prev => new Set([...prev, nextImageIndex]))
         }
       }, 500)
     }, 15000)
     return () => clearInterval(interval)
   }, [currentSlide, preloadedImages])
+
+  // Preload only the first 2 images on mount
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (!preloadedImages.has(1)) {
+        setPreloadedImages(prev => new Set([...prev, 1]))
+      }
+    }, 2000) // Delay to not block initial render
+    return () => clearTimeout(timer)
+  }, [])
 
   const current = heroContent[currentSlide]
 
