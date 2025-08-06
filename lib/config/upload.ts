@@ -3,9 +3,9 @@
  */
 
 export const UPLOAD_CONFIG = {
-  // File size limits
-  MAX_FILE_SIZE: 5 * 1024 * 1024, // 5MB
-  MAX_TOTAL_SIZE: 50 * 1024 * 1024, // 50MB for batch uploads
+  // File size limits (optimized for VPS hosting)
+  MAX_FILE_SIZE: 10 * 1024 * 1024, // 10MB per file (VPS can handle this)
+  MAX_TOTAL_SIZE: 50 * 1024 * 1024, // 50MB for batch uploads (restore batch capability)
   
   // Allowed file types
   ALLOWED_IMAGE_TYPES: [
@@ -95,8 +95,8 @@ export function getDeploymentLimits() {
   // Common deployment platform limits
   const PLATFORM_LIMITS = {
     vercel: {
-      maxFileSize: 4.5 * 1024 * 1024, // 4.5MB
-      maxRequestSize: 4.5 * 1024 * 1024,
+      maxFileSize: 3.5 * 1024 * 1024, // 3.5MB (conservative for FormData overhead)
+      maxRequestSize: 3.5 * 1024 * 1024, // Account for FormData padding
       maxDuration: 10000 // 10 seconds for hobby plan
     },
     netlify: {
@@ -113,6 +113,11 @@ export function getDeploymentLimits() {
       maxFileSize: 100 * 1024 * 1024, // 100MB
       maxRequestSize: 100 * 1024 * 1024,
       maxDuration: 30000
+    },
+    vps: {
+      maxFileSize: 50 * 1024 * 1024, // 50MB (VPS with Nginx/OpenLiteSpeed)
+      maxRequestSize: 100 * 1024 * 1024, // 100MB total request
+      maxDuration: 300000 // 5 minutes
     }
   }
   
@@ -121,14 +126,14 @@ export function getDeploymentLimits() {
     : process.env.NETLIFY ? 'netlify'
     : process.env.RAILWAY_ENVIRONMENT ? 'railway'
     : process.env.RENDER ? 'render'
-    : 'unknown'
+    : 'vps' // Default to VPS for custom hosting
   
   return {
     platform,
     limits: PLATFORM_LIMITS[platform as keyof typeof PLATFORM_LIMITS] || {
-      maxFileSize: 10 * 1024 * 1024,
-      maxRequestSize: 10 * 1024 * 1024,
-      maxDuration: 15000
+      maxFileSize: 50 * 1024 * 1024, // 50MB default for VPS
+      maxRequestSize: 100 * 1024 * 1024, // 100MB default
+      maxDuration: 300000 // 5 minutes default
     }
   }
 }

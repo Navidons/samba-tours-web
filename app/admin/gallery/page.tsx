@@ -59,8 +59,8 @@ interface UploadProgress {
   completedFiles: number
 }
 
-// Validation constants
-const MAX_FILE_SIZE = 5 * 1024 * 1024 // 5MB
+// Validation constants (optimized for VPS hosting)
+const MAX_FILE_SIZE = 10 * 1024 * 1024 // 10MB (VPS can handle larger files)
 const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif']
 
 export default function AdminGalleryPage() {
@@ -303,33 +303,49 @@ export default function AdminGalleryPage() {
     }
   }
 
-  // Handle image upload with better error handling
+  // Handle image upload with hybrid approach (batch for VPS, single for limited platforms)
   const handleImageUpload = async () => {
     if (!selectedGallery || uploadFiles.length === 0) return
 
+    // Calculate total upload size
+    const totalSize = uploadFiles.reduce((sum, file) => sum + file.size, 0)
+    const totalFiles = uploadFiles.length
+    
+    // Check if we should use batch upload (VPS can handle it) or single-file upload
+    const shouldUseBatchUpload = totalSize < 80 * 1024 * 1024 && totalFiles <= 10 // 80MB or 10 files max for batch
+
+    if (shouldUseBatchUpload) {
+      await handleBatchUpload()
+    } else {
+      await handleSingleFileUploads()
+    }
+  }
+
+  // Batch upload for VPS (more efficient)
+  const handleBatchUpload = async () => {
     try {
-      // Show initial upload state
+      const totalFiles = uploadFiles.length
+      
       setUploadProgress({
         isUploading: true,
         progress: 10,
-        currentFile: `Preparing ${uploadFiles.length} file${uploadFiles.length > 1 ? 's' : ''}...`,
-        totalFiles: uploadFiles.length,
+        currentFile: `Preparing batch upload of ${totalFiles} file${totalFiles > 1 ? 's' : ''}...`,
+        totalFiles: totalFiles,
         completedFiles: 0
       })
 
       const formData = new FormData()
-      formData.append('galleryId', selectedGallery.id.toString())
+      formData.append('galleryId', selectedGallery!.id.toString())
       
-      uploadFiles.forEach((file, index) => {
+      uploadFiles.forEach((file) => {
         formData.append('images', file)
-        console.log(`📁 Added to upload queue: ${file.name} (${(file.size / 1024 / 1024).toFixed(2)}MB)`)
+        console.log(`📁 Added to batch: ${file.name} (${(file.size / 1024 / 1024).toFixed(2)}MB)`)
       })
 
-      // Update progress during upload
       setUploadProgress(prev => ({
         ...prev,
         progress: 30,
-        currentFile: 'Uploading files...'
+        currentFile: 'Uploading batch...'
       }))
 
       const response = await fetch('/api/admin/gallery/images', {
@@ -337,7 +353,6 @@ export default function AdminGalleryPage() {
         body: formData,
       })
 
-      // Update progress after response
       setUploadProgress(prev => ({
         ...prev,
         progress: 80,
@@ -347,11 +362,9 @@ export default function AdminGalleryPage() {
       const data = await response.json()
 
       if (!response.ok) {
-        toast({
-          title: "Upload Failed",
-          description: data.error || 'Failed to upload images',
-          variant: "destructive",
-        })
+        // If batch fails, fall back to single-file uploads
+        console.log('📝 Batch upload failed, falling back to single-file uploads...')
+        await handleSingleFileUploads()
         return
       }
 
@@ -360,13 +373,13 @@ export default function AdminGalleryPage() {
       
       if (uploaded.length > 0) {
         toast({
-          title: "🎉 Upload Successful!",
-          description: `Successfully uploaded ${uploaded.length} image${uploaded.length > 1 ? 's' : ''}. ${uploaded.length > 1 ? 'Images are' : 'Image is'} now visible in your gallery.`,
+          title: "🎉 Batch Upload Successful!",
+          description: `Successfully uploaded ${uploaded.length} image${uploaded.length > 1 ? 's' : ''} in one batch. Images are now visible in your gallery.`,
           duration: 5000,
         })
       }
 
-      if (failed.length > 0) {
+      if (failed && failed.length > 0) {
         const failedNames = failed.map((f: any) => f.name).join(', ')
         toast({
           title: "⚠️ Some uploads failed",
@@ -376,63 +389,149 @@ export default function AdminGalleryPage() {
         })
       }
 
-      // Clear files and refresh media
-      setUploadFiles([])
-      
-      // Update progress to completion
-      setUploadProgress(prev => ({
-        ...prev,
-        progress: 95,
-        currentFile: 'Refreshing gallery...'
-      }))
-
-      // Force refresh media list to show new images
-      console.log('🔄 Refreshing gallery after upload...')
-      await Promise.all([
-        loadMedia(),
-        loadGalleries() // Refresh gallery counts
-      ])
-      
-      // Complete progress
-      setUploadProgress(prev => ({
-        ...prev,
-        progress: 100,
-        currentFile: 'Upload complete!'
-      }))
-      
-      console.log(`✅ Gallery refreshed. New images are now visible!`)
-      
-      // Show completion for a moment before resetting
-      setTimeout(() => {
-        setUploadProgress({
-          isUploading: false,
-          progress: 0,
-          currentFile: '',
-          totalFiles: 0,
-          completedFiles: 0
-        })
-      }, 1000)
+      await finishUpload(uploaded.length, failed?.length || 0)
 
     } catch (err) {
-      console.error('Error uploading images:', err)
+      console.error('Batch upload error, falling back to single-file uploads:', err)
+      await handleSingleFileUploads()
+    }
+  }
+
+  // Single-file upload fallback
+  const handleSingleFileUploads = async () => {
+    const totalFiles = uploadFiles.length
+    let uploadedCount = 0
+    let failedCount = 0
+    const failedFiles: string[] = []
+
+    try {
+      setUploadProgress({
+        isUploading: true,
+        progress: 5,
+        currentFile: `Preparing ${totalFiles} file${totalFiles > 1 ? 's' : ''}...`,
+        totalFiles: totalFiles,
+        completedFiles: 0
+      })
+
+      console.log(`📁 Starting single-file upload of ${totalFiles} files to gallery ${selectedGallery!.id}`)
+
+      for (let i = 0; i < uploadFiles.length; i++) {
+        const file = uploadFiles[i]
+        const fileNumber = i + 1
+        
+        try {
+          const baseProgress = 10 + (i / totalFiles) * 80
+          setUploadProgress(prev => ({
+            ...prev,
+            progress: baseProgress,
+            currentFile: `Uploading ${fileNumber}/${totalFiles}: ${file.name}`,
+            completedFiles: i
+          }))
+
+          console.log(`📤 Uploading file ${fileNumber}/${totalFiles}: ${file.name} (${(file.size / 1024 / 1024).toFixed(2)}MB)`)
+
+          const formData = new FormData()
+          formData.append('galleryId', selectedGallery!.id.toString())
+          formData.append('image', file)
+          
+          const response = await fetch('/api/admin/gallery/images/single', {
+            method: 'POST',
+            body: formData,
+          })
+
+          const data = await response.json()
+
+          if (!response.ok) {
+            console.error(`❌ Failed to upload ${file.name}:`, data.error)
+            failedFiles.push(file.name)
+            failedCount++
+          } else {
+            console.log(`✅ Successfully uploaded ${file.name}`)
+            uploadedCount++
+          }
+
+        } catch (fileError) {
+          console.error(`❌ Error uploading ${file.name}:`, fileError)
+          failedFiles.push(file.name)
+          failedCount++
+        }
+      }
+
+      if (uploadedCount > 0) {
+        toast({
+          title: "🎉 Upload Successful!",
+          description: `Successfully uploaded ${uploadedCount} image${uploadedCount > 1 ? 's' : ''}. Images are now visible in your gallery.`,
+          duration: 5000,
+        })
+      }
+
+      if (failedCount > 0) {
+        toast({
+          title: "⚠️ Some uploads failed",
+          description: `Failed to upload ${failedCount} file${failedCount > 1 ? 's' : ''}: ${failedFiles.slice(0, 3).join(', ')}${failedFiles.length > 3 ? '...' : ''}`,
+          variant: "destructive",
+          duration: 6000,
+        })
+      }
+
+      await finishUpload(uploadedCount, failedCount)
+
+    } catch (err) {
+      console.error('Error in single-file upload session:', err)
       toast({
         title: "Upload Error",
-        description: "An error occurred during upload",
+        description: "An error occurred during upload session",
         variant: "destructive",
       })
-    } finally {
-      // Progress reset is now handled in success case with timeout
-      // Only reset immediately on error
-      if (uploadProgress.progress < 100) {
+      finishUploadWithError()
+    }
+  }
+
+  // Common upload completion logic
+  const finishUpload = async (uploadedCount: number, failedCount: number) => {
+    setUploadFiles([])
+    
+    setUploadProgress(prev => ({
+      ...prev,
+      progress: 95,
+      currentFile: 'Refreshing gallery...',
+      completedFiles: uploadFiles.length
+    }))
+
+    console.log('🔄 Refreshing gallery after upload...')
+    await Promise.all([
+      loadMedia(),
+      loadGalleries()
+    ])
+    
+    setUploadProgress(prev => ({
+      ...prev,
+      progress: 100,
+      currentFile: `Upload complete! ${uploadedCount} successful, ${failedCount} failed`
+    }))
+    
+    console.log(`✅ Upload session complete: ${uploadedCount} successful, ${failedCount} failed`)
+    
+    setTimeout(() => {
       setUploadProgress({
         isUploading: false,
         progress: 0,
-          currentFile: '',
+        currentFile: '',
         totalFiles: 0,
         completedFiles: 0
       })
-      }
-    }
+    }, 2000)
+  }
+
+  // Error cleanup
+  const finishUploadWithError = () => {
+    setUploadProgress({
+      isUploading: false,
+      progress: 0,
+      currentFile: '',
+      totalFiles: 0,
+      completedFiles: 0
+    })
   }
 
   // Handle video upload
@@ -825,9 +924,9 @@ export default function AdminGalleryPage() {
                 onChange={handleFileSelection}
                         className="mt-1"
               />
-                      <p className="text-sm text-gray-600 mt-1">
-                        Max {(MAX_FILE_SIZE / 1024 / 1024).toFixed(0)}MB per file. Supported: JPG, PNG, WebP, GIF
-                </p>
+                                            <p className="text-sm text-gray-600 mt-1">
+                        Max {(MAX_FILE_SIZE / 1024 / 1024).toFixed(0)}MB per file (VPS optimized). Batch upload: up to 80MB total. Supported: JPG, PNG, WebP, GIF
+                      </p>
         </div>
 
                     {uploadFiles.length > 0 && (

@@ -7,9 +7,9 @@ import Link from "next/link"
 import Image from "next/image"
 
 export const metadata: Metadata = {
-  title: "Samba Tours vs Pamba Tours - Authentic Uganda Safari Operator",
-  description: "Samba Tours is the authentic Uganda safari operator. Learn why we're different from Pamba Tours and choose the trusted local expert for gorilla trekking and wildlife safaris in Uganda.",
-  keywords: "Samba Tours vs Pamba Tours, authentic Uganda safari, Samba Tours Uganda, local Uganda tour operator, trusted safari company, gorilla trekking Uganda, wildlife safari Africa",
+  title: "Samba Tours Uganda - Authentic Local Safari Operator | NOT Pamba Tours",
+  description: "Samba Tours Uganda is an independent, authentic local safari company based in Kampala. We are NOT affiliated with Pamba Tours. Choose genuine local expertise for your Uganda safari adventure.",
+  keywords: "Samba Tours Uganda, authentic Uganda safari, local tour operator, NOT Pamba Tours, independent safari company, Uganda gorilla trekking, Kampala based, genuine local guides",
   authors: [{ name: "Samba Tours" }],
   creator: "Samba Tours",
   publisher: "Samba Tours",

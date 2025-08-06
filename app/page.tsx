@@ -14,6 +14,100 @@ import {
   Compass, TreePine, Fish, Plane, Utensils, Drum, Leaf
 } from "lucide-react"
 
+// Homepage structured data
+const structuredData = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "TravelAgency",
+      "@id": "https://sambatours.co/#organization",
+      "name": "Samba Tours Uganda",
+      "alternateName": "Samba Tours & Travel Uganda",
+      "url": "https://sambatours.co",
+      "logo": "https://sambatours.co/logo/samba tours-01.png",
+      "description": "Premier Uganda safari company offering authentic gorilla trekking, wildlife safaris, and cultural tours. Established local operator specializing in Bwindi, Queen Elizabeth & Murchison Falls.",
+      "address": {
+        "@type": "PostalAddress",
+        "addressCountry": "UG",
+        "addressRegion": "Central Region",
+        "addressLocality": "Kampala",
+        "streetAddress": "Kampala, Uganda"
+      },
+      "geo": {
+        "@type": "GeoCoordinates",
+        "latitude": "0.3476",
+        "longitude": "32.5825"
+      },
+      "areaServed": [
+        {
+          "@type": "Country",
+          "name": "Uganda"
+        },
+        {
+          "@type": "Place",
+          "name": "East Africa"
+        }
+      ],
+      "serviceType": [
+        "Safari Tours",
+        "Gorilla Trekking",
+        "Wildlife Safari",
+        "Cultural Tours", 
+        "Adventure Travel",
+        "Primate Tracking"
+      ],
+      "knowsAbout": [
+        "Bwindi Impenetrable Forest",
+        "Queen Elizabeth National Park",
+        "Murchison Falls National Park", 
+        "Mountain Gorillas",
+        "Uganda Wildlife",
+        "Pearl of Africa"
+      ],
+      "award": "TripAdvisor Certificate of Excellence",
+      "foundingDate": "2015",
+      "slogan": "Discover the Pearl of Africa"
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://sambatours.co/#website",
+      "url": "https://sambatours.co",
+      "name": "Samba Tours Uganda",
+      "description": "Premier Uganda safari company offering authentic gorilla trekking and wildlife safaris",
+      "publisher": {
+        "@id": "https://sambatours.co/#organization"
+      },
+      "inLanguage": "en-US",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://sambatours.co/search?q={search_term_string}",
+        "query-input": "required name=search_term_string"
+      }
+    },
+    {
+      "@type": "WebPage",
+      "@id": "https://sambatours.co/#webpage",
+      "url": "https://sambatours.co",
+      "name": "Samba Tours Uganda - Authentic Safari & Gorilla Trekking",
+      "description": "Premier Uganda safari company offering authentic gorilla trekking, wildlife safaris, and cultural tours",
+      "isPartOf": {
+        "@id": "https://sambatours.co/#website"
+      },
+      "about": {
+        "@id": "https://sambatours.co/#organization"
+      },
+      "primaryImageOfPage": {
+        "@type": "ImageObject",
+        "url": "https://sambatours.co/photos/uganda-wildlife.jpg",
+        "width": 1200,
+        "height": 630
+      },
+      "datePublished": "2024-01-01",
+      "dateModified": "2024-12-19"
+    }
+  ]
+}
+
 // Wildlife highlights
 const wildlifeHighlights = [
   {
@@ -328,7 +422,7 @@ export default function HomePage() {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify(homepageStructuredData),
+          __html: JSON.stringify(structuredData),
         }}
       />
 
