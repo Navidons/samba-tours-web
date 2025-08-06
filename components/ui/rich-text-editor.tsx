@@ -44,6 +44,13 @@ const MenuBar = ({ editor }: { editor: any }) => {
   const [showImageDialog, setShowImageDialog] = useState(false)
   const [showColorPicker, setShowColorPicker] = useState(false)
 
+  // Prevent all button clicks from submitting the parent form
+  const handleButtonClick = (e: React.MouseEvent, action: () => void) => {
+    e.preventDefault()
+    e.stopPropagation()
+    action()
+  }
+
   if (!editor) {
     return null
   }
@@ -81,35 +88,51 @@ const MenuBar = ({ editor }: { editor: any }) => {
   return (
     <div className="border border-gray-200 rounded-t-lg bg-white p-2 flex flex-wrap gap-1">
       <Button
+        type="button"
         variant={editor.isActive('bold') ? 'default' : 'ghost'}
         size="sm"
-        onClick={() => editor.chain().focus().toggleBold().run()}
+        onClick={(e) => {
+          e.preventDefault()
+          editor.chain().focus().toggleBold().run()
+        }}
         disabled={!editor.can().chain().focus().toggleBold().run()}
       >
         <Bold className="h-4 w-4" />
       </Button>
       
       <Button
+        type="button"
         variant={editor.isActive('italic') ? 'default' : 'ghost'}
         size="sm"
-        onClick={() => editor.chain().focus().toggleItalic().run()}
+        onClick={(e) => {
+          e.preventDefault()
+          editor.chain().focus().toggleItalic().run()
+        }}
         disabled={!editor.can().chain().focus().toggleItalic().run()}
       >
         <Italic className="h-4 w-4" />
       </Button>
       
       <Button
+        type="button"
         variant={editor.isActive('underline') ? 'default' : 'ghost'}
         size="sm"
-        onClick={() => editor.chain().focus().toggleUnderline().run()}
+        onClick={(e) => {
+          e.preventDefault()
+          editor.chain().focus().toggleUnderline().run()
+        }}
       >
         <UnderlineIcon className="h-4 w-4" />
       </Button>
       
       <Button
+        type="button"
         variant={editor.isActive('strike') ? 'default' : 'ghost'}
         size="sm"
-        onClick={() => editor.chain().focus().toggleStrike().run()}
+        onClick={(e) => {
+          e.preventDefault()
+          editor.chain().focus().toggleStrike().run()
+        }}
         disabled={!editor.can().chain().focus().toggleStrike().run()}
       >
         <Strikethrough className="h-4 w-4" />
@@ -118,33 +141,49 @@ const MenuBar = ({ editor }: { editor: any }) => {
       <div className="w-px h-6 bg-gray-200 mx-1" />
 
       <Button
+        type="button"
         variant={editor.isActive('bulletList') ? 'default' : 'ghost'}
         size="sm"
-        onClick={() => editor.chain().focus().toggleBulletList().run()}
+        onClick={(e) => {
+          e.preventDefault()
+          editor.chain().focus().toggleBulletList().run()
+        }}
       >
         <List className="h-4 w-4" />
       </Button>
       
       <Button
+        type="button"
         variant={editor.isActive('orderedList') ? 'default' : 'ghost'}
         size="sm"
-        onClick={() => editor.chain().focus().toggleOrderedList().run()}
+        onClick={(e) => {
+          e.preventDefault()
+          editor.chain().focus().toggleOrderedList().run()
+        }}
       >
         <ListOrdered className="h-4 w-4" />
       </Button>
       
       <Button
+        type="button"
         variant={editor.isActive('blockquote') ? 'default' : 'ghost'}
         size="sm"
-        onClick={() => editor.chain().focus().toggleBlockquote().run()}
+        onClick={(e) => {
+          e.preventDefault()
+          editor.chain().focus().toggleBlockquote().run()
+        }}
       >
         <Quote className="h-4 w-4" />
       </Button>
       
       <Button
+        type="button"
         variant={editor.isActive('codeBlock') ? 'default' : 'ghost'}
         size="sm"
-        onClick={() => editor.chain().focus().toggleCodeBlock().run()}
+        onClick={(e) => {
+          e.preventDefault()
+          editor.chain().focus().toggleCodeBlock().run()
+        }}
       >
         <Code className="h-4 w-4" />
       </Button>
@@ -152,33 +191,37 @@ const MenuBar = ({ editor }: { editor: any }) => {
       <div className="w-px h-6 bg-gray-200 mx-1" />
 
       <Button
+        type="button"
         variant={editor.isActive({ textAlign: 'left' }) ? 'default' : 'ghost'}
         size="sm"
-        onClick={() => editor.chain().focus().setTextAlign('left').run()}
+        onClick={(e) => handleButtonClick(e, () => editor.chain().focus().setTextAlign('left').run())}
       >
         <AlignLeft className="h-4 w-4" />
       </Button>
       
       <Button
+        type="button"
         variant={editor.isActive({ textAlign: 'center' }) ? 'default' : 'ghost'}
         size="sm"
-        onClick={() => editor.chain().focus().setTextAlign('center').run()}
+        onClick={(e) => handleButtonClick(e, () => editor.chain().focus().setTextAlign('center').run())}
       >
         <AlignCenter className="h-4 w-4" />
       </Button>
       
       <Button
+        type="button"
         variant={editor.isActive({ textAlign: 'right' }) ? 'default' : 'ghost'}
         size="sm"
-        onClick={() => editor.chain().focus().setTextAlign('right').run()}
+        onClick={(e) => handleButtonClick(e, () => editor.chain().focus().setTextAlign('right').run())}
       >
         <AlignRight className="h-4 w-4" />
       </Button>
       
       <Button
+        type="button"
         variant={editor.isActive({ textAlign: 'justify' }) ? 'default' : 'ghost'}
         size="sm"
-        onClick={() => editor.chain().focus().setTextAlign('justify').run()}
+        onClick={(e) => handleButtonClick(e, () => editor.chain().focus().setTextAlign('justify').run())}
       >
         <AlignJustify className="h-4 w-4" />
       </Button>
@@ -188,9 +231,13 @@ const MenuBar = ({ editor }: { editor: any }) => {
       <Dialog open={showLinkDialog} onOpenChange={setShowLinkDialog}>
         <DialogTrigger asChild>
           <Button
+            type="button"
             variant={editor.isActive('link') ? 'default' : 'ghost'}
             size="sm"
-            onClick={setLink}
+            onClick={(e) => {
+              e.preventDefault()
+              setLink()
+            }}
           >
             <LinkIcon className="h-4 w-4" />
           </Button>
@@ -216,10 +263,10 @@ const MenuBar = ({ editor }: { editor: any }) => {
               />
             </div>
             <div className="flex justify-end gap-2">
-              <Button variant="outline" onClick={() => setShowLinkDialog(false)}>
+              <Button type="button" variant="outline" onClick={() => setShowLinkDialog(false)}>
                 Cancel
               </Button>
-              <Button onClick={addLink} disabled={!linkUrl.trim()}>
+              <Button type="button" onClick={addLink} disabled={!linkUrl.trim()}>
                 Add Link
               </Button>
             </div>
@@ -229,9 +276,10 @@ const MenuBar = ({ editor }: { editor: any }) => {
 
       {editor.isActive('link') && (
         <Button
+          type="button"
           variant="ghost"
           size="sm"
-          onClick={removeLink}
+          onClick={(e) => handleButtonClick(e, removeLink)}
         >
           Remove Link
         </Button>
@@ -239,7 +287,7 @@ const MenuBar = ({ editor }: { editor: any }) => {
 
       <Dialog open={showImageDialog} onOpenChange={setShowImageDialog}>
         <DialogTrigger asChild>
-          <Button variant="ghost" size="sm">
+          <Button type="button" variant="ghost" size="sm">
             <ImageIcon className="h-4 w-4" />
           </Button>
         </DialogTrigger>
@@ -264,10 +312,10 @@ const MenuBar = ({ editor }: { editor: any }) => {
               />
             </div>
             <div className="flex justify-end gap-2">
-              <Button variant="outline" onClick={() => setShowImageDialog(false)}>
+              <Button type="button" variant="outline" onClick={() => setShowImageDialog(false)}>
                 Cancel
               </Button>
-              <Button onClick={addImage} disabled={!imageUrl.trim()}>
+              <Button type="button" onClick={addImage} disabled={!imageUrl.trim()}>
                 Add Image
               </Button>
             </div>
@@ -277,7 +325,7 @@ const MenuBar = ({ editor }: { editor: any }) => {
 
       <Dialog open={showColorPicker} onOpenChange={setShowColorPicker}>
         <DialogTrigger asChild>
-          <Button variant="ghost" size="sm">
+          <Button type="button" variant="ghost" size="sm">
             <Palette className="h-4 w-4" />
           </Button>
         </DialogTrigger>
@@ -293,9 +341,11 @@ const MenuBar = ({ editor }: { editor: any }) => {
             ].map((color) => (
               <button
                 key={color}
+                type="button"
                 className="w-8 h-8 rounded border border-gray-300 hover:scale-110 transition-transform"
                 style={{ backgroundColor: color }}
-                onClick={() => {
+                onClick={(e) => {
+                  e.preventDefault()
                   setColor(color)
                   setShowColorPicker(false)
                 }}
@@ -337,6 +387,14 @@ export default function RichTextEditor({ value, onChange, placeholder }: RichTex
     editorProps: {
       attributes: {
         class: 'prose prose-sm sm:prose lg:prose-lg xl:prose-2xl mx-auto focus:outline-none'
+      },
+      handleKeyDown: (view, event) => {
+        // Prevent Ctrl/Cmd+Enter from submitting the form
+        if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') {
+          event.preventDefault()
+          return true
+        }
+        return false
       }
     }
   })

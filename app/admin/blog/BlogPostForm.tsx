@@ -46,6 +46,8 @@ export default function BlogPostForm({ postId, slug }: BlogPostFormProps) {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [saving, setSaving] = useState(false)
+  const [savingDraft, setSavingDraft] = useState(false)
+  const [lastSaved, setLastSaved] = useState<Date | null>(null)
   const [categories, setCategories] = useState<BlogCategory[]>([])
   const [tags, setTags] = useState<BlogTag[]>([])
   const [authors, setAuthors] = useState<BlogAuthor[]>([])
@@ -225,6 +227,121 @@ export default function BlogPostForm({ postId, slug }: BlogPostFormProps) {
     }))
   }
 
+  // Auto-save as draft functionality
+  const saveDraft = async () => {
+    if (!formData.title.trim() && !formData.content.trim()) return
+
+    try {
+      setSavingDraft(true)
+      
+      const draftData = {
+        ...formData,
+        status: 'draft',
+        tags: selectedTags
+      }
+
+      const formDataToSend = new FormData()
+      Object.entries(draftData).forEach(([key, value]) => {
+        if (key === 'tags') {
+          selectedTags.forEach(tagId => {
+            formDataToSend.append('tagIds', tagId.toString())
+          })
+        } else {
+          formDataToSend.append(key, value?.toString() || '')
+        }
+      })
+
+      if (thumbnailFile) {
+        formDataToSend.append('thumbnail', thumbnailFile)
+      }
+
+      let url = "/api/admin/blog"
+      let method = "POST"
+      
+      if (postId) {
+        url = `/api/admin/blog/${postId}`
+        method = "PUT"
+      } else if (slug) {
+        url = `/api/admin/blog/by-slug/${encodeURIComponent(slug)}`
+        method = "PUT"
+      }
+
+      const response = await fetch(url, {
+        method,
+        body: formDataToSend
+      })
+
+      if (response.ok) {
+        setLastSaved(new Date())
+        localStorage.setItem('blog-draft-autosave', JSON.stringify({
+          formData: draftData,
+          selectedTags,
+          timestamp: new Date().toISOString()
+        }))
+      }
+    } catch (error) {
+      console.error("Error auto-saving draft:", error)
+    } finally {
+      setSavingDraft(false)
+    }
+  }
+
+  // Load draft from localStorage
+  const loadDraft = () => {
+    if (typeof window === 'undefined' || postId || slug) return
+    
+    try {
+      const savedDraft = localStorage.getItem('blog-draft-autosave')
+      if (savedDraft) {
+        const draftData = JSON.parse(savedDraft)
+        
+        // Only load if not editing existing post
+        if (!postId && !slug) {
+          setFormData(draftData.formData || formData)
+          setSelectedTags(draftData.selectedTags || [])
+          
+          if (draftData.timestamp) {
+            setLastSaved(new Date(draftData.timestamp))
+          }
+        }
+      }
+    } catch (error) {
+      console.error("Error loading draft:", error)
+    }
+  }
+
+  // Auto-save effect
+  useEffect(() => {
+    if (postId || slug) return // Don't auto-save when editing existing posts
+    
+    const autoSaveTimer = setTimeout(() => {
+      if (formData.title.trim() || formData.content.trim()) {
+        saveDraft()
+      }
+    }, 30000) // Auto-save every 30 seconds
+
+    return () => clearTimeout(autoSaveTimer)
+  }, [formData, selectedTags])
+
+  // Load draft on component mount
+  useEffect(() => {
+    loadDraft()
+  }, [])
+
+  // Prevent accidental navigation away from unsaved content
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (formData.title.trim() || formData.content.trim()) {
+        e.preventDefault()
+        e.returnValue = 'You have unsaved changes. Are you sure you want to leave?'
+        return 'You have unsaved changes. Are you sure you want to leave?'
+      }
+    }
+
+    window.addEventListener('beforeunload', handleBeforeUnload)
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload)
+  }, [formData.title, formData.content])
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setSaving(true)
@@ -284,6 +401,9 @@ export default function BlogPostForm({ postId, slug }: BlogPostFormProps) {
         title: "Success",
         description: `Blog post ${postId ? 'updated' : 'created'} successfully`
       })
+
+      // Clear auto-save draft after successful submission
+      localStorage.removeItem('blog-draft-autosave')
 
       router.push("/admin/blog")
     } catch (error) {
@@ -838,19 +958,47 @@ export default function BlogPostForm({ postId, slug }: BlogPostFormProps) {
       </div>
 
       {/* Actions */}
-      <div className="flex justify-end gap-4">
-        <Button
-          type="button"
-          variant="outline"
-          onClick={() => router.push("/admin/blog")}
-        >
-          Cancel
-        </Button>
-        <Button type="submit" disabled={saving}>
-          {saving && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
-          <Save className="h-4 w-4 mr-2" />
-          {postId ? 'Update Post' : 'Create Post'}
-        </Button>
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        {/* Auto-save status */}
+        <div className="flex items-center gap-2 text-sm text-gray-600">
+          {savingDraft && (
+            <>
+              <Loader2 className="h-4 w-4 animate-spin" />
+              <span>Saving draft...</span>
+            </>
+          )}
+          {lastSaved && !savingDraft && (
+            <span>
+              Last saved: {lastSaved.toLocaleTimeString()}
+            </span>
+          )}
+        </div>
+
+        <div className="flex gap-4">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => router.push("/admin/blog")}
+          >
+            Cancel
+          </Button>
+          {!postId && !slug && (
+            <Button
+              type="button"
+              variant="outline"
+              onClick={saveDraft}
+              disabled={savingDraft || (!formData.title.trim() && !formData.content.trim())}
+            >
+              {savingDraft && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+              Save Draft
+            </Button>
+          )}
+          <Button type="submit" disabled={saving}>
+            {saving && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+            <Save className="h-4 w-4 mr-2" />
+            {postId ? 'Update Post' : 'Create Post'}
+          </Button>
+        </div>
       </div>
     </form>
   )
