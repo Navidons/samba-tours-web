@@ -101,7 +101,6 @@ const galleryStructuredData = {
 interface GalleryPageProps {
   searchParams: {
     category?: string
-    location?: string
     featured?: string
     search?: string
     page?: string

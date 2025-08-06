@@ -4,9 +4,10 @@ import { useState, useEffect } from "react"
 import { useSearchParams, useRouter } from "next/navigation"
 import GalleryHero from "@/components/gallery/gallery-hero"
 import GalleryFilters from "@/components/gallery/gallery-filters"
-import GalleryGrid from "@/components/gallery/gallery-grid"
-import GalleryStats from "@/components/gallery/gallery-stats"
+import VirtualGalleryGrid from "@/components/gallery/virtual-gallery-grid"
+
 import VideoGallery from "@/components/gallery/video-gallery"
+import ScrollPositionIndicator from "@/components/gallery/scroll-position-indicator"
 import LoadingSpinner from "@/components/ui/loading-spinner"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { AlertCircle, Database, RefreshCw } from "lucide-react"
@@ -16,6 +17,7 @@ import { useScrollManagement } from "@/hooks/use-scroll-management"
 
 interface GalleryClientProps {
   searchParams: {
+    category?: string
     featured?: string
     search?: string
     page?: string
@@ -38,28 +40,63 @@ export default function GalleryClient({ searchParams, hideMainHeading }: Gallery
   })
   const [viewMode, setViewMode] = useState<"grid" | "masonry">("masonry")
 
-  // Scroll management hook
+  // Enhanced scroll management hook
   const { startLoading, endLoading } = useScrollManagement({
     preserveScroll: true,
     preventAutoScroll: true
   })
+  
+  // Track scroll position for stability
+  const [scrollPosition, setScrollPosition] = useState(0)
 
   // Get search params
+  const category = searchParams.category
   const featured = searchParams.featured === 'true'
   const search = searchParams.search
   const page = parseInt(searchParams.page || '1')
 
-  // Pagination navigation function
+  // Pagination navigation function with scroll preservation
   const navigateToPage = (newPage: number) => {
+    // Store current scroll position
+    setScrollPosition(window.scrollY)
+    
     const current = new URLSearchParams(Array.from(urlSearchParams.entries()))
     current.set('page', newPage.toString())
     const query = current.toString()
+    
+    // Navigate without scrolling
     router.replace(`/gallery?${query}`, { scroll: false })
+    
+    // Maintain scroll position after navigation
+    requestAnimationFrame(() => {
+      window.scrollTo(0, scrollPosition)
+    })
   }
 
   useEffect(() => {
     loadGalleryData()
-  }, [featured, search, page])
+  }, [category, featured, search, page])
+
+  // Prevent scroll jumps during content loading
+  useEffect(() => {
+    const handleScrollPreservation = () => {
+      if (loading) {
+        setScrollPosition(window.scrollY)
+      }
+    }
+
+    window.addEventListener('scroll', handleScrollPreservation)
+    return () => window.removeEventListener('scroll', handleScrollPreservation)
+  }, [loading])
+
+  // Restore scroll position after images load
+  useEffect(() => {
+    if (!loading && images.length > 0 && scrollPosition > 0) {
+      requestAnimationFrame(() => {
+        window.scrollTo(0, scrollPosition)
+      })
+    }
+  }, [loading, images.length, scrollPosition])
 
   const loadGalleryData = async () => {
     try {
@@ -68,6 +105,7 @@ export default function GalleryClient({ searchParams, hideMainHeading }: Gallery
       setError(null)
 
       const filters = {
+        category,
         featured: searchParams.featured === 'true' ? true : searchParams.featured === 'false' ? false : undefined,
         search,
         page,
@@ -121,7 +159,9 @@ export default function GalleryClient({ searchParams, hideMainHeading }: Gallery
   }))
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-green-50">
+    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-green-50 gallery-container">
+      <ScrollPositionIndicator />
+      
       {/* Always show hero section first */}
       <GalleryHero hideHeading={hideMainHeading} />
 
@@ -178,93 +218,90 @@ export default function GalleryClient({ searchParams, hideMainHeading }: Gallery
             </Alert>
           )}
 
-          {/* Show stats if we have data */}
-          {(images.length > 0) && (
-            <GalleryStats 
-              totalImages={pagination.total}
-              totalVideos={totalVideos}
+
+
+          {/* Mobile-first filters */}
+          <div className="mb-6">
+            <GalleryFilters 
+              selectedCategory={category}
+              selectedFeatured={searchParams.featured}
+              searchQuery={search}
+              viewMode={viewMode}
+              onViewModeChange={setViewMode}
             />
-          )}
+          </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 mt-12">
-            <div className="lg:col-span-1">
-              <div className="sticky top-24">
-                <GalleryFilters 
-                  selectedFeatured={searchParams.featured}
-                  searchQuery={search}
-                  viewMode={viewMode}
-                  onViewModeChange={setViewMode}
-                />
+          {/* Main gallery content */}
+          {loading && images.length === 0 ? (
+            // Show placeholder cards while loading
+            <VirtualGalleryGrid 
+              images={Array.from({ length: 8 }, (_, i) => ({
+                id: `placeholder-${i}`,
+                src: '',
+                alt: 'Loading...',
+                title: '',
+                description: '',
+                aspectRatio: '4:3'
+              }))}
+              viewMode={viewMode}
+            />
+          ) : images.length === 0 && !loading ? (
+            <div className="text-center py-16">
+              <div className="text-gray-400 mb-4">
+                <svg className="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 00-2-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
               </div>
-            </div>
-
-            <div className="lg:col-span-3">
-              {loading ? (
-                <div className="flex justify-center py-12">
-                  <div className="text-center">
-                    <LoadingSpinner />
-                    <p className="mt-2 text-gray-600">Loading images...</p>
-                  </div>
-                </div>
-              ) : images.length === 0 ? (
-                <div className="text-center py-12">
-                  <div className="text-gray-400 mb-4">
-                    <svg className="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 00-2-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                    </svg>
-                  </div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">No images found</h3>
-                  <p className="text-gray-600 mb-4">
-                    {search ? 
-                      "No images match your current filters. Try adjusting your search criteria." :
-                      "No images are available in the gallery yet."
-                    }
-                  </p>
-                  {search && (
-                    <Button 
-                      variant="outline"
-                      onClick={() => router.replace('/gallery', { scroll: false })}
-                      className="border-emerald-200 hover:bg-emerald-50"
-                    >
-                      View All Images
-                    </Button>
-                  )}
-                </div>
-              ) : (
-                <>
-                  <GalleryGrid 
-                    images={transformedImages}
-                    viewMode={viewMode}
-                  />
-                  
-                  {/* Pagination */}
-                  {pagination.totalPages > 1 && (
-                    <div className="flex justify-center items-center space-x-4 mt-12">
-                      <button
-                        onClick={() => navigateToPage(pagination.page - 1)}
-                        disabled={pagination.page === 1}
-                        className="px-4 py-2 border border-emerald-200 rounded-md text-gray-700 hover:bg-emerald-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                      >
-                        Previous
-                      </button>
-                      
-                      <span className="text-gray-600">
-                        Page {pagination.page} of {pagination.totalPages}
-                      </span>
-                      
-                      <button
-                        onClick={() => navigateToPage(pagination.page + 1)}
-                        disabled={pagination.page === pagination.totalPages}
-                        className="px-4 py-2 border border-emerald-200 rounded-md text-gray-700 hover:bg-emerald-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                      >
-                        Next
-                      </button>
-                    </div>
-                  )}
-                </>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">No images found</h3>
+              <p className="text-gray-600 mb-4">
+                {search ? 
+                  "No images match your current filters. Try adjusting your search criteria." :
+                  "No images are available in the gallery yet."
+                }
+              </p>
+              {search && (
+                <Button 
+                  variant="outline"
+                  onClick={() => router.replace('/gallery', { scroll: false })}
+                  className="border-emerald-200 hover:bg-emerald-50"
+                >
+                  View All Images
+                </Button>
               )}
             </div>
-          </div>
+          ) : (
+            <>
+              <VirtualGalleryGrid 
+                images={transformedImages}
+                viewMode={viewMode}
+              />
+              
+              {/* Simplified pagination for mobile */}
+              {pagination.totalPages > 1 && (
+                <div className="flex justify-center items-center space-x-3 mt-8 px-4">
+                  <button
+                    onClick={() => navigateToPage(pagination.page - 1)}
+                    disabled={pagination.page === 1}
+                    className="px-3 py-2 text-sm border border-emerald-200 rounded-lg text-gray-700 hover:bg-emerald-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  >
+                    Previous
+                  </button>
+                  
+                  <span className="text-sm text-gray-600 px-2">
+                    {pagination.page} / {pagination.totalPages}
+                  </span>
+                  
+                  <button
+                    onClick={() => navigateToPage(pagination.page + 1)}
+                    disabled={pagination.page === pagination.totalPages}
+                    className="px-3 py-2 text-sm border border-emerald-200 rounded-lg text-gray-700 hover:bg-emerald-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  >
+                    Next
+                  </button>
+                </div>
+              )}
+            </>
+          )}
         </div>
       </section>
 

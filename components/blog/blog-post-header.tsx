@@ -104,8 +104,20 @@ export default function BlogPostHeader({ post }: BlogPostHeaderProps) {
         {post.thumbnail ? (
           <Image src={post.thumbnail} alt={post.title} fill className="object-cover" priority />
         ) : (
-          <div className="absolute inset-0 w-full h-full bg-gradient-to-br from-emerald-200 to-green-100 flex items-center justify-center">
-            <span className="text-4xl font-bold text-emerald-700 opacity-60">{post.title}</span>
+          <div className="absolute inset-0 w-full h-full bg-gradient-to-br from-emerald-600 via-green-600 to-emerald-700">
+            {/* Beautiful pattern overlay */}
+            <div className="absolute inset-0 opacity-20" 
+                 style={{
+                   backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='white' fill-opacity='0.3'%3E%3Ccircle cx='9' cy='9' r='2'/%3E%3Ccircle cx='51' cy='51' r='2'/%3E%3Ccircle cx='21' cy='21' r='1'/%3E%3Ccircle cx='39' cy='39' r='1'/%3E%3C/g%3E%3C/svg%3E")`,
+                   backgroundSize: '30px 30px'
+                 }} />
+            {/* Gradient overlay for text readability */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-black/10" />
+            {/* Safari/Uganda themed icons */}
+            <div className="absolute top-10 left-10 text-white/20 text-4xl">🦌</div>
+            <div className="absolute top-20 right-20 text-white/20 text-3xl">🌿</div>
+            <div className="absolute bottom-20 left-20 text-white/20 text-3xl">🏔️</div>
+            <div className="absolute bottom-10 right-10 text-white/20 text-4xl">🦁</div>
           </div>
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-gray-900/90 via-gray-900/50 to-transparent" />

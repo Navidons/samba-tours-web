@@ -5,7 +5,7 @@ import Image from "next/image"
 import Link from "next/link"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Calendar, User, Loader2 } from "lucide-react"
+import { Calendar, User, Loader2, Eye, Heart, MessageCircle } from "lucide-react"
 
 interface BlogPost {
   id: number
@@ -77,18 +77,21 @@ export default function BlogGrid({ posts }: BlogGridProps) {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         {posts.slice(0, visiblePosts).map((post) => (
           <div key={post.id} className="bg-white rounded-lg shadow-md overflow-hidden group flex flex-col">
-            <Link href={`/blog/${post.slug}`} className="block">
-              {post.thumbnail ? (
-                <Image
-                  src={post.thumbnail}
-                  alt={post.title}
-                  width={400}
-                  height={250}
-                  className="w-full h-56 object-cover group-hover:scale-105 transition-transform duration-300"
-                />
-              ) : (
-                <div className="w-full h-56 flex items-center justify-center bg-gradient-to-br from-emerald-100 to-green-50 text-emerald-700 text-xl font-semibold">
-                  {post.title}
+            <Link href={`/blog/${post.slug}`} className="block relative">
+              <Image
+                src={post.thumbnail || '/photos/queen-elizabeth-national-park-uganda.jpg'}
+                alt={post.title}
+                width={400}
+                height={250}
+                className="w-full h-56 object-cover group-hover:scale-105 transition-transform duration-300"
+              />
+              
+              {/* Featured badge */}
+              {post.featured && (
+                <div className="absolute top-3 left-3">
+                  <Badge className="bg-yellow-500 text-yellow-900 hover:bg-yellow-600">
+                    ⭐ Featured
+                  </Badge>
                 </div>
               )}
             </Link>
@@ -104,20 +107,42 @@ export default function BlogGrid({ posts }: BlogGridProps) {
                 </h3>
               </Link>
               <p className="text-gray-600 text-sm line-clamp-3 flex-grow">{post.excerpt}</p>
-              <div className="mt-4 pt-4 border-t border-gray-100 flex items-center justify-between text-xs text-gray-500">
-                <div className="flex items-center space-x-2">
-                  <User className="h-4 w-4" />
-                  <span>{post.author?.name || "Unknown Author"}</span>
+              
+              {/* Engagement metrics */}
+              <div className="mt-4 pt-3 border-t border-gray-100">
+                <div className="flex items-center justify-between text-xs text-gray-500 mb-3">
+                  <div className="flex items-center space-x-4">
+                    <div className="flex items-center space-x-1">
+                      <Eye className="h-3 w-3" />
+                      <span>{(post.viewCount || 0).toLocaleString()}</span>
+                    </div>
+                    <div className="flex items-center space-x-1">
+                      <Heart className="h-3 w-3" />
+                      <span>{(post.likeCount || 0).toLocaleString()}</span>
+                    </div>
+                    <div className="flex items-center space-x-1">
+                      <MessageCircle className="h-3 w-3" />
+                      <span>{(post.commentCount || 0)}</span>
+                    </div>
+                  </div>
+                  <span>{post.readTimeMinutes ? `${post.readTimeMinutes} min read` : '5 min read'}</span>
                 </div>
-                <div className="flex items-center space-x-2">
-                  <Calendar className="h-4 w-4" />
-                  <span>
-                    {post.publishDate ? new Date(post.publishDate).toLocaleDateString("en-US", {
-                      year: "numeric",
-                      month: "long",
-                      day: "numeric",
-                    }) : "Not published"}
-                  </span>
+                
+                <div className="flex items-center justify-between text-xs text-gray-500">
+                  <div className="flex items-center space-x-2">
+                    <User className="h-4 w-4" />
+                    <span>{post.author?.name || "Unknown Author"}</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Calendar className="h-4 w-4" />
+                    <span>
+                      {post.publishDate ? new Date(post.publishDate).toLocaleDateString("en-US", {
+                        year: "numeric",
+                        month: "short",
+                        day: "numeric",
+                      }) : "Draft"}
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>

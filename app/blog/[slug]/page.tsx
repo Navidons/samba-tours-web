@@ -8,7 +8,8 @@ import RelatedPosts from "@/components/blog/related-posts"
 import BlogComments from "@/components/blog/blog-comments"
 import LoadingSpinner from "@/components/ui/loading-spinner"
 import { getRelatedBlogPosts } from "@/lib/services/blog-service"
-import { safeServerImport } from "@/lib/utils/production-safe"
+import { generateFakeBlogMetrics } from "@/lib/utils/blog-metrics"
+import { getFallbackBlogImage, getSocialShareImage } from "@/lib/utils/blog-images"
 
 // Helper function to create a URL-friendly slug from a string
 const slugify = (text: string) =>
@@ -23,24 +24,24 @@ const slugify = (text: string) =>
 // Helper function to parse HTML content for table of contents
 const parseTableOfContents = async (content: string) => {
   try {
-    // Use safe server import to avoid production issues
-    const cheerio = await safeServerImport<any>('cheerio')
-    if (!cheerio || !cheerio.load) {
-      console.warn('Cheerio not available for table of contents parsing')
-      return []
+    // Simple regex-based parsing for development/production compatibility
+    if (!content) return []
+    
+    const headingRegex = /<h[2-3][^>]*>(.*?)<\/h[2-3]>/gi
+    const headings = []
+    let match
+    
+    while ((match = headingRegex.exec(content)) !== null) {
+      const text = match[1].replace(/<[^>]*>/g, '').trim()
+      if (text) {
+        headings.push({
+          text,
+          id: slugify(text)
+        })
+      }
     }
-
-    const $ = cheerio.load(content || '')
-    const headings = $("h2, h3").map((_: any, el: any) => ({
-      id: slugify($(el).text()),
-      text: $(el).text(),
-      level: el.tagName,
-    })).get()
-
-    return headings.map((h: any) => ({
-      text: h.text,
-      id: h.id
-    }))
+    
+    return headings
   } catch (error) {
     console.warn('Error parsing table of contents:', error)
     return []
@@ -50,9 +51,15 @@ const parseTableOfContents = async (content: string) => {
 // Generate metadata for SEO
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://sambatours.co'
+    // Handle localhost development
+    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 
+                   (process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : 'https://sambatours.co')
+    
     const response = await fetch(`${baseUrl}/api/blog/${params.slug}`, {
-      cache: 'no-store'
+      cache: 'no-store',
+      headers: {
+        'Content-Type': 'application/json',
+      }
     })
     
     if (!response.ok) {
@@ -86,7 +93,7 @@ export async function generateMetadata({ params }: { params: { slug: string } })
     const keywords = post.tags?.map((tag: any) => tag.name).join(', ') + ', Uganda safari, gorilla trekking, wildlife, travel blog'
     const author = post.author?.name || 'Samba Tours'
     const publishDate = post.publishDate || post.createdAt
-    const imageUrl = post.thumbnail || '/photos/queen-elizabeth-national-park-uganda.jpg'
+    const imageUrl = getSocialShareImage(post.thumbnail, post.title)
     const canonicalUrl = `${baseUrl}/blog/${params.slug}`
 
     return {
@@ -177,19 +184,34 @@ export const dynamic = 'force-dynamic'
 
 export default async function BlogPostPage({ params }: { params: { slug: string } }) {
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://sambatours.co'
+    // Handle localhost development
+    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 
+                   (process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : 'https://sambatours.co')
+    
+    console.log(`Fetching blog post from: ${baseUrl}/api/blog/${params.slug}`)
+    
     const response = await fetch(`${baseUrl}/api/blog/${params.slug}`, {
-      cache: 'no-store'
+      cache: 'no-store',
+      headers: {
+        'Content-Type': 'application/json',
+      }
     })
     
     if (!response.ok) {
+      console.error(`Blog post fetch failed with status: ${response.status}`)
+      if (response.status === 404) {
+        console.error(`Blog post with slug "${params.slug}" not found`)
+      }
       notFound()
     }
     
     const data = await response.json()
+    console.log('Blog post data received:', data.success ? 'Success' : 'Failed', data.post ? 'Post found' : 'No post')
+    
     const post = data.post
     
     if (!post) {
+      console.error('No post data in API response')
       notFound()
     }
 
@@ -208,14 +230,19 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
       console.warn('Could not fetch related posts:', error)
     }
 
+    const fakeMetrics = generateFakeBlogMetrics(post.id, post.title, post.featured)
+    
+    // Get fallback image if no thumbnail exists
+    const blogImage = post.thumbnail || getFallbackBlogImage(post.id, post.category?.name, post.title)
+
     // Transform post data to match component expectations
     const transformedPost = {
       ...post,
       publishDate: post.publishDate || null,
       createdAt: post.createdAt,
       updatedAt: post.updatedAt,
-      image: post.thumbnail,
-      thumbnail: post.thumbnail,
+      image: blogImage,
+      thumbnail: blogImage,
       category: post.category?.name || 'Uncategorized',
       author: {
         name: post.author?.name || 'Unknown Author',
@@ -225,9 +252,10 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
       },
       date: post.publishDate || post.createdAt,
       readTime: post.readTimeMinutes ? `${post.readTimeMinutes} min read` : '5 min read',
-      views: post.viewCount,
-      likes: post.likeCount,
-      tags: post.tags.map((t: any) => t.tag.name),
+      views: post.viewCount || fakeMetrics.viewCount,
+      likes: post.likeCount || fakeMetrics.likeCount,
+      shares: fakeMetrics.shareCount,
+      tags: post.tags?.map((t: any) => t.tag?.name).filter(Boolean) || [],
       tableOfContents
     }
 
@@ -237,7 +265,7 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
       "@type": "Article",
       "headline": post.title,
       "description": post.excerpt || `Read about ${post.title} on our Uganda safari blog. Expert insights, travel tips, and wildlife stories from the Pearl of Africa.`,
-      "image": post.thumbnail || "https://sambatours.co/photos/queen-elizabeth-national-park-uganda.jpg",
+      "image": blogImage,
       "author": {
         "@type": "Person",
         "name": post.author?.name || "Samba Tours"

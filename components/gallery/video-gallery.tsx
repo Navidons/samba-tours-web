@@ -184,29 +184,7 @@ export default function VideoGallery() {
             adventures with our travelers.
           </p>
           
-          {/* Stats - Show if we have data */}
-          {videos.length > 0 && (
-            <div className="flex justify-center items-center space-x-8 mt-8">
-              <div className="text-center">
-                <div className="text-2xl font-bold text-gray-900">{pagination.total}</div>
-                <div className="text-sm text-gray-600">Videos</div>
-              </div>
-              <div className="w-px h-8 bg-emerald-200"></div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-gray-900">
-                  {videos.reduce((sum, video) => sum + video.views, 0).toLocaleString()}
-                </div>
-                <div className="text-sm text-gray-600">Total Views</div>
-              </div>
-              <div className="w-px h-8 bg-emerald-200"></div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-gray-900">
-                  {videos.filter(v => v.featured).length}
-                </div>
-                <div className="text-sm text-gray-600">Featured</div>
-              </div>
-            </div>
-          )}
+
         </div>
 
         {/* Show connection error as alert instead of full page */}

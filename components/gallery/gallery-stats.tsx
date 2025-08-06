@@ -51,14 +51,6 @@ export default function GalleryStats({ totalImages, totalVideos: propTotalVideos
   return (
     <section className="section-padding bg-gradient-to-r from-emerald-50 to-green-50 rounded-2xl border border-emerald-100">
       <div className="container-max">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl font-playfair font-bold text-gray-900 mb-4">Our Visual Journey</h2>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Every photo and video in our gallery represents a real moment from actual tours, captured by our
-            professional guides and happy travelers.
-          </p>
-        </div>
-
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
           {stats.map((stat, index) => (
             <div

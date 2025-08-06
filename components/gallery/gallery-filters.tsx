@@ -8,9 +8,11 @@ import { Search, Filter, Grid, List, X } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Switch } from "@/components/ui/switch"
 import { Label } from "@/components/ui/label"
+import GalleryCategoryTabs from "./gallery-category-tabs"
 
 interface GalleryFiltersProps {
   selectedFeatured?: string
+  selectedCategory?: string
   searchQuery?: string
   viewMode?: "grid" | "masonry"
   onViewModeChange?: (mode: "grid" | "masonry") => void
@@ -18,6 +20,7 @@ interface GalleryFiltersProps {
 
 export default function GalleryFilters({
   selectedFeatured,
+  selectedCategory,
   searchQuery,
   viewMode = "masonry",
   onViewModeChange
@@ -50,8 +53,18 @@ export default function GalleryFilters({
     const search = current.toString()
     const query = search ? `?${search}` : ""
     
+    // Preserve current scroll position
+    const currentScrollY = window.scrollY
+    
     // Use replace instead of push to avoid scroll to top
     router.replace(`/gallery${query}`, { scroll: false })
+    
+    // Ensure scroll position is maintained
+    requestAnimationFrame(() => {
+      if (window.scrollY !== currentScrollY) {
+        window.scrollTo(0, currentScrollY)
+      }
+    })
   }
 
   const handleFeaturedChange = (featured: boolean) => {
@@ -65,13 +78,31 @@ export default function GalleryFilters({
 
   const clearAllFilters = () => {
     setLocalSearchTerm("")
+    
+    // Preserve current scroll position
+    const currentScrollY = window.scrollY
     router.replace("/gallery", { scroll: false })
+    
+    // Ensure scroll position is maintained
+    requestAnimationFrame(() => {
+      if (window.scrollY !== currentScrollY) {
+        window.scrollTo(0, currentScrollY)
+      }
+    })
   }
 
   const hasActiveFilters = selectedFeatured || searchQuery
 
+  // Get current category from URL params
+  const currentCategory = selectedCategory || (selectedFeatured === "true" ? "featured" : "all")
+
   return (
     <div className="mb-8">
+      {/* Category Tabs */}
+      <GalleryCategoryTabs 
+        selectedCategory={currentCategory}
+      />
+      
       {/* Search and View Toggle */}
       <div className="flex flex-col lg:flex-row gap-4 mb-6">
         <form onSubmit={handleSearchSubmit} className="flex-1 relative">

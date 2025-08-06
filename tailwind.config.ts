@@ -94,6 +94,7 @@ const config: Config = {
         "fade-in": "fadeIn 0.6s ease-in-out",
         "slide-up": "slideUp 0.8s ease-out",
         "slide-in-from-right": "slide-in-from-right 0.3s ease-out",
+        "shimmer": "shimmer 1.5s infinite",
       },
     },
   },
@@ -101,6 +102,10 @@ const config: Config = {
     "slide-in-from-right": {
       "0%": { transform: "translateX(100%)" },
       "100%": { transform: "translateX(0)" },
+    },
+    "shimmer": {
+      "0%": { backgroundPosition: "-200% 0" },
+      "100%": { backgroundPosition: "200% 0" },
     },
   },
   plugins: [require("tailwindcss-animate")],

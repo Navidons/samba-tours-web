@@ -6,6 +6,8 @@ import BlogGrid from "@/components/blog/blog-grid"
 import BlogSidebar from "@/components/blog/blog-sidebar"
 import FeaturedPosts from "@/components/blog/featured-posts"
 import LoadingSpinner from "@/components/ui/loading-spinner"
+import { generateFakeBlogMetrics } from "@/lib/utils/blog-metrics"
+import { getFallbackBlogImage } from "@/lib/utils/blog-images"
 
 interface BlogPost {
   id: number
@@ -65,7 +67,19 @@ export default function BlogClient() {
       }
       
       const data = await response.json()
-      const publishedPosts = data.posts.filter((post: BlogPost) => post.status === 'published')
+      const publishedPosts = data.posts
+        .filter((post: BlogPost) => post.status === 'published')
+        .map((post: BlogPost) => {
+          const fakeMetrics = generateFakeBlogMetrics(post.id, post.title, post.featured)
+          return {
+            ...post,
+            viewCount: post.viewCount || fakeMetrics.viewCount,
+            likeCount: post.likeCount || fakeMetrics.likeCount,
+            commentCount: post.commentCount || fakeMetrics.commentCount,
+            // Add fallback image if no thumbnail exists
+            thumbnail: post.thumbnail || getFallbackBlogImage(post.id, post.category?.name, post.title)
+          }
+        })
       
       setAllPosts(publishedPosts)
       setFilteredPosts(publishedPosts)
