@@ -5,7 +5,8 @@ import Image from "next/image"
 import Link from "next/link"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Calendar, User, Loader2, Eye, Heart, MessageCircle } from "lucide-react"
+import { Calendar, User, Loader2, Heart, MessageCircle } from "lucide-react"
+import { formatLikes, formatComments } from "@/lib/utils/number-formatting"
 
 interface BlogPost {
   id: number
@@ -113,16 +114,12 @@ export default function BlogGrid({ posts }: BlogGridProps) {
                 <div className="flex items-center justify-between text-xs text-gray-500 mb-3">
                   <div className="flex items-center space-x-4">
                     <div className="flex items-center space-x-1">
-                      <Eye className="h-3 w-3" />
-                      <span>{(post.viewCount || 0).toLocaleString()}</span>
-                    </div>
-                    <div className="flex items-center space-x-1">
                       <Heart className="h-3 w-3" />
-                      <span>{(post.likeCount || 0).toLocaleString()}</span>
+                      <span>{formatLikes(post.likeCount || 0)}</span>
                     </div>
                     <div className="flex items-center space-x-1">
                       <MessageCircle className="h-3 w-3" />
-                      <span>{(post.commentCount || 0)}</span>
+                      <span>{formatComments(post.commentCount || 0)}</span>
                     </div>
                   </div>
                   <span>{post.readTimeMinutes ? `${post.readTimeMinutes} min read` : '5 min read'}</span>

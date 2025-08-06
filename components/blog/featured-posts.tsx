@@ -3,10 +3,13 @@
 import { useState, useEffect } from "react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Calendar, User, ArrowRight, Eye, Heart, Loader2 } from "lucide-react"
+import { Calendar, User, ArrowRight, Heart, Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import Image from "next/image"
+import { generateFakeBlogMetrics } from "@/lib/utils/blog-metrics"
+import { getFallbackBlogImage } from "@/lib/utils/blog-images"
+import { formatLikes } from "@/lib/utils/number-formatting"
 
 interface BlogPost {
   id: number
@@ -61,7 +64,18 @@ export default function FeaturedPosts() {
       }
       
       const data = await response.json()
-      setFeaturedPosts(data.posts)
+      const postsWithMetrics = data.posts.map((post: BlogPost) => {
+        const fakeMetrics = generateFakeBlogMetrics(post.id, post.title, post.featured)
+        return {
+          ...post,
+          viewCount: post.viewCount || fakeMetrics.viewCount,
+          likeCount: post.likeCount || fakeMetrics.likeCount,
+          commentCount: post.commentCount || fakeMetrics.commentCount,
+          // Add fallback image if no thumbnail exists
+          thumbnail: post.thumbnail || getFallbackBlogImage(post.id, post.category?.name, post.title)
+        }
+      })
+      setFeaturedPosts(postsWithMetrics)
     } catch (error) {
       console.error('Error fetching featured posts:', error)
     } finally {
@@ -135,12 +149,8 @@ export default function FeaturedPosts() {
                 <div className="absolute bottom-4 left-4 right-4">
                   <div className="flex items-center space-x-4 text-white text-sm">
                     <div className="flex items-center space-x-1">
-                      <Eye className="h-4 w-4" />
-                      <span>{post.viewCount.toLocaleString()}</span>
-                    </div>
-                    <div className="flex items-center space-x-1">
                       <Heart className="h-4 w-4" />
-                      <span>{post.likeCount.toLocaleString()}</span>
+                      <span>{formatLikes(post.likeCount)}</span>
                     </div>
                   </div>
                 </div>

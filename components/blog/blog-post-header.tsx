@@ -3,11 +3,12 @@
 import { useState, useEffect } from "react"
 import Image from "next/image"
 import Link from "next/link"
-import { Calendar, Clock, User, Eye, Heart, Facebook, Twitter, Linkedin, LinkIcon, Check } from "lucide-react"
+import { Calendar, Clock, User, Heart, Facebook, Twitter, Linkedin, LinkIcon, Check } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { toast } from "sonner"
+import { formatLikes } from "@/lib/utils/number-formatting"
 
 interface Post {
   id: number
@@ -157,12 +158,8 @@ export default function BlogPostHeader({ post }: BlogPostHeaderProps) {
           <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-4">
             <div className="flex items-center space-x-4">
               <div className="flex items-center space-x-1 text-gray-200">
-                <Eye className="h-4 w-4" />
-                <span className="text-xs">{(post.viewCount ?? 0).toLocaleString()} views</span>
-              </div>
-              <div className="flex items-center space-x-1 text-gray-200">
                 <Heart className="h-4 w-4" />
-                <span className="text-xs">{(post.likeCount ?? 0).toLocaleString()} likes</span>
+                <span className="text-xs">{formatLikes(post.likeCount ?? 0)} likes</span>
               </div>
             </div>
 
