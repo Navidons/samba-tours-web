@@ -1,15 +1,34 @@
 import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { PrismaClientInitializationError, PrismaClientKnownRequestError } from "@prisma/client/runtime/library"
+import { getUploadConfig, getDeploymentLimits, logDeploymentInfo, validateFile, UPLOAD_CONFIG } from "@/lib/config/upload"
 
-// File size limits (5MB per image)
-const MAX_FILE_SIZE = 5 * 1024 * 1024 // 5MB
-const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif']
+// For backward compatibility
+const MAX_FILE_SIZE = UPLOAD_CONFIG.MAX_FILE_SIZE
+const ALLOWED_IMAGE_TYPES = UPLOAD_CONFIG.ALLOWED_IMAGE_TYPES
 
 // POST /api/admin/gallery/images - Upload images to gallery
 export async function POST(request: NextRequest) {
   try {
     console.log('📁 Gallery image upload started')
+    
+    // Log deployment configuration for debugging
+    logDeploymentInfo()
+    
+    const config = getUploadConfig()
+    const { platform, limits } = getDeploymentLimits()
+    
+    // Check content length for deployment
+    const contentLength = request.headers.get('content-length')
+    console.log(`📊 Content-Length: ${contentLength}`)
+    
+    if (contentLength && parseInt(contentLength) > limits.maxRequestSize) {
+      console.log(`❌ Request too large: ${contentLength} > ${limits.maxRequestSize}`)
+      return NextResponse.json(
+        { error: `Request too large for ${platform}. Maximum: ${(limits.maxRequestSize / 1024 / 1024).toFixed(2)}MB` },
+        { status: 413 }
+      )
+    }
     
     const formData = await request.formData()
     
@@ -21,9 +40,9 @@ export async function POST(request: NextRequest) {
     
     console.log(`📊 Upload details: Gallery ID: ${galleryId}, Files: ${files.length}`)
     
-    // Log file sizes for debugging
+    // Enhanced logging for deployment debugging
     files.forEach((file, index) => {
-      console.log(`📄 File ${index + 1}: ${file.name} (${(file.size / 1024 / 1024).toFixed(2)}MB)`)
+      console.log(`📄 File ${index + 1}: ${file.name} (${(file.size / 1024 / 1024).toFixed(2)}MB, ${file.type})`)
     })
     
     if (!galleryId) {
@@ -60,41 +79,54 @@ export async function POST(request: NextRequest) {
       try {
         console.log(`🔄 Processing: ${file.name} (${(file.size / 1024 / 1024).toFixed(2)}MB)`)
         
-        // Validate file type
-        if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
-          console.log(`❌ Invalid type: ${file.name} (${file.type})`)
+        // Use centralized validation
+        const validation = validateFile(file)
+        if (!validation.valid) {
+          console.log(`❌ Validation failed: ${validation.error}`)
           failedImages.push({
             name: file.name,
-            error: `Invalid file type: ${file.type}. Allowed types: ${ALLOWED_IMAGE_TYPES.join(', ')}`
+            error: validation.error || 'Validation failed'
           })
           continue
         }
 
-        // Validate file size
-        if (file.size > MAX_FILE_SIZE) {
-          console.log(`❌ Too large: ${file.name} (${(file.size / 1024 / 1024).toFixed(2)}MB)`)
+        // Additional deployment-specific checks
+        if (file.size > limits.maxFileSize) {
+          console.log(`❌ File exceeds platform limit: ${(file.size / 1024 / 1024).toFixed(2)}MB > ${(limits.maxFileSize / 1024 / 1024).toFixed(2)}MB`)
           failedImages.push({
             name: file.name,
-            error: `File too large: ${(file.size / 1024 / 1024).toFixed(2)}MB. Maximum size: ${(MAX_FILE_SIZE / 1024 / 1024).toFixed(2)}MB`
+            error: `File too large for ${platform}: ${(file.size / 1024 / 1024).toFixed(2)}MB. Maximum: ${(limits.maxFileSize / 1024 / 1024).toFixed(2)}MB`
           })
           continue
         }
 
-        // Validate file has content
-        if (file.size === 0) {
-          console.log(`❌ Empty file: ${file.name}`)
-          failedImages.push({
-            name: file.name,
-            error: 'File is empty'
-          })
-          continue
-        }
-
-        // Convert file to buffer with error handling
+        // Convert file to buffer with enhanced error handling for deployment
         let buffer: Buffer
         try {
           console.log(`📦 Converting to buffer: ${file.name}`)
+          
+          // Check if file is valid before processing
+          if (!file || !file.stream) {
+            console.log(`❌ Invalid file object: ${file.name}`)
+            failedImages.push({
+              name: file.name,
+              error: 'Invalid file object'
+            })
+            continue
+          }
+          
           const arrayBuffer = await file.arrayBuffer()
+          
+          // Additional validation for deployment
+          if (!arrayBuffer || arrayBuffer.byteLength === 0) {
+            console.log(`❌ Empty or invalid arrayBuffer: ${file.name}`)
+            failedImages.push({
+              name: file.name,
+              error: 'Failed to read file data'
+            })
+            continue
+          }
+          
           buffer = Buffer.from(arrayBuffer)
           
           // Validate buffer has content
@@ -102,15 +134,21 @@ export async function POST(request: NextRequest) {
             console.log(`❌ Empty buffer: ${file.name}`)
             failedImages.push({
               name: file.name,
-              error: 'Failed to read file content'
+              error: 'File contains no data'
             })
             continue
           }
+          
+          // Validate buffer length matches file size
+          if (buffer.length !== file.size) {
+            console.log(`⚠️ Buffer size mismatch for ${file.name}: buffer=${buffer.length}, file=${file.size}`)
+          }
+          
         } catch (bufferError) {
           console.error(`❌ Buffer error for ${file.name}:`, bufferError)
           failedImages.push({
             name: file.name,
-            error: 'Failed to read file content'
+            error: `Failed to process file: ${bufferError instanceof Error ? bufferError.message : 'Unknown error'}`
           })
           continue
         }

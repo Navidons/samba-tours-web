@@ -4,8 +4,18 @@ const nextConfig = {
     appDir: true,
   },
   images: {
-    domains: ['sambatours.co', 'localhost'],
+    domains: [
+      'sambatours.co', 
+      'localhost',
+      'img.youtube.com',
+      'i.ytimg.com',
+      'youtube.com',
+      'www.youtube.com',
+      'via.placeholder.com'
+    ],
     formats: ['image/webp', 'image/avif'],
+    dangerouslyAllowSVG: true,
+    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
   },
   // Increase body parser limit for file uploads
   api: {

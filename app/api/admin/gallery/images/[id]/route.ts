@@ -1,13 +1,17 @@
 import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 
-// GET /api/admin/gallery/images/[id] - Get specific image
+// GET /api/admin/gallery/images/[id] - Serve image as binary data or JSON based on Accept header
 export async function GET(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
   try {
     const imageId = parseInt(params.id)
+    const acceptHeader = request.headers.get('accept')
+    const isImageRequest = acceptHeader?.includes('image/') || 
+                           acceptHeader?.includes('*/*') ||
+                           request.url.includes('?raw=true')
 
     const image = await prisma.galleryImage.findUnique({
       where: { id: imageId },
@@ -32,12 +36,38 @@ export async function GET(
     })
 
     if (!image) {
+      if (isImageRequest) {
+        // Return a 1x1 transparent PNG for broken images
+        const transparentPng = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==', 'base64')
+        return new NextResponse(transparentPng, {
+          headers: {
+            'Content-Type': 'image/png',
+            'Content-Length': transparentPng.length.toString(),
+            'Cache-Control': 'public, max-age=3600'
+          }
+        })
+      }
       return NextResponse.json(
         { error: 'Image not found' },
         { status: 404 }
       )
     }
 
+    // If this is an image request (from <img> or Next.js Image), serve the binary data
+    if (isImageRequest && image.imageData) {
+      const buffer = Buffer.from(image.imageData)
+      
+      return new NextResponse(buffer, {
+        headers: {
+          'Content-Type': image.imageType || 'image/jpeg',
+          'Content-Length': buffer.length.toString(),
+          'Cache-Control': 'public, max-age=3600',
+          'Content-Disposition': `inline; filename="${image.imageName || 'image'}"`,
+        }
+      })
+    }
+
+    // Otherwise, return JSON metadata
     const transformedImage = {
       id: image.id,
       title: image.title,
@@ -56,6 +86,19 @@ export async function GET(
 
   } catch (error) {
     console.error('Error fetching image:', error)
+    
+    // Return placeholder image for image requests
+    const acceptHeader = request.headers.get('accept')
+    if (acceptHeader?.includes('image/') || acceptHeader?.includes('*/*')) {
+      const transparentPng = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==', 'base64')
+      return new NextResponse(transparentPng, {
+        headers: {
+          'Content-Type': 'image/png',
+          'Content-Length': transparentPng.length.toString()
+        }
+      })
+    }
+    
     return NextResponse.json(
       { error: 'Failed to fetch image' },
       { status: 500 }
