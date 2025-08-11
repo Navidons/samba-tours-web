@@ -1,14 +1,11 @@
 "use client"
 
-import { useState, useEffect } from "react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Calendar, User, ArrowRight, Heart, Loader2 } from "lucide-react"
+import { Calendar, User, ArrowRight, Heart } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import Image from "next/image"
-import { generateFakeBlogMetrics } from "@/lib/utils/blog-metrics"
-import { getFallbackBlogImage } from "@/lib/utils/blog-images"
 import { formatLikes } from "@/lib/utils/number-formatting"
 
 interface BlogPost {
@@ -16,8 +13,6 @@ interface BlogPost {
   title: string
   slug: string
   excerpt: string
-  content: string
-  contentHtml: string | null
   status: string
   publishDate: string | null
   readTimeMinutes: number | null
@@ -47,52 +42,12 @@ interface BlogPost {
   updatedAt: string
 }
 
-export default function FeaturedPosts() {
-  const [featuredPosts, setFeaturedPosts] = useState<BlogPost[]>([])
-  const [loading, setLoading] = useState(true)
+interface FeaturedPostsProps {
+  posts: BlogPost[]
+}
 
-  useEffect(() => {
-    fetchFeaturedPosts()
-  }, [])
-
-  const fetchFeaturedPosts = async () => {
-    try {
-      setLoading(true)
-      const response = await fetch('/api/blog?featured=true&limit=3')
-      if (!response.ok) {
-        throw new Error('Failed to fetch featured posts')
-      }
-      
-      const data = await response.json()
-      const postsWithMetrics = data.posts.map((post: BlogPost) => {
-        const fakeMetrics = generateFakeBlogMetrics(post.id, post.title, post.featured)
-        return {
-          ...post,
-          viewCount: post.viewCount || fakeMetrics.viewCount,
-          likeCount: post.likeCount || fakeMetrics.likeCount,
-          commentCount: post.commentCount || fakeMetrics.commentCount,
-          // Add fallback image if no thumbnail exists
-          thumbnail: post.thumbnail || getFallbackBlogImage(post.id, post.category?.name, post.title)
-        }
-      })
-      setFeaturedPosts(postsWithMetrics)
-    } catch (error) {
-      console.error('Error fetching featured posts:', error)
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  if (loading) {
-    return (
-      <div className="text-center py-12">
-        <Loader2 className="h-8 w-8 animate-spin text-emerald-600 mx-auto mb-4" />
-        <p className="text-gray-600">Loading featured posts...</p>
-      </div>
-    )
-  }
-
-  if (featuredPosts.length === 0) {
+export default function FeaturedPosts({ posts }: FeaturedPostsProps) {
+  if (posts.length === 0) {
     return (
       <div className="text-center py-12">
         <h2 className="font-playfair text-4xl font-bold text-gray-900 mb-4">Featured Stories</h2>
@@ -114,7 +69,7 @@ export default function FeaturedPosts() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {featuredPosts.map((post, index) => (
+        {posts.map((post, index) => (
           <Card
             key={post.id}
             className={`group hover:shadow-xl transition-all duration-300 overflow-hidden ${

@@ -84,17 +84,10 @@ export async function GET(
       )
     }
 
-    // Transform the post data to include proper image handling
+    // Transform the post data to include proper image handling (URL, not base64)
     const transformedPost = {
       ...post,
-      thumbnail: post.thumbnailData && post.thumbnailType 
-        ? `data:${post.thumbnailType};base64,${Buffer.from(post.thumbnailData).toString('base64')}`
-        : null,
-      // Remove the raw binary data from the response
-      thumbnailData: undefined,
-      thumbnailName: undefined,
-      thumbnailType: undefined,
-      thumbnailSize: undefined,
+      thumbnail: `/api/blog/thumbnails/${post.id}`,
     }
 
     // Increment view count (non-blocking)

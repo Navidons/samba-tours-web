@@ -1,45 +1,20 @@
 "use client"
 
-import { useState, useEffect } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { Search, TrendingUp, Tag, Folder, Mail, Loader2 } from "lucide-react"
+import { Search, TrendingUp, Tag, Folder } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
+import { Skeleton } from "@/components/ui/skeleton"
 
-interface BlogPost {
+interface PopularPostLite {
   id: number
   title: string
   slug: string
-  excerpt: string
-  status: string
-  publishDate: string | null
   viewCount: number
-  likeCount: number
-  commentCount: number
-  featured: boolean
   thumbnail: string | null
-  category: {
-    id: number
-    name: string
-    slug: string
-  } | null
-  author: {
-    id: number
-    name: string
-    email: string | null
-    bio: string | null
-  } | null
-  tags: Array<{
-    id: number
-    name: string
-    slug: string
-    color: string
-  }>
-  createdAt: string
-  updatedAt: string
 }
 
 interface BlogCategory {
@@ -55,50 +30,28 @@ interface BlogTag {
   name: string
   slug: string
   color: string
-  postCount: number
+  postCount?: number
+}
+
+interface SidebarData {
+  popularPosts: PopularPostLite[]
+  categories: BlogCategory[]
+  tags: BlogTag[]
 }
 
 interface BlogSidebarProps {
   searchQuery: string
   onSearchChange: (query: string) => void
+  sidebarData: SidebarData | null
+  isLoading: boolean
 }
 
-export default function BlogSidebar({ searchQuery, onSearchChange }: BlogSidebarProps) {
-  const [popularPosts, setPopularPosts] = useState<BlogPost[]>([])
-  const [categories, setCategories] = useState<BlogCategory[]>([])
-  const [tags, setTags] = useState<BlogTag[]>([])
-  const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
-    fetchSidebarData()
-  }, [])
-
-  const fetchSidebarData = async () => {
-    try {
-      setLoading(true)
-      
-      // Fetch popular posts (most viewed)
-      const popularResponse = await fetch('/api/blog?limit=3&sort=views')
-      const popularData = await popularResponse.json()
-      
-      // Fetch categories
-      const categoriesResponse = await fetch('/api/blog/categories')
-      const categoriesData = await categoriesResponse.json()
-      
-      // Fetch tags
-      const tagsResponse = await fetch('/api/blog/tags')
-      const tagsData = await tagsResponse.json()
-      
-      setPopularPosts(popularData.posts || [])
-      setCategories(categoriesData.categories || [])
-      setTags(tagsData.tags || [])
-    } catch (error) {
-      console.error('Error fetching sidebar data:', error)
-    } finally {
-      setLoading(false)
-    }
-  }
-
+export default function BlogSidebar({ 
+  searchQuery, 
+  onSearchChange, 
+  sidebarData, 
+  isLoading 
+}: BlogSidebarProps) {
   const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     // The search is already happening live on change, but this prevents page reload.
@@ -138,12 +91,20 @@ export default function BlogSidebar({ searchQuery, onSearchChange }: BlogSidebar
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          {loading ? (
-            <div className="flex justify-center py-4">
-              <Loader2 className="h-6 w-6 animate-spin text-emerald-600" />
+          {isLoading ? (
+            <div className="space-y-4">
+              {Array.from({ length: 3 }).map((_, i) => (
+                <div key={i} className="flex items-start space-x-4">
+                  <Skeleton className="w-20 h-20 rounded-lg" />
+                  <div className="flex-1 space-y-2">
+                    <Skeleton className="h-4 w-3/4" />
+                    <Skeleton className="h-4 w-1/2" />
+                  </div>
+                </div>
+              ))}
             </div>
-          ) : popularPosts.length > 0 ? (
-            popularPosts.map((post) => (
+          ) : sidebarData?.popularPosts && sidebarData.popularPosts.length > 0 ? (
+            sidebarData.popularPosts.map((post) => (
               <Link key={post.id} href={`/blog/${post.slug}`} className="block group">
                 <div className="flex items-start space-x-4">
                   {post.thumbnail ? (
@@ -188,13 +149,18 @@ export default function BlogSidebar({ searchQuery, onSearchChange }: BlogSidebar
           </CardTitle>
         </CardHeader>
         <CardContent>
-          {loading ? (
-            <div className="flex justify-center py-4">
-              <Loader2 className="h-6 w-6 animate-spin text-emerald-600" />
-            </div>
-          ) : categories.length > 0 ? (
+          {isLoading ? (
             <div className="space-y-2">
-              {categories.map((category) => (
+              {Array.from({ length: 5 }).map((_, i) => (
+                <div key={i} className="flex items-center justify-between p-3">
+                  <Skeleton className="h-4 w-32" />
+                  <Skeleton className="h-5 w-8 rounded" />
+                </div>
+              ))}
+            </div>
+          ) : sidebarData?.categories && sidebarData.categories.length > 0 ? (
+            <div className="space-y-2">
+              {sidebarData.categories.map((category) => (
                 <Link key={category.id} href={`/blog/category/${category.slug}`}>
                   <div className="flex items-center justify-between p-3 rounded-lg hover:bg-emerald-50 transition-colors group">
                     <span className="text-gray-900 group-hover:text-emerald-600">{category.name}</span>
@@ -218,13 +184,15 @@ export default function BlogSidebar({ searchQuery, onSearchChange }: BlogSidebar
           </CardTitle>
         </CardHeader>
         <CardContent>
-          {loading ? (
-            <div className="flex justify-center py-4">
-              <Loader2 className="h-6 w-6 animate-spin text-emerald-600" />
-            </div>
-          ) : tags.length > 0 ? (
+          {isLoading ? (
             <div className="flex flex-wrap gap-2">
-              {tags.map((tag) => (
+              {Array.from({ length: 10 }).map((_, i) => (
+                <Skeleton key={i} className="h-6 w-16 rounded" />
+              ))}
+            </div>
+          ) : sidebarData?.tags && sidebarData.tags.length > 0 ? (
+            <div className="flex flex-wrap gap-2">
+              {sidebarData.tags.map((tag) => (
                 <Link key={tag.id} href={`/blog/tag/${tag.slug}`}>
                   <Badge
                     variant="outline"

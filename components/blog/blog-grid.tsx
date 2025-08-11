@@ -5,8 +5,9 @@ import Image from "next/image"
 import Link from "next/link"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Calendar, User, Loader2, Heart, MessageCircle } from "lucide-react"
+import { Calendar, User, Heart, MessageCircle } from "lucide-react"
 import { formatLikes, formatComments } from "@/lib/utils/number-formatting"
+import { Skeleton } from "@/components/ui/skeleton"
 
 interface BlogPost {
   id: number
@@ -53,6 +54,7 @@ interface BlogGridProps {
 export default function BlogGrid({ posts }: BlogGridProps) {
   const [visiblePosts, setVisiblePosts] = useState(POSTS_PER_PAGE)
   const [isLoading, setIsLoading] = useState(false)
+  const [loadedMap, setLoadedMap] = useState<Record<number, boolean>>({})
 
   const loadMorePosts = () => {
     setIsLoading(true)
@@ -79,12 +81,20 @@ export default function BlogGrid({ posts }: BlogGridProps) {
         {posts.slice(0, visiblePosts).map((post) => (
           <div key={post.id} className="bg-white rounded-lg shadow-md overflow-hidden group flex flex-col">
             <Link href={`/blog/${post.slug}`} className="block relative">
+              {!loadedMap[post.id] && (
+                <Skeleton className="absolute inset-0 h-56 w-full" />
+              )}
               <Image
-                src={post.thumbnail || '/photos/queen-elizabeth-national-park-uganda.jpg'}
+                src={post.thumbnail || `/api/blog/thumbnails/${post.id}`}
                 alt={post.title}
                 width={400}
                 height={250}
-                className="w-full h-56 object-cover group-hover:scale-105 transition-transform duration-300"
+                onLoadingComplete={() =>
+                  setLoadedMap((prev) => ({ ...prev, [post.id]: true }))
+                }
+                className={`w-full h-56 object-cover group-hover:scale-105 transition-transform duration-300 transition-opacity ${
+                  loadedMap[post.id] ? "opacity-100" : "opacity-0"
+                }`}
               />
               
               {/* Featured badge */}
@@ -153,14 +163,7 @@ export default function BlogGrid({ posts }: BlogGridProps) {
             Showing {Math.min(visiblePosts, posts.length)} of {posts.length} articles
           </p>
           <Button onClick={loadMorePosts} disabled={isLoading} className="bg-emerald-600 hover:bg-emerald-700" size="lg">
-            {isLoading ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Loading...
-              </>
-            ) : (
-              "Load More Articles"
-            )}
+            {isLoading ? "Loading..." : "Load More Articles"}
           </Button>
         </div>
       )}

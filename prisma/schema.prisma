@@ -351,6 +351,10 @@ model BlogPost {
   @@index([categoryId])
   @@index([publishDate])
   @@index([authorId])
+  @@index([viewCount(sort: Desc)])
+  @@index([createdAt(sort: Desc)])
+  @@index([status, featured, publishDate(sort: Desc)])
+  @@index([status, categoryId, publishDate(sort: Desc)])
   @@map("blog_posts")
 }
 
