@@ -57,11 +57,7 @@ export default function TourHero({ tour, isListingPage = false }: TourHeroProps)
                    tour.images?.[0]
 
   // Optimized image source handling
-  const imageSource = heroImage?.data ? (
-    heroImage.data.startsWith('data:') ? heroImage.data : 
-    heroImage.data.startsWith('/') ? heroImage.data : 
-    `data:${heroImage.type || 'image/jpeg'};base64,${heroImage.data}`
-  ) : ''
+  const imageSource = heroImage?.data ? heroImage.data : ''
 
   // Get alt text for the image
   const altText = (heroImage && 'altText' in heroImage && heroImage.altText 

@@ -54,14 +54,11 @@ export default async function TourPage({ params }: TourPageProps) {
     notFound()
   }
 
-  const reviewsData = await getTourReviews(params.slug)
-  let relatedTours = []
-  try {
-    relatedTours = await getRelatedTours(tour)
-  } catch (error) {
-    console.error('Error fetching related tours:', error)
-    // Continue without related tours if they fail to load
-  }
+  // Parallelize secondary data fetches; do not block first render
+  const [reviewsData, relatedTours] = await Promise.all([
+    getTourReviews(params.slug).catch(() => ({ reviews: [], pagination: { total: 0 } })),
+    getRelatedTours(tour).catch(() => [])
+  ])
 
   return (
     <ScrollGuard>

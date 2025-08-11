@@ -9,6 +9,7 @@ import VirtualGalleryGrid from "@/components/gallery/virtual-gallery-grid"
 import VideoGallery from "@/components/gallery/video-gallery"
 import ScrollPositionIndicator from "@/components/gallery/scroll-position-indicator"
 import LoadingSpinner from "@/components/ui/loading-spinner"
+import SectionHeader from "@/components/ui/section-header"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { AlertCircle, Database, RefreshCw } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -29,7 +30,7 @@ export default function GalleryClient({ searchParams, hideMainHeading }: Gallery
   const router = useRouter()
   const urlSearchParams = useSearchParams()
   const [images, setImages] = useState<GalleryImage[]>([])
-  const [totalVideos, setTotalVideos] = useState<number>(0)
+  // const [totalVideos, setTotalVideos] = useState<number>(0)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<{ message: string; type: string } | null>(null)
   const [pagination, setPagination] = useState({
@@ -38,7 +39,7 @@ export default function GalleryClient({ searchParams, hideMainHeading }: Gallery
     pageSize: 20,
     totalPages: 1
   })
-  const [viewMode, setViewMode] = useState<"grid" | "masonry">("masonry")
+  const [viewMode, setViewMode] = useState<"grid" | "masonry">("grid")
 
   // Enhanced scroll management hook
   const { startLoading, endLoading } = useScrollManagement({
@@ -76,6 +77,8 @@ export default function GalleryClient({ searchParams, hideMainHeading }: Gallery
   useEffect(() => {
     loadGalleryData()
   }, [category, featured, search, page])
+
+  // Stats removed
 
   // Prevent scroll jumps during content loading
   useEffect(() => {
@@ -167,18 +170,11 @@ export default function GalleryClient({ searchParams, hideMainHeading }: Gallery
 
       <section className="py-16">
         <div className="container-max px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl md:text-5xl font-playfair font-bold text-gray-900 mb-6">
-              Captured
-              <span className="block text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 to-green-600">
-                Moments
-              </span>
-            </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-              Experience the beauty of Uganda through our lens. Every photo tells a story of adventure, wildlife
-              encounters, and unforgettable moments from our safari expeditions.
-            </p>
-          </div>
+          <SectionHeader 
+            title="Captured" 
+            highlight="Moments"
+            subtitle="Experience the beauty of Uganda through our lens. Every photo tells a story of adventure, wildlife encounters, and unforgettable moments from our safari expeditions."
+          />
 
           {/* Show connection error state */}
           {error?.type === 'CONNECTION_ERROR' && (
@@ -221,7 +217,7 @@ export default function GalleryClient({ searchParams, hideMainHeading }: Gallery
 
 
           {/* Mobile-first filters */}
-          <div className="mb-6">
+          <div className="mb-8 sticky top-0 z-20 bg-white/70 backdrop-blur-md border border-emerald-100 rounded-2xl p-4 shadow-sm">
             <GalleryFilters 
               selectedCategory={category}
               selectedFeatured={searchParams.featured}
@@ -230,6 +226,8 @@ export default function GalleryClient({ searchParams, hideMainHeading }: Gallery
               onViewModeChange={setViewMode}
             />
           </div>
+
+          {/* Stats section removed */}
 
           {/* Main gallery content */}
           {loading && images.length === 0 ? (
@@ -271,7 +269,12 @@ export default function GalleryClient({ searchParams, hideMainHeading }: Gallery
             </div>
           ) : (
             <>
-              <VirtualGalleryGrid 
+              {/* Section header removed to avoid duplication with filters area; grid follows immediately */}
+
+            {/* Subtle divider */}
+            <div className="h-px bg-gradient-to-r from-transparent via-emerald-100 to-transparent my-8" />
+
+            <VirtualGalleryGrid 
                 images={transformedImages}
                 viewMode={viewMode}
               />

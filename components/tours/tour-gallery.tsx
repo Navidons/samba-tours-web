@@ -53,15 +53,8 @@ export default function TourGallery({ gallery, images, title }: TourGalleryProps
 
   // Convert image objects to data URLs if needed
   const getImageSrc = (image: TourImage | string) => {
-    if (typeof image === 'string') {
-      return image
-    }
-    // If data already contains a data URL, use it directly
-    if (image.data && image.data.startsWith('data:')) {
-      return image.data
-    }
-    // Otherwise construct the data URL
-    return image.data ? `data:${image.type};base64,${image.data}` : null
+    if (typeof image === 'string') return image
+    return image.data || null // may be a streaming URL like /api/tours/images/{id}
   }
 
   const getImageAlt = (image: TourImage | string, index: number) => {

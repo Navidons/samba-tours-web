@@ -148,7 +148,8 @@ export async function GET(
       } : null,
       images: tour.images.map(img => ({
         id: img.id,
-        data: `data:${img.imageType || 'image/jpeg'};base64,${Buffer.from(img.imageData).toString('base64')}`,
+        // Use streaming URL
+        data: `/api/tours/images/${img.id}`,
         name: img.imageName,
         type: img.imageType,
         size: img.imageSize,

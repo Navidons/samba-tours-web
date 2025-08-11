@@ -247,10 +247,8 @@ class GalleryService {
 
   // Convert image data to URL for display
   getImageUrl(image: GalleryImage): string {
-    if (!image.imageData || !image.imageType) {
-      return ''
-    }
-    return `data:${image.imageType};base64,${image.imageData}`
+    // Always prefer streaming endpoint by id to avoid large payloads
+    return `/api/gallery/images/${image.id}`
   }
 
   // Get thumbnail URL for gallery

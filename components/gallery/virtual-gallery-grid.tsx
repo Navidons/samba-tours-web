@@ -1,7 +1,6 @@
 "use client"
 
 import { useState, useEffect, useRef, useMemo } from "react"
-import GalleryLightbox from "./gallery-lightbox"
 import OptimizedGalleryImage from "./optimized-gallery-image"
 
 interface VirtualGalleryGridProps {
@@ -15,21 +14,20 @@ export default function VirtualGalleryGrid({
   images = [], 
   viewMode = "masonry",
   itemHeight = 300,
-  overscan = 5
+  overscan = 3
 }: VirtualGalleryGridProps) {
   const [selectedImage, setSelectedImage] = useState<number | null>(null)
   const [containerHeight, setContainerHeight] = useState(600)
   const [scrollTop, setScrollTop] = useState(0)
   const containerRef = useRef<HTMLDivElement>(null)
 
-  // Calculate how many columns we can fit
-  const columns = viewMode === "masonry" 
-    ? typeof window !== 'undefined' && window.innerWidth < 640 ? 1 
-      : typeof window !== 'undefined' && window.innerWidth < 1024 ? 2 
-      : 3
-    : typeof window !== 'undefined' && window.innerWidth < 640 ? 1 
-      : typeof window !== 'undefined' && window.innerWidth < 1024 ? 2 
-      : 3
+  // Calculate how many columns we can fit (align with Tailwind classes: lg => 4)
+  const viewportWidth = typeof window !== 'undefined' ? window.innerWidth : 0
+  const columns = viewportWidth < 640
+    ? 1
+    : viewportWidth < 1024
+      ? 2
+      : 4
 
   // Calculate visible range
   const startIndex = Math.max(0, Math.floor(scrollTop / itemHeight) * columns - overscan * columns)
@@ -64,9 +62,9 @@ export default function VirtualGalleryGrid({
     })
   }
 
-  // For very large galleries (>100 images), use virtual scrolling
+  // For large galleries, use virtual scrolling earlier to reduce simultaneous loads
   // For smaller galleries, render all images with lazy loading
-  const shouldUseVirtualScrolling = images.length > 100
+  const shouldUseVirtualScrolling = images.length > 60
 
   if (!shouldUseVirtualScrolling) {
     // Use regular optimized grid for smaller galleries
@@ -85,22 +83,11 @@ export default function VirtualGalleryGrid({
               item={item}
               index={index}
               viewMode={viewMode}
-              priority={index < 8} // Prioritize first 8 images for faster initial load
-              onClick={() => setSelectedImage(index)}
+              priority={index < 4} // Reduce initial priorities to avoid network saturation
+              onClick={() => {}}
             />
           ))}
         </div>
-
-        {selectedImage !== null && (
-          <GalleryLightbox
-            images={images}
-            currentIndex={selectedImage}
-            onClose={() => setSelectedImage(null)}
-            onNext={() => setSelectedImage((selectedImage + 1) % images.length)}
-            onPrev={() => setSelectedImage(selectedImage === 0 ? images.length - 1 : selectedImage - 1)}
-            onIndexChange={(index) => setSelectedImage(index)}
-          />
-        )}
       </>
     )
   }
@@ -132,27 +119,16 @@ export default function VirtualGalleryGrid({
                 <OptimizedGalleryImage
                   key={item.id || actualIndex}
                   item={item}
-                  index={actualIndex}
-                  viewMode={viewMode}
-                  priority={actualIndex < 8}
-                  onClick={() => setSelectedImage(actualIndex)}
+                 index={actualIndex}
+                 viewMode={viewMode}
+                 priority={actualIndex < 4}
+                 onClick={() => {}}
                 />
               )
             })}
           </div>
         </div>
       </div>
-
-      {selectedImage !== null && (
-        <GalleryLightbox
-          images={images}
-          currentIndex={selectedImage}
-          onClose={() => setSelectedImage(null)}
-          onNext={() => setSelectedImage((selectedImage + 1) % images.length)}
-          onPrev={() => setSelectedImage(selectedImage === 0 ? images.length - 1 : selectedImage - 1)}
-          onIndexChange={(index) => setSelectedImage(index)}
-        />
-      )}
     </>
   )
 }

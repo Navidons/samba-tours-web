@@ -6,7 +6,6 @@ import TourFilters from "@/components/tours/tour-filters"
 import TourGrid from "@/components/tours/tour-grid"
 import { TourComparisonProvider } from "@/components/tours/tour-comparison-provider"
 import { Suspense } from "react"
-import { Skeleton } from "@/components/ui/skeleton"
 import { Button } from "@/components/ui/button"
 import { MapPin, Star, Users, Calendar, Filter, Search, Globe, Award, TrendingUp } from "lucide-react"
 import { Input } from "@/components/ui/input"
@@ -14,7 +13,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
 import Image from "next/image"
+import Link from "next/link"
 import { useScrollManagement } from "@/hooks/use-scroll-management"
+
 
 interface Tour {
   id: number
@@ -41,11 +42,7 @@ interface Tour {
       lng: number
     } | null
   }
-  featuredImage: {
-    data: string
-    name: string | null
-    type: string | null
-  } | null
+  featuredImageUrl?: string
   featured: boolean
   popular: boolean
   isNew: boolean
@@ -53,7 +50,7 @@ interface Tour {
   reviewCount: number
   viewCount: number
   bookingCount: number
-  highlights: Array<{
+  highlights?: Array<{
     id: number
     highlight: string
     icon: string | null
@@ -92,6 +89,7 @@ export default function ToursClient({
 }: ToursClientProps) {
   const searchParams = useSearchParams()
   const [loading, setLoading] = useState(false)
+  const [loadedMap, setLoadedMap] = useState<Record<number, boolean>>({})
   const [tours, setTours] = useState<Tour[]>(initialTours)
   const [categories, setCategories] = useState<TourCategory[]>(initialCategories)
   const [totalTours, setTotalTours] = useState(initialTotalTours)
@@ -334,127 +332,124 @@ export default function ToursClient({
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 {tours.map((tour, index) => (
                   <Card key={tour.id} className="group overflow-hidden hover:shadow-xl transition-all duration-300 border-emerald-100 hover:border-emerald-200">
-                    {/* Tour Image */}
-                    <div className="relative aspect-[4/3] overflow-hidden">
-                      {tour.featuredImage && tour.featuredImage.data ? (
-                        <Image
-                          src={tour.featuredImage.data.startsWith('/') ? tour.featuredImage.data : tour.featuredImage.data}
-                          alt={tour.title}
-                          fill
-                          className="object-cover group-hover:scale-105 transition-transform duration-500"
-                          priority={index < 4} // Reduced from 6 to 4 for better performance
-                          quality={75} // Reduced from 85 to 75
-                          placeholder="blur"
-                          blurDataURL={blurDataURL}
-                          loading={index < 4 ? "eager" : "lazy"} // Only first 4 images eager load
-                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw" // Optimized sizes
-                        />
-                      ) : (
-                        <div className="w-full h-full bg-gradient-to-br from-emerald-100 to-green-100 flex items-center justify-center">
-                          <MapPin className="h-16 w-16 text-emerald-400" />
-                        </div>
-                      )}
-                      
-                      {/* Badges */}
-                      <div className="absolute top-4 left-4 flex flex-col gap-2">
-                        {tour.featured && (
-                          <Badge className="bg-gradient-to-r from-yellow-500 to-emerald-500 text-white border-0 shadow-lg">
-                            <Star className="h-3 w-3 mr-1" />
-                            Featured
-                          </Badge>
+                    <Link href={`/tours/${tour.slug}`} className="block">
+                      {/* Tour Image */}
+                      <div className="relative aspect-[4/3] overflow-hidden">
+                        {!loadedMap[tour.id] && (
+                          <div className="absolute inset-0 animate-pulse bg-emerald-100" />
                         )}
-                        {tour.popular && (
-                          <Badge className="bg-gradient-to-r from-green-500 to-emerald-500 text-white border-0 shadow-lg">
-                            <TrendingUp className="h-3 w-3 mr-1" />
-                            Popular
-                          </Badge>
+                        {tour.featuredImageUrl && (
+                          <Image
+                            src={tour.featuredImageUrl}
+                            alt={tour.title}
+                            fill
+                            onLoadingComplete={() => setLoadedMap((prev) => ({ ...prev, [tour.id]: true }))}
+                            className={`object-cover group-hover:scale-105 transition-transform duration-500 transition-opacity ${
+                              loadedMap[tour.id] ? 'opacity-100' : 'opacity-0'
+                            }`}
+                            priority={index < 4}
+                            quality={75}
+                            loading={index < 4 ? "eager" : "lazy"}
+                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
+                          />
                         )}
-                        {tour.isNew && (
-                          <Badge className="bg-gradient-to-r from-teal-500 to-emerald-500 text-white border-0 shadow-lg">
-                            <Award className="h-3 w-3 mr-1" />
-                            New
-                          </Badge>
-                        )}
-                      </div>
-
-                      {/* Price */}
-                      <div className="absolute top-4 right-4 bg-white/95 backdrop-blur-sm rounded-lg px-3 py-2 shadow-lg">
-                        <div className="text-lg font-bold text-emerald-600">
-                          {formatPrice(tour.price)}
-                        </div>
-                        {tour.originalPrice && tour.originalPrice > tour.price && (
-                          <div className="text-xs text-gray-500 line-through">
-                            {formatPrice(tour.originalPrice)}
-                          </div>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* Tour Info */}
-                    <CardContent className="p-6">
-                      <div className="space-y-4">
-                        {/* Header */}
-                        <div>
-                          <h3 className="text-xl font-semibold text-gray-900 mb-2 group-hover:text-emerald-600 transition-colors">
-                            {tour.title}
-                          </h3>
-                          <p className="text-gray-600 text-sm line-clamp-2">
-                            {tour.shortDescription}
-                          </p>
-                        </div>
-
-                        {/* Tour Details */}
-                        <div className="grid grid-cols-2 gap-3 text-sm">
-                          <div className="flex items-center gap-2">
-                            <Calendar className="h-4 w-4 text-emerald-500" />
-                            <span className="text-gray-600">{tour.duration}</span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <Users className="h-4 w-4 text-emerald-500" />
-                            <span className="text-gray-600">{tour.groupSize}</span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <MapPin className="h-4 w-4 text-emerald-500" />
-                            <span className="text-gray-600">{tour.location.region || tour.location.country}</span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <Star className="h-4 w-4 text-yellow-500" />
-                            <span className="text-gray-600">{tour.rating.toFixed(1)} ({tour.reviewCount})</span>
-                          </div>
-                        </div>
-
-                        {/* Category & Difficulty */}
-                        <div className="flex gap-2">
-                          {tour.category && (
-                            <Badge variant="outline" className="text-xs border-emerald-200 text-emerald-700">
-                              {tour.category.name}
+                        
+                        {/* Badges */}
+                        <div className="absolute top-4 left-4 flex flex-col gap-2">
+                          {tour.featured && (
+                            <Badge className="bg-gradient-to-r from-yellow-500 to-emerald-500 text-white border-0 shadow-lg">
+                              <Star className="h-3 w-3 mr-1" />
+                              Featured
                             </Badge>
                           )}
-                          <Badge className={`text-xs ${getDifficultyColor(tour.difficulty)}`}>
-                            {tour.difficulty}
-                          </Badge>
+                          {tour.popular && (
+                            <Badge className="bg-gradient-to-r from-green-500 to-emerald-500 text-white border-0 shadow-lg">
+                              <TrendingUp className="h-3 w-3 mr-1" />
+                              Popular
+                            </Badge>
+                          )}
+                          {tour.isNew && (
+                            <Badge className="bg-gradient-to-r from-teal-500 to-emerald-500 text-white border-0 shadow-lg">
+                              <Award className="h-3 w-3 mr-1" />
+                              New
+                            </Badge>
+                          )}
                         </div>
 
-                        {/* Highlights Preview */}
-                        {tour.highlights.length > 0 && (
-                          <div className="text-xs text-gray-600 bg-emerald-50 p-2 rounded-lg">
-                            <span className="font-medium text-emerald-700">Highlights: </span>
-                            {tour.highlights.slice(0, 2).map(h => h.highlight).join(', ')}
-                            {tour.highlights.length > 2 && '...'}
+                        {/* Price */}
+                        <div className="absolute top-4 right-4 bg-white/95 backdrop-blur-sm rounded-lg px-3 py-2 shadow-lg">
+                          <div className="text-lg font-bold text-emerald-600">
+                            {formatPrice(tour.price)}
                           </div>
-                        )}
-
-                        {/* Action Button */}
-                        <Button 
-                          className="w-full bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700 text-white font-semibold transition-all duration-300 shadow-lg hover:shadow-xl"
-                          asChild
-                        >
-                          <a href={`/tours/${tour.slug}`}>
-                            View Details
-                          </a>
-                        </Button>
+                          {tour.originalPrice && tour.originalPrice > tour.price && (
+                            <div className="text-xs text-gray-500 line-through">
+                              {formatPrice(tour.originalPrice)}
+                            </div>
+                          )}
+                        </div>
                       </div>
-                    </CardContent>
+
+                      {/* Tour Info */}
+                      <CardContent className="p-6">
+                        <div className="space-y-4">
+                          {/* Header */}
+                          <div>
+                            <h3 className="text-xl font-semibold text-gray-900 mb-2 group-hover:text-emerald-600 transition-colors">
+                              {tour.title}
+                            </h3>
+                            <p className="text-gray-600 text-sm line-clamp-2">
+                              {tour.shortDescription}
+                            </p>
+                          </div>
+
+                          {/* Tour Details */}
+                          <div className="grid grid-cols-2 gap-3 text-sm">
+                            <div className="flex items-center gap-2">
+                              <Calendar className="h-4 w-4 text-emerald-500" />
+                              <span className="text-gray-600">{tour.duration}</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <Users className="h-4 w-4 text-emerald-500" />
+                              <span className="text-gray-600">{tour.groupSize}</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <MapPin className="h-4 w-4 text-emerald-500" />
+                              <span className="text-gray-600">{tour.location.region || tour.location.country}</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <Star className="h-4 w-4 text-yellow-500" />
+                              <span className="text-gray-600">{tour.rating.toFixed(1)} ({tour.reviewCount})</span>
+                            </div>
+                          </div>
+
+                          {/* Category & Difficulty */}
+                          <div className="flex gap-2">
+                            {tour.category && (
+                              <Badge variant="outline" className="text-xs border-emerald-200 text-emerald-700">
+                                {tour.category.name}
+                              </Badge>
+                            )}
+                            <Badge className={`text-xs ${getDifficultyColor(tour.difficulty)}`}>
+                              {tour.difficulty}
+                            </Badge>
+                          </div>
+
+                          {/* Highlights Preview */}
+                          {tour.highlights && tour.highlights.length > 0 && (
+                            <div className="text-xs text-gray-600 bg-emerald-50 p-2 rounded-lg">
+                              <span className="font-medium text-emerald-700">Highlights: </span>
+                              {tour.highlights.slice(0, 2).map(h => h.highlight).join(', ')}
+                              {tour.highlights.length > 2 && '...'}
+                            </div>
+                          )}
+
+                          {/* Visual CTA */}
+                          <div className="w-full bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700 text-white font-semibold transition-all duration-300 shadow-lg hover:shadow-xl text-center py-2 rounded-md">
+                            View Details
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Link>
                   </Card>
                 ))}
               </div>

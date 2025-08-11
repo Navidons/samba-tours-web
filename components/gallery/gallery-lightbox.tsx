@@ -48,6 +48,59 @@ export default function GalleryLightbox({
   onPrev, 
   onIndexChange 
 }: GalleryLightboxProps) {
+  function LightboxThumbnail({ image, index, onClick }: { image: any, index: number, onClick: () => void }) {
+    const [isInView, setIsInView] = useState(false)
+    const ref = useRef<HTMLDivElement>(null)
+
+    useEffect(() => {
+      if (!ref.current) return
+      const el = ref.current
+      const io = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              setIsInView(true)
+              io.unobserve(el)
+            }
+          })
+        },
+        { root: null, rootMargin: '200px', threshold: 0.01 }
+      )
+      io.observe(el)
+      return () => io.disconnect()
+    }, [])
+
+    return (
+      <div
+        ref={ref}
+        className={`relative w-12 h-12 md:w-16 md:h-16 flex-shrink-0 rounded cursor-pointer overflow-hidden transition-all duration-200 ${
+          index === currentIndex 
+            ? 'ring-2 ring-emerald-400 scale-110' 
+            : 'opacity-60 hover:opacity-100 hover:scale-105'
+        }`}
+        onClick={onClick}
+      >
+        {isInView ? (
+          <Image 
+            src={image.src} 
+            alt={image.alt || image.title || 'Gallery Image'} 
+            fill 
+            className="object-cover"
+            quality={35}
+            placeholder="blur"
+            blurDataURL={blurDataURL}
+            loading="lazy"
+            sizes={isMobile ? '48px' : '64px'}
+          />
+        ) : (
+          <div className="absolute inset-0 bg-gray-200 animate-pulse" />
+        )}
+        {index === currentIndex && (
+          <div className="absolute inset-0 bg-emerald-400/20" />
+        )}
+      </div>
+    )
+  }
   const currentImage = images[currentIndex]
   const isMobile = useIsMobile()
   const [scale, setScale] = useState(1)
@@ -74,17 +127,20 @@ export default function GalleryLightbox({
     setIsImageLoaded(false)
   }, [currentIndex, currentImage])
 
-  // Preload next/prev images for instant navigation
+  // Hint browser to prefetch only the immediate next image to reduce bandwidth
   useEffect(() => {
     if (images.length > 1) {
-      const preload = (idx: number) => {
-        if (idx >= 0 && idx < images.length) {
-          const img = new window.Image()
-          img.src = images[idx].src
+      const nextIndex = currentIndex + 1 < images.length ? currentIndex + 1 : -1
+      if (nextIndex >= 0) {
+        const link = document.createElement('link')
+        link.rel = 'prefetch'
+        link.as = 'image'
+        link.href = images[nextIndex].src
+        document.head.appendChild(link)
+        return () => {
+          document.head.removeChild(link)
         }
       }
-      preload(currentIndex + 1)
-      preload(currentIndex - 1)
     }
   }, [currentIndex, images])
 
@@ -255,12 +311,20 @@ export default function GalleryLightbox({
   return (
     <div 
       ref={containerRef}
-      className={`fixed inset-0 z-50 bg-black/95 flex items-center justify-center ${isFullscreen ? 'z-[60]' : ''}`}
+      className={`fixed inset-0 z-50 bg-black/95 flex items-start justify-center pt-4 md:pt-8 ${isFullscreen ? 'z-[60]' : ''}`}
+      style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 16px)' }}
+      onClick={(e) => {
+        // Close when clicking the backdrop, but ignore clicks inside content
+        if (e.target === containerRef.current) onClose()
+      }}
     >
-      {/* Top toolbar */}
-      <div className="absolute top-4 left-4 right-4 z-10 flex items-center justify-between">
-        <div />
-        <div className="flex items-center space-x-2">
+      {/* Modal container */}
+      <div 
+        className="relative w-[92vw] md:w-[85vw] lg:w-[75vw] max-w-6xl max-h-[90vh] bg-black/80 rounded-xl shadow-2xl border border-white/10 overflow-hidden"
+        style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 8px)' }}
+      >
+        {/* Close button */}
+        <div className="absolute top-2 right-2 z-20">
           <Button
             variant="ghost"
             size="sm"
@@ -271,127 +335,113 @@ export default function GalleryLightbox({
             <X className="h-5 w-5" />
           </Button>
         </div>
-      </div>
 
-      {/* Navigation buttons */}
-      <Button
-        variant="ghost"
-        size="sm"
-        onClick={onPrev}
-        className="absolute left-4 top-1/2 transform -translate-y-1/2 z-10 text-white hover:bg-white/20 h-12 w-12 p-0"
-        title="Previous (←)"
-        style={isMobile ? { left: 0, width: 48, height: 48 } : {}}
-      >
-        <ChevronLeft className="h-8 w-8" />
-      </Button>
-
-      <Button
-        variant="ghost"
-        size="sm"
-        onClick={onNext}
-        className="absolute right-4 top-1/2 transform -translate-y-1/2 z-10 text-white hover:bg-white/20 h-12 w-12 p-0"
-        title="Next (→)"
-        style={isMobile ? { right: 0, width: 48, height: 48 } : {}}
-      >
-        <ChevronRight className="h-8 w-8" />
-      </Button>
-
-      {/* Main content */}
-      <div className="flex flex-col lg:flex-row h-full w-full max-w-7xl mx-auto p-2 pt-16 md:p-4 md:pt-20">
-        {/* Image container with zoom and scroll */}
-        <div 
-          className="flex-1 flex items-center justify-center relative overflow-hidden"
-          onWheel={handleWheel}
-          onMouseDown={handleMouseDown}
-          onMouseMove={handleMouseMove}
-          onMouseUp={handleMouseUp}
-          onMouseLeave={handleMouseUp}
-          onTouchStart={handleTouchStart}
-          onTouchMove={handleTouchMove}
-          onTouchEnd={handleTouchEnd}
+        {/* Navigation buttons */}
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={onPrev}
+          className="absolute left-2 md:left-3 top-1/2 -translate-y-1/2 z-20 text-white hover:bg-white/20 h-10 w-10 md:h-12 md:w-12 p-0"
+          title="Previous (←)"
         >
+          <ChevronLeft className="h-7 w-7 md:h-8 md:w-8" />
+        </Button>
+
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={onNext}
+          className="absolute right-2 md:right-3 top-1/2 -translate-y-1/2 z-20 text-white hover:bg-white/20 h-10 w-10 md:h-12 md:w-12 p-0"
+          title="Next (→)"
+        >
+          <ChevronRight className="h-7 w-7 md:h-8 md:w-8" />
+        </Button>
+
+        {/* Main content */}
+        <div className="flex flex-col lg:flex-row h-[64vh] md:h-[70vh] w-full p-2 md:p-4 pb-16">
+          {/* Image container with zoom and scroll */}
           <div 
-            ref={imageRef}
-            className={`relative max-w-full max-h-full ${scale > 1 ? 'cursor-grab active:cursor-grabbing' : 'cursor-zoom-in'}`}
-            style={{
-              transform: `scale(${scale}) rotate(${rotation}deg) translate(${position.x}px, ${position.y}px)`,
-              transition: isDragging ? 'none' : 'transform 0.2s ease-out'
-            }}
+            className="flex-1 flex items-center justify-center relative overflow-hidden"
+            onWheel={handleWheel}
+            onMouseDown={handleMouseDown}
+            onMouseMove={handleMouseMove}
+            onMouseUp={handleMouseUp}
+            onMouseLeave={handleMouseUp}
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
           >
-            <Image
-              src={currentImage.src}
-              alt={currentImage.alt || currentImage.title || "Gallery Image"}
-              width={isMobile ? 600 : 1200}
-              height={isMobile ? 400 : 800}
-              className={`max-w-full max-h-[80vh] object-contain transition-opacity duration-300 ${isImageLoaded ? 'opacity-100' : 'opacity-0'}`}
-              priority={currentIndex === 0}
-              quality={isMobile ? 60 : 90}
-              placeholder="blur"
-              blurDataURL={blurDataURL}
-              onLoad={() => setIsImageLoaded(true)}
-              sizes={isMobile ? "100vw" : "80vw"}
-            />
-            
-            {/* Loading indicator */}
-            {!isImageLoaded && (
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-500"></div>
+            <div 
+              ref={imageRef}
+              className={`relative w-full h-full max-w-full ${scale > 1 ? 'cursor-grab active:cursor-grabbing' : 'cursor-zoom-in'}`}
+              style={{
+                transform: `scale(${scale}) rotate(${rotation}deg) translate(${position.x}px, ${position.y}px)`,
+                transition: isDragging ? 'none' : 'transform 0.2s ease-out'
+              }}
+            >
+              <Image
+                src={currentImage.src}
+                alt={currentImage.alt || currentImage.title || "Gallery Image"}
+                fill
+                className={`object-contain w-full h-full transition-opacity duration-300 ${isImageLoaded ? 'opacity-100' : 'opacity-0'}`}
+                priority
+                fetchPriority="high"
+                quality={50}
+                placeholder="blur"
+                blurDataURL={blurDataURL}
+                onLoadingComplete={() => setIsImageLoaded(true)}
+                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 90vw, 80vw"
+              />
+              
+              {/* Loading indicator */}
+              {!isImageLoaded && (
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-500"></div>
+                </div>
+              )}
+            </div>
+
+            {/* Zoom indicator */}
+            {scale !== 1 && (
+              <div className="absolute top-4 left-1/2 -translate-x-1/2 bg-black/70 text-white px-3 py-1 rounded-full text-sm">
+                {Math.round(scale * 100)}%
               </div>
             )}
           </div>
 
-          {/* Zoom indicator */}
-          {scale !== 1 && (
-            <div className="absolute top-4 left-1/2 transform -translate-x-1/2 bg-black/70 text-white px-3 py-1 rounded-full text-sm">
-              {Math.round(scale * 100)}%
+          {/* Info panel: hide by default on mobile, toggleable */}
+          {showInfo && (
+            <div className="lg:w-80 bg-gradient-to-br from-emerald-900/20 to-green-900/20 backdrop-blur-sm rounded-lg p-4 md:p-6 text-white lg:ml-6 mt-4 lg:mt-0 border border-emerald-500/20 max-h-full overflow-y-auto">
+              <h2 className="text-2xl font-bold mb-3 text-emerald-100">{currentImage.title}</h2>
             </div>
           )}
         </div>
 
-        {/* Info panel: hide by default on mobile, toggleable */}
-        {showInfo && (
-          <div className="lg:w-80 bg-gradient-to-br from-emerald-900/20 to-green-900/20 backdrop-blur-sm rounded-lg p-4 md:p-6 text-white lg:ml-6 mt-4 lg:mt-0 border border-emerald-500/20 max-h-[60vh] overflow-y-auto">
-            <h2 className="text-2xl font-bold mb-3 text-emerald-100">{currentImage.title}</h2>
+        {/* Thumbnail strip */}
+        <div 
+          className="absolute left-0 right-0 flex justify-center space-x-2 max-w-full overflow-x-auto px-2 md:px-4 pb-1"
+          style={{ bottom: 'calc(env(safe-area-inset-bottom, 0px) + 8px)' }}
+        >
+          {images.map((image, index) => (
+            <LightboxThumbnail 
+              key={image.id}
+              image={image}
+              index={index}
+              onClick={() => handleThumbnailClick(index)}
+            />
+          ))}
+        </div>
+
+        {/* Keyboard shortcuts help */}
+        {!isMobile && (
+          <div 
+            className="absolute right-4 text-white/60 text-xs"
+            style={{ bottom: 'calc(env(safe-area-inset-bottom, 0px) + 16px)' }}
+          >
+            <div>ESC: Close | ←→: Navigate | +/-: Zoom | R: Rotate | 0: Reset | F: Fullscreen | I: Info | Mouse: Drag/Zoom</div>
           </div>
         )}
       </div>
-
-      {/* Thumbnail strip */}
-      <div className="absolute bottom-2 md:bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2 max-w-full overflow-x-auto px-2 md:px-4 pb-2">
-        {images.map((image, index) => (
-          <div
-            key={image.id}
-            className={`relative w-12 h-12 md:w-16 md:h-16 flex-shrink-0 rounded cursor-pointer overflow-hidden transition-all duration-200 ${
-              index === currentIndex 
-                ? "ring-2 ring-emerald-400 scale-110" 
-                : "opacity-60 hover:opacity-100 hover:scale-105"
-            }`}
-            onClick={() => handleThumbnailClick(index)}
-          >
-            <Image 
-              src={image.src} 
-              alt={image.alt || image.title || "Gallery Image"} 
-              fill 
-              className="object-cover"
-              quality={isMobile ? 40 : 85}
-              placeholder="blur"
-              blurDataURL={blurDataURL}
-              loading="lazy"
-              sizes={isMobile ? "48px" : "64px"}
-            />
-            {index === currentIndex && (
-              <div className="absolute inset-0 bg-emerald-400/20" />
-            )}
-          </div>
-        ))}
-      </div>
-
-      {/* Keyboard shortcuts help */}
-      {!isMobile && (
-        <div className="absolute bottom-4 right-4 text-white/60 text-xs">
-          <div>ESC: Close | ←→: Navigate | +/-: Zoom | R: Rotate | 0: Reset | F: Fullscreen | I: Info | Mouse: Drag/Zoom</div>
-        </div>
-      )}
     </div>
   )
 }

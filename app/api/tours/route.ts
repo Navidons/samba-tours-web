@@ -143,7 +143,7 @@ export async function GET(request: NextRequest) {
     // Get total count
     const total = await prisma.tour.count({ where })
 
-    // Get tours with essential data
+    // Get tours with essential data only (drop large fields)
     const tours = await prisma.tour.findMany({
       where,
       orderBy,
@@ -153,7 +153,6 @@ export async function GET(request: NextRequest) {
         id: true,
         title: true,
         slug: true,
-        description: true,
         shortDescription: true,
         duration: true,
         groupSize: true,
@@ -163,8 +162,7 @@ export async function GET(request: NextRequest) {
         difficulty: true,
         locationCountry: true,
         locationRegion: true,
-        locationCoordinatesLat: true,
-        locationCoordinatesLng: true,
+        // coordinates omitted for list
         featuredImageData: true,
         featuredImageName: true,
         featuredImageType: true,
@@ -173,12 +171,7 @@ export async function GET(request: NextRequest) {
         isNew: true,
         rating: true,
         reviewCount: true,
-        viewCount: true,
-        bookingCount: true,
-        bestTime: true,
-        physicalRequirements: true,
         createdAt: true,
-        updatedAt: true,
         category: {
           select: {
             id: true,
@@ -186,35 +179,7 @@ export async function GET(request: NextRequest) {
             slug: true
           }
         },
-        highlights: {
-          select: {
-            id: true,
-            highlight: true,
-            icon: true,
-            displayOrder: true
-          },
-          orderBy: {
-            displayOrder: 'asc'
-          },
-          take: 5
-        },
-        inclusions: {
-          select: {
-            id: true,
-            item: true,
-            category: true
-          },
-          orderBy: {
-            displayOrder: 'asc'
-          },
-          take: 10
-        },
-        _count: {
-          select: {
-            reviews: true,
-            bookings: true
-          }
-        }
+        // drop highlights/inclusions/counts in list view
       }
     })
 
@@ -223,7 +188,6 @@ export async function GET(request: NextRequest) {
       id: tour.id,
       title: tour.title,
       slug: tour.slug,
-      description: tour.description,
       shortDescription: tour.shortDescription,
       category: tour.category,
       duration: tour.duration,
@@ -232,36 +196,14 @@ export async function GET(request: NextRequest) {
       price: parseFloat(tour.price.toString()),
       originalPrice: tour.originalPrice ? parseFloat(tour.originalPrice.toString()) : null,
       difficulty: tour.difficulty,
-      location: {
-        country: tour.locationCountry,
-        region: tour.locationRegion,
-        coordinates: tour.locationCoordinatesLat && tour.locationCoordinatesLng ? {
-          lat: parseFloat(tour.locationCoordinatesLat.toString()),
-          lng: parseFloat(tour.locationCoordinatesLng.toString())
-        } : null
-      },
-      featuredImage: tour.featuredImageData ? {
-        data: `data:${tour.featuredImageType};base64,${Buffer.from(tour.featuredImageData).toString('base64')}`,
-        name: tour.featuredImageName,
-        type: tour.featuredImageType
-      } : null,
+      location: { country: tour.locationCountry, region: tour.locationRegion, coordinates: null },
+      // Lightweight image URL (streamed by API)
+      featuredImageUrl: `/api/tours/thumbnails/${tour.id}`,
       featured: tour.featured,
       popular: tour.popular,
       isNew: tour.isNew,
       rating: parseFloat(tour.rating.toString()),
-      reviewCount: tour.reviewCount,
-      viewCount: tour.viewCount,
-      bookingCount: tour.bookingCount,
-      bestTime: tour.bestTime,
-      physicalRequirements: tour.physicalRequirements,
-      highlights: tour.highlights,
-      inclusions: tour.inclusions,
-      createdAt: tour.createdAt,
-      updatedAt: tour.updatedAt,
-      stats: {
-        totalReviews: tour._count.reviews,
-        totalBookings: tour._count.bookings
-      }
+      reviewCount: tour.reviewCount
     }))
 
     return NextResponse.json({
@@ -365,11 +307,7 @@ export async function HEAD(request: NextRequest) {
         country: tour.locationCountry,
         region: tour.locationRegion
       },
-      featuredImage: tour.featuredImageData ? {
-        data: `data:${tour.featuredImageType};base64,${Buffer.from(tour.featuredImageData).toString('base64')}`,
-        name: tour.featuredImageName,
-        type: tour.featuredImageType
-      } : null,
+      featuredImageUrl: `/api/tours/thumbnails/${tour.id}`,
       rating: parseFloat(tour.rating.toString()),
       reviewCount: tour.reviewCount,
       category: tour.category

@@ -92,17 +92,6 @@ function ToursHero() {
                 <ArrowRight className="w-5 h-5 ml-2" />
               </Link>
             </Button>
-            <Button 
-              variant="outline" 
-              size="lg" 
-              className="border-2 border-white text-white hover:bg-white hover:text-emerald-900 px-8 py-4 text-lg font-semibold rounded-xl backdrop-blur-sm transition-all duration-300"
-              asChild
-            >
-              <Link href="/contact">
-                <Play className="w-5 h-5 mr-2" />
-                Watch Video
-              </Link>
-            </Button>
           </div>
         </div>
       </div>
@@ -120,8 +109,10 @@ function ToursHero() {
 // Separate component for the tours section that can load independently
 async function ToursSection() {
   // Fetch data for tours section
-  const initialData = await getTours({ page: 1, limit: 8, sortBy: "popular" })
-  const categories = await getCategories()
+  const [initialData, categories] = await Promise.all([
+    getTours({ page: 1, limit: 8, sortBy: "popular" }),
+    getCategories(),
+  ])
 
   return (
     <div id="tours">
@@ -137,21 +128,40 @@ async function ToursSection() {
 
 export default function ToursPage() {
   return (
-    <ScrollGuard>
-      <div className="bg-gradient-to-br from-gray-50 via-emerald-50 to-green-50 min-h-screen">
-        {/* Hero Section - Loads immediately */}
-        <ToursHero />
-        
-        {/* Tours Section - Loads independently with Suspense */}
-        <Suspense fallback={
-          <div className="py-16 text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600 mx-auto mb-4"></div>
-            <p className="text-gray-600">Loading amazing tours...</p>
-          </div>
-        }>
+    <div className="bg-gradient-to-br from-gray-50 via-emerald-50 to-green-50 min-h-screen">
+      {/* Hero Section - Loads immediately (server-rendered) */}
+      <ToursHero />
+
+      {/* Tours Section - Wrap only this part in client ScrollGuard to avoid blocking hero */}
+      <ScrollGuard>
+        <Suspense
+          fallback={
+            <div className="py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                {Array.from({ length: 8 }).map((_, i) => (
+                  <div key={i} className="group overflow-hidden rounded-lg border border-emerald-100 bg-white shadow-sm">
+                    <div className="relative aspect-[4/3] overflow-hidden">
+                      <div className="animate-pulse absolute inset-0 bg-emerald-100" />
+                    </div>
+                    <div className="p-6 space-y-3">
+                      <div className="animate-pulse h-5 w-2/3 bg-emerald-100 rounded" />
+                      <div className="animate-pulse h-4 w-full bg-emerald-50 rounded" />
+                      <div className="animate-pulse h-4 w-5/6 bg-emerald-50 rounded" />
+                      <div className="flex items-center justify-between pt-2">
+                        <div className="animate-pulse h-4 w-24 bg-emerald-50 rounded" />
+                        <div className="animate-pulse h-4 w-20 bg-emerald-50 rounded" />
+                      </div>
+                      <div className="animate-pulse h-10 w-full bg-emerald-100 rounded mt-2" />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          }
+        >
           <ToursSection />
         </Suspense>
-      </div>
-    </ScrollGuard>
+      </ScrollGuard>
+    </div>
   )
 }

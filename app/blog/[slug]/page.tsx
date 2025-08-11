@@ -6,10 +6,11 @@ import BlogPostContent from "@/components/blog/blog-post-content"
 import BlogPostSidebar from "@/components/blog/blog-post-sidebar"
 import RelatedPosts from "@/components/blog/related-posts"
 import BlogComments from "@/components/blog/blog-comments"
-import LoadingSpinner from "@/components/ui/loading-spinner"
+import { Skeleton } from "@/components/ui/skeleton"
 import { getRelatedBlogPosts } from "@/lib/services/blog-service"
 import { generateFakeBlogMetrics } from "@/lib/utils/blog-metrics"
-import { getFallbackBlogImage, getSocialShareImage } from "@/lib/utils/blog-images"
+import { getSocialShareImage } from "@/lib/utils/blog-images"
+import { prisma } from "@/lib/prisma"
 
 // Helper function to create a URL-friendly slug from a string
 const slugify = (text: string) =>
@@ -51,30 +52,21 @@ const parseTableOfContents = async (content: string) => {
 // Generate metadata for SEO
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
   try {
-    // Handle localhost development
-    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 
-                   (process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : 'https://sambatours.co')
-    
-    const response = await fetch(`${baseUrl}/api/blog/${params.slug}`, {
-      cache: 'no-store',
-      headers: {
-        'Content-Type': 'application/json',
+    const post = await prisma.blogPost.findUnique({
+      where: { slug: params.slug, status: 'published' },
+      select: {
+        id: true,
+        title: true,
+        slug: true,
+        excerpt: true,
+        publishDate: true,
+        createdAt: true,
+        updatedAt: true,
+        author: { select: { name: true } },
+        category: { select: { name: true } },
+        tags: { select: { tag: { select: { name: true } } } },
       }
     })
-    
-    if (!response.ok) {
-      return {
-        title: 'Blog Post Not Found - Samba Tours',
-        description: 'The requested blog post could not be found.',
-        robots: {
-          index: false,
-          follow: false,
-        }
-      }
-    }
-    
-    const data = await response.json()
-    const post = data.post
     
     if (!post) {
       return {
@@ -90,11 +82,17 @@ export async function generateMetadata({ params }: { params: { slug: string } })
     // Create rich metadata for the blog post
     const title = `${post.title} - Uganda Safari Blog | Samba Tours`
     const description = post.excerpt || `Read about ${post.title} on our Uganda safari blog. Expert insights, travel tips, and wildlife stories from the Pearl of Africa.`
-    const keywords = post.tags?.map((tag: any) => tag.name).join(', ') + ', Uganda safari, gorilla trekking, wildlife, travel blog'
+    const keywords = (post.tags?.map((t: any) => t.tag?.name).filter(Boolean) || []).join(', ') + ', Uganda safari, gorilla trekking, wildlife, travel blog'
     const author = post.author?.name || 'Samba Tours'
-    const publishDate = post.publishDate || post.createdAt
-    const imageUrl = getSocialShareImage(post.thumbnail, post.title)
-    const canonicalUrl = `${baseUrl}/blog/${params.slug}`
+    const toISO = (d: unknown): string => {
+      if (d instanceof Date) return d.toISOString()
+      if (typeof d === 'string') return d
+      try { return new Date(String(d)).toISOString() } catch { return new Date().toISOString() }
+    }
+    const publishedISO = toISO(post.publishDate ?? post.createdAt)
+    const updatedISO = toISO(post.updatedAt)
+    const imageUrl = getSocialShareImage(`/api/blog/thumbnails/${post.id}`, post.title)
+    const canonicalUrl = `${process.env.NEXT_PUBLIC_SITE_URL || 'https://sambatours.co'}/blog/${params.slug}`
 
     return {
       title,
@@ -127,7 +125,7 @@ export async function generateMetadata({ params }: { params: { slug: string } })
         ],
         locale: 'en_US',
         type: 'article',
-        publishedTime: publishDate,
+        publishedTime: publishedISO,
         authors: [author],
         tags: post.tags?.map((tag: any) => tag.name) || [],
       },
@@ -150,8 +148,8 @@ export async function generateMetadata({ params }: { params: { slug: string } })
         },
       },
       other: {
-        'article:published_time': publishDate,
-        'article:modified_time': post.updatedAt,
+        'article:published_time': publishedISO,
+        'article:modified_time': updatedISO,
         'article:author': author,
         'article:section': post.category?.name || 'Uganda Safari',
         ...(post.tags?.reduce((acc: any, tag: any) => {
@@ -184,34 +182,31 @@ export const dynamic = 'force-dynamic'
 
 export default async function BlogPostPage({ params }: { params: { slug: string } }) {
   try {
-    // Handle localhost development
-    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 
-                   (process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : 'https://sambatours.co')
-    
-    console.log(`Fetching blog post from: ${baseUrl}/api/blog/${params.slug}`)
-    
-    const response = await fetch(`${baseUrl}/api/blog/${params.slug}`, {
-      cache: 'no-store',
-      headers: {
-        'Content-Type': 'application/json',
+    const post = await prisma.blogPost.findUnique({
+      where: { slug: params.slug, status: 'published' },
+      select: {
+        id: true,
+        title: true,
+        slug: true,
+        excerpt: true,
+        content: true,
+        contentHtml: true,
+        status: true,
+        publishDate: true,
+        readTimeMinutes: true,
+        viewCount: true,
+        likeCount: true,
+        commentCount: true,
+        featured: true,
+        createdAt: true,
+        updatedAt: true,
+        category: { select: { id: true, name: true } },
+        author: { select: { name: true, bio: true } },
+        tags: { select: { tag: { select: { name: true } } } },
       }
     })
     
-    if (!response.ok) {
-      console.error(`Blog post fetch failed with status: ${response.status}`)
-      if (response.status === 404) {
-        console.error(`Blog post with slug "${params.slug}" not found`)
-      }
-      notFound()
-    }
-    
-    const data = await response.json()
-    console.log('Blog post data received:', data.success ? 'Success' : 'Failed', data.post ? 'Post found' : 'No post')
-    
-    const post = data.post
-    
     if (!post) {
-      console.error('No post data in API response')
       notFound()
     }
 
@@ -232,8 +227,8 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
 
     const fakeMetrics = generateFakeBlogMetrics(post.id, post.title, post.featured)
     
-    // Get fallback image if no thumbnail exists
-    const blogImage = post.thumbnail || getFallbackBlogImage(post.id, post.category?.name, post.title)
+    // Use DB thumbnail URL (no filesystem fallback)
+    const blogImage = `/api/blog/thumbnails/${post.id}`
 
     // Transform post data to match component expectations
     const transformedPost = {
@@ -307,7 +302,17 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
         <div className="container mx-auto px-4 py-8 grid grid-cols-1 lg:grid-cols-12 gap-8">
           <div className="lg:col-span-8">
             <BlogPostHeader post={transformedPost as any} />
-            <Suspense fallback={<LoadingSpinner />}>
+            <Suspense
+              fallback={
+                <div className="space-y-4">
+                  <Skeleton className="h-8 w-3/4" />
+                  <Skeleton className="h-5 w-full" />
+                  <Skeleton className="h-5 w-11/12" />
+                  <Skeleton className="h-5 w-10/12" />
+                  <Skeleton className="h-5 w-9/12" />
+                </div>
+              }
+            >
               <BlogPostContent post={transformedPost as any} />
             </Suspense>
             <RelatedPosts currentPost={transformedPost as any} />
