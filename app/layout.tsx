@@ -72,8 +72,8 @@ export const metadata: Metadata = {
     telephone: false,
   },
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://sambatours.co'),
+  // Do not set a site-wide canonical to the homepage; pages will define their own canonicals
   alternates: {
-    canonical: 'https://sambatours.co',
     languages: {
       'en-US': 'https://sambatours.co',
       'en': 'https://sambatours.co'

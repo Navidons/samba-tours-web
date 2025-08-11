@@ -1,18 +1,37 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
-export async function middleware(request: NextRequest) {
+export function middleware(request: NextRequest) {
+  const url = request.nextUrl
+  const host = request.headers.get('host') || ''
+  const proto = request.headers.get('x-forwarded-proto') || 'https'
+
+  // Canonicalize host and protocol to reduce duplicate/redirect issues
+  if (host.startsWith('www.')) {
+    const apex = host.replace(/^www\./, '')
+    url.host = apex
+    url.protocol = 'https'
+    return NextResponse.redirect(url, 308)
+  }
+  if (proto !== 'https') {
+    url.protocol = 'https'
+    return NextResponse.redirect(url, 308)
+  }
+
   const { pathname } = request.nextUrl
 
-  // Protect /admin routes
-  if (pathname.startsWith('/admin')) {
+  // Protect /admin routes and hide public signin
+  if (pathname.startsWith('/admin') || pathname === '/signin') {
     const cookie = request.cookies.get('admin_session')
     
     // Check if cookie exists and has a valid format
     if (!cookie || !cookie.value || cookie.value.trim() === '') {
+      // Forbid access to public signin: send 404 for /signin
+      if (pathname === '/signin') {
+        return new NextResponse('Not Found', { status: 404 })
+      }
       const signinUrl = request.nextUrl.clone()
-      signinUrl.pathname = '/signin'
-      signinUrl.searchParams.set('redirect', pathname)
+      signinUrl.pathname = '/'
       return NextResponse.redirect(signinUrl)
     }
     
@@ -24,10 +43,12 @@ export async function middleware(request: NextRequest) {
       }
     } catch (error) {
       // Invalid session, redirect to login
-      const signinUrl = request.nextUrl.clone()
-      signinUrl.pathname = '/signin'
-      signinUrl.searchParams.set('redirect', pathname)
-      return NextResponse.redirect(signinUrl)
+      if (pathname === '/signin') {
+        return new NextResponse('Not Found', { status: 404 })
+      }
+      const home = request.nextUrl.clone()
+      home.pathname = '/'
+      return NextResponse.redirect(home)
     }
   }
 
@@ -37,6 +58,8 @@ export async function middleware(request: NextRequest) {
     pathname.startsWith('/api') ||
     pathname.startsWith('/_next') ||
     pathname.startsWith('/favicon.ico') ||
+    pathname.startsWith('/robots.txt') ||
+    pathname.startsWith('/sitemap.xml') ||
     pathname.includes('.')
   ) {
     return NextResponse.next()
@@ -54,13 +77,6 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    /*
-     * Match all request paths except for the ones starting with:
-     * - api (API routes)
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     */
-    '/((?!api|_next/static|_next/image|favicon.ico).*)',
+    '/((?!api|_next/static|_next/image|favicon.ico|robots.txt|sitemap.xml).*)',
   ],
-} 
+}

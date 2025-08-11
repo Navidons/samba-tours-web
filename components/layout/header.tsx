@@ -101,8 +101,8 @@ const TopBar = memo(function TopBar({ pathname }: { pathname: string }) {
             <a href="tel:+256791742494" className="hover:text-emerald-200 transition-colors">
               +256 791 742 494
             </a>
-            <a href="mailto:info@sambatours.co" className="hover:text-emerald-200 transition-colors hidden sm:inline">
-              info@sambatours.co
+            <a href="mailto:sambatours256@gmail.com" className="hover:text-emerald-200 transition-colors hidden sm:inline">
+            sambatours256@gmail.com
             </a>
           </div>
         </div>

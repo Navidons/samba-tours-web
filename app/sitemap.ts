@@ -86,33 +86,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
   ]
 
-  // In a real implementation, you would fetch these from your database
-  // For now, we'll include some example tour and blog URLs
-  const tourPages = [
-    'gorilla-trekking-bwindi',
-    'queen-elizabeth-safari',
-    'murchison-falls-adventure',
-    'cultural-heritage-tour',
-    'wildlife-photography-safari'
-  ].map(slug => ({
-    url: `${baseUrl}/tours/${slug}`,
-    lastModified: currentDate,
-    changeFrequency: 'monthly' as const,
-    priority: 0.7,
-  }))
-
-  const blogPages = [
-    'ultimate-gorilla-trekking-guide',
-    'best-time-visit-uganda',
-    'uganda-wildlife-photography',
-    'cultural-experiences-uganda',
-    'planning-your-safari'
-  ].map(slug => ({
-    url: `${baseUrl}/blog/${slug}`,
-    lastModified: currentDate,
-    changeFrequency: 'monthly' as const,
-    priority: 0.6,
-  }))
+  // Keep sitemap simple: only stable static pages to avoid 404/canonical conflicts
+  const tourPages: MetadataRoute.Sitemap = []
+  const blogPages: MetadataRoute.Sitemap = []
 
   return [
     ...staticPages,

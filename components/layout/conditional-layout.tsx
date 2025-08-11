@@ -22,7 +22,7 @@ export default function ConditionalLayout({ children }: ConditionalLayoutProps) 
   const currentPathname = isClient ? pathname : ''
 
   // Routes that should not have header/footer
-  const noLayoutRoutes = ["/admin", "/signin", "/signup"]
+  const noLayoutRoutes = ["/admin", "/signup"]
 
   // Check if current route should exclude layout
   const shouldExcludeLayout = isClient && noLayoutRoutes.some((route) => 

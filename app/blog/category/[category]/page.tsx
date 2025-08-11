@@ -141,7 +141,12 @@ export default function BlogCategoryPage({ params }: { params: { category: strin
             </div>
 
             <div className="lg:col-span-1">
-              <BlogSidebar searchQuery={searchQuery} onSearchChange={setSearchQuery} />
+              <BlogSidebar 
+                searchQuery={searchQuery} 
+                onSearchChange={setSearchQuery}
+                sidebarData={null}
+                isLoading={false}
+              />
             </div>
           </div>
         </div>

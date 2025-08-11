@@ -26,6 +26,7 @@ export default function ContactForm() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitStatus, setSubmitStatus] = useState<"idle" | "success" | "error">("idle")
   const [errorMessage, setErrorMessage] = useState("")
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -36,11 +37,39 @@ export default function ContactForm() {
     message: "",
   })
 
+  const validateForm = (): boolean => {
+    const errors: Record<string, string> = {}
+    if (!formData.name || formData.name.trim().length < 2) {
+      errors.name = "Name must be at least 2 characters"
+    }
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!formData.email || !emailPattern.test(formData.email)) {
+      errors.email = "Please enter a valid email address"
+    }
+    if (!formData.tourType || formData.tourType.trim().length === 0) {
+      errors.tourType = "Please select a tour type"
+    }
+    if (!formData.message || formData.message.trim().length < 10) {
+      errors.message = "Message must be at least 10 characters"
+    }
+    setFieldErrors(errors)
+    return Object.keys(errors).length === 0
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsSubmitting(true)
     setSubmitStatus("idle")
     setErrorMessage("")
+    setFieldErrors({})
+
+    // Client-side validation
+    if (!validateForm()) {
+      setIsSubmitting(false)
+      setSubmitStatus("error")
+      setErrorMessage("Please correct the highlighted fields and try again.")
+      return
+    }
 
     try {
       const response = await fetch("/api/contact", {
@@ -66,7 +95,16 @@ export default function ContactForm() {
         })
       } else {
         setSubmitStatus("error")
-        setErrorMessage(result.error || "Failed to submit form. Please try again.")
+        // Map server-side zod errors to field messages when present
+        if (result?.errors && Array.isArray(result.errors)) {
+          const serverErrors: Record<string, string> = {}
+          for (const err of result.errors) {
+            const key = Array.isArray(err.path) ? err.path[0] : err.path
+            if (key) serverErrors[String(key)] = err.message
+          }
+          setFieldErrors(serverErrors)
+        }
+        setErrorMessage(result.message || result.error || "Failed to submit form. Please try again.")
       }
     } catch (error) {
       console.error("Error submitting form:", error)
@@ -79,6 +117,9 @@ export default function ContactForm() {
 
   const handleInputChange = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }))
+    if (fieldErrors[field]) {
+      setFieldErrors((prev) => ({ ...prev, [field]: "" }))
+    }
   }
 
   const resetForm = () => {
@@ -149,8 +190,12 @@ export default function ContactForm() {
                 value={formData.name}
                 onChange={(e) => handleInputChange("name", e.target.value)}
                 placeholder="Your full name"
-                className="border-emerald-200 focus:border-emerald-400 focus:ring-emerald-400"
+                aria-invalid={!!fieldErrors.name}
+                className={`focus:ring-emerald-400 ${fieldErrors.name ? "border-red-400 focus:border-red-500 focus:ring-red-500" : "border-emerald-200 focus:border-emerald-400"}`}
               />
+              {fieldErrors.name && (
+                <p className="text-sm text-red-600">{fieldErrors.name}</p>
+              )}
             </div>
             <div className="space-y-2">
               <Label htmlFor="email" className="text-gray-700 font-medium">
@@ -163,8 +208,12 @@ export default function ContactForm() {
                 value={formData.email}
                 onChange={(e) => handleInputChange("email", e.target.value)}
                 placeholder="your@email.com"
-                className="border-emerald-200 focus:border-emerald-400 focus:ring-emerald-400"
+                aria-invalid={!!fieldErrors.email}
+                className={`focus:ring-emerald-400 ${fieldErrors.email ? "border-red-400 focus:border-red-500 focus:ring-red-500" : "border-emerald-200 focus:border-emerald-400"}`}
               />
+              {fieldErrors.email && (
+                <p className="text-sm text-red-600">{fieldErrors.email}</p>
+              )}
             </div>
           </div>
 
@@ -187,7 +236,7 @@ export default function ContactForm() {
                 Tour Type *
               </Label>
               <Select value={formData.tourType} onValueChange={(value) => handleInputChange("tourType", value)}>
-                <SelectTrigger className="border-emerald-200 focus:border-emerald-400 focus:ring-emerald-400">
+                <SelectTrigger className={`${fieldErrors.tourType ? "border-red-400 focus:border-red-500 focus:ring-red-500" : "border-emerald-200 focus:border-emerald-400 focus:ring-emerald-400"}`}>
                   <SelectValue placeholder="Select tour type" />
                 </SelectTrigger>
                 <SelectContent>
@@ -198,6 +247,9 @@ export default function ContactForm() {
                   ))}
                 </SelectContent>
               </Select>
+              {fieldErrors.tourType && (
+                <p className="text-sm text-red-600">{fieldErrors.tourType}</p>
+              )}
             </div>
           </div>
 
@@ -243,8 +295,12 @@ export default function ContactForm() {
               value={formData.message}
               onChange={(e) => handleInputChange("message", e.target.value)}
               placeholder="Tell us about your dream safari experience, special requirements, dietary restrictions, or any questions you have..."
-              className="border-emerald-200 focus:border-emerald-400 focus:ring-emerald-400"
+              aria-invalid={!!fieldErrors.message}
+              className={`${fieldErrors.message ? "border-red-400 focus:border-red-500 focus:ring-red-500" : "border-emerald-200 focus:border-emerald-400 focus:ring-emerald-400"}`}
             />
+            {fieldErrors.message && (
+              <p className="text-sm text-red-600">{fieldErrors.message}</p>
+            )}
           </div>
 
           <Button
