@@ -4,17 +4,13 @@ import type { NextRequest } from 'next/server'
 export function middleware(request: NextRequest) {
   const url = request.nextUrl
   const host = request.headers.get('host') || ''
-  const proto = request.headers.get('x-forwarded-proto') || 'https'
 
-  // Canonicalize host and protocol to reduce duplicate/redirect issues
-  if (host.startsWith('www.')) {
+  // Only normalize host in production and only for our domain
+  const isProd = process.env.NODE_ENV === 'production'
+  const isOurDomain = host.endsWith('sambatours.co')
+  if (isProd && isOurDomain && host.startsWith('www.')) {
     const apex = host.replace(/^www\./, '')
     url.host = apex
-    url.protocol = 'https'
-    return NextResponse.redirect(url, 308)
-  }
-  if (proto !== 'https') {
-    url.protocol = 'https'
     return NextResponse.redirect(url, 308)
   }
 
