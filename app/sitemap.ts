@@ -1,7 +1,7 @@
 import { MetadataRoute } from 'next'
 
-export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = 'https://sambatours.co'
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://sambatours.co'
   const currentDate = new Date().toISOString()
 
   // Static pages with high priority
@@ -86,9 +86,33 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
   ]
 
-  // Keep sitemap simple: only stable static pages to avoid 404/canonical conflicts
-  const tourPages: MetadataRoute.Sitemap = []
-  const blogPages: MetadataRoute.Sitemap = []
+  // Fetch dynamic slugs (tours + blogs)
+  let tourPages: MetadataRoute.Sitemap = []
+  let blogPages: MetadataRoute.Sitemap = []
+  try {
+    const [toursRes, blogsRes] = await Promise.all([
+      fetch(`${baseUrl}/api/tours?limit=1000`, { next: { revalidate: 3600 } }),
+      fetch(`${baseUrl}/api/blog?limit=1000`, { next: { revalidate: 3600 } }),
+    ])
+    if (toursRes.ok) {
+      const toursData = await toursRes.json()
+      tourPages = (toursData.tours || []).map((t: any) => ({
+        url: `${baseUrl}/tours/${t.slug}`,
+        lastModified: currentDate,
+        changeFrequency: 'weekly' as const,
+        priority: 0.7,
+      }))
+    }
+    if (blogsRes.ok) {
+      const blogsData = await blogsRes.json()
+      blogPages = (blogsData.posts || []).map((p: any) => ({
+        url: `${baseUrl}/blog/${p.slug}`,
+        lastModified: p.updatedAt || currentDate,
+        changeFrequency: 'weekly' as const,
+        priority: 0.6,
+      }))
+    }
+  } catch {}
 
   return [
     ...staticPages,

@@ -110,6 +110,8 @@ interface GalleryPageProps {
 export const dynamic = 'force-dynamic'
 
 export default function GalleryPage({ searchParams }: GalleryPageProps) {
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://sambatours.co'
+  const canonicalUrl = `${baseUrl}/gallery`
   return (
     <ScrollGuard>
       <h1 className="sr-only">Uganda Safari Gallery - Wildlife & Adventure Photos</h1>
@@ -121,6 +123,8 @@ export default function GalleryPage({ searchParams }: GalleryPageProps) {
           __html: JSON.stringify(galleryStructuredData),
         }}
       />
+      {/* Canonical to strip query params */}
+      <link rel="canonical" href={canonicalUrl} />
 
       <Suspense fallback={
         <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-green-50 flex items-center justify-center">
@@ -130,7 +134,7 @@ export default function GalleryPage({ searchParams }: GalleryPageProps) {
           </div>
         </div>
       }>
-        <GalleryClient searchParams={searchParams} hideMainHeading={true} />
+        <GalleryClient searchParams={searchParams} hideMainHeading={false} />
       </Suspense>
     </ScrollGuard>
   )

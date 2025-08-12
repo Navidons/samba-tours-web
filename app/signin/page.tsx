@@ -12,6 +12,6 @@ export const metadata: Metadata = {
 export const dynamic = 'force-dynamic'
 
 export default async function AdminSignInPage() {
-  // Never render publicly
-  return null
+  await redirectIfAuthenticated()
+  return <AdminSignIn />
 }

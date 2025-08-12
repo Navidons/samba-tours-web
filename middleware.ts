@@ -16,35 +16,18 @@ export function middleware(request: NextRequest) {
 
   const { pathname } = request.nextUrl
 
-  // Protect /admin routes and hide public signin
-  if (pathname.startsWith('/admin') || pathname === '/signin') {
+  // Protect /admin routes; allow public /signin
+  if (pathname.startsWith('/admin')) {
     const cookie = request.cookies.get('admin_session')
-    
-    // Check if cookie exists and has a valid format
-    if (!cookie || !cookie.value || cookie.value.trim() === '') {
-      // Forbid access to public signin: send 404 for /signin
-      if (pathname === '/signin') {
-        return new NextResponse('Not Found', { status: 404 })
-      }
+    const hasSession = Boolean(cookie?.value && cookie.value.trim() !== '')
+
+    if (!hasSession) {
       const signinUrl = request.nextUrl.clone()
-      signinUrl.pathname = '/'
+      signinUrl.pathname = '/signin'
+      if (pathname !== '/admin') {
+        signinUrl.searchParams.set('from', pathname)
+      }
       return NextResponse.redirect(signinUrl)
-    }
-    
-    // Basic validation that the session has the expected format (userId:timestamp)
-    try {
-      const decoded = Buffer.from(cookie.value, 'base64').toString()
-      if (!decoded.includes(':')) {
-        throw new Error('Invalid session format')
-      }
-    } catch (error) {
-      // Invalid session, redirect to login
-      if (pathname === '/signin') {
-        return new NextResponse('Not Found', { status: 404 })
-      }
-      const home = request.nextUrl.clone()
-      home.pathname = '/'
-      return NextResponse.redirect(home)
     }
   }
 

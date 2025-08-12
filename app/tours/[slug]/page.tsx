@@ -118,9 +118,18 @@ export async function generateMetadata({ params }: TourPageProps) {
   const title = `${tour.title} - Uganda Safari Tour`
   const description = tour.shortDescription || 
     `Experience ${tour.title} with Samba Tours. ${tour.duration}-day adventure through Uganda's stunning landscapes. Starting from $${tour.price}.`
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://sambatours.co'
+  const canonicalUrl = `${baseUrl}/tours/${params.slug}`
 
   return {
     title,
-    description
+    description,
+    alternates: {
+      canonical: canonicalUrl,
+    },
+    robots: {
+      index: true,
+      follow: true,
+    },
   }
 }
