@@ -94,9 +94,6 @@ const heroContent = [
   },
 ]
 
-// Blur data URL for better loading experience
-const blurDataURL = 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=='
-
 export default function HeroSection() {
   const [currentSlide, setCurrentSlide] = useState(0)
   const [isTransitioning, setIsTransitioning] = useState(false)
@@ -109,7 +106,7 @@ export default function HeroSection() {
         const nextSlide = (currentSlide + 1) % heroContent.length
         setCurrentSlide(nextSlide)
         setIsTransitioning(false)
-        
+
         // Only preload the next image when needed, not all images
         const nextImageIndex = (nextSlide + 1) % heroContent.length
         if (!preloadedImages.has(nextImageIndex)) {
@@ -145,8 +142,6 @@ export default function HeroSection() {
           className={`object-cover transition-opacity duration-500 ${isTransitioning ? 'opacity-0' : 'opacity-100'}`}
           sizes="100vw"
           quality={85}
-          placeholder="blur"
-          blurDataURL={blurDataURL}
           data-lcp="true"
         />
         {/* Gradient Overlays */}
@@ -240,11 +235,10 @@ export default function HeroSection() {
                     setIsTransitioning(false)
                   }, 500)
                 }}
-                className={`transition-all duration-500 rounded-full ${
-                  index === currentSlide
-                    ? "bg-gradient-to-r from-green-400 to-emerald-400 w-8 h-2"
-                    : "bg-white/30 hover:bg-white/50 w-2 h-2"
-                }`}
+                className={`transition-all duration-500 rounded-full ${index === currentSlide
+                  ? "bg-gradient-to-r from-green-400 to-emerald-400 w-8 h-2"
+                  : "bg-white/30 hover:bg-white/50 w-2 h-2"
+                  }`}
                 aria-label={`Go to slide ${index + 1}`}
               />
             ))}
