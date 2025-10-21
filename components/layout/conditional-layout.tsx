@@ -4,6 +4,8 @@ import { useEffect, useRef, useState, Suspense } from "react"
 import { usePathname } from "next/navigation"
 import Header from "./header"
 import Footer from "./footer"
+import WhatsAppFloat from "./whatsapp-float"
+import CopyProtection from "./copy-protection"
 
 interface ConditionalLayoutProps {
   children: React.ReactNode
@@ -25,7 +27,7 @@ export default function ConditionalLayout({ children }: ConditionalLayoutProps) 
   const noLayoutRoutes = ["/admin", "/signup"]
 
   // Check if current route should exclude layout
-  const shouldExcludeLayout = isClient && noLayoutRoutes.some((route) => 
+  const shouldExcludeLayout = isClient && noLayoutRoutes.some((route) =>
     currentPathname === route || currentPathname.startsWith(`${route}/`)
   )
 
@@ -38,11 +40,13 @@ export default function ConditionalLayout({ children }: ConditionalLayoutProps) 
   if (!isClient) {
     return (
       <div className="min-h-screen flex flex-col">
+        <CopyProtection />
         <Suspense fallback={<div className="h-16 bg-white border-b border-gray-200" />}>
           <Header />
         </Suspense>
         <main className="flex-1">{children}</main>
         <Footer />
+        <WhatsAppFloat />
       </div>
     )
   }
@@ -53,6 +57,7 @@ export default function ConditionalLayout({ children }: ConditionalLayoutProps) 
 
   return (
     <div className="min-h-screen flex flex-col">
+      <CopyProtection />
       <Suspense fallback={<div className="h-16 bg-white border-b border-gray-200" />}>
         <Header />
       </Suspense>
@@ -60,6 +65,7 @@ export default function ConditionalLayout({ children }: ConditionalLayoutProps) 
         {children}
       </main>
       <Footer />
+      <WhatsAppFloat />
     </div>
   )
 }
