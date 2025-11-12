@@ -19,7 +19,7 @@ export default function WhatsAppFloat() {
     const [isHovered, setIsHovered] = useState(false)
 
     // WhatsApp number from contact methods
-    const whatsappNumber = "256700123456"
+    const whatsappNumber = "256791742494"
     const whatsappUrl = `https://wa.me/${whatsappNumber}?text=Hi%20Samba%20Tours!%20I%27m%20interested%20in%20booking%20a%20tour.`
 
     useEffect(() => {
