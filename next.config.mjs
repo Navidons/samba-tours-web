@@ -1,34 +1,45 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  experimental: {
-    appDir: true,
-  },
   images: {
-    domains: [
-      'sambatours.co', 
-      'localhost',
-      'img.youtube.com',
-      'i.ytimg.com',
-      'youtube.com',
-      'www.youtube.com',
-      'via.placeholder.com'
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'sambatours.co',
+      },
+      {
+        protocol: 'http',
+        hostname: 'localhost',
+      },
+      {
+        protocol: 'https',
+        hostname: 'img.youtube.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'i.ytimg.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'youtube.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'www.youtube.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'via.placeholder.com',
+      },
     ],
     formats: ['image/webp', 'image/avif'],
     dangerouslyAllowSVG: true,
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
   },
-  // Increase body parser limit for file uploads
-  api: {
-    bodyParser: {
-      sizeLimit: '50mb',
-    },
-    responseLimit: '50mb',
-  },
-  // Increase timeout for API routes
-  serverRuntimeConfig: {
-    maxDuration: 300, // 5 minutes
-  },
-  // Handle large file uploads
+  // Turbopack is the default in Next.js 16; an explicit (even empty)
+  // config silences the error when a custom webpack config is present.
+  turbopack: {},
+  // Handle large file uploads in the browser bundle by preventing "fs" from
+  // being included on the client side.
   webpack: (config, { isServer }) => {
     if (!isServer) {
       config.resolve.fallback = {
