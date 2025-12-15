@@ -2,12 +2,16 @@ import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { PrismaClientInitializationError, PrismaClientKnownRequestError } from "@prisma/client/runtime/library"
 
+type RouteContext = {
+  params: Promise<{ reference: string }>
+}
+
 export async function GET(
   request: NextRequest,
-  { params }: { params: { reference: string } }
+  context: RouteContext
 ) {
   try {
-    const { reference } = params
+    const { reference } = await context.params
 
     // Get booking with all related data
     const booking = await prisma.booking.findFirst({

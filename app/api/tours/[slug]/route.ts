@@ -2,13 +2,17 @@ import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { PrismaClientInitializationError, PrismaClientKnownRequestError } from "@prisma/client/runtime/library"
 
+type RouteContext = {
+  params: Promise<{ slug: string }>
+}
+
 // GET /api/tours/[slug] - Get tour details by slug
 export async function GET(
   request: NextRequest,
-  { params }: { params: { slug: string } }
+  context: RouteContext
 ) {
   try {
-    const { slug } = params
+    const { slug } = await context.params
 
     // Get tour with all related data
     const tour = await prisma.tour.findUnique({
@@ -226,10 +230,10 @@ export async function GET(
 // POST /api/tours/[slug] - Create a review for a tour
 export async function POST(
   request: NextRequest,
-  { params }: { params: { slug: string } }
+  context: RouteContext
 ) {
   try {
-    const { slug } = params
+    const { slug } = await context.params
     const body = await request.json()
 
     // Validate required fields

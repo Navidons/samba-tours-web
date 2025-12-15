@@ -3,8 +3,13 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
-export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
-  const id = Number(params.id);
+type RouteContext = {
+  params: Promise<{ id: string }>
+}
+
+export async function PUT(req: NextRequest, context: RouteContext) {
+  const { id: idStr } = await context.params
+  const id = Number(idStr);
 
   // Parse FormData
   const formData = await req.formData();
@@ -46,8 +51,9 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
   }
 }
 
-export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
-  const id = Number(params.id);
+export async function DELETE(req: NextRequest, context: RouteContext) {
+  const { id: idStr } = await context.params
+  const id = Number(idStr);
   try {
     const deleted = await prisma.tourCategory.delete({
       where: { id },

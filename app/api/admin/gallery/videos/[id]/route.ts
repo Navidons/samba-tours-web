@@ -2,13 +2,18 @@ import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { PrismaClientInitializationError, PrismaClientKnownRequestError } from "@prisma/client/runtime/library"
 
+type RouteContext = {
+  params: Promise<{ id: string }>
+}
+
 // GET /api/admin/gallery/videos/[id] - Get specific video
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: RouteContext
 ) {
   try {
-    const videoId = parseInt(params.id)
+    const { id } = await context.params
+    const videoId = parseInt(id)
 
     const video = await prisma.galleryVideo.findUnique({
       where: { id: videoId },
@@ -86,10 +91,11 @@ export async function GET(
 // PUT /api/admin/gallery/videos/[id] - Update video
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: RouteContext
 ) {
   try {
-    const videoId = parseInt(params.id)
+    const { id } = await context.params
+    const videoId = parseInt(id)
     const formData = await request.formData()
 
     const title = formData.get('title') as string
@@ -236,10 +242,11 @@ export async function PUT(
 // DELETE /api/admin/gallery/videos/[id] - Delete video
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: RouteContext
 ) {
   try {
-    const videoId = parseInt(params.id)
+    const { id } = await context.params
+    const videoId = parseInt(id)
 
     // Check if video exists and get gallery info
     const video = await prisma.galleryVideo.findUnique({

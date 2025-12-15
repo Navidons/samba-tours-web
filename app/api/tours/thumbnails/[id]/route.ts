@@ -1,13 +1,18 @@
 import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 
+type RouteContext = {
+  params: Promise<{ id: string }>
+}
+
 // GET /api/tours/thumbnails/[id] - Stream tour featured image
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: RouteContext
 ) {
   try {
-    const tourId = parseInt(params.id)
+    const { id } = await context.params
+    const tourId = parseInt(id)
     if (Number.isNaN(tourId)) {
       return new NextResponse("Invalid id", { status: 400 })
     }

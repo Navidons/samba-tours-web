@@ -3,12 +3,17 @@ import { PrismaClient } from '@prisma/client'
 
 const prisma = new PrismaClient()
 
+type RouteContext = {
+  params: Promise<{ id: string }>
+}
+
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: RouteContext
 ) {
   try {
-    const userId = parseInt(params.id)
+    const { id } = await context.params
+    const userId = parseInt(id)
     const body = await request.json()
     const { newPassword } = body
 

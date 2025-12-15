@@ -1,13 +1,18 @@
 import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 
+type RouteContext = {
+  params: Promise<{ id: string }>
+}
+
 // GET /api/admin/gallery/images/[id] - Serve image as binary data or JSON based on Accept header
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: RouteContext
 ) {
   try {
-    const imageId = parseInt(params.id)
+    const { id } = await context.params
+    const imageId = parseInt(id)
     const acceptHeader = request.headers.get('accept')
     const isImageRequest = acceptHeader?.includes('image/') || 
                            acceptHeader?.includes('*/*') ||
@@ -109,10 +114,11 @@ export async function GET(
 // PUT /api/admin/gallery/images/[id] - Update image
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: RouteContext
 ) {
   try {
-    const imageId = parseInt(params.id)
+    const { id } = await context.params
+    const imageId = parseInt(id)
     const formData = await request.formData()
 
     const title = formData.get('title') as string
@@ -189,10 +195,11 @@ export async function PUT(
 // DELETE /api/admin/gallery/images/[id] - Delete image
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: RouteContext
 ) {
   try {
-    const imageId = parseInt(params.id)
+    const { id } = await context.params
+    const imageId = parseInt(id)
 
     // Check if image exists and get gallery info
     const image = await prisma.galleryImage.findUnique({

@@ -1,10 +1,15 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 
-export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
+type RouteContext = {
+  params: Promise<{ id: string }>
+}
+
+export async function GET(request: NextRequest, context: RouteContext) {
   try {
+    const { id } = await context.params
     const customer = await prisma.customer.findUnique({
-      where: { id: parseInt(params.id) },
+      where: { id: parseInt(id) },
       include: {
         bookings: {
           select: {
@@ -103,12 +108,13 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
   }
 }
 
-export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
+export async function PUT(request: NextRequest, context: RouteContext) {
   try {
+    const { id } = await context.params
     const body = await request.json()
 
     const customer = await prisma.customer.update({
-      where: { id: parseInt(params.id) },
+      where: { id: parseInt(id) },
       data: {
         name: body.name,
         email: body.email,
@@ -131,8 +137,9 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
   }
 }
 
-export async function PATCH(request: NextRequest, { params }: { params: { id: string } }) {
+export async function PATCH(request: NextRequest, context: RouteContext) {
   try {
+    const { id } = await context.params
     const body = await request.json()
 
     const updateData: any = {}
@@ -154,7 +161,7 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
     }
 
     const customer = await prisma.customer.update({
-      where: { id: parseInt(params.id) },
+      where: { id: parseInt(id) },
       data: updateData
     })
 
@@ -165,10 +172,11 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
   }
 }
 
-export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(request: NextRequest, context: RouteContext) {
   try {
+    const { id } = await context.params
     await prisma.customer.delete({
-      where: { id: parseInt(params.id) }
+      where: { id: parseInt(id) }
     })
 
     return NextResponse.json({ success: true })

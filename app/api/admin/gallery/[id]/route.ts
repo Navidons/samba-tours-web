@@ -2,13 +2,18 @@ import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { PrismaClientInitializationError, PrismaClientKnownRequestError } from "@prisma/client/runtime/library"
 
+type RouteContext = {
+  params: Promise<{ id: string }>
+}
+
 // GET /api/admin/gallery/[id] - Get specific gallery for editing
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: RouteContext
 ) {
   try {
-    const galleryId = parseInt(params.id)
+    const { id } = await context.params
+    const galleryId = parseInt(id)
 
     const gallery = await prisma.gallery.findUnique({
       where: { id: galleryId },
@@ -120,10 +125,11 @@ export async function GET(
 // PUT /api/admin/gallery/[id] - Update gallery
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: RouteContext
 ) {
   try {
-    const galleryId = parseInt(params.id)
+    const { id } = await context.params
+    const galleryId = parseInt(id)
     const formData = await request.formData()
     
     const name = formData.get('name') as string
@@ -263,10 +269,11 @@ export async function PUT(
 // DELETE /api/admin/gallery/[id] - Delete gallery
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: RouteContext
 ) {
   try {
-    const galleryId = parseInt(params.id)
+    const { id } = await context.params
+    const galleryId = parseInt(id)
 
     // Check if gallery exists
     const existingGallery = await prisma.gallery.findUnique({

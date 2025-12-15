@@ -3,13 +3,18 @@ import { prisma } from "@/lib/prisma"
 import { PrismaClientInitializationError, PrismaClientKnownRequestError } from "@prisma/client/runtime/library"
 import { Difficulty, TourStatus } from "@prisma/client"
 
+type RouteContext = {
+  params: Promise<{ id: string }>
+}
+
 // GET /api/admin/tours/[id] - Get specific tour with all details
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: RouteContext
 ) {
   try {
-    const tourId = parseInt(params.id)
+    const { id } = await context.params
+    const tourId = parseInt(id)
 
     const tour = await prisma.tour.findUnique({
       where: { id: tourId },
@@ -304,9 +309,10 @@ export async function GET(
 // PUT /api/admin/tours/[id] - Update tour
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: RouteContext
 ) {
   try {
+    const { id } = await context.params
     const tourId = parseInt(params.id)
     const formData = await request.formData()
 
@@ -661,10 +667,12 @@ export async function PUT(
 // DELETE /api/admin/tours/[id] - Delete tour
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: RouteContext
 ) {
   try {
-    const tourId = parseInt(params.id)
+    const { id } = await context.params
+    const { id } = await context.params
+    const tourId = parseInt(id)
 
     // Check if tour exists
     const existingTour = await prisma.tour.findUnique({

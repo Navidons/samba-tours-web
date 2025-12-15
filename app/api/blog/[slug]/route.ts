@@ -1,14 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 
+type RouteContext = {
+  params: Promise<{ slug: string }>
+}
+
 export async function GET(
   request: NextRequest,
-  { params }: { params: { slug: string } }
+  context: RouteContext
 ) {
   try {
+    const { slug } = await context.params
     const post = await prisma.blogPost.findUnique({
       where: { 
-        slug: params.slug,
+        slug,
         status: 'published'
       },
       select: {

@@ -1,11 +1,16 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 
+type RouteContext = {
+  params: Promise<{ slug: string }>
+}
+
 export async function GET(
   request: NextRequest,
-  { params }: { params: { slug: string } }
+  context: RouteContext
 ) {
   try {
+    const { slug } = await context.params
     const { searchParams } = new URL(request.url)
     const page = parseInt(searchParams.get('page') || '1')
     const limit = parseInt(searchParams.get('limit') || '10')
@@ -19,7 +24,7 @@ export async function GET(
       tags: {
         some: {
           tag: {
-            slug: params.slug
+            slug
           }
         }
       }

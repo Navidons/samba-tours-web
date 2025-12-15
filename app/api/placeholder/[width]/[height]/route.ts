@@ -1,13 +1,18 @@
 import { NextRequest, NextResponse } from "next/server"
 
+type RouteContext = {
+  params: Promise<{ width: string; height: string }>
+}
+
 // Simple placeholder image generator
 export async function GET(
   request: NextRequest,
-  { params }: { params: { width: string; height: string } }
+  context: RouteContext
 ) {
   try {
-    const width = parseInt(params.width) || 400
-    const height = parseInt(params.height) || 300
+    const { width: widthStr, height: heightStr } = await context.params
+    const width = parseInt(widthStr) || 400
+    const height = parseInt(heightStr) || 300
     const searchParams = new URL(request.url).searchParams
     const text = searchParams.get('text') || 'No Image'
     const bgColor = searchParams.get('bg') || 'e5e7eb' // gray-200

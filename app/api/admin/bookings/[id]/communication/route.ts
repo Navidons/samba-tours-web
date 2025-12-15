@@ -1,8 +1,13 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 
-export async function POST(request: NextRequest, { params }: { params: { id: string } }) {
+type RouteContext = {
+  params: Promise<{ id: string }>
+}
+
+export async function POST(request: NextRequest, context: RouteContext) {
   try {
+    const { id } = await context.params
     const body = await request.json()
     const { type, notes, staffMember, outcome, nextFollowUpDate } = body
 
@@ -15,7 +20,7 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
 
     // Verify the booking exists
     const booking = await prisma.booking.findUnique({
-      where: { id: parseInt(params.id) }
+      where: { id: parseInt(id) }
     })
 
     if (!booking) {
@@ -28,7 +33,7 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
     // Create communication record
     const communication = await prisma.bookingCommunication.create({
       data: {
-        bookingId: parseInt(params.id),
+        bookingId: parseInt(id),
         communicationType: type,
         staffMember: staffMember || "Admin",
         message: notes,

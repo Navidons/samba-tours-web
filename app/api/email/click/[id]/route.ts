@@ -4,13 +4,18 @@ import { EmailAnalytics } from '@/lib/email-service'
 
 const prisma = new PrismaClient()
 
+type RouteContext = {
+  params: Promise<{ id: string }>
+}
+
 // GET - Track email clicks and redirect to original URL
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: RouteContext
 ) {
   try {
-    const emailId = parseInt(params.id)
+    const { id } = await context.params
+    const emailId = parseInt(id)
     const { searchParams } = new URL(request.url)
     const originalUrl = searchParams.get('url')
     

@@ -1,13 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 
+type RouteContext = {
+  params: Promise<{ id: string }>
+}
+
 // POST - Like a comment
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: RouteContext
 ) {
   try {
-    const commentId = parseInt(params.id)
+    const { id } = await context.params
+    const commentId = parseInt(id)
 
     if (isNaN(commentId)) {
       return NextResponse.json(

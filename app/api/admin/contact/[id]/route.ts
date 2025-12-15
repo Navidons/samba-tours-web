@@ -14,9 +14,13 @@ const updateInquirySchema = z.object({
   message: z.string().optional(),
 })
 
+type RouteContext = {
+  params: Promise<{ id: string }>
+}
+
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: RouteContext
 ) {
   try {
     // Check admin authentication
@@ -28,7 +32,8 @@ export async function PATCH(
       )
     }
 
-    const id = parseInt(params.id)
+    const { id: idStr } = await context.params
+    const id = parseInt(idStr)
     
     if (isNaN(id)) {
       return NextResponse.json(
@@ -109,7 +114,7 @@ export async function PATCH(
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: RouteContext
 ) {
   try {
     // Check admin authentication
@@ -121,7 +126,8 @@ export async function GET(
       )
     }
 
-    const id = parseInt(params.id)
+    const { id: idStr } = await context.params
+    const id = parseInt(idStr)
     
     if (isNaN(id)) {
       return NextResponse.json(
@@ -172,7 +178,7 @@ export async function GET(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: RouteContext
 ) {
   try {
     // Check admin authentication
@@ -184,7 +190,8 @@ export async function DELETE(
       )
     }
 
-    const id = parseInt(params.id)
+    const { id: idStr } = await context.params
+    const id = parseInt(idStr)
     
     if (isNaN(id)) {
       return NextResponse.json(

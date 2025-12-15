@@ -1,9 +1,14 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 
-export async function GET(request: NextRequest, { params }: { params: { slug: string } }) {
+type RouteContext = {
+  params: Promise<{ slug: string }>
+}
+
+export async function GET(request: NextRequest, context: RouteContext) {
   try {
-    const slug = decodeURIComponent(params.slug)
+    const { slug: rawSlug } = await context.params
+    const slug = decodeURIComponent(rawSlug)
     
     const post = await prisma.blogPost.findUnique({
       where: { slug },
@@ -110,9 +115,10 @@ export async function GET(request: NextRequest, { params }: { params: { slug: st
   }
 }
 
-export async function PUT(request: NextRequest, { params }: { params: { slug: string } }) {
+export async function PUT(request: NextRequest, context: RouteContext) {
   try {
-    const slug = decodeURIComponent(params.slug)
+    const { slug: rawSlug } = await context.params
+    const slug = decodeURIComponent(rawSlug)
     
     // Parse FormData
     const formData = await request.formData()

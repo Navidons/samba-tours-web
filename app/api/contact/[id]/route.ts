@@ -1,11 +1,16 @@
 import { type NextRequest, NextResponse } from "next/server"
 
+type RouteContext = {
+  params: Promise<{ id: string }>
+}
+
 // Mock database for storing contact submissions
 const contactSubmissions: any[] = []
 
-export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(request: NextRequest, context: RouteContext) {
   try {
-    const submission = contactSubmissions.find((s) => s.id === params.id)
+    const { id } = await context.params
+    const submission = contactSubmissions.find((s) => s.id === id)
 
     if (!submission) {
       return NextResponse.json({ error: "Submission not found" }, { status: 404 })
@@ -21,12 +26,13 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
   }
 }
 
-export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
+export async function PUT(request: NextRequest, context: RouteContext) {
   try {
+    const { id } = await context.params
     const body = await request.json()
     const { status, priority, notes } = body
 
-    const submissionIndex = contactSubmissions.findIndex((s) => s.id === params.id)
+    const submissionIndex = contactSubmissions.findIndex((s) => s.id === id)
 
     if (submissionIndex === -1) {
       return NextResponse.json({ error: "Submission not found" }, { status: 404 })
@@ -52,9 +58,10 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
   }
 }
 
-export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(request: NextRequest, context: RouteContext) {
   try {
-    const submissionIndex = contactSubmissions.findIndex((s) => s.id === params.id)
+    const { id } = await context.params
+    const submissionIndex = contactSubmissions.findIndex((s) => s.id === id)
 
     if (submissionIndex === -1) {
       return NextResponse.json({ error: "Submission not found" }, { status: 404 })

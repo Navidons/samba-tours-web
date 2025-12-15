@@ -1,8 +1,13 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 
-export async function GET(request: NextRequest, { params }: { params: { slug: string } }) {
+type RouteContext = {
+  params: Promise<{ slug: string }>
+}
+
+export async function GET(request: NextRequest, context: RouteContext) {
   try {
+    const { slug } = await context.params
     const { searchParams } = new URL(request.url)
 
     const page = Number.parseInt(searchParams.get("page") || "1")
@@ -14,7 +19,7 @@ export async function GET(request: NextRequest, { params }: { params: { slug: st
 
     // Get tour by slug first
     const tour = await prisma.tour.findUnique({
-      where: { slug: params.slug },
+      where: { slug },
       select: { id: true }
     })
 
@@ -107,8 +112,9 @@ export async function GET(request: NextRequest, { params }: { params: { slug: st
   }
 }
 
-export async function POST(request: NextRequest, { params }: { params: { slug: string } }) {
+export async function POST(request: NextRequest, context: RouteContext) {
   try {
+    const { slug } = await context.params
     const body = await request.json()
 
     const { name, email, rating, title, comment, tourDate, wouldRecommend, images } = body
@@ -124,7 +130,7 @@ export async function POST(request: NextRequest, { params }: { params: { slug: s
 
     // Get tour by slug
     const tour = await prisma.tour.findUnique({
-      where: { slug: params.slug },
+      where: { slug },
       select: { id: true }
     })
 

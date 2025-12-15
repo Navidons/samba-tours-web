@@ -1,10 +1,15 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 
-export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
+type RouteContext = {
+  params: Promise<{ id: string }>
+}
+
+export async function GET(request: NextRequest, context: RouteContext) {
   try {
+    const { id } = await context.params
     const booking = await prisma.booking.findUnique({
-      where: { id: parseInt(params.id) },
+      where: { id: parseInt(id) },
       include: {
         tour: {
           select: {
@@ -287,12 +292,13 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
   }
 }
 
-export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
+export async function PUT(request: NextRequest, context: RouteContext) {
   try {
+    const { id } = await context.params
     const body = await request.json()
 
     const booking = await prisma.booking.update({
-      where: { id: parseInt(params.id) },
+      where: { id: parseInt(id) },
       data: {
         customerName: body.customerName,
         customerEmail: body.customerEmail,
@@ -323,8 +329,9 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
   }
 }
 
-export async function PATCH(request: NextRequest, { params }: { params: { id: string } }) {
+export async function PATCH(request: NextRequest, context: RouteContext) {
   try {
+    const { id } = await context.params
     const body = await request.json()
 
     const updateData: any = {}
@@ -363,7 +370,7 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
 
     // Update the booking first
     const booking = await prisma.booking.update({
-      where: { id: parseInt(params.id) },
+      where: { id: parseInt(id) },
       data: updateData,
       include: {
         tour: {
@@ -476,7 +483,7 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
 
         // Update the booking to link to the customer
         await prisma.booking.update({
-          where: { id: parseInt(params.id) },
+          where: { id: parseInt(id) },
           data: {
             customerId: existingCustomer?.id || (await prisma.customer.findUnique({
               where: { email: booking.customerEmail }
@@ -501,10 +508,11 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
   }
 }
 
-export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(request: NextRequest, context: RouteContext) {
   try {
+    const { id } = await context.params
     await prisma.booking.delete({
-      where: { id: parseInt(params.id) }
+      where: { id: parseInt(id) }
     })
 
     return NextResponse.json({ success: true })

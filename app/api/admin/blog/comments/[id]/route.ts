@@ -1,13 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 
+type RouteContext = {
+  params: Promise<{ id: string }>
+}
+
 // GET - Get a specific comment
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: RouteContext
 ) {
   try {
-    const commentId = parseInt(params.id)
+    const { id } = await context.params
+    const commentId = parseInt(id)
 
     if (isNaN(commentId)) {
       return NextResponse.json(
@@ -88,10 +93,11 @@ export async function GET(
 // PATCH - Update comment status
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: RouteContext
 ) {
   try {
-    const commentId = parseInt(params.id)
+    const { id } = await context.params
+    const commentId = parseInt(id)
     const body = await request.json()
     const { status } = body
 
@@ -162,10 +168,11 @@ export async function PATCH(
 // DELETE - Delete a comment
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: RouteContext
 ) {
   try {
-    const commentId = parseInt(params.id)
+    const { id } = await context.params
+    const commentId = parseInt(id)
 
     if (isNaN(commentId)) {
       return NextResponse.json(

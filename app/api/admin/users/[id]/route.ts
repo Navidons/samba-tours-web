@@ -3,12 +3,17 @@ import { PrismaClient } from '@prisma/client'
 
 const prisma = new PrismaClient()
 
+type RouteContext = {
+  params: Promise<{ id: string }>
+}
+
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: RouteContext
 ) {
   try {
-    const userId = parseInt(params.id)
+    const { id } = await context.params
+    const userId = parseInt(id)
     
     const user = await prisma.user.findUnique({
       where: { id: userId },
@@ -134,10 +139,11 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: RouteContext
 ) {
   try {
-    const userId = parseInt(params.id)
+    const { id } = await context.params
+    const userId = parseInt(id)
     const body = await request.json()
     
     const {
@@ -266,10 +272,11 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: RouteContext
 ) {
   try {
-    const userId = parseInt(params.id)
+    const { id } = await context.params
+    const userId = parseInt(id)
     
     // Check if user exists
     const user = await prisma.user.findUnique({

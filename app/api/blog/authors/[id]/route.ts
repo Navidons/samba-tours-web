@@ -1,12 +1,17 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 
+type RouteContext = {
+  params: Promise<{ id: string }>
+}
+
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: RouteContext
 ) {
   try {
-    const authorId = parseInt(params.id)
+    const { id } = await context.params
+    const authorId = parseInt(id)
     
     if (isNaN(authorId)) {
       return NextResponse.json({ error: "Invalid author ID" }, { status: 400 })
