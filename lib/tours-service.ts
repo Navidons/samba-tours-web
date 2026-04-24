@@ -7,15 +7,13 @@ export async function getBaseUrl() {
   const headersList = await headers()
   const host = headersList.get('host') || 'localhost:3000'
   
-  // Always use HTTP for development, HTTPS for production
-  const protocol = process.env.NODE_ENV === 'development' ? 'http' : 'https'
-  
-  // For localhost, always use HTTP
-  if (host.includes('localhost') || host.includes('127.0.0.1')) {
+  // For development, always use HTTP to avoid SSL issues
+  if (process.env.NODE_ENV === 'development') {
     return `http://${host}`
   }
   
-  return `${protocol}://${host}`
+  // For production, use HTTPS
+  return `https://${host}`
 }
 
 interface TourParams {

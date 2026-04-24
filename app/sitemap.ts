@@ -1,7 +1,10 @@
 import { MetadataRoute } from 'next'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://sambatours.co'
+  // Use HTTP with IP in development to avoid SSL issues
+  const baseUrl = process.env.NODE_ENV === 'development' 
+    ? 'http://192.168.109.1:3000' 
+    : (process.env.NEXT_PUBLIC_SITE_URL || 'https://sambatours.co')
   const currentDate = new Date().toISOString()
 
   // Static pages with high priority

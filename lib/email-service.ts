@@ -32,11 +32,16 @@ try {
   console.error('Failed to create email transporter:', error)
 }
 
-// Verify transporter on startup
-if (transporter) {
+// Verify transporter on startup - handle errors gracefully
+if (transporter && env.GMAIL_USER && env.GMAIL_APP_PASSWORD) {
   transporter.verify()
     .then(() => console.log('Email transporter verified successfully'))
-    .catch((error) => console.error('Email transporter verification failed:', error))
+    .catch((error) => {
+      console.warn('Email transporter verification failed - email functionality will be disabled:', error.message)
+      // Don't throw error, just warn and continue
+    })
+} else {
+  console.warn('Email credentials not configured - email functionality will be disabled')
 }
 
 export interface EmailAttachment {
@@ -425,6 +430,16 @@ export class EmailCampaignService {
 
 // Main email service functions
 export async function sendEmail(data: EmailData): Promise<EmailResult> {
+  // Check if email is configured
+  if (!transporter || !env.GMAIL_USER || !env.GMAIL_APP_PASSWORD) {
+    console.warn('Email not configured - skipping email send')
+    return {
+      success: false,
+      error: 'Email service not configured',
+      status: 'failed'
+    }
+  }
+
   try {
     // Get template key from slug
     const templateKey = getTemplateKey(data.template as string)

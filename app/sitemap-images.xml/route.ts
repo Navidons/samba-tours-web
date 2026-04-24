@@ -7,7 +7,10 @@ function xmlEscape(str: string) {
 }
 
 export async function GET() {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://sambatours.co'
+  // Use HTTP with IP in development to avoid SSL issues
+  const baseUrl = process.env.NODE_ENV === 'development' 
+    ? 'http://192.168.109.1:3000' 
+    : (process.env.NEXT_PUBLIC_SITE_URL || 'https://sambatours.co')
 
   try {
     // Fetch sources in parallel
