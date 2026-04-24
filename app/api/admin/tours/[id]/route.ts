@@ -671,6 +671,10 @@ export async function DELETE(
 ) {
   try {
     const { id } = await context.params
+<<<<<<< HEAD
+=======
+    const { id } = await context.params
+>>>>>>> 0d567ea44daf0132606b74076e8626895fde057f
     const tourId = parseInt(id)
 
     // Check if tour exists
