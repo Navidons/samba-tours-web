@@ -2,9 +2,9 @@ import { cache } from 'react'
 import { headers } from 'next/headers'
 
 // Helper to get base URL for API calls
-export function getBaseUrl() {
+export async function getBaseUrl() {
   // Get host from headers when running on server
-  const headersList = headers()
+  const headersList = await headers()
   const host = headersList.get('host') || 'localhost:3000'
   
   // Always use HTTP for development, HTTPS for production
@@ -43,7 +43,7 @@ export const getTours = cache(async (params: TourParams = {}) => {
     }
   })
 
-  const baseUrl = getBaseUrl()
+  const baseUrl = await getBaseUrl()
   const response = await fetch(`${baseUrl}/api/tours?${searchParams.toString()}`)
   const data = await response.json()
 
@@ -55,7 +55,7 @@ export const getTours = cache(async (params: TourParams = {}) => {
 })
 
 export const getTour = cache(async (slug: string) => {
-  const baseUrl = getBaseUrl()
+  const baseUrl = await getBaseUrl()
   const response = await fetch(`${baseUrl}/api/tours/${slug}`)
   const data = await response.json()
 
@@ -67,7 +67,7 @@ export const getTour = cache(async (slug: string) => {
 })
 
 export const getTourReviews = cache(async (slug: string) => {
-  const baseUrl = getBaseUrl()
+  const baseUrl = await getBaseUrl()
   const response = await fetch(`${baseUrl}/api/tours/${slug}/reviews`)
   const data = await response.json()
 
@@ -79,7 +79,7 @@ export const getTourReviews = cache(async (slug: string) => {
 })
 
 export const getCategories = cache(async () => {
-  const baseUrl = getBaseUrl()
+  const baseUrl = await getBaseUrl()
   const response = await fetch(`${baseUrl}/api/tours/categories`)
   const data = await response.json()
 

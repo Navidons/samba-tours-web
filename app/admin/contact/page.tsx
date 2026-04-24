@@ -4,9 +4,9 @@ import { cookies } from "next/headers"
 import ContactManagementClient from "./ContactManagementClient"
 import { Skeleton } from "@/components/ui/skeleton"
 
-export default function ContactManagementPage() {
+export default async function ContactManagementPage() {
   // Check for admin session on server side
-  const cookieStore = cookies()
+  const cookieStore = await cookies()
   const adminSession = cookieStore.get('admin_session')
   
   if (!adminSession || !adminSession.value) {

@@ -7,8 +7,8 @@ export interface AdminSession {
   timestamp: number
 }
 
-export function validateAdminSession(): AdminSession | null {
-  const cookieStore = cookies()
+export async function validateAdminSession(): Promise<AdminSession | null> {
+  const cookieStore = await cookies()
   const sessionCookie = cookieStore.get('admin_session')
   
   if (!sessionCookie?.value) {
@@ -43,7 +43,7 @@ export function validateAdminSession(): AdminSession | null {
 }
 
 export async function requireAdminAuth() {
-  const session = validateAdminSession()
+  const session = await validateAdminSession()
   if (!session) {
     redirect('/signin')
   }
@@ -68,7 +68,7 @@ export async function requireAdminAuth() {
 }
 
 export async function requireAdminAuthAPI() {
-  const session = validateAdminSession()
+  const session = await validateAdminSession()
   if (!session) {
     return { error: "Unauthorized", status: 401 }
   }
@@ -93,7 +93,7 @@ export async function requireAdminAuthAPI() {
 }
 
 export async function redirectIfAuthenticated() {
-  const session = validateAdminSession()
+  const session = await validateAdminSession()
   if (!session) return
   try {
     const user = await prisma.user.findUnique({
