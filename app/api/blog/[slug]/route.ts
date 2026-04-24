@@ -1,0 +1,116 @@
+import { NextRequest, NextResponse } from 'next/server'
+import { prisma } from '@/lib/prisma'
+
+type RouteContext = {
+  params: Promise<{ slug: string }>
+}
+
+export async function GET(
+  request: NextRequest,
+  context: RouteContext
+) {
+  try {
+    const { slug } = await context.params
+    const post = await prisma.blogPost.findUnique({
+      where: { 
+        slug,
+        status: 'published'
+      },
+      select: {
+        id: true,
+        title: true,
+        slug: true,
+        excerpt: true,
+        content: true,
+        contentHtml: true,
+        status: true,
+        publishDate: true,
+        readTimeMinutes: true,
+        viewCount: true,
+        likeCount: true,
+        commentCount: true,
+        featured: true,
+        thumbnailData: true,
+        thumbnailName: true,
+        thumbnailType: true,
+        thumbnailSize: true,
+
+        createdAt: true,
+        updatedAt: true,
+        category: {
+          select: {
+            id: true,
+            name: true,
+            slug: true,
+          }
+        },
+        author: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            bio: true,
+          }
+        },
+        tags: {
+          select: {
+            tag: {
+              select: {
+                id: true,
+                name: true,
+                slug: true,
+                color: true,
+              }
+            }
+          }
+        },
+        comments: {
+          where: {
+            status: 'approved'
+          },
+          select: {
+            id: true,
+            authorName: true,
+            content: true,
+            status: true,
+            createdAt: true,
+          },
+          orderBy: {
+            createdAt: 'desc'
+          }
+        }
+      }
+    })
+
+    if (!post) {
+      return NextResponse.json(
+        { error: 'Blog post not found', success: false },
+        { status: 404 }
+      )
+    }
+
+    // Transform the post data to include proper image handling (URL, not base64)
+    const transformedPost = {
+      ...post,
+      thumbnail: `/api/blog/thumbnails/${post.id}`,
+    }
+
+    // Increment view count (non-blocking)
+    prisma.blogPost.update({
+      where: { id: post.id },
+      data: { viewCount: { increment: 1 } }
+    }).catch(console.error)
+
+    return NextResponse.json({
+      success: true,
+      post: transformedPost
+    })
+
+  } catch (error) {
+    console.error('Error fetching blog post:', error)
+    return NextResponse.json(
+      { error: 'Failed to fetch blog post', success: false },
+      { status: 500 }
+    )
+  }
+} 

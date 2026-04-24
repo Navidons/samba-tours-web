@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://sambatours.co/sitemap.xml
+Sitemap: https://sambatours.co/sitemap-images.xml
+
